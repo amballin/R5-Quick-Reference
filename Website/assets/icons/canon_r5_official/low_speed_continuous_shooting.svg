@@ -1,0 +1,12 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_continuous-shooting</title>
+  <path d="M14.49,10.71H0.69V0.5h13.8V10.71ZM12.7,8.91V2.3H2.47V8.91H12.7Zm4.2,4.2H3.69v-1.2h12V3.5h1.2v9.61Zm2.4,2.39H6.7V14.3H18.11V6.51h1.2v9Z"/>
+  <rect class="cls-1" width="20" height="16"/>
+</svg>
