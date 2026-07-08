@@ -1,0 +1,1829 @@
+[
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "purpose",
+    "text": "Explain when to use Electronic, Electronic First Curtain Shutter (EFCS), and Mechanical shutter on the Canon R5."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "what-it-does",
+    "text": "Shutter mode controls how the exposure starts and ends. Electronic uses sensor readout, EFCS starts electronically and ends mechanically, and Mechanical uses physical curtains."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "how-it-works",
+    "text": "Electronic shutter reads the sensor line by line. EFCS begins exposure without first-curtain movement and ends with the mechanical second curtain. Mechanical shutter uses both physical curtains."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "advantages",
+    "text": "- Electronic: silent shooting, no shutter shock, fastest burst options.\n- EFCS: low vibration with broad compatibility.\n- Mechanical: best compatibility for flash, motion, and artificial light."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "disadvantages",
+    "text": "- Electronic can show rolling shutter with fast movement.\n- Electronic can band under flickering lights.\n- EFCS can affect bokeh at very high shutter speeds.\n- Mechanical is louder and can add vibration."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "recommended-uses",
+    "text": "Use Electronic for quiet subjects with controlled movement. Use EFCS for general handheld shooting. Use Mechanical for flash, fast action under artificial light, and when rolling shutter risk matters."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid Electronic shutter for fast lateral motion, flash, or flickering light. Avoid EFCS at very high shutter speeds when bokeh quality is critical."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "decision-guide",
+    "text": "Need flash: Mechanical. Need silence: Electronic if motion/light allow. General stills: EFCS. Fast action under uncertain light: Mechanical."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Birds in Flight: Mechanical or Electronic only after testing rolling shutter.\n- Fireworks: Mechanical.\n- Sports: Mechanical unless silent shooting is mandatory.\n- Wildlife: Electronic for quiet moments, Mechanical for fast movement."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "canon-specific-notes",
+    "text": "On the Canon R5, Electronic shutter is silent but has rolling-shutter and flash limitations. Mechanical and EFCS remain safer default choices for mixed lighting and flash."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "tips",
+    "text": "Test each shutter mode with the actual subject speed and lighting. Watch backgrounds and straight vertical lines for skew."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "common-mistakes",
+    "text": "- Using Electronic shutter with flash.\n- Ignoring banding under LED lighting.\n- Using EFCS at high shutter speeds with nervous bokeh."
+  },
+  {
+    "appendix_id": "shutter_modes",
+    "title": "Electronic vs EFCS vs Mechanical Shutter",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Electronic vs EFCS vs Mechanical Shutter.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Electronic vs EFCS vs Mechanical Shutter.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Fireworks, Sports, Wildlife.\n- Settings: shutter type, drive mode, flash mode.\n- Related appendices: Flash Photography, Drive Modes."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "purpose",
+    "text": "Explain Servo AF behavior, tracking response, and subject detection choices for moving subjects."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "what-it-does",
+    "text": "AF tracking controls how quickly the camera follows subjects, ignores distractions, and switches targets."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "how-it-works",
+    "text": "Servo AF continuously updates focus. Tracking sensitivity, Accel/Decel Tracking, and subject switching tune how the camera responds to subject movement and interruptions."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "advantages",
+    "text": "- Eye detection improves people and animal focus accuracy.\n- Animal detection helps wildlife and birds.\n- Vehicle detection supports motorsports and similar subjects.\n- Servo AF keeps moving subjects in focus."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "disadvantages",
+    "text": "- Too much sensitivity can jump to distractions.\n- Too little sensitivity can cling to the wrong subject.\n- Subject detection can fail with blocked, small, or low-contrast subjects."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "recommended-uses",
+    "text": "Use Servo AF for moving subjects. Use subject detection when the subject type is clear. Use AF-ON/back-button focus when separating focus from shutter release helps."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid aggressive tracking settings in cluttered scenes. Avoid subject detection when the camera repeatedly chooses the wrong target."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "decision-guide",
+    "text": "Predictable subject: moderate tracking. Erratic subject: increase Accel/Decel support. Busy background: reduce subject switching and use a smaller AF area."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Birds in Flight: Servo AF, animal detection, Expand AF Area.\n- People: Servo AF or One-Shot depending on movement, eye detection.\n- Sports: Servo AF, tuned tracking sensitivity.\n- Wildlife: Servo AF, animal eye detection when available."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon R5 AF cases and subject detection work together. Subject detection is powerful, but AF area selection still matters."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "tips",
+    "text": "Start with a familiar AF area and change one tracking parameter at a time."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "common-mistakes",
+    "text": "- Letting the camera switch subjects too easily.\n- Using too small an AF area for erratic subjects.\n- Assuming eye detection replaces good panning and framing."
+  },
+  {
+    "appendix_id": "af_cases_tracking",
+    "title": "AF Cases & Tracking Behavior",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/AF Cases & Tracking Behavior.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/AF Cases & Tracking Behavior.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, People, Sports, Wildlife.\n- Settings: AF operation, AF method, subject detection.\n- Related appendices: Custom Controls, Drive Modes."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "purpose",
+    "text": "Explain Evaluative, Partial, Spot, and Center-weighted metering and when each mode helps."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "what-it-does",
+    "text": "Metering determines how the camera reads scene brightness to recommend or set exposure."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "how-it-works",
+    "text": "Evaluative analyzes the whole frame. Partial reads a central area. Spot reads a small central area. Center-weighted averages the frame with priority near the center."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "advantages",
+    "text": "- Evaluative: best general-purpose choice.\n- Partial: useful when the subject is central and backlit.\n- Spot: precise measurement of a small tone.\n- Center-weighted: predictable for classic centered compositions."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "disadvantages",
+    "text": "- Evaluative can be influenced by subject recognition and scene contrast.\n- Partial and Spot require careful placement.\n- Center-weighted can under- or over-expose off-center subjects."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "recommended-uses",
+    "text": "Use Evaluative by default. Use Partial or Spot for difficult contrast. Use Center-weighted when you want a stable, traditional meter pattern."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid Spot unless you know exactly which tone you are metering. Avoid Center-weighted for off-center subjects unless exposure lock is used."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "decision-guide",
+    "text": "General scene: Evaluative. Backlit central subject: Partial. Small known tone: Spot. Simple centered scene: Center-weighted."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Camera Defaults: Evaluative.\n- Fireworks: Manual exposure; metering is secondary.\n- Landscape: Evaluative with exposure compensation as needed.\n- People: Evaluative or Partial for backlight.\n- Wildlife: Evaluative, with compensation for bright/dark subjects."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon Evaluative metering is highly capable and usually the safest starting point on the R5."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "tips",
+    "text": "Use exposure compensation when the scene is mostly bright or mostly dark."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "common-mistakes",
+    "text": "- Using Spot accidentally.\n- Forgetting exposure compensation for snow, dark stages, or backlight.\n- Treating the meter as a creative decision instead of a starting point."
+  },
+  {
+    "appendix_id": "metering_modes",
+    "title": "Metering Modes",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Metering Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Metering Modes.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Camera Defaults, Fireworks, Landscape, People, Wildlife.\n- Settings: metering mode, exposure compensation.\n- Related appendices: Flash Photography."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "purpose",
+    "text": "Focus Bracketing captures a sequence of photographs while the camera automatically moves focus from near to far. It is used when one photograph cannot hold enough depth of field.\nDepth Compositing is the process of combining those bracketed photographs into one image where more of the subject appears sharp. Focus Bracketing creates the source frames. Depth Compositing creates the final stacked image.\nMultiple focused images often produce better results than stopping down to very small apertures. At f/16, f/22, or smaller, diffraction can soften fine detail even though depth of field increases. A stack shot around f/5.6-f/11 often keeps sharper detail and creates deeper apparent focus.\nUse this appendix as a field guide for estimating Focus Bracketing settings with minimal trial and error.\nTable of contents:\n- Camera Requirements\n- Every Camera Setting Explained\n- Number of Shots\n- Focus Increment\n- Exposure Smoothing\n- Depth Compositing\n- How to Choose Settings\n- Starting Point Tables\n- Lens x Magnification x Aperture Quick Reference\n- Lens Considerations\n- Common Problems\n- Troubleshooting Guide\n- Decision Trees\n- Profile Recommendations"
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "what-it-does",
+    "text": "Focus Bracketing takes multiple frames focused at different distances. The camera begins at the focus point you choose, then steps focus farther away for each frame.\nDepth Compositing uses the sharp regions from those frames to create a deeper-focus image. The composite can be made in camera when supported, or later in software such as Canon Digital Photo Professional, Photoshop, Helicon Focus, or Zerene Stacker."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Camera Requirements",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "camera-requirements",
+    "text": "- Compatible lenses: Use Canon AF lenses that support electronic focus control. RF lenses generally work best. Many adapted EF lenses work well, but focus step behavior varies by lens.\n- RAW/JPEG behavior: Keep the source images for maximum quality. In-camera depth compositing may create a processed composite file, while external software can use the original RAW frames.\n- Tripod recommendations: Use a tripod for macro, product, landscape, architecture, and any stack where framing must stay fixed.\n- Handheld limitations: Handheld bracketing can work for casual close-ups, but framing shifts and subject movement increase stacking errors.\n- Flash compatibility: Flash can work, but recycle time must keep up with the bracket sequence. Manual flash with consistent power is usually better than variable automatic flash.\n- Electronic shutter considerations: Electronic shutter can reduce vibration, but watch for banding under artificial light. Mechanical shutter may be safer when flash is required.\n- Image Stabilization considerations: Use IS for handheld stacks. Turn IS off on a solid tripod for static subjects unless the lens/body combination handles tripod detection cleanly."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "how-it-works",
+    "text": "The camera needs a starting focus point, a focus increment, and a number of shots.\nStart focus on the nearest important detail. The sequence moves focus farther away from that point. If you start too deep into the subject, the near edge will never be sharp.\nThe key relationships are:\n- Higher magnification gives shallower depth of field.\n- Closer subject distance gives shallower depth of field.\n- Wider aperture gives shallower depth of field.\n- Smaller focus increments increase overlap between slices.\n- More shots increase total depth coverage."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "advantages",
+    "text": "- Creates deeper apparent focus without relying on very small apertures.\n- Preserves fine detail by avoiding diffraction-heavy settings.\n- Excellent for macro, product photography, flowers, food, small collectibles, and landscapes with close foregrounds.\n- Lets the photographer choose sharpness and depth separately.\n- External stacking software can produce high-quality results from RAW source frames."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "disadvantages",
+    "text": "- Requires static subjects or very little movement.\n- Wind can ruin flowers, insects, and foreground landscape elements.\n- Flash recycle time can interrupt the sequence.\n- Focus breathing can change framing between frames.\n- Too few images leave gaps; too many images waste storage and time.\n- In-camera compositing is convenient but less controllable than external software."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "recommended-uses",
+    "text": "Use Focus Bracketing when the subject is static and depth of field is not enough in one frame.\nRecommended:\n- Macro subjects.\n- Water drops.\n- Flowers.\n- Coins.\n- Jewelry.\n- Watches.\n- Food.\n- Electronics.\n- Product photography.\n- Architecture details.\n- Landscapes with close foreground elements."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, wind is moving important details, or the flash cannot recycle fast enough.\nAvoid it for portraits unless there is a specific static setup. Eye and face movement usually make stacking unnecessary or unreliable.\nAvoid using very small apertures and stacking at the same time unless there is a deliberate reason. Diffraction can soften every frame in the stack."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Every Camera Setting Explained",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "every-camera-setting-explained",
+    "text": "Canon Focus Bracketing settings control how far the camera travels through the subject and how reliable the overlap is between frames."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Number of Shots",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "number-of-shots",
+    "text": "What it controls: the maximum number of frames the camera will capture in the bracket.\nEffect of increasing the value: more depth coverage and less chance that the sequence stops before the far edge is sharp.\nEffect of decreasing the value: less time, less storage, and faster processing.\nTypical values:\n  Subject   Typical Number of Shots  \n  ---   ---  \n  Very shallow macro   100-300+  \n  Flowers   30-80  \n  Products   20-60  \n  Landscape   3-20  \n  Architecture   5-15  \n  Portrait   Rarely needed  \nCommon mistakes:\n- Too few shots leave the far edge soft.\n- Too many shots waste time and storage.\n- Using one shot count for every subject.\nRecommended starting point: choose more shots than you think you need for the first test stack, then reduce after reviewing the last useful sharp frame."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Focus Increment",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "focus-increment",
+    "text": "What it controls: how far the focus plane moves between frames.\nFocus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters. Its real-world effect changes with aperture, magnification, subject distance, and lens behavior.\nRelationship to depth of field:\n- Wider aperture: shallower depth of field, smaller increment needed.\n- Smaller aperture: deeper depth of field, larger increment possible.\n- Higher magnification: shallower depth of field, smaller increment needed.\n- Closer subject: shallower depth of field, smaller increment needed.\n- Greater subject distance: deeper depth of field, larger increment possible.\nSmall increment:\n- More overlap.\n- Better stacking reliability.\n- More images.\n- Slower workflow.\nLarge increment:\n- Fewer images.\n- Faster capture.\n- Less storage.\n- Greater chance of focus gaps.\nPractical starting points:\n  Subject   Suggested Increment  \n  ---   ---  \n  1:1 Macro   1-2  \n  Insects   2-3  \n  Flowers   3-5  \n  Product Photography   3-5  \n  Food   4-6  \n  Landscape   5-8  \n  Architecture   5-10  \nThese are starting points, not fixed rules. If the stack shows bands of softness, reduce the increment. If every frame is nearly identical, increase the increment.\nCommon mistakes:\n- Using a large increment for 1:1 macro.\n- Assuming the increment means the same thing with every lens.\n- Changing aperture without adjusting increment.\n- Starting focus in the middle of the subject instead of the nearest important detail.\nRecommended starting point: increment 1-2 for true macro, 3-5 for close product work, and 5-8 for landscape."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Exposure Smoothing",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "exposure-smoothing",
+    "text": "What it controls: whether the camera attempts to reduce visible exposure jumps across the bracket.\nEffect of enabling it: helps make frames more consistent when natural light shifts during the sequence.\nEffect of disabling it: keeps controlled studio lighting untouched and avoids unnecessary camera intervention.\nTypical values:\n- On for changing natural light.\n- Usually Off for controlled studio lighting.\nCommon mistakes:\n- Leaving it Off outdoors when clouds are moving quickly.\n- Turning it On in a controlled flash setup and expecting it to fix inconsistent flash recycle.\nRecommended starting point: On outdoors, Off in studio."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Depth Compositing",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "depth-compositing",
+    "text": "What it controls: whether the camera creates a stacked composite from the bracketed images.\nHow it works: the camera analyzes sharp areas from each frame, aligns the stack where possible, and blends the sharp regions into one composite.\nAdvantages:\n- Fast review in the field.\n- Useful for simple subjects.\n- Good for quick documentation.\nLimitations:\n- Less control over halos and alignment.\n- Less retouching flexibility.\n- Can struggle with movement and focus breathing.\n- External software usually produces better results for serious macro, product, and landscape work.\nCommon mistakes:\n- Treating the in-camera composite as the only file worth keeping.\n- Expecting it to fix movement, wind, or poor overlap.\nRecommended starting point: use in-camera compositing for quick checks; keep source frames for final stacking."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "decision-guide",
+    "text": "How much depth needs to be covered?\n- Small depth: use fewer shots.\n- Large depth: use more shots.\nHow large is the subject?\n- Tiny macro subject: small increment and many shots.\n- Larger product or landscape: larger increment and fewer shots.\nHow close am I?\n- Very close: smaller increment.\n- Farther away: larger increment.\nWhat aperture am I using?\n- f/5.6-f/8 macro: small increment.\n- f/8-f/11 product or landscape: moderate increment.\n- f/16 or smaller: watch for diffraction; stacking may be better at a wider aperture.\nChoose Focus Increment.\nEstimate Number of Shots.\nReview the first stack.\nAdjust."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "How to Choose Settings",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "how-to-choose-settings",
+    "text": "Use this field process:\n1. Decide how much physical depth must be sharp.\n2. Check how close you are to the subject.\n3. Estimate magnification. The closer the lens is to macro range, the smaller the increment should be.\n4. Choose an aperture that balances sharpness and depth. f/8 is a strong starting point for many macro and product stacks.\n5. Choose Focus Increment.\n6. Choose Number of Shots.\n7. Run a test stack.\n8. Review the first and last frames.\n9. Adjust increment or shot count.\nWorked examples:\n- Water drops at f/8 with a 100 mm macro lens: start at increment 1 and 150 shots. If the rear edge is still soft, increase shots. If many final frames add no detail, reduce shots.\n- Flower at f/8: start at increment 4 and 50 shots. If petal edges show focus gaps, reduce increment to 3 or increase shots.\n- Product watch at f/8: start at increment 3 and 80 shots. Use tripod and controlled light. If bracelet links show gaps, reduce increment.\n- Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.\n- Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "  Profile / Subject   Aperture   Focus Increment   Number of Shots   Notes  \n  ---   ---   ---   ---   ---  \n  Macro   f/8   1-3   80-200   Use tripod when possible  \n  Water Drops   f/8   1   150   Flash recycle and timing matter  \n  Landscape close foreground   f/8   5-8   5-20   Start near foreground detail  \n  Product   f/8   3-5   20-80   Controlled light and tripod  \n  Flowers   f/8   3-5   30-80   Watch wind  \n  Insects   f/8   2-3   100-200   Subject movement is the main risk  \n  Architecture   f/8   5-10   5-15   Usually fewer frames than macro  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon R5 Focus Bracketing starts from the current focus position and moves focus farther away. Focus carefully on the nearest important detail before starting the sequence.\nIf using in-camera Depth Compositing, keep expectations practical. It is useful for fast review and simple stacks, but external software usually provides better alignment, retouching, and artifact control.\nSome Canon lenses change framing noticeably as focus shifts. This focus breathing can make stacks harder to align, especially with product and macro subjects."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "tips",
+    "text": "- Start with the nearest important detail.\n- Use a tripod for serious stacks.\n- Use f/8 as a practical first aperture for many macro/product stacks.\n- Review the first and last frame to confirm the full depth range was covered.\n- If there are focus gaps, lower the increment or increase shot count.\n- If many frames are redundant, raise the increment or reduce shot count.\n- Use controlled lighting when possible.\n- Protect the subject from wind.\n- Leave extra room around the subject for alignment and cropping."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "common-mistakes",
+    "text": "- Starting focus too far into the subject.\n- Using too few shots.\n- Using an increment that is too large for macro.\n- Using f/22 and getting diffraction-soft source frames.\n- Letting flash recycle time lag behind the bracket sequence.\n- Ignoring subject movement.\n- Forgetting focus breathing.\n- Keeping hundreds of unnecessary frames."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "100 mm Macro Lens",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "100-mm-macro-lens",
+    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Water Drops   f/8   1   150  \n  Insects   f/8   2   120  \n  Flowers   f/8   4   50  \n  Coins   f/8   3   60  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Landscape",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "landscape",
+    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Foreground flowers   f/8   5   15  \n  Mountains   f/8   6   8  \n  Scenic overlook   f/8   7   5  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Product Photography",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "product-photography",
+    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Watches   f/8   3   80  \n  Jewelry   f/8   2   100  \n  Electronics   f/8   4   40  \n  Small collectibles   f/8   4   50  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Lens x Magnification x Aperture Quick Reference",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "lens-x-magnification-x-aperture-quick-reference",
+    "text": "  Lens   Magnification   Aperture   Increment   Starting Shots  \n  ---   ---   ---   ---   ---  \n  RF 100 Macro   1:1   f/8   1   150  \n  RF 100 Macro   1:2   f/8   2   80  \n  RF 100 Macro   1:4   f/8   4   40  \n  EF 100 Macro   1:1   f/8   1-2   150  \n  EF 100 Macro   1:2   f/8   2-3   80  \n  EF 100-400 @ 400mm   Close focus   f/8   3   30  \n  RF 24-105 @ 24mm   Landscape   f/8   6   8  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Lens Considerations",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "lens-considerations",
+    "text": "RF 100 mm Macro: excellent for high-magnification stacking. At 1:1 or higher, use very small increments and many shots.\nEF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.\nEF 100-400L: useful for close telephoto detail, flowers, compressed landscape details, and larger products. Use moderate increments because magnification is lower than true macro but depth can still be shallow at close focus.\nWide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.\nWorking distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Common Problems",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "common-problems",
+    "text": "- Missing focus slices: usually caused by an increment that is too large.\n- Halo artifacts: usually caused by movement, focus breathing, or difficult high-contrast edges.\n- Subject movement: common with insects, flowers, water, and outdoor foregrounds.\n- Wind: the main outdoor stacking problem for flowers and foreground landscape elements.\n- Flash recycle issues: missed or underexposed frames appear when flash cannot recharge between shots.\n- Focus breathing: framing changes as focus moves, especially at close distances.\n- Too many images: slows sorting, stacking, storage, and backup.\n- Too few images: leaves gaps or stops before the far edge is sharp.\n- Diffraction: very small apertures soften every frame before stacking starts."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Troubleshooting Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "troubleshooting-guide",
+    "text": "  Problem   Likely Cause   Recommended Solution  \n  ---   ---   ---  \n  Missing focus slices   Increment too large   Lower increment and reshoot  \n  Far edge still soft   Too few shots   Increase shot count  \n  Near edge soft   Started focus too far away   Start on nearest important detail  \n  Halo artifacts   Blend struggled with edges   Use external software and retouch  \n  Subject movement   Wind or living subject moved   Shield subject, wait, or abandon stack  \n  Flash misses frames   Recycle too slow   Lower flash power, raise ISO, or slow sequence  \n  Framing changes   Focus breathing   Leave extra crop room and use external software  \n  Too many images   Shot count too high   Reduce shots after test stack  \n  Diffraction softness   Aperture too small   Use wider aperture and stack more frames  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Decision Trees",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "decision-trees",
+    "text": "Tripod?\n- No: use only for casual stacks; keep shots low and expect alignment issues.\n- Yes: continue.\nMacro?\n- Yes: start increment 1-3 and 80-200 shots.\n- No: continue.\nProduct or flower?\n- Yes: start increment 3-5 and 30-80 shots.\n- No: continue.\nLandscape?\n- Foreground close: start increment 5-8 and 5-20 shots.\n- No close foreground: Focus Bracketing may not be needed.\nLandscape decision tree:\nLandscape?\n- No: use the subject-specific table.\n- Yes: continue.\nForeground close?\n- No: single frame may be enough.\n- Yes: continue.\nNeed foreground and background critically sharp?\n- No: stop down moderately and shoot one frame.\n- Yes: use Focus Bracketing at f/8, increment 5-8, 5-20 shots.\nFlash decision tree:\nUsing flash?\n- No: continue normally.\n- Yes: test recycle time.\nFlash keeps up with every frame?\n- Yes: continue.\n- No: lower flash power, raise ISO, slow the sequence, or reduce the number of frames."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Profile Recommendations",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "profile-recommendations",
+    "text": "  Profile   Recommended Starting Point  \n  ---   ---  \n  Macro   f/8, increment 1-3, 80-200 shots  \n  Water Drops   f/8, increment 1, 150 shots, controlled flash  \n  Landscape   f/8, increment 5-8, 5-20 shots when foreground is close  \n  Product   f/8, increment 3-5, 20-80 shots  \n  Flowers   f/8, increment 3-5, 30-80 shots  \n  Insects   f/8, increment 2-3, 100-200 shots  \n  Architecture   f/8, increment 5-10, 5-15 shots  "
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Landscape, Macro, Water Drops, Product, Flowers, Insects, Architecture.\n- Settings: focus bracketing, number of shots, focus increment, exposure smoothing, depth compositing, aperture, shutter mode, flash mode.\n- Related appendices:\n- Image Stabilization\n- Long Exposure & Night Photography\n- Electronic vs EFCS vs Mechanical Shutter\n- Flash Photography"
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "purpose",
+    "text": "Explain how image stabilization works on the Canon EOS R5 and when to use Mode 1, Mode 2, Mode 3, or Off.\nOn the Canon EOS R5, image stabilization can come from three places:\n- Lens IS in supported lenses.\n- IBIS (In-Body Image Stabilization) in the camera.\n- Coordinated IS when a supported RF lens and the camera body work together."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "what-it-does",
+    "text": "Image stabilization reduces blur from camera movement. It does not freeze subject motion; shutter speed still controls motion blur from the subject.\nThe camera offers several stabilization behaviors depending on the lens and shooting mode.\n  Mode   What it stabilizes   Best use  \n  ---   ---   ---  \n  Mode 1 (Continuous IS)   Vertical + horizontal movement   General photography, portraits, landscapes, travel, handheld macro, low-light handheld work  \n  Mode 2 (Panning IS)   Vertical movement only during horizontal pans   Motorsports, airshows, birds flying steadily across the frame, cyclists, running subjects while panning  \n  Mode 3 (Exposure-only IS)   Stabilization activates fully during exposure   Erratic action where a stabilized viewfinder can make tracking harder, including birds, wildlife, and sports  \n  Off   No stabilization   Solid tripod work, multi-minute exposures, astrophotography, very high shutter speeds, and certain long exposures  "
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "how-it-works",
+    "text": "Lens IS moves lens elements to counter camera shake. IBIS moves the camera sensor. With compatible RF lenses, the R5 coordinates lens IS and IBIS automatically, so the main field decision is usually the IS mode or whether stabilization should be off.\nMode 1 stabilizes continuously. Mode 2 ignores intentional panning movement in one direction. Mode 3 keeps the view less stabilized while tracking and applies stabilization during the exposure."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "advantages",
+    "text": "- Mode 1 is the best default for most handheld photography.\n- Mode 2 supports intentional motion blur while panning.\n- Mode 3 can make erratic subjects easier to track.\n- Turning IS off avoids stabilization drift during some tripod and long-exposure work.\n- Coordinated IS can improve handheld results with supported RF lenses."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "disadvantages",
+    "text": "- Stabilization cannot stop subject motion.\n- Mode 1 can create a floating viewfinder feel with erratic subjects.\n- Mode 2 is specialized and should not be used as a general default.\n- Stabilization can be unnecessary or counterproductive on a solid tripod.\n- Some lenses do not provide all modes."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "recommended-uses",
+    "text": "Use Mode 1 for landscapes, portraits, street photography, travel, handheld macro, and low-light handheld work. This is the default mode and should be used most of the time.\nUse Mode 2 for intentional panning, such as a race car at 1/60 sec where the background blurs while the car stays sharp.\nUse Mode 3 for birds in flight, football, soccer, basketball, and wildlife moving unpredictably. Many wildlife photographers leave long telephotos in Mode 3.\nTurn IS off for solid tripod work, multi-minute exposures, astrophotography, and situations where shutter speeds are already very fast, such as 1/2000-1/4000 sec."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "when-not-to-use",
+    "text": "Do not leave stabilization on automatically for every tripod setup. Modern Canon RF lenses generally detect tripod use well, but for completely static tripod shots, turning stabilization off can still be beneficial.\nDo not rely on IS to solve subject blur. If the subject is moving, raise shutter speed or change timing.\nAvoid Mode 2 unless you are intentionally panning."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "decision-guide",
+    "text": "If handheld and the subject is mostly static, use Mode 1.\nIf intentionally panning, use Mode 2.\nIf tracking fast erratic subjects, use Mode 3.\nIf on a solid tripod for static or long-exposure work, turn IS off.\nIf using an RF lens with IS, let the R5 coordinate lens IS and IBIS; choose the mode based on the subject."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "  Profile   General IS recommendation   EF 100-400mm L IS II recommendation  \n  ---   ---   ---  \n  Wildlife   Mode 3 for active wildlife; Mode 1 for resting subjects   Mode 3  \n  Birds in Flight   Mode 3 by default; Mode 2 for deliberate steady pans   Mode 3 by default; Mode 2 for smooth lateral pans  \n  Sports   Mode 3   Mode 3  \n  Panning (cars, aircraft, cyclists)   Mode 2   Mode 2  \n  Travel   Mode 1   Mode 1  \n  Camera Defaults   Mode 1   Mode 1  \n  Macro (handheld)   Mode 1   Mode 1 if using a telephoto technique  \n  Macro (tripod)   Off   Off  \n  Waterdrops   Off   Off  \n  Landscapes (tripod)   Off   Off  \n  Landscapes (handheld)   Mode 1   Mode 1  "
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "canon-specific-notes",
+    "text": "With RF lenses that include IS, the R5 automatically coordinates lens and body stabilization. You do not normally choose lens IS versus IBIS separately in the field.\nSome lenses expose a physical IS switch and mode selector. Lens controls can determine whether the camera menu offers the expected options."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "EF 100-400mm f/4.5-5.6L IS II USM",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "ef-100-400mm-f-4-5-5-6l-is-ii-usm",
+    "text": "For the Canon EF 100-400mm f/4.5-5.6L IS II USM, commonly adapted to the R5 with a Canon EF-EOS R adapter, stabilization is controlled by the switch on the lens.\nWhen this lens is used on the R5 with the Canon adapter, the lens IS and the camera's IBIS work together. In the field, treat the lens IS mode switch as the primary stabilization mode choice.\n  Lens IS Mode   Purpose   Best use  \n  ---   ---   ---  \n  Mode 1   Stabilizes in all directions   General wildlife, perched birds, landscapes, travel, handheld telephoto  \n  Mode 2   Panning mode   Birds flying smoothly across the frame, motorsports, cyclists, runners  \n  Mode 3   Stabilization only during exposure   Birds in flight, erratic wildlife, field sports, fast action  \n  Off   No stabilization   Rigid tripod work, very long exposures, or very fast shutter speeds where IS adds little practical benefit  \nUse Mode 1 for static or slow-moving subjects: perched birds, wildlife at rest, zoo photography, travel, handheld landscapes, and general telephoto work.\nUse Mode 2 for intentional panning. The lens detects the panning direction and stabilizes only perpendicular to that movement. This is the right choice for horizontal pans of birds in flight, airshows, motorsports, cyclists, and running animals.\nUse Mode 3 for action that changes direction quickly. The viewfinder remains largely unstabilized while tracking, and full stabilization is applied only when the shutter is released. This is often preferred for birds in flight, erratic wildlife, sports, and subjects that are difficult to keep in the frame.\nMany wildlife photographers leave this lens in Mode 3 for unpredictable subjects because it makes tracking feel more natural.\nFor completely static tripod work, long exposures, and astrophotography, turning stabilization off remains a good practice.\nFor this reference system, treat Mode 1 as the default, Mode 2 as the dedicated panning mode, and Mode 3 as the default for fast action."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "tips",
+    "text": "- Use Mode 1 as the everyday handheld default.\n- Use Mode 3 for long telephoto wildlife and unpredictable action.\n- Use Mode 2 only when you are deliberately panning.\n- Recheck IS after switching between handheld and tripod work.\n- Treat stabilization as camera-shake reduction, not a substitute for shutter speed."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "common-mistakes",
+    "text": "- Leaving Mode 1 on for erratic action when Mode 3 would track better.\n- Using Mode 2 for non-panning subjects.\n- Leaving IS on during long static tripod exposures.\n- Expecting stabilization to freeze subject movement.\n- Forgetting that some lenses do not provide Mode 2 or Mode 3."
+  },
+  {
+    "appendix_id": "image_stabilization",
+    "title": "Image Stabilization",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Image Stabilization.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Image Stabilization.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Camera Defaults, Landscape, Macro, Sports, Travel, Waterdrops, Wildlife.\n- Settings: stabilization.image_stabilization.mode, stabilization.ibis, stabilization.lens_is, shutter speed, drive mode.\n- Lens notes: RF lenses with optical IS, long telephoto lenses, macro lenses, tripod-mounted lenses.\n- Related appendices: Electronic vs EFCS vs Mechanical Shutter, Drive Modes, Focus Bracketing & In-Camera Depth Compositing."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Lens Capabilities",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "lens-capabilities",
+    "text": "Use this guide as a quick lens-by-lens setup check before choosing a profile card. Lens switches can override or shape camera behavior, especially stabilization, manual focus, extenders, and adapted EF lenses."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Index",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "index",
+    "text": "1. Match by Subject\n2. Canon EF 100-400mm f/4.5-5.6L IS II USM\n3. Canon EF 100mm f/2.8L Macro IS USM\n4. Canon EF 50mm f/1.4 USM\n5. Canon Extender EF 1.4x\n6. EF-EOS R Control Ring Adapter\n7. Canon RF 24-240mm F4-6.3 IS USM\n8. Common Mistakes\n9. Cross References"
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Match by Subject",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "match-by-subject",
+    "text": "  Card / Subject   Best lens starting point   Support   Setup hint  \n  ---   ---   ---   ---  \n  Birds in Flight   EF 100-400L, optionally 1.4x when light is strong   Handheld or gimbal   IS Mode 3 for erratic flight; Mode 2 only for smooth panning  \n  Birds Perched   EF 100-400L, optionally 1.4x   Handheld, monopod, tripod, or gimbal   IS Mode 1 for static subjects; turn IS off on a locked tripod  \n  Wildlife   EF 100-400L, optionally 1.4x   Handheld or gimbal   Mode 3 for active animals, Mode 1 for resting animals  \n  Sports   EF 100-400L   Monopod or gimbal for long sessions   Mode 3 for erratic field action, Mode 2 for deliberate pans  \n  People   EF 50mm f/1.4, RF 24-240, or EF 100L Macro   Handheld   Use EF 50 for low light or shallow depth of field; use RF 24-240 for flexibility  \n  Travel   RF 24-240 or EF 50mm f/1.4   Handheld   Use RF 24-240 as the walk-around lens; use EF 50 for low light/simple kit  \n  Landscape   RF 24-240 or EF 100-400L for compressed scenes   Tripod for careful framing   Turn stabilization off on a solid tripod  \n  Macro   EF 100L Macro   Tripod for serious close-up work   Use manual focus or careful AF; consider focus bracketing for depth  \n  Waterdrops   EF 100L Macro   Tripod required   Manual focus, controlled light, stabilization off on a locked setup  \n  Fireworks   RF 24-240, EF 50mm f/1.4, or wider lens if available   Tripod required   Manual focus, stabilization off, remote or timer release  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Canon EF 100-400mm f/4.5-5.6L IS II USM",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm",
+    "text": "Best for birds, wildlife, sports, distant details, compressed landscapes, zoo subjects, airshows, and outdoor action."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Switches and Settings",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "switches-and-settings",
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for wildlife/action; MF for static tripod scenes if focus must not move  \n  Stabilizer ON/OFF   Turns lens IS on or off   On handheld, monopod, or gimbal; Off on a solid locked tripod  \n  Stabilizer Mode 1   General stabilization   Perched birds, resting wildlife, travel telephoto, static subjects  \n  Stabilizer Mode 2   Panning stabilization   Birds, aircraft, cyclists, motorsports, or runners moving smoothly across the frame  \n  Stabilizer Mode 3   Exposure-only stabilization   Birds in flight, erratic wildlife, sports, and action that changes direction  \n  Focus distance limiter   Restricts AF range to reduce hunting   Use the longer-distance range for distant wildlife/action; use full range for close subjects  \n  Zoom touch adjustment ring   Changes zoom-ring resistance   Looser for fast reframing; tighter for carrying or slower deliberate zooming  \nThis guidance is for the IS II version you listed. Treat Mode 1 as the static-subject default, Mode 2 as the panning mode, and Mode 3 as the fast-action mode."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Support",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "support",
+    "text": "Handheld works well in good light. Use a monopod or gimbal for long sessions, long waits, or smoother subject tracking. Use a tripod for static wildlife, landscapes, moon shots, and careful compositions. On a locked tripod, turn stabilization off unless you are actively tracking."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Extender and Adapter Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "extender-and-adapter-notes",
+    "text": "The EF 100-400L IS II is the main lens in this kit where the 1.4x extender makes sense. Put the EF 1.4x extender between the EF lens and the EF-EOS R adapter, then mount the adapter to the R5.\nWith a 1.4x extender, this lens becomes 140-560mm f/6.3-8. Expect more reach, less light, slightly slower AF, and more need for steady support. It is best for perched birds, distant wildlife, moon/detail shots, and bright outdoor subjects. Avoid it for low light, fast erratic action, or heat shimmer unless reach matters more than speed.\nThe EF-EOS R control ring adapter does not change focal length or aperture. Use the control ring for a high-value field setting such as exposure compensation, ISO, or aperture, depending on how you like to shoot."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Canon EF 100mm f/2.8L Macro IS USM",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "canon-ef-100mm-f-2-8l-macro-is-usm",
+    "text": "Best for macro, waterdrops, flowers, small objects, product details, portraits with compression, and close detail work."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Switches and Settings",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "switches-and-settings",
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for general close work; MF for controlled macro, waterdrops, and stacking  \n  Stabilizer ON/OFF   Turns Hybrid IS on or off   On handheld; Off on a locked tripod  \n  Focus distance limiter   Restricts AF range   Use the closest range for macro, longer range for portraits/general work, full range when unsure  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Support",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "support",
+    "text": "Use a tripod for waterdrops, focus bracketing, product work, and any subject where framing must stay fixed. Handheld is fine for casual flowers, details, and portraits, but depth of field becomes very thin at close distances."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Extender and Adapter Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "extender-and-adapter-notes",
+    "text": "Use the EF-EOS R control ring adapter with this EF lens. The adapter does not change focus behavior, focal length, or aperture.\nDo not plan on using the EF 1.4x extender with the EF 100L Macro as a normal field setup. Canon EF extenders are intended for compatible telephoto lenses and are not the practical choice for this macro lens."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Canon EF 50mm f/1.4 USM",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "canon-ef-50mm-f-1-4-usm",
+    "text": "Best for people, low-light details, travel-light, casual portraits, indoor family work, and natural-light scenes."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Switches and Settings",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "switches-and-settings",
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for normal shooting; MF for deliberate static scenes or prefocused compositions  \n  Focus ring   Allows manual focus adjustment   Use gently; avoid bumping it while carrying because this older micro-USM design is less rugged than modern ring-USM/L lenses  \n  Image stabilization   Not available on this lens   Use faster shutter speed, higher ISO, or tripod when light is low  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Support",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "support",
+    "text": "Handheld is the normal use. Use a tripod for deliberate low-light static scenes, product-style detail shots, or video/locked composition work. A gimbal is not needed."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Extender and Adapter Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "extender-and-adapter-notes",
+    "text": "Use the EF-EOS R control ring adapter with this lens. Do not use the EF 1.4x extender with it; the extender is for compatible telephoto lenses, not this normal prime."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Canon Extender EF 1.4x",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "canon-extender-ef-1-4x",
+    "text": "Use the 1.4x extender only when the extra reach is worth the tradeoffs.\n  Benefit   Tradeoff  \n  ---   ---  \n  More reach for birds and distant wildlife   Less light reaches the camera  \n  Tighter framing without cropping as much   AF can slow down  \n  Useful for perched or distant subjects   More camera shake and heat shimmer are visible  \n  Can help moon/detail shots   Not ideal for low light or fast close action  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Compatibility in This Kit",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "compatibility-in-this-kit",
+    "text": "  Owned lens   1.4x use  \n  ---   ---  \n  EF 100-400mm f/4.5-5.6L IS II USM   Yes; best pairing in this kit, becomes 140-560mm f/6.3-8  \n  EF 100mm f/2.8L Macro IS USM   No practical field use  \n  EF 50mm f/1.4 USM   No; not a compatible telephoto pairing  \n  RF 24-240mm F4-6.3 IS USM   No; RF lens, not used with EF extender  \nAvoid using it as an always-on accessory. Add it when the subject is distant, light is strong, and you can keep shutter speed high enough."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "EF-EOS R Control Ring Adapter",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "ef-eos-r-control-ring-adapter",
+    "text": "Use this adapter for EF lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, and EF 50mm f/1.4 USM. It is not used with the RF 24-240mm F4-6.3 IS USM.\nIt preserves normal EF lens use and adds a programmable control ring.\nRecommended control ring choices:\n  Control ring assignment   Why use it  \n  ---   ---  \n  Exposure compensation   Fast field correction for birds, wildlife, people, and travel  \n  ISO   Useful in Manual exposure when shutter and aperture are already occupied  \n  Aperture   Useful for Av or Manual when you want lens-like aperture control  \nFor this system, exposure compensation is the strongest default recommendation because many profiles already rely on exposure compensation decisions in changing light."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Canon RF 24-240mm F4-6.3 IS USM",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "canon-rf-24-240mm-f4-6-3-is-usm",
+    "text": "Best for travel, family, people, casual landscapes, events, and one-lens walking around."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Controls and Settings",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "controls-and-settings",
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF / focus mode   Chooses autofocus or manual focus through camera/lens focus settings   AF for almost everything; MF only for deliberate static scenes  \n  Stabilizer ON/OFF   Turns lens IS on or off   On handheld; Off on solid tripod long exposures  \n  Focus/control ring   Acts as manual focus ring or configurable control ring depending on lens/camera settings   Use control-ring behavior for exposure compensation/ISO when you want quick field control; use focus behavior for manual focus  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Support",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "support",
+    "text": "Handheld is the normal use. Use a tripod for landscapes, night scenes, fireworks, or careful static compositions. A gimbal is not needed for this lens."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Extender and Adapter Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "extender-and-adapter-notes",
+    "text": "Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does not use the EF-EOS R adapter."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "common-mistakes",
+    "text": "- Leaving IS on for locked tripod long exposures.\n- Leaving Mode 2 on after a panning session.\n- Using the 1.4x extender when light is too low for a clean shutter speed.\n- Forgetting that the EF control ring adapter changes controls, not optics.\n- Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.\n- Using the macro lens handheld when the subject really needs a tripod.\n- Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Lens Capabilities.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Lens Capabilities.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.\n- Related appendices: Image Stabilization, Focus Bracketing & In-Camera Depth Compositing, R5 Quick Reference, Electronic vs EFCS vs Mechanical Shutter."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "purpose",
+    "text": "Explain the Canon R5 choices that matter for long exposures, night photography, fireworks, waterfalls, light painting, Milky Way images, and other tripod-based low-light work.\nThis appendix is the single source of truth for Long Exposure Noise Reduction (LENR). Profiles should reference this appendix rather than duplicating LENR explanations.\nTable of contents:\n- Long Exposure Noise Reduction (LENR)\n- Processing Time\n- AUTO Setting\n- Decision Guide\n- Recommended Settings by Profile\n- Cross References"
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "what-it-does",
+    "text": "Long exposure settings control how the R5 handles multi-second captures, sensor heat, tripod stability, shutter behavior, stabilization, and processing delays."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Long Exposure Noise Reduction (LENR)",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "long-exposure-noise-reduction-lenr",
+    "text": "Long Exposure Noise Reduction performs a second exposure, called a dark frame, immediately after the original exposure with the shutter closed.\nThe camera compares the dark frame with the original exposure and removes or reduces:\n- Hot pixels.\n- Thermal noise.\n- Amp glow.\n- Fixed-pattern sensor noise.\nLENR is different from High ISO Noise Reduction. High ISO Noise Reduction targets high-sensitivity noise; LENR targets artifacts created or revealed by longer exposure times."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "how-it-works",
+    "text": "The camera uses dark frame subtraction. If the original exposure is 30 seconds, the R5 records the main image, then spends roughly another 30 seconds recording a dark frame. The dark frame contains sensor noise patterns but no scene detail, allowing the camera to subtract those artifacts.\nDuring the dark-frame exposure, the camera cannot take another photograph."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Processing Time",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "processing-time",
+    "text": "LENR effectively doubles capture time.\n  Exposure   Camera Busy Time  \n  ---   ---  \n  5 sec   10 sec  \n  15 sec   30 sec  \n  30 sec   60 sec  \n  1 minute   2 minutes  \n  5 minutes   10 minutes  \nThe camera may display BUSY while the dark frame is being captured or processed."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "advantages",
+    "text": "- Reduces hot pixels.\n- Reduces thermal noise.\n- Reduces fixed-pattern sensor noise.\n- Helps control amp glow.\n- Improves single long exposures.\n- Is especially useful on warm nights.\n- Produces cleaner night photographs directly from the camera."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "disadvantages",
+    "text": "- Doubles shooting time.\n- Makes the camera unavailable during processing.\n- Increases battery usage.\n- Can cause missed opportunities.\n- Is not efficient for image stacking workflows.\n- Can interrupt fireworks, lightning, time-lapse, and changing-light sequences."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "recommended-uses",
+    "text": "Turn LENR On for important one-off long exposures where maximum single-frame image quality is more important than speed.\nRecommended On:\n- Single night landscapes.\n- Single cityscapes.\n- Single waterfall exposures.\n- Single light-painting images.\n- Single fireworks exposures.\n- Single Milky Way exposures.\n- Any important one-off long exposure where maximum image quality is desired.\nFor exposures under a few seconds, the benefit is usually minimal. LENR becomes more valuable as exposure duration and sensor heat increase."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "when-not-to-use",
+    "text": "Turn LENR Off for workflows where many images will be captured or combined later.\nRecommended Off:\n- Focus bracketing.\n- Exposure bracketing.\n- Time-lapse.\n- Astrophotography stacking.\n- Star trails.\n- Multiple waterfall exposures.\n- Burst long exposures.\n- Waterdrop flash work.\n- Any workflow where many images will be combined later.\nPost-processing software generally provides better results for stacked images than applying LENR to every frame in camera. If shooting many long exposures, disable LENR and remove hot pixels during post-processing or with a planned dark-frame workflow."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "AUTO Setting",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "auto-setting",
+    "text": "AUTO lets the camera decide when to apply Long Exposure Noise Reduction.\nAUTO is suitable for general photography and travel, but the user may experience unexpected processing delays. If timing matters, choose On or Off deliberately instead of leaving the decision to the camera."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "decision-guide",
+    "text": "Long exposure?\n- No: Off or Auto.\n- Yes: continue.\nMore than one exposure?\n- Yes: Off.\n- No: continue.\nMaximum single-frame image quality required?\n- Yes: On.\n- No: Auto.\nIf timing matters more than maximum single-frame cleanup, choose Off."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "  Photography Type   Recommended Setting  \n  ---   ---  \n  Normal   Auto  \n  Travel   Auto  \n  Landscape (single exposure)   On  \n  Landscape (multiple exposures)   Off  \n  Night Landscape   On  \n  Milky Way (single image)   On  \n  Milky Way (stacking)   Off  \n  Star Trails   Off  \n  Waterfalls   Off  \n  Light Painting   On  \n  Fireworks (single exposure)   On  \n  Fireworks (sequence)   Off  \n  Focus Bracketing   Off  \n  Wildlife   Off  \n  Birds in Flight   Off  \n  Sports   Off  \n  Waterdrops   Off  "
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "canon-specific-notes",
+    "text": "On the Canon EOS R5, Long Exposure Noise Reduction can affect RAW and JPEG workflows because the correction is applied by the camera, not merely stored as a post-processing suggestion.\nThe project baseline should avoid forcing LENR On. Use Auto for general/travel workflows when convenience matters, On for single critical long exposures, and Off for stacked or repeated-capture workflows.\nLENR is separate from High ISO Noise Reduction. Do not use LENR as a general high-ISO cleanup tool."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "tips",
+    "text": "- For exposures under a few seconds, the benefit is usually minimal.\n- LENR is most valuable for long exposures where sensor heating becomes significant.\n- If shooting many long exposures, disable LENR and remove hot pixels during post-processing.\n- Expect the camera to display BUSY while capturing the dark frame.\n- Decide before the sequence starts; changing mid-shoot can make files inconsistent.\n- Watch battery life during long exposure sessions."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "common-mistakes",
+    "text": "- Leaving LENR On after a night shoot.\n- Using LENR for waterdrop flash work.\n- Confusing LENR with High ISO Noise Reduction.\n- Missing fireworks or lightning because the camera is busy processing.\n- Applying LENR to every frame in a stacking workflow.\n- Forgetting that processing delay scales with exposure length."
+  },
+  {
+    "appendix_id": "long_exposure_night_photography",
+    "title": "Long Exposure & Night Photography",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Long Exposure & Night Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Long Exposure & Night Photography.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Camera Defaults, Fireworks, Landscape, Macro, Travel, Waterdrops.\n- Settings: image.long_exposure_noise_reduction.value, shutter speed, drive mode, ISO, flash mode.\n- Related appendices:\n- Focus Bracketing & In-Camera Depth Compositing\n- Image Stabilization\n- Electronic vs EFCS vs Mechanical Shutter\n- Metering Modes\n- Flash Photography"
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "purpose",
+    "text": "Explain Canon R5 flash concepts and practical choices for E-TTL, manual flash, sync modes, and triggers."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "what-it-does",
+    "text": "Flash adds controlled light to a scene, either as primary light, fill, or a timed creative accent."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "how-it-works",
+    "text": "E-TTL meters a preflash automatically. Manual flash uses a fixed power. Sync modes determine when the flash fires relative to the shutter."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "advantages",
+    "text": "- E-TTL adapts quickly.\n- Manual flash is consistent.\n- Flash Exposure Compensation fine-tunes automatic flash.\n- High Speed Sync allows wider apertures in bright light.\n- Rear Curtain Sync places motion trails behind subjects."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "disadvantages",
+    "text": "- HSS reduces power.\n- E-TTL can vary between frames.\n- Manual flash requires distance/power adjustment.\n- Multiple flash and wireless flash add setup complexity."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "recommended-uses",
+    "text": "Use fill flash for people and travel. Use bounce flash indoors. Use manual flash for repeatable portraits, macro, and products. Use wireless flash for multi-light control."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid flash when it is prohibited, distracting, too weak for the distance, or incompatible with the selected shutter mode."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "decision-guide",
+    "text": "Fast event: E-TTL. Controlled setup: Manual. Bright daylight wide aperture: HSS. Motion trail: Rear Curtain Sync. Remote timing: external trigger or Pluto trigger."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- People: E-TTL fill or bounce flash.\n- Macro: manual flash with diffuser.\n- Travel: small fill flash when allowed.\n- Fireworks: generally no flash for distant bursts."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon Speedlite systems support E-TTL, wireless control, Flash Exposure Compensation, and HSS. Flash generally requires Mechanical shutter on the R5."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "tips",
+    "text": "Bounce when possible. Start with negative Flash Exposure Compensation for subtle fill. Check recycle time."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "common-mistakes",
+    "text": "- Expecting flash to light distant subjects.\n- Forgetting shutter sync limits.\n- Using HSS unnecessarily.\n- Leaving Flash Exposure Compensation from a prior scene."
+  },
+  {
+    "appendix_id": "flash_photography",
+    "title": "Flash Photography",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Flash Photography.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Flash Photography.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Fireworks, Macro, People, Travel.\n- Settings: flash mode, shutter mode, metering, exposure compensation.\n- Related appendices: Electronic vs EFCS vs Mechanical Shutter, Metering Modes."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "purpose",
+    "text": "Define recommended Canon R5 control customization patterns for faster field operation."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "what-it-does",
+    "text": "Custom controls assign camera functions to buttons, dials, the joystick, control ring, and recall functions."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "how-it-works",
+    "text": "The R5 allows button customization for M-Fn, AF-ON, AE Lock, Control Ring, joystick behavior, and Register/Recall Shooting Function."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "advantages",
+    "text": "- Faster access to frequent controls.\n- Less menu diving.\n- Better separation of focus, exposure, and shutter release.\n- Profile-specific layouts can support different subjects."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "disadvantages",
+    "text": "- Too much customization can be hard to remember.\n- Shared cameras become confusing.\n- Accidental button presses can change behavior unexpectedly."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "recommended-uses",
+    "text": "Use AF-ON for back-button focus, joystick for AF point movement, Control Ring for exposure compensation or ISO, and Register/Recall for temporary action settings."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid complex layouts before a critical shoot. Avoid assigning rarely used functions to prime controls."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "decision-guide",
+    "text": "Frequent action: assign to button. Needs precision: joystick or dial. Temporary override: Register/Recall. Rare function: leave in menu."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Wildlife: AF-ON, animal detection access, recall faster shutter/drive.\n- Landscape: Control Ring for exposure compensation, stable focus controls.\n- Sports: recall action settings and AF mode changes.\n- Travel: simple layout with exposure compensation and AF area access."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon R5 Custom Controls and Register/Recall Shooting Function are powerful but should be documented per profile."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "tips",
+    "text": "Keep one consistent base layout. Add only one or two profile-specific changes."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "common-mistakes",
+    "text": "- Over-customizing.\n- Forgetting what a button does.\n- Changing controls without updating profile notes."
+  },
+  {
+    "appendix_id": "custom_controls",
+    "title": "Custom Controls",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Custom Controls.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Custom Controls.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Landscape, Sports, Travel, Wildlife.\n- Settings: AF-ON, M-Fn, AE Lock, Control Ring, joystick.\n- Related appendices: AF Cases & Tracking Behavior, Drive Modes."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "purpose",
+    "text": "Explain Canon R5 drive modes and when to use single, continuous, silent, and self-timer options."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "what-it-does",
+    "text": "Drive mode controls how many frames the camera captures per shutter press and whether delays or silent capture modes are used."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "how-it-works",
+    "text": "Single Shot captures one frame. Low Continuous, High Continuous, and High+ Continuous capture bursts at increasing rates. Silent modes depend on electronic shutter behavior. Self Timer delays capture."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "advantages",
+    "text": "- Single Shot encourages timing and conserves storage.\n- Low Continuous supports controlled sequences.\n- High and High+ Continuous capture peak action.\n- Silent modes reduce disturbance.\n- Self Timer reduces camera shake."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "disadvantages",
+    "text": "- High burst rates create many files.\n- Silent/electronic drive can have rolling shutter limits.\n- Continuous drive can hide timing mistakes.\n- Self Timer is too slow for action."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Recommended Uses",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "recommended-uses",
+    "text": "Use Single Shot for static scenes. Use Low Continuous for portraits or mild movement. Use High/High+ for action, birds, wildlife, and sports. Use Self Timer for tripod work."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "when-not-to-use",
+    "text": "Avoid High+ when storage, buffer, or editing load matters. Avoid silent electronic drive with fast motion or flickering light."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Decision Guide",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "decision-guide",
+    "text": "Static: Single Shot. Gentle movement: Low Continuous. Action: High or High+. Tripod: Self Timer or remote. Need silence: Silent mode if shutter limitations are acceptable."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Birds in Flight: High Speed Continuous+.\n- Camera Defaults: Single Shooting.\n- Sports: High Continuous or High+.\n- Wildlife: High Speed Continuous for behavior/action."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "canon-specific-notes",
+    "text": "On the Canon R5, drive mode interacts with shutter mode, buffer, card speed, and subject movement."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "tips",
+    "text": "Use short bursts. Match drive mode to the moment, not the subject category alone."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "common-mistakes",
+    "text": "- Leaving High+ on for static scenes.\n- Forgetting silent mode limitations.\n- Filling the buffer before peak action."
+  },
+  {
+    "appendix_id": "drive_modes",
+    "title": "Drive Modes",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Drive Modes.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Drive Modes.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Camera Defaults, Sports, Wildlife.\n- Settings: drive mode, shutter mode.\n- Related appendices: Electronic vs EFCS vs Mechanical Shutter, AF Cases & Tracking Behavior."
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Canon EOS R5 Official Icon Reference",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "canon-eos-r5-official-icon-reference",
+    "text": "Official Canon icon names and assets extracted from the Canon EOS R5 Product Manual at cam.start.canon. This appendix preserves Canon names from manual image alt text or adjacent labels and does not include redrawn placeholder icons."
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Source Pages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "source-pages",
+    "text": "- Selecting the AF Method\n- AF Operation\n- Manual Focus\n- R5 Quick Reference\n- Selecting the Drive Mode\n- Metering Mode Selection\n- Shutter Mode\n- Information Display\n- Image Stabilizer (IS Mode)\n- Focus Bracketing\n- Long Exposure Noise Reduction"
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "AF Method",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "af-method",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !1-point AF   1-point AF   1-point AF   Single AF point selection.   Selecting the AF Method  \n  !AF   AF   AF   Lens focus mode switch set to AF; shown on Canon AF Operation page.   AF Operation  \n  !AF point   AF point   AF point   Displayed over a detected/focused subject.   Selecting the AF Method  \n  !AF point adjustment   AF point adjustment   AF point adjustment   Shown when choosing a detected face/subject.   Selecting the AF Method  \n  screen-only   Animals   Animals   Shown as a Canon Subject to Detect menu option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  !Autofocus   Autofocus   Autofocus   AF menu tab icon.   Selecting the AF Method  \n  screen-only   Disable   Disable   Shown as a Canon Eye detection option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  screen-only   Enable   Enable   Shown as a Canon Eye detection option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  !Expand AF area   Expand AF area   Expand AF area   Uses one AF point plus adjacent expansion points.   Selecting the AF Method  \n  !Expand AF area (manual selection: surround)   Expand AF area (manual selection: surround)   Expand AF around   Uses one AF point plus surrounding expansion points.   Selecting the AF Method  \n  screen-only   Eye detection   Eye detect   Shown in Canon menu/annotated screen; needs manual crop or redraw.   Selecting the AF Method  \n  !Face   Face   Face   Face detection component used with Face+Tracking.   Selecting the AF Method  \n  !Face+Tracking   Face+Tracking   Face+Tracking   Primary AF method; tracks detected faces/subjects.   Selecting the AF Method  \n  !Large Zone AF (horizontal)   Large Zone AF (horizontal)   Large Zone AF (horizontal)   Horizontal large-zone AF frame.   Selecting the AF Method  \n  !Large Zone AF (vertical)   Large Zone AF (vertical)   Large Zone AF (vertical)   Vertical large-zone AF frame.   Selecting the AF Method  \n  !MF   MF   MF   Lens focus mode switch set to MF; shown on Canon Manual Focus page.   Manual Focus  \n  screen-only   None   None   Shown as a Canon Subject to Detect menu option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  screen-only   Not Used   Not used   Quick-reference state, not a Canon standalone icon; no official asset.   R5 Quick Reference  \n  screen-only   One-Shot AF   One-Shot   Shown as a Canon AF operation option; no isolated icon asset on the Canon page.   AF Operation  \n  screen-only   People   People   Shown as a Canon Subject to Detect menu option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  screen-only   Servo AF   Servo   Shown as a Canon AF operation option; no isolated icon asset on the Canon page.   AF Operation  \n  !Set AF point to center   Set AF point to center   Set AF point to center   Recenters the selected AF point.   Selecting the AF Method  \n  !Spot AF   Spot AF   Spot AF   Narrower AF area than 1-point AF.   Selecting the AF Method  \n  screen-only   Subject to detect   Subject detect   Shown in Canon menu/annotated screen; needs manual crop or redraw.   Selecting the AF Method  \n  !Subject tracking adjustment   Subject tracking adjustment   Subject tracking adjustment   Shown while adjusting tracking subject selection.   Selecting the AF Method  \n  !Subject tracking release   Subject tracking release   Subject tracking release   Control shown for releasing locked tracking.   Selecting the AF Method  \n  !Tracking subject   Tracking subject   Tracking subject   Indicates the locked tracking subject.   Selecting the AF Method  \n  screen-only   Vehicles   Vehicles   Shown as a Canon Subject to Detect menu option; no isolated icon asset on the Canon page.   Selecting the AF Method  \n  !Zone AF   Zone AF   Zone AF   Auto selection AF within a zone frame.   Selecting the AF Method  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Drive",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "drive",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !10 sec. self-timer   10 sec. self-timer   10 sec. self-timer   Self-timer: 10 sec./remote control.   Selecting the Drive Mode  \n  !2 sec. self-timer   2 sec. self-timer   2 sec. self-timer   Self-timer: 2 sec./remote control.   Selecting the Drive Mode  \n  !High-speed continuous shooting   High-speed continuous shooting   H continuous   High-speed continuous drive mode.   Selecting the Drive Mode  \n  !High-speed continuous shooting plus   High-speed continuous shooting plus   H+ continuous   Fastest still-photo continuous drive mode.   Selecting the Drive Mode  \n  !Low-speed continuous shooting   Low-speed continuous shooting   L continuous   Low-speed continuous drive mode.   Selecting the Drive Mode  \n  !Multi-function   Multi-function   Multi-function   Button used to access drive mode selection.   Selecting the Drive Mode  \n  !Single shooting   Single shooting   Single   Takes one shot per full shutter press.   Selecting the Drive Mode  \n  !Timer 6 sec.   Timer 6 sec.   Timer 6 sec.   Six-second button/function timer indicator.   Selecting the Drive Mode  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Metering",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "metering",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !Center-weighted average metering   Center-weighted average metering   Center-weighted   Averages metering with center weighting.   Metering Mode Selection  \n  !Evaluative metering   Evaluative metering   Evaluative   General-purpose metering mode.   Metering Mode Selection  \n  !Partial metering   Partial metering   Partial   Meters approx. 6.1% at screen center.   Metering Mode Selection  \n  !Q (Quick Control)   Q (Quick Control)   Q (Quick Control)   Button used to access metering mode selection.   Metering Mode Selection  \n  !Spot metering   Spot metering   Spot   Meters approx. 3.1% at screen center.   Metering Mode Selection  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Shutter",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "shutter",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   Elec. 1st-curtain   Elec. 1st   Shown as a shutter mode option; no isolated icon asset on the Canon page.   Shutter Mode  \n  screen-only   Electronic   Electronic   Shown in Canon annotated screen; needs manual crop or redraw.   Shutter Mode  \n  !High-speed continuous shooting   High-speed continuous shooting   H continuous   Shown in shutter-mode cautions for high speed display.   Shutter Mode  \n  screen-only   Mechanical   Mechanical   Shown as a shutter mode option; no isolated icon asset on the Canon page.   Shutter Mode  \n  !Shooting   Shooting   Shooting   Shooting menu tab icon used for Shutter mode.   Shutter Mode  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Exposure",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "exposure",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   AE lock   AE lock   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  screen-only   Exposure compensation   Exp. comp.   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  screen-only   Highlight tone priority   HTP   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Image Quality",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "image-quality",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   Image quality   Quality   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  !JPEG   JPEG   JPEG   Image type/compression indicator in playback information.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "White Balance",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "white-balance",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   White balance   WB   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Display",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "display",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   Battery level   Battery   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  !INFO   INFO   INFO   Changes the information display.   Information Display  \n  !OFF   OFF   IS off   Lens IS off switch/setting asset from Canon manual screens.   Image Stabilizer (IS Mode)  \n  !ON   ON   IS on   Lens IS switch/setting shown on Canon Image Stabilizer page.   Image Stabilizer (IS Mode)  \n  !Scene Intelligent Auto   Scene Intelligent Auto   A+   Auto mode scene icon reference.   Information Display  \n  !Scene Intelligent Auto (movies)   Scene Intelligent Auto (movies)   A+ movies   Movie auto mode scene icon reference.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Playback",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "playback",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !Cropping (images)   Cropping (images)   Cropping (images)   Playback information icon for cropped images.   Information Display  \n  !Images created and saved after performing processing   Images created and saved after performing processing   Processed image   Playback information icon for processed saved images.   Information Display  \n  !Still photo from test shots   Still photo from test shots   Test-shot still   Playback information icon for stills from test shots.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Connectivity",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "connectivity",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  screen-only   Bluetooth function   Bluetooth   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  screen-only   Wi-Fi function   Wi-Fi   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  \n  screen-only   Wi-Fi signal strength   Wi-Fi signal   Shown in Canon annotated screen; needs manual crop or redraw.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Flash",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "flash",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !Bounce flash photography   Bounce flash photography   Bounce flash photography   Playback information icon for bounce flash.   Information Display  \n  !Flash photography without flash exposure compensation   Flash photography without flash exposure compensation   Flash no comp.   Playback information icon for flash without compensation.   Information Display  "
+  },
+  {
+    "appendix_id": "canon_r5_official_icon_reference",
+    "title": "Canon EOS R5 Official Icon Reference",
+    "section": "Special Shooting",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/Canon EOS R5 Official Icon Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/Canon EOS R5 Official Icon Reference.html",
+    "anchor": "special-shooting",
+    "text": "  Icon   Canon official name   Card label   Where it appears   Source  \n --- --- --- --- --- \n  !Close Non-Portrait (Blue Sky Included)   Close Non-Portrait (Blue Sky Included)   Close Non-Portrait (Blue Sky Inc   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Close Non-Portrait (Blue Sky Included/Backlit)   Close Non-Portrait (Blue Sky Included/Backlit)   Close Non-Portrait (Blue Sky Inc   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Close Non-Portrait (Bright)   Close Non-Portrait (Bright)   Close Non-Portrait (Bright)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Close Non-Portrait (Bright/Backlit)   Close Non-Portrait (Bright/Backlit)   Close Non-Portrait (Bright/Backl   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Close Non-Portrait (Dark)   Close Non-Portrait (Dark)   Close Non-Portrait (Dark)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Close Non-Portrait (Spotlight)   Close Non-Portrait (Spotlight)   Close Non-Portrait (Spotlight)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  screen-only   Focus bracketing   Focus bracketing   Shown as a Canon menu item; no isolated icon asset on the Canon page.   Focus Bracketing  \n  screen-only   Long exp. noise reduction   LENR   Shown as a Canon menu item; no isolated icon asset on the Canon page.   Long Exposure Noise Reduction  \n  !Multi Shot Noise Reduction   Multi Shot Noise Reduction   Multi Shot Noise Reduction   Playback information icon for Multi Shot Noise Reduction.   Information Display  \n  !Multiple exposures   Multiple exposures   Multiple exposures   Playback information icon for multiple exposures.   Information Display  \n  !Nature/Outdoor Scene (Blue Sky Included)   Nature/Outdoor Scene (Blue Sky Included)   Nature/Outdoor Scene (Blue Sky I   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Nature/Outdoor Scene (Blue Sky Included/Backlit)   Nature/Outdoor Scene (Blue Sky Included/Backlit)   Nature/Outdoor Scene (Blue Sky I   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Nature/Outdoor Scene (Bright)   Nature/Outdoor Scene (Bright)   Nature/Outdoor Scene (Bright)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Nature/Outdoor Scene (Bright/Backlit)   Nature/Outdoor Scene (Bright/Backlit)   Nature/Outdoor Scene (Bright/Bac   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Nature/Outdoor Scene (Dark/Tripod Used)   Nature/Outdoor Scene (Dark/Tripod Used)   Nature/Outdoor Scene (Dark/Tripo   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait (Dark)   Non-Portrait (Dark)   Non-Portrait (Dark)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait (Spotlight)   Non-Portrait (Spotlight)   Non-Portrait (Spotlight)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait (Sunset)   Non-Portrait (Sunset)   Non-Portrait (Sunset)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait With Motion (Blue Sky Included)   Non-Portrait With Motion (Blue Sky Included)   Non-Portrait With Motion (Blue S   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait With Motion (Blue Sky Included/Backlit)   Non-Portrait With Motion (Blue Sky Included/Backlit)   Non-Portrait With Motion (Blue S   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait With Motion (Bright)   Non-Portrait With Motion (Bright)   Non-Portrait With Motion (Bright   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Non-Portrait With Motion (Bright/Backlit)   Non-Portrait With Motion (Bright/Backlit)   Non-Portrait With Motion (Bright   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Blue Sky Included)   Portrait (Blue Sky Included)   Portrait (Blue Sky Included)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Blue Sky Included/Backlit)   Portrait (Blue Sky Included/Backlit)   Portrait (Blue Sky Included/Back   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Bright)   Portrait (Bright)   Portrait (Bright)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Bright/Backlit)   Portrait (Bright/Backlit)   Portrait (Bright/Backlit)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Dark)   Portrait (Dark)   Portrait (Dark)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Dark/Tripod Used)   Portrait (Dark/Tripod Used)   Portrait (Dark/Tripod Used)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait (Spotlight)   Portrait (Spotlight)   Portrait (Spotlight)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait With Motion (Blue Sky Included)   Portrait With Motion (Blue Sky Included)   Portrait With Motion (Blue Sky I   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait With Motion (Blue Sky Included/Backlit)   Portrait With Motion (Blue Sky Included/Backlit)   Portrait With Motion (Blue Sky I   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait With Motion (Bright)   Portrait With Motion (Bright)   Portrait With Motion (Bright)   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  \n  !Portrait With Motion (Bright/Backlit)   Portrait With Motion (Bright/Backlit)   Portrait With Motion (Bright/Bac   Scene icon shown in Canon Information Display > Scene Icons.   Information Display  "
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "R5 Quick Reference",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "r5-quick-reference",
+    "text": "Use this quick reference when a card setting is not obvious, especially AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Topic Index",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "topic-index",
+    "text": "- AF Operation\n- Subject Detection\n- Eye Detection\n- AF Method\n- Focus Mode\n- Drive Mode\n- Metering Mode\n- Shutter Speed\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Shutter Type\n- Focus Bracketing\n- Long Exposure Noise Reduction\n- Subject Detection and AF Method Combinations"
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "AF Operation",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "af-operation",
+    "text": "Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.\n  Icon   Setting   What it Does  \n --- --- --- \n  !AF   Servo AF   Continuously updates focus for moving subjects.  \n  !AF   One-Shot AF   Locks focus for static or slow subjects.  \n  !MF   Manual Focus   Stops autofocus hunting and keeps focus under manual control.  \n**Camera Menu:** AF1 > AF operation; for Manual Focus use the lens AF/MF switch or AF1 > Focus mode when shown.\n**Quick Menu:** Q screen / M-Fn for AF Operation. Manual Focus is usually the lens switch, not Q."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Subject Detection",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "subject-detection",
+    "text": "Use People, Animals, or Vehicles when the camera can recognize the subject. Use None when a smaller AF area or manual focus should control the point.\n  Icon   Setting   What it Does  \n --- --- --- \n  !People   People   Prioritizes human faces, heads, and eyes.  \n  !Animals   Animals   Prioritizes animals and birds when recognized.  \n  !Vehicles   Vehicles   Prioritizes racing cars and motorcycles when recognized.  \n  !None   None   Prevents subject recognition from pulling focus away from the chosen area.  \n**Camera Menu:** AF1 > Subject to detect.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Eye Detection",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "eye-detection",
+    "text": "Enable it when Face + Tracking and subject detection are useful. It is not useful when AF is manual or when the selected AF method cannot use eye tracking.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Eye detection   Enable   Lets compatible AF methods prioritize the subject's eye.  \n  !Eye detection   Disable   Prevents eye priority when the AF area or subject choice should stay simpler.  \n  !Eye detection   Not shown   Usually means AF is manual or the AF method cannot use eye tracking.  \n**Camera Menu:** AF1 > Eye detection.\n**Quick Menu:** AF point selection button, then INFO toggle when available."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "AF Method",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "af-method",
+    "text": "Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking   Tracks recognized subjects across the frame.  \n  !1-point AF   1-Point AF   Gives predictable focus control on one selected point.  \n  !Spot AF   Spot AF   Uses a smaller point for very precise placement.  \n  !Expand AF area   Expand AF Area   Starts from one point but uses surrounding points to help with action.  \n  screen-only   Not Used   AF method does not matter because autofocus is not controlling focus.  \n**Camera Menu:** AF1 > AF method.\n**Quick Menu:** AF point selection button, then M-Fn."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Focus Mode",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "focus-mode",
+    "text": "AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.\n  Icon   Setting   What it Does  \n --- --- --- \n  !AF   AF   Lets the camera or lens drive focus.  \n  !MF   MF   Leaves focus under manual control from the lens or camera setting.  \n**Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.\n**Quick Menu:** Lens switch; usually not a Q item."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Drive Mode",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "drive-mode",
+    "text": "Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Single shooting   Single Shooting   Takes one frame per shutter press for deliberate work.  \n  !Low-speed continuous shooting   Low Speed Continuous   Captures short bursts without creating too many files.  \n  !High-speed continuous shooting   High Speed Continuous   Increases capture rate for movement and changing expressions.  \n  !High-speed continuous shooting plus   High Speed Continuous+   Maximizes capture rate for fast action, with more files to sort later.  \n  !10 sec. self-timer   Self-timer: 10 sec.   Delays capture for tripod work, group frames, or remote release timing.  \n  !2 sec. self-timer   Self-timer: 2 sec.   Delays capture briefly to let tripod shake settle after pressing the shutter.  \n**Camera Menu:** M-Fn drive mode item.\n**Quick Menu:** Q screen / M-Fn."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Metering Mode",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "metering-mode",
+    "text": "Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Evaluative metering   Evaluative   Reads the whole scene and is the safest general default.  \n  !Partial metering   Partial   Meters a central area when the background should matter less.  \n  !Spot metering   Spot   Meters a very small area when one subject tone must control exposure.  \n  !Center-weighted average metering   Center-weighted   Emphasizes the center while still considering the whole frame.  \n**Camera Menu:** Shooting menu > Metering mode.\n**Quick Menu:** Q screen / M-Fn."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Shutter Speed",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "shutter-speed",
+    "text": "Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.\n  Setting   What it Does  \n --- --- \n  Fast shutter speed   Freezes motion for action, wildlife, or sports.  \n  Slow shutter speed   Allows long exposures for fireworks, night work, or blur effects.  \n  Camera-selected shutter speed   Lets the camera choose shutter speed from the exposure mode.  \n**Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.\n**Quick Menu:** Top dial / Q screen depending on exposure mode."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Image Stabilization Mode",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "image-stabilization-mode",
+    "text": "Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Image Stabilization   Mode 1   General handheld stabilization.  \n  !Image Stabilization   Mode 2   Stabilization for deliberate panning.  \n  !Image Stabilization   Mode 3   Stabilization for erratic action, mainly during exposure.  \n  !Image Stabilization   Off   Best for solid tripod work or profiles where stabilization can cause problems.  \n**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode, or lens IS controls. Mode 2/3 may be lens-switch settings when available.\n**Quick Menu:** Menu/lens control; not usually Q."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "IBIS",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "ibis",
+    "text": "In-body image stabilization moves the camera sensor to reduce shake. It helps handheld work and should usually be off for solid tripod long exposures.\n  Icon   Setting   What it Does  \n --- --- --- \n  !ON   On   Uses in-body sensor movement to reduce camera shake.  \n  !OFF   Off   Prevents sensor stabilization during solid tripod or locked-down work.  \n**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Lens IS",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "lens-is",
+    "text": "Lens stabilization moves lens elements to reduce shake. With compatible lenses, Lens IS and IBIS may work together. Turn it off on a solid tripod when the profile calls for locked-down work.\n  Icon   Setting   What it Does  \n --- --- --- \n  !ON   On   Uses lens stabilization to reduce shake, often coordinated with IBIS.  \n  !OFF   Off   Prevents lens stabilization during solid tripod or locked-down work.  \n**Camera Menu:** Lens IS switch; Shooting 7 > IS mode where available.\n**Quick Menu:** Lens switch; not Q."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Shutter Type",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "shutter-type",
+    "text": "Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.\n  Setting   What it Does  \n --- --- \n  Mechanical   Safest general default with broad flash and motion compatibility.  \n  EFCS   Reduces vibration while avoiding many electronic shutter tradeoffs.  \n  Electronic   Silent shooting, but watch for rolling shutter, banding, and flash limits.  \n**Camera Menu:** Shooting 6 > Shutter mode.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Focus Bracketing",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "focus-bracketing",
+    "text": "Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see Focus Bracketing & In-Camera Depth Compositing.\n  Setting   What it Does  \n --- --- \n  Enable   Turns on focus-bracket capture for near-to-far focus stacks.  \n  Disable   Returns the camera to normal single-focus capture.  \n  Number of shots   Controls how many frames the bracket sequence captures.  \n  Focus increment   Controls how far focus moves between frames.  \nRecommended: create a new folder for each subject or stack so bracket sequences stay organized.\n**Camera Menu:** Shooting 5 > Focus bracketing.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Long Exposure Noise Reduction",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "long-exposure-noise-reduction",
+    "text": "LENR takes a dark frame after a long exposure. It can clean hot pixels but doubles wait time and is usually poor for repeated captures, stacking, or fireworks sequences.\n  Setting   What it Does  \n --- --- \n  Off   Avoids delay between frames and is best for sequences or stacking.  \n  Auto   Lets the camera decide when dark-frame cleanup is useful.  \n  On   Takes a dark frame after long exposures to reduce hot pixels, but doubles wait time.  \n**Camera Menu:** Shooting 4 > Long exp. noise reduction.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Subject Detection and AF Method Combinations",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "subject-detection-and-af-method-combinations",
+    "text": "Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking + subject detection   Best when the camera should identify and follow the subject.  \n  !Expand AF area   Expand AF Area + Subject Detection None   Useful when action is hard to track and the camera might choose the wrong subject.  \n  !MF   Manual Focus   Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.  \n**Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.\n**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Recommended Settings by Profile",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "recommended-settings-by-profile",
+    "text": "- Birds in Flight: Servo AF, Animals when tracking is useful, Expand AF Area, High Speed Continuous+.\n- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous.\n- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.\n- Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.\n- Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.\n- People: Servo AF, People, Eye Detection, Face + Tracking.\n- Sports: Servo AF, Expand AF Area, High Speed Continuous+, fast shutter target.\n- Travel: Baseline settings unless the subject demands a specialized profile.\n- Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.\n- Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Canon-Specific Notes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "canon-specific-notes",
+    "text": "Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Tips",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "tips",
+    "text": "- Change one behavior at a time when troubleshooting focus.\n- If the camera jumps to the wrong subject, simplify AF Method or turn Subject Detection to None.\n- For handheld landscape, raise ISO before accepting camera shake.\n- For tripod work, remember to review stabilization and Long Exposure Noise Reduction."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Common Mistakes",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "common-mistakes",
+    "text": "- Leaving action drive mode on for deliberate static work.\n- Expecting Eye Detection to work when AF Method or Manual Focus prevents it.\n- Using Electronic shutter under lights without checking for banding.\n- Leaving stabilization on for solid tripod long exposures.\n- Using LENR during sequences where the delay causes missed shots."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Cross References",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "cross-references",
+    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.\n- Related guides: AF Cases & Tracking Behavior, Image Stabilization, Metering Modes, Electronic vs EFCS vs Mechanical Shutter, Drive Modes, Focus Bracketing & In-Camera Depth Compositing, Long Exposure & Night Photography."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Purpose",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "purpose",
+    "text": "Explain the card settings whose choices are easy to misread in the field."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "What it Does",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "what-it-does",
+    "text": "This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, stabilization, drive behavior, shutter behavior, and long exposure workflow."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "How it Works",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "how-it-works",
+    "text": "The cards show merged baseline and profile settings. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Advantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "advantages",
+    "text": "- Helps explain why a card chooses one focusing or stabilization behavior.\n- Keeps quick-reference cards compact without hiding the meaning of important choices.\n- Clarifies when the camera ignores a setting, such as AF Method during Manual Focus."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Disadvantages",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "disadvantages",
+    "text": "- It is a quick reference, not a full camera manual.\n- Some subjects still require judgment when conditions change.\n- Menu names can vary slightly by firmware or shooting context."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "When Not to Use",
+    "source": "/Users/andy/Documents/Photography Reference System/50 Field Guide/Appendices/R5 Quick Reference.md",
+    "html": "/Users/andy/Documents/Photography Reference System/50 Field Guide/HTML/R5 Quick Reference.html",
+    "anchor": "when-not-to-use",
+    "text": "Do not use this quick reference to decide basic exposure values. For aperture, ISO, and Auto ISO Max, use the card value and normal photographic judgment."
+  }
+]

@@ -1,0 +1,12 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_af-zoom1</title>
+  <path d="M9.49,0.5h-3v3h3v-3ZM8.63,2.64H7.35V1.36H8.63V2.64ZM6.49,15.5h3v-3h-3v3Zm0.86-2.14H8.63v1.28H7.35V13.36ZM12.5,6.51v3h3v-3h-3Zm2.13,2.14H13.36V7.37h1.28V8.65ZM0.5,9.51h3v-3h-3v3ZM1.35,7.37H2.63V8.65H1.35V7.37ZM5.2,10.8h5.58V5.22H5.2V10.8ZM6.07,6.08H9.92V9.94H6.07V6.08Z"/>
+  <rect class="cls-1" width="16" height="16"/>
+</svg>

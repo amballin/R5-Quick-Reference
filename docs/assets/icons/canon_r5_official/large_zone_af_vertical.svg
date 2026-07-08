@@ -1,0 +1,15 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_af-large-zone-vertical</title>
+  <g>
+    <polygon points="5.25 4.12 5.25 1.42 10.75 1.42 10.75 4.12 11.67 4.12 11.67 0.5 4.33 0.5 4.33 4.12 5.25 4.12"/>
+    <polygon points="10.75 11.88 10.75 14.58 5.25 14.58 5.25 11.88 4.33 11.88 4.33 15.5 11.67 15.5 11.67 11.88 10.75 11.88"/>
+  </g>
+  <rect class="cls-1" width="16" height="16"/>
+</svg>

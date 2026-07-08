@@ -1,0 +1,16 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="21" height="16" viewBox="0 0 21 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #231815;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_bounce</title>
+  <path class="cls-1" d="M17.7,4.69a2.59,2.59,0,0,0-2.56-2.62H7.95V7.32h7.19A2.59,2.59,0,0,0,17.7,4.69Zm-4.21-.1a1.74,1.74,0,1,1,1.73,1.74A1.74,1.74,0,0,1,13.49,4.59Zm5,2.15H17.87a2,2,0,0,1-1.74,1.32H14.06l1.74,6.53h4.55ZM0.66,3.6H2.27V7.24H4.83V3.6H6.44l-3-3.1ZM4.83,8.76H2.27V12.4H0.66L3.4,15.5l3-3.1H4.83V8.76Z"/>
+  <rect class="cls-2" width="21" height="16"/>
+</svg>
