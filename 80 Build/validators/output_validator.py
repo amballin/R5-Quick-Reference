@@ -4,11 +4,14 @@ from .common import error
 
 
 OUTPUT_FOLDERS = {
+    "output": "output",
     "html": "output/cards/html",
     "merged": "output/cards/merged",
     "png": "output/cards/png",
+    "phone-png": "output/cards/phone-png",
     "merged-build": "output/merged-build",
     "field-guide-html": "output/field-guide/html",
+    "docs": "docs",
 }
 
 

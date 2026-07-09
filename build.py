@@ -264,7 +264,7 @@ def build_site(paths, requested_profile=None, start=None, include_pdf=False, kee
     generated.update(appendix_generated)
     generated.update(render_offline_index(paths))
     generated.update(generate_pwa(paths))
-    clean_generated_tree(paths.merged_build_output_dir)
+    settle_clean_generated_roots(paths.root / "output", paths.merged_build_output_dir)
     pwa_validation_results = validate_merged_build_pwa(paths)
     validation_results.extend(pwa_validation_results)
     pwa_validation_errors = [result for result in pwa_validation_results if result[0] == "error"]
@@ -307,6 +307,14 @@ def settle_clean_pages_mirror(source, target):
     for attempt in range(20):
         clean_generated_tree(source)
         clean_generated_tree(target)
+        if attempt < 19:
+            time.sleep(0.5)
+
+
+def settle_clean_generated_roots(*roots):
+    for attempt in range(20):
+        for root in roots:
+            clean_generated_tree(root)
         if attempt < 19:
             time.sleep(0.5)
 
@@ -385,13 +393,12 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
     if full_build:
         obsolete_generated_roots.extend(
             [
-                paths.merged_output_dir,
-                paths.html_output_dir,
-                paths.png_output_dir,
-                paths.phone_png_output_dir,
+                paths.root / "output" / "cards",
+                paths.root / "output" / "field-guide",
                 paths.merged_build_output_dir,
                 paths.merged_build_output_dir.parent / f".{paths.merged_build_output_dir.name}.staging",
                 paths.field_guide_html_output_dir,
+                paths.field_guide_html_output_dir.parent / f".{paths.field_guide_html_output_dir.name}.staging",
             ]
         )
     for root in obsolete_generated_roots:

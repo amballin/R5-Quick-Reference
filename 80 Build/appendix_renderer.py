@@ -2,6 +2,7 @@ import html
 import json
 import os
 import re
+import shutil
 from textwrap import wrap
 from urllib.parse import quote, unquote, urlparse
 
@@ -16,9 +17,16 @@ def render_appendices(paths, include_pdf=False):
     manifest = load_yaml_checked(manifest_path) or {}
     appendices = manifest.get("appendices", []) or []
     html_dir = paths.field_guide_html_output_dir
+    html_stage_dir = html_dir.parent / f".{html_dir.name}.staging"
     pdf_dir = paths.field_guide_pdf_output_dir
-    html_dir.mkdir(parents=True, exist_ok=True)
+    if html_stage_dir.exists():
+        shutil.rmtree(html_stage_dir)
+    html_stage_dir.mkdir(parents=True, exist_ok=True)
+    if html_dir.exists():
+        shutil.rmtree(html_dir)
     if include_pdf:
+        if pdf_dir.exists():
+            shutil.rmtree(pdf_dir)
         pdf_dir.mkdir(parents=True, exist_ok=True)
 
     search_entries = []
@@ -29,7 +37,7 @@ def render_appendices(paths, include_pdf=False):
             continue
         title = entry.get("title") or source.stem
         markdown = source.read_text(encoding="utf-8", errors="replace")
-        html_path = html_dir / f"{source.stem}.html"
+        html_path = html_stage_dir / f"{source.stem}.html"
         if entry.get("id") == "canon_r5_official_icon_reference":
             html_path.write_text(_canon_icon_reference_html(paths), encoding="utf-8")
         else:
@@ -42,6 +50,10 @@ def render_appendices(paths, include_pdf=False):
             generated["Appendix PDF"] += 1
         search_entries.extend(_search_entries(entry, source, html_path, markdown))
         generated["Appendix HTML"] += 1
+
+    if html_dir.exists():
+        shutil.rmtree(html_dir)
+    os.replace(html_stage_dir, html_dir)
 
     search_path = paths.field_guide_search_index_file
     search_path.parent.mkdir(parents=True, exist_ok=True)
