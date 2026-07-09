@@ -9,9 +9,6 @@ card:
     left: people
 inherits: baseline
 overrides:
-  exposure:
-    mode: Av
-
   drive:
     mode: Low Speed Continuous
 checklist:
@@ -23,3 +20,4 @@ common_mistakes:
   - Focus on nose instead of eye
 notes:
   - Face + Tracking inherited from baseline.
+  - Consider Av for intentional portraits; use Fv for casual family and event people photography.
