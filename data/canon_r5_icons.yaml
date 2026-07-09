@@ -1,0 +1,800 @@
+- id: one_point_af
+  canon_name: 1-point AF
+  display_label: 1-point AF
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/one_point_af.svg
+  notes: Single AF point selection.
+- id: lens_af
+  canon_name: AF
+  display_label: AF
+  category: af
+  source_page: AF Operation
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0040.html
+  asset_path: 60 Assets/icons/canon_r5_official/lens_af.svg
+  notes: Lens focus mode switch set to AF; shown on Canon AF Operation page.
+- id: af_point
+  canon_name: AF point
+  display_label: AF point
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/af_point.svg
+  notes: Displayed over a detected/focused subject.
+- id: af_point_adjustment
+  canon_name: AF point adjustment
+  display_label: AF point adjustment
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/af_point_adjustment.svg
+  notes: Shown when choosing a detected face/subject.
+- id: subject_to_detect_animals
+  canon_name: Animals
+  display_label: Animals
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_to_detect_animals.png
+  notes: Cropped from the Canon Subject to Detect menu screenshot.
+- id: autofocus_tab
+  canon_name: Autofocus
+  display_label: Autofocus
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/autofocus_tab.svg
+  notes: AF menu tab icon.
+- id: eye_detection_disable
+  canon_name: Disable
+  display_label: Disable
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: null
+  notes: Shown as a Canon Eye detection option; no isolated icon asset on the Canon page.
+- id: eye_detection_enable
+  canon_name: Enable
+  display_label: Enable
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: null
+  notes: Shown as a Canon Eye detection option; no isolated icon asset on the Canon page.
+- id: expand_af_area
+  canon_name: Expand AF area
+  display_label: Expand AF area
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/expand_af_area.svg
+  notes: Uses one AF point plus adjacent expansion points.
+- id: expand_af_area_around
+  canon_name: 'Expand AF area (manual selection: surround)'
+  display_label: Expand AF around
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/expand_af_area_around.svg
+  notes: Uses one AF point plus surrounding expansion points.
+- id: eye_detection
+  canon_name: Eye detection
+  display_label: Eye detect
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/eye_detection.svg
+  notes: Eye detection menu icon.
+- id: face
+  canon_name: Face
+  display_label: Face
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/face.svg
+  notes: Face detection component used with Face+Tracking.
+- id: face_tracking
+  canon_name: Face+Tracking
+  display_label: Face+Tracking
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/face_tracking.svg
+  notes: Primary AF method; tracks detected faces/subjects.
+- id: large_zone_af_horizontal
+  canon_name: Large Zone AF (horizontal)
+  display_label: Large Zone AF (horizontal)
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/large_zone_af_horizontal.svg
+  notes: Horizontal large-zone AF frame.
+- id: large_zone_af_vertical
+  canon_name: Large Zone AF (vertical)
+  display_label: Large Zone AF (vertical)
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/large_zone_af_vertical.svg
+  notes: Vertical large-zone AF frame.
+- id: lens_mf
+  canon_name: MF
+  display_label: MF
+  category: af
+  source_page: Manual Focus
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/lens_mf.svg
+  notes: Lens focus mode switch set to MF; shown on Canon Manual Focus page.
+- id: subject_to_detect_none
+  canon_name: None
+  display_label: None
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_to_detect_none.png
+  notes: Cropped from the Canon Subject to Detect menu screenshot.
+- id: af_method_not_used
+  canon_name: Not Used
+  display_label: Not used
+  category: af
+  source_page: R5 Quick Reference
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: null
+  notes: Quick-reference state, not a Canon standalone icon; no official asset.
+- id: one_shot_af
+  canon_name: One-Shot AF
+  display_label: One-Shot
+  category: af
+  source_page: AF Operation
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0040.html
+  asset_path: null
+  notes: Shown as a Canon AF operation option; no isolated icon asset on the Canon page.
+- id: subject_to_detect_people
+  canon_name: People
+  display_label: People
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_to_detect_people.png
+  notes: Cropped from the Canon Subject to Detect menu screenshot.
+- id: servo_af
+  canon_name: Servo AF
+  display_label: Servo
+  category: af
+  source_page: AF Operation
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0040.html
+  asset_path: null
+  notes: Shown as a Canon AF operation option; no isolated icon asset on the Canon page.
+- id: set_af_point_to_center
+  canon_name: Set AF point to center
+  display_label: Set AF point to center
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/set_af_point_to_center.svg
+  notes: Recenters the selected AF point.
+- id: spot_af
+  canon_name: Spot AF
+  display_label: Spot AF
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/spot_af.svg
+  notes: Narrower AF area than 1-point AF.
+- id: subject_to_detect
+  canon_name: Subject to detect
+  display_label: Subject detect
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: null
+  notes: Shown in Canon menu/annotated screen; needs manual crop or redraw.
+- id: subject_tracking_adjustment
+  canon_name: Subject tracking adjustment
+  display_label: Subject tracking adjustment
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_tracking_adjustment.svg
+  notes: Shown while adjusting tracking subject selection.
+- id: subject_tracking_release
+  canon_name: Subject tracking release
+  display_label: Subject tracking release
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_tracking_release.svg
+  notes: Control shown for releasing locked tracking.
+- id: tracking_subject
+  canon_name: Tracking subject
+  display_label: Tracking subject
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/tracking_subject.svg
+  notes: Indicates the locked tracking subject.
+- id: subject_to_detect_vehicles
+  canon_name: Vehicles
+  display_label: Vehicles
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/subject_to_detect_vehicles.png
+  notes: Cropped from the Canon Subject to Detect menu screenshot.
+- id: zone_af
+  canon_name: Zone AF
+  display_label: Zone AF
+  category: af
+  source_page: Selecting the AF Method
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+  asset_path: 60 Assets/icons/canon_r5_official/zone_af.svg
+  notes: Auto selection AF within a zone frame.
+- id: self_timer_10_sec_remote_control
+  canon_name: 10 sec. self-timer
+  display_label: 10 sec. self-timer
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/self_timer_10_sec_remote_control.svg
+  notes: 'Self-timer: 10 sec./remote control.'
+- id: self_timer_2_sec_remote_control
+  canon_name: 2 sec. self-timer
+  display_label: 2 sec. self-timer
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/self_timer_2_sec_remote_control.svg
+  notes: 'Self-timer: 2 sec./remote control.'
+- id: high_speed_continuous_shooting
+  canon_name: High-speed continuous shooting
+  display_label: H continuous
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/high_speed_continuous_shooting.svg
+  notes: High-speed continuous drive mode.
+- id: high_speed_continuous_shooting_plus
+  canon_name: High-speed continuous shooting plus
+  display_label: H+ continuous
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg
+  notes: Fastest still-photo continuous drive mode.
+- id: low_speed_continuous_shooting
+  canon_name: Low-speed continuous shooting
+  display_label: L continuous
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/low_speed_continuous_shooting.svg
+  notes: Low-speed continuous drive mode.
+- id: multi_function
+  canon_name: Multi-function
+  display_label: Multi-function
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/multi_function.svg
+  notes: Button used to access drive mode selection.
+- id: single_shooting
+  canon_name: Single shooting
+  display_label: Single
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/single_shooting.svg
+  notes: Takes one shot per full shutter press.
+- id: timer_6_sec
+  canon_name: Timer 6 sec.
+  display_label: Timer 6 sec.
+  category: drive
+  source_page: Selecting the Drive Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+  asset_path: 60 Assets/icons/canon_r5_official/timer_6_sec.svg
+  notes: Six-second button/function timer indicator.
+- id: center_weighted_average_metering
+  canon_name: Center-weighted average metering
+  display_label: Center-weighted
+  category: metering
+  source_page: Metering Mode Selection
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+  asset_path: 60 Assets/icons/canon_r5_official/center_weighted_average_metering.svg
+  notes: Averages metering with center weighting.
+- id: evaluative_metering
+  canon_name: Evaluative metering
+  display_label: Evaluative
+  category: metering
+  source_page: Metering Mode Selection
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+  asset_path: 60 Assets/icons/canon_r5_official/evaluative_metering.svg
+  notes: General-purpose metering mode.
+- id: partial_metering
+  canon_name: Partial metering
+  display_label: Partial
+  category: metering
+  source_page: Metering Mode Selection
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+  asset_path: 60 Assets/icons/canon_r5_official/partial_metering.svg
+  notes: Meters approx. 6.1% at screen center.
+- id: quick_control
+  canon_name: Q (Quick Control)
+  display_label: Q (Quick Control)
+  category: metering
+  source_page: Metering Mode Selection
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+  asset_path: 60 Assets/icons/canon_r5_official/quick_control.svg
+  notes: Button used to access metering mode selection.
+- id: spot_metering
+  canon_name: Spot metering
+  display_label: Spot
+  category: metering
+  source_page: Metering Mode Selection
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+  asset_path: 60 Assets/icons/canon_r5_official/spot_metering.svg
+  notes: Meters approx. 3.1% at screen center.
+- id: electronic_first_curtain_shutter
+  canon_name: Elec. 1st-curtain
+  display_label: Elec. 1st
+  category: shutter
+  source_page: Shutter Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0240.html
+  asset_path: null
+  notes: Shown as a shutter mode option; no isolated icon asset on the Canon page.
+- id: electronic_shutter
+  canon_name: Electronic
+  display_label: Electronic
+  category: shutter
+  source_page: Shutter Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0240.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: high_speed_display
+  canon_name: High-speed continuous shooting
+  display_label: H continuous
+  category: shutter
+  source_page: Shutter Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0240.html
+  asset_path: 60 Assets/icons/canon_r5_official/high_speed_display.svg
+  notes: Shown in shutter-mode cautions for high speed display.
+- id: mechanical_shutter
+  canon_name: Mechanical
+  display_label: Mechanical
+  category: shutter
+  source_page: Shutter Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0240.html
+  asset_path: null
+  notes: Shown as a shutter mode option; no isolated icon asset on the Canon page.
+- id: shooting_tab
+  canon_name: Shooting
+  display_label: Shooting
+  category: shutter
+  source_page: Shutter Mode
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0240.html
+  asset_path: 60 Assets/icons/canon_r5_official/shooting_tab.svg
+  notes: Shooting menu tab icon used for Shutter mode.
+- id: ae_lock
+  canon_name: AE lock
+  display_label: AE lock
+  category: exposure
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: exposure_compensation
+  canon_name: Exposure compensation
+  display_label: Exp. comp.
+  category: exposure
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: highlight_tone_priority
+  canon_name: Highlight tone priority
+  display_label: HTP
+  category: exposure
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: image_quality
+  canon_name: Image quality
+  display_label: Quality
+  category: image_quality
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: jpeg
+  canon_name: JPEG
+  display_label: JPEG
+  category: image_quality
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/jpeg.svg
+  notes: Image type/compression indicator in playback information.
+- id: white_balance
+  canon_name: White balance
+  display_label: WB
+  category: white_balance
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: battery_level
+  canon_name: Battery level
+  display_label: Battery
+  category: display
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: info
+  canon_name: INFO
+  display_label: INFO
+  category: display
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/info.svg
+  notes: Changes the information display.
+- id: lens_is_off
+  canon_name: 'OFF'
+  display_label: IS off
+  category: display
+  source_page: Image Stabilizer (IS Mode)
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html
+  asset_path: 60 Assets/icons/canon_r5_official/lens_is_off.svg
+  notes: Lens IS off switch/setting asset from Canon manual screens.
+- id: lens_is_on
+  canon_name: 'ON'
+  display_label: IS on
+  category: display
+  source_page: Image Stabilizer (IS Mode)
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html
+  asset_path: 60 Assets/icons/canon_r5_official/lens_is_on.svg
+  notes: Lens IS switch/setting shown on Canon Image Stabilizer page.
+- id: scene_intelligent_auto
+  canon_name: Scene Intelligent Auto
+  display_label: A+
+  category: display
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/scene_intelligent_auto.svg
+  notes: Auto mode scene icon reference.
+- id: scene_intelligent_auto_movies
+  canon_name: Scene Intelligent Auto (movies)
+  display_label: A+ movies
+  category: display
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/scene_intelligent_auto_movies.svg
+  notes: Movie auto mode scene icon reference.
+- id: cropping_images
+  canon_name: Cropping (images)
+  display_label: Cropping (images)
+  category: playback
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/cropping_images.svg
+  notes: Playback information icon for cropped images.
+- id: images_created_and_saved_after_performing_processing
+  canon_name: Images created and saved after performing processing
+  display_label: Processed image
+  category: playback
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/images_created_and_saved_after_performing_processing.svg
+  notes: Playback information icon for processed saved images.
+- id: still_photo_from_test_shots
+  canon_name: Still photo from test shots
+  display_label: Test-shot still
+  category: playback
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/still_photo_from_test_shots.svg
+  notes: Playback information icon for stills from test shots.
+- id: bluetooth_function
+  canon_name: Bluetooth function
+  display_label: Bluetooth
+  category: connectivity
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: wifi_function
+  canon_name: Wi-Fi function
+  display_label: Wi-Fi
+  category: connectivity
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: wifi_signal_strength
+  canon_name: Wi-Fi signal strength
+  display_label: Wi-Fi signal
+  category: connectivity
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: null
+  notes: Shown in Canon annotated screen; needs manual crop or redraw.
+- id: bounce_flash_photography
+  canon_name: Bounce flash photography
+  display_label: Bounce flash photography
+  category: flash
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/bounce_flash_photography.svg
+  notes: Playback information icon for bounce flash.
+- id: flash_photography_without_flash_exposure_compensation
+  canon_name: Flash photography without flash exposure compensation
+  display_label: Flash no comp.
+  category: flash
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/flash_photography_without_flash_exposure_compensation.svg
+  notes: Playback information icon for flash without compensation.
+- id: close_non_portrait_blue_sky_included
+  canon_name: Close Non-Portrait (Blue Sky Included)
+  display_label: Close Non-Portrait (Blue Sky Inc
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_blue_sky_included.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: close_non_portrait_blue_sky_included_backlit
+  canon_name: Close Non-Portrait (Blue Sky Included/Backlit)
+  display_label: Close Non-Portrait (Blue Sky Inc
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_blue_sky_included_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: close_non_portrait_bright
+  canon_name: Close Non-Portrait (Bright)
+  display_label: Close Non-Portrait (Bright)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_bright.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: close_non_portrait_bright_backlit
+  canon_name: Close Non-Portrait (Bright/Backlit)
+  display_label: Close Non-Portrait (Bright/Backl
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_bright_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: close_non_portrait_dark
+  canon_name: Close Non-Portrait (Dark)
+  display_label: Close Non-Portrait (Dark)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_dark.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: close_non_portrait_spotlight
+  canon_name: Close Non-Portrait (Spotlight)
+  display_label: Close Non-Portrait (Spotlight)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/close_non_portrait_spotlight.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: focus_bracketing
+  canon_name: Focus bracketing
+  display_label: Focus bracketing
+  category: special_shooting
+  source_page: Focus Bracketing
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html
+  asset_path: null
+  notes: Shown as a Canon menu item; no isolated icon asset on the Canon page.
+- id: long_exposure_noise_reduction
+  canon_name: Long exp. noise reduction
+  display_label: LENR
+  category: special_shooting
+  source_page: Long Exposure Noise Reduction
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0200.html
+  asset_path: null
+  notes: Shown as a Canon menu item; no isolated icon asset on the Canon page.
+- id: multi_shot_noise_reduction
+  canon_name: Multi Shot Noise Reduction
+  display_label: Multi Shot Noise Reduction
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/multi_shot_noise_reduction.svg
+  notes: Playback information icon for Multi Shot Noise Reduction.
+- id: multiple_exposures
+  canon_name: Multiple exposures
+  display_label: Multiple exposures
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/multiple_exposures.svg
+  notes: Playback information icon for multiple exposures.
+- id: nature_outdoor_scene_blue_sky_included
+  canon_name: Nature/Outdoor Scene (Blue Sky Included)
+  display_label: Nature/Outdoor Scene (Blue Sky I
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/nature_outdoor_scene_blue_sky_included.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: nature_outdoor_scene_blue_sky_included_backlit
+  canon_name: Nature/Outdoor Scene (Blue Sky Included/Backlit)
+  display_label: Nature/Outdoor Scene (Blue Sky I
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/nature_outdoor_scene_blue_sky_included_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: nature_outdoor_scene_bright
+  canon_name: Nature/Outdoor Scene (Bright)
+  display_label: Nature/Outdoor Scene (Bright)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/nature_outdoor_scene_bright.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: nature_outdoor_scene_bright_backlit
+  canon_name: Nature/Outdoor Scene (Bright/Backlit)
+  display_label: Nature/Outdoor Scene (Bright/Bac
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/nature_outdoor_scene_bright_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: nature_outdoor_scene_dark_tripod_used
+  canon_name: Nature/Outdoor Scene (Dark/Tripod Used)
+  display_label: Nature/Outdoor Scene (Dark/Tripo
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/nature_outdoor_scene_dark_tripod_used.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_dark
+  canon_name: Non-Portrait (Dark)
+  display_label: Non-Portrait (Dark)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_dark.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_spotlight
+  canon_name: Non-Portrait (Spotlight)
+  display_label: Non-Portrait (Spotlight)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_spotlight.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_sunset
+  canon_name: Non-Portrait (Sunset)
+  display_label: Non-Portrait (Sunset)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_sunset.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_with_motion_blue_sky_included
+  canon_name: Non-Portrait With Motion (Blue Sky Included)
+  display_label: Non-Portrait With Motion (Blue S
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_with_motion_blue_sky_included.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_with_motion_blue_sky_included_backlit
+  canon_name: Non-Portrait With Motion (Blue Sky Included/Backlit)
+  display_label: Non-Portrait With Motion (Blue S
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_with_motion_blue_sky_included_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_with_motion_bright
+  canon_name: Non-Portrait With Motion (Bright)
+  display_label: Non-Portrait With Motion (Bright
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_with_motion_bright.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: non_portrait_with_motion_bright_backlit
+  canon_name: Non-Portrait With Motion (Bright/Backlit)
+  display_label: Non-Portrait With Motion (Bright
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/non_portrait_with_motion_bright_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_blue_sky_included
+  canon_name: Portrait (Blue Sky Included)
+  display_label: Portrait (Blue Sky Included)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_blue_sky_included.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_blue_sky_included_backlit
+  canon_name: Portrait (Blue Sky Included/Backlit)
+  display_label: Portrait (Blue Sky Included/Back
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_blue_sky_included_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_bright
+  canon_name: Portrait (Bright)
+  display_label: Portrait (Bright)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_bright.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_bright_backlit
+  canon_name: Portrait (Bright/Backlit)
+  display_label: Portrait (Bright/Backlit)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_bright_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_dark
+  canon_name: Portrait (Dark)
+  display_label: Portrait (Dark)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_dark.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_dark_tripod_used
+  canon_name: Portrait (Dark/Tripod Used)
+  display_label: Portrait (Dark/Tripod Used)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_dark_tripod_used.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_spotlight
+  canon_name: Portrait (Spotlight)
+  display_label: Portrait (Spotlight)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_spotlight.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_with_motion_blue_sky_included
+  canon_name: Portrait With Motion (Blue Sky Included)
+  display_label: Portrait With Motion (Blue Sky I
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_with_motion_blue_sky_included.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_with_motion_blue_sky_included_backlit
+  canon_name: Portrait With Motion (Blue Sky Included/Backlit)
+  display_label: Portrait With Motion (Blue Sky I
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_with_motion_blue_sky_included_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_with_motion_bright
+  canon_name: Portrait With Motion (Bright)
+  display_label: Portrait With Motion (Bright)
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_with_motion_bright.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.
+- id: portrait_with_motion_bright_backlit
+  canon_name: Portrait With Motion (Bright/Backlit)
+  display_label: Portrait With Motion (Bright/Bac
+  category: special_shooting
+  source_page: Information Display
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0090.html
+  asset_path: 60 Assets/icons/canon_r5_official/portrait_with_motion_bright_backlit.png
+  notes: Scene icon shown in Canon Information Display > Scene Icons.

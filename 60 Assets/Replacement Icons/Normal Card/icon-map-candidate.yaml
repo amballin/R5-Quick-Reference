@@ -1,0 +1,153 @@
+fields:
+  header_camera:
+    label: "Header Camera"
+    svg: "Replacement Icons/Normal Card/SVG/header_camera.svg"
+    png: "Replacement Icons/Normal Card/PNG/header_camera.png"
+  header_reset:
+    label: "Header Reset"
+    svg: "Replacement Icons/Normal Card/SVG/header_reset.svg"
+    png: "Replacement Icons/Normal Card/PNG/header_reset.png"
+  mode:
+    label: "Mode"
+    svg: "Replacement Icons/Normal Card/SVG/mode.svg"
+    png: "Replacement Icons/Normal Card/PNG/mode.png"
+  af_method:
+    label: "AF Method"
+    svg: "Replacement Icons/Normal Card/SVG/af_method.svg"
+    png: "Replacement Icons/Normal Card/PNG/af_method.png"
+  subject_detection:
+    label: "Subject Detection"
+    svg: "Replacement Icons/Normal Card/SVG/subject_detection.svg"
+    png: "Replacement Icons/Normal Card/PNG/subject_detection.png"
+  drive:
+    label: "Drive"
+    svg: "Replacement Icons/Normal Card/SVG/drive.svg"
+    png: "Replacement Icons/Normal Card/PNG/drive.png"
+  shutter:
+    label: "Shutter"
+    svg: "Replacement Icons/Normal Card/SVG/shutter.svg"
+    png: "Replacement Icons/Normal Card/PNG/shutter.png"
+  iso:
+    label: "ISO"
+    svg: "Replacement Icons/Normal Card/SVG/iso.svg"
+    png: "Replacement Icons/Normal Card/PNG/iso.png"
+  exposure_compensation:
+    label: "Exposure Comp."
+    svg: "Replacement Icons/Normal Card/SVG/exposure_compensation.svg"
+    png: "Replacement Icons/Normal Card/PNG/exposure_compensation.png"
+  metering:
+    label: "Metering"
+    svg: "Replacement Icons/Normal Card/SVG/metering.svg"
+    png: "Replacement Icons/Normal Card/PNG/metering.png"
+  white_balance:
+    label: "White Balance"
+    svg: "Replacement Icons/Normal Card/SVG/white_balance.svg"
+    png: "Replacement Icons/Normal Card/PNG/white_balance.png"
+  picture_style:
+    label: "Picture Style"
+    svg: "Replacement Icons/Normal Card/SVG/picture_style.svg"
+    png: "Replacement Icons/Normal Card/PNG/picture_style.png"
+  highlight_tone_priority:
+    label: "Highlight Tone Priority"
+    svg: "Replacement Icons/Normal Card/SVG/highlight_tone_priority.svg"
+    png: "Replacement Icons/Normal Card/PNG/highlight_tone_priority.png"
+  image_quality_raw:
+    label: "Image Quality RAW"
+    svg: "Replacement Icons/Normal Card/SVG/image_quality_raw.svg"
+    png: "Replacement Icons/Normal Card/PNG/image_quality_raw.png"
+  lens_digital_correction:
+    label: "Lens Digital Correction"
+    svg: "Replacement Icons/Normal Card/SVG/lens_digital_correction.svg"
+    png: "Replacement Icons/Normal Card/PNG/lens_digital_correction.png"
+  long_exposure_noise_reduction:
+    label: "Long Exposure Noise Reduction"
+    svg: "Replacement Icons/Normal Card/SVG/long_exposure_noise_reduction.svg"
+    png: "Replacement Icons/Normal Card/PNG/long_exposure_noise_reduction.png"
+  high_iso_noise_reduction:
+    label: "High ISO Noise Reduction"
+    svg: "Replacement Icons/Normal Card/SVG/high_iso_noise_reduction.svg"
+    png: "Replacement Icons/Normal Card/PNG/high_iso_noise_reduction.png"
+  image_stabilization:
+    label: "IS (Image Stabilizer)"
+    svg: "Replacement Icons/Normal Card/SVG/image_stabilization.svg"
+    png: "Replacement Icons/Normal Card/PNG/image_stabilization.png"
+  af_operation:
+    label: "AF Operation"
+    svg: "Replacement Icons/Normal Card/SVG/af_operation.svg"
+    png: "Replacement Icons/Normal Card/PNG/af_operation.png"
+  af_area:
+    label: "AF Area"
+    svg: "Replacement Icons/Normal Card/SVG/af_area.svg"
+    png: "Replacement Icons/Normal Card/PNG/af_area.png"
+  white_balance_shift:
+    label: "WB Shift"
+    svg: "Replacement Icons/Normal Card/SVG/white_balance_shift.svg"
+    png: "Replacement Icons/Normal Card/PNG/white_balance_shift.png"
+  creative_assist:
+    label: "Creative Assist"
+    svg: "Replacement Icons/Normal Card/SVG/creative_assist.svg"
+    png: "Replacement Icons/Normal Card/PNG/creative_assist.png"
+  battery_grip_function:
+    label: "Battery Grip Function"
+    svg: "Replacement Icons/Normal Card/SVG/battery_grip_function.svg"
+    png: "Replacement Icons/Normal Card/PNG/battery_grip_function.png"
+  record_func_card_folder_selection:
+    label: "Record Func+ Card/Folder Sel."
+    svg: "Replacement Icons/Normal Card/SVG/record_func_card_folder_selection.svg"
+    png: "Replacement Icons/Normal Card/PNG/record_func_card_folder_selection.png"
+  heif:
+    label: "HEIF"
+    svg: "Replacement Icons/Normal Card/SVG/heif.svg"
+    png: "Replacement Icons/Normal Card/PNG/heif.png"
+  custom_controls:
+    label: "Custom Controls"
+    svg: "Replacement Icons/Normal Card/SVG/custom_controls.svg"
+    png: "Replacement Icons/Normal Card/PNG/custom_controls.png"
+  checklist:
+    label: "Checklist"
+    svg: "Replacement Icons/Normal Card/SVG/checklist.svg"
+    png: "Replacement Icons/Normal Card/PNG/checklist.png"
+  watch_for:
+    label: "Watch For"
+    svg: "Replacement Icons/Normal Card/SVG/watch_for.svg"
+    png: "Replacement Icons/Normal Card/PNG/watch_for.png"
+  common_mistakes:
+    label: "Common Mistakes"
+    svg: "Replacement Icons/Normal Card/SVG/common_mistakes.svg"
+    png: "Replacement Icons/Normal Card/PNG/common_mistakes.png"
+  notes:
+    label: "Notes"
+    svg: "Replacement Icons/Normal Card/SVG/notes.svg"
+    png: "Replacement Icons/Normal Card/PNG/notes.png"
+  footer_reset:
+    label: "Footer Reset"
+    svg: "Replacement Icons/Normal Card/SVG/footer_reset.svg"
+    png: "Replacement Icons/Normal Card/PNG/footer_reset.png"
+  bird_in_flight:
+    label: "Bird in Flight"
+    svg: "Card Logos/svg/Bird in Flight.svg"
+    png: "Card Logos/png/Bird in Flight.png"
+  bird_perched:
+    label: "Bird Perched"
+    svg: "Card Logos/svg/Bird Perched.svg"
+    png: "Card Logos/png/Bird Perched.png"
+  landscape:
+    label: "Landscape"
+    svg: "Card Logos/svg/Landscape.svg"
+    png: "Card Logos/png/Landscape.png"
+  wildlife:
+    label: "Wildlife"
+    svg: "Card Logos/svg/Wildlife.svg"
+    png: "Card Logos/png/Wildlife.png"
+  camera_default:
+    label: "Camera Default"
+    svg: "Card Logos/svg/Camera Default.svg"
+    png: "Card Logos/png/Camera Default.png"
+  people:
+    label: "People"
+    svg: "Card Logos/svg/People.svg"
+    png: "Card Logos/png/People.png"
+  water_drops:
+    label: "Water Drops"
+    svg: "Card Logos/svg/Water Drops.svg"
+    png: "Card Logos/png/Water Drops.png"

@@ -1,0 +1,35 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: false
+title: Sports
+inherits: baseline
+
+card:
+  icons:
+    left: sports
+  colors:
+    background:
+    text:
+
+overrides:
+  exposure:
+    mode: Tv
+  autofocus:
+    subject_detection: None
+    eye_detection: Disable
+    method: Expand AF Area
+  drive:
+    mode: High Speed Continuous+
+  shutter:
+    target: 1/2000
+checklist:
+  - Servo AF
+  - Subject acquired
+watch_for:
+  - Motion blur
+common_mistakes:
+  - Shutter too slow
+notes:
+  - Subject Detection depends on sport.

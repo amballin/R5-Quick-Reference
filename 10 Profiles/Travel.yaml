@@ -1,0 +1,25 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: false
+title: Travel
+inherits: baseline
+
+card:
+  icons:
+    left: travel
+  colors:
+    background:
+    text:
+
+overrides: {}
+checklist:
+  - Battery
+  - Spare card
+watch_for:
+  - Changing light
+common_mistakes:
+  - Leaving exposure compensation set
+notes:
+  - Baseline configuration is normally sufficient.

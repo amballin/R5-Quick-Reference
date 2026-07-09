@@ -1,0 +1,35 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: false
+title: Waterdrops
+card:
+  icons:
+    left: water_drops
+inherits: baseline
+overrides:
+  exposure:
+    mode: Manual
+    iso:
+      mode: Fixed
+      value: 100
+  autofocus:
+    operation: Manual Focus
+    subject_detection: None
+    eye_detection: Disable
+    method: Not Used
+  shutter:
+    target: 1/200
+  lens:
+    aperture:
+      target: f/11
+checklist:
+  - Pluto armed
+  - Flash ready
+watch_for:
+  - Ambient light
+common_mistakes:
+  - Incorrect trigger timing
+notes:
+  - Manual flash operation.

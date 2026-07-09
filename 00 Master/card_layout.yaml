@@ -1,0 +1,32 @@
+card_layout:
+  always_show:
+    - key: exposure.mode
+      label: Mode
+    - key: autofocus.operation
+      label: AF Operation
+    - key: autofocus.subject_detection
+      label: Subject Detection
+    - key: autofocus.method
+      label: AF Method
+    - key: drive.mode
+      label: Drive
+    - key: shutter.target
+      label: Shutter
+    - key: lens.aperture.target
+      label: Aperture
+    - key: exposure.auto_iso.maximum
+      label: Auto ISO Max
+    - key: exposure.exposure_compensation
+      label: Exposure Compensation
+    - key: stabilization.image_stabilization.mode
+      label: Image Stabilization
+    - key: stabilization.ibis
+      label: IBIS
+    - key: stabilization.lens_is
+      label: Lens IS
+    - key: exposure.iso.mode
+      label: ISO
+    - key: display.histogram
+      label: Histogram
+    - key: display.highlight_alert
+      label: Highlight Alert

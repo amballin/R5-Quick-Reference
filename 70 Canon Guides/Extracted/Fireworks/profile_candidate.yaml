@@ -1,0 +1,67 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: '2026-07-05'
+  source: Fireworks
+title: Fireworks
+inherits: baseline
+overrides:
+  exposure:
+    mode: Manual
+    iso:
+      mode: Fixed
+      value: 100
+  shutter:
+    target: 4 s
+  lens:
+    aperture:
+      target: f/11
+      strategy: Guide Selected
+      note: 'brighter fireworks: f/13-f/16; dimmer fireworks: f/8; short exposure
+        option: f/4-f/5.6 if using very short Bulb/timed exposures around 1-2 sec'
+  autofocus:
+    operation: Manual Focus
+  drive:
+    mode: Single Shot
+  stabilization:
+    ibis: 'Off'
+    lens_is: 'Off'
+  image:
+    white_balance: Daylight
+    quality: RAW
+checklist:
+- RAW enabled
+- Manual exposure set
+- ISO 100
+- f/11
+- 4 sec starting shutter
+- Manual focus locked
+- Tripod stable
+- IS/IBIS off
+- Remote release ready
+- RGB histogram enabled
+watch_for:
+- Fireworks Too Bright Or Washed Out
+- Fireworks Too Dark
+- Trails Too Short
+- Trails Too Long Or Messy
+- Sky Not Black
+- Smoke Problem
+common_mistakes:
+- Auto ISO
+- Autofocus during the show
+- Handholding
+- Electronic shutter
+- Flash for distant fireworks
+- Relying on the meter for exposure
+notes:
+- Manual Focus
+- Before the show starts, focus on a distant object near the launch area.
+- Use magnified view if needed.
+- Switch lens to MF and leave it there.
+- For RF lenses, use the camera focus-distance display when useful.
+- Infinity / distant launch area
+- Do not let AF hunt against the dark sky during the show.
+- Required
+- Off when mounted on tripod
+- Prevent stabilization drift during long tripod exposures.

@@ -1,0 +1,43 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: true
+
+title: Birds Perched
+inherits: baseline
+
+card:
+  icons:
+    left: bird_perched
+  colors:
+    background:
+    text:
+
+overrides:
+  autofocus:
+    subject_detection: Animals
+
+  drive:
+    mode: High Speed Continuous
+
+  exposure:
+    mode: Av
+    exposure_compensation: "0 to +1/3"
+checklist:
+  - Servo AF
+  - Eye detected
+  - Background checked
+  - Histogram
+
+watch_for:
+  - Branches
+  - Bird preparing to launch
+
+common_mistakes:
+  - Shutter too slow
+  - Too much depth of field
+
+notes:
+  - Use Expand AF if tracking struggles.
+  - Image Stabilization Mode 1 is correct for handheld perched birds; turn IS off on a solid tripod.

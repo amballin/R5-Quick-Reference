@@ -1,0 +1,62 @@
+purpose: Custom card logo assets extracted from supplied reference images.
+icons:
+  - field_id: bird_in_flight
+    label: "Bird in Flight"
+    original: "original/Bird in Flight.png"
+    png: "png/Bird in Flight.png"
+    svg: "svg/Bird in Flight.svg"
+  - field_id: bird_perched
+    label: "Bird Perched"
+    original: "original/Bird Perched.png"
+    png: "png/Bird Perched.png"
+    svg: "svg/Bird Perched.svg"
+  - field_id: landscape
+    label: "Landscape"
+    original: "original/Landscape.png"
+    png: "png/Landscape.png"
+    svg: "svg/Landscape.svg"
+  - field_id: macro
+    label: "Macro"
+    original: "original/Macro.png"
+    png: "png/Macro.png"
+  - field_id: sports
+    label: "Sports"
+    original: "original/Sports.png"
+    png: "png/Sports.png"
+  - field_id: travel
+    label: "Travel"
+    original: "original/Travel.png"
+    png: "png/Travel.png"
+  - field_id: fireworks
+    label: "Fireworks"
+    original: "original/Fireworks.png"
+    png: "png/Fireworks.png"
+  - field_id: wildlife
+    label: "Wildlife"
+    original: "original/Wildlife.png"
+    png: "png/Wildlife.png"
+    svg: "svg/Wildlife.svg"
+  - field_id: camera_default
+    label: "Camera Default"
+    original: "original/Camera Default.png"
+    png: "png/Camera Default.png"
+    svg: "svg/Camera Default.svg"
+  - field_id: people
+    label: "People"
+    original: "original/People.png"
+    png: "png/People.png"
+    svg: "svg/People.svg"
+  - field_id: water_drops
+    label: "Water Drops"
+    original: "original/Water Drops.png"
+    png: "png/Water Drops.png"
+  - field_id: silver_logo
+    label: "Silver Logo"
+    original: "original/Silver Logo.png"
+    png: "png/Silver Logo.png"
+    svg: "svg/Silver Logo.svg"
+  - field_id: white_logo
+    label: "White Logo"
+    original: "original/White Logo.png"
+    png: "png/White Logo.png"
+    svg: "svg/White Logo.svg"

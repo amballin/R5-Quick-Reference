@@ -1,0 +1,43 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: true
+title: Landscape
+card:
+  icons:
+    left: landscape
+inherits: baseline
+overrides:
+  autofocus:
+    operation: One Shot AF
+    subject_detection: None
+    eye_detection: Disable
+    method: 1-Point AF
+  exposure:
+    mode: Av
+    iso:
+      mode: Fixed
+      value: 100
+  lens:
+    aperture:
+      target: f/8-f/11 (f/16 if needed)
+checklist:
+  - Stable stance
+  - Level horizon
+  - Histogram checked
+  - Focus point confirmed
+watch_for:
+  - Highlight clipping
+  - Camera shake
+  - Wind movement
+common_mistakes:
+  - Shutter too slow handheld
+  - Using f/22 unnecessarily
+  - Forgetting to turn IS off on tripod
+notes:
+  - Handheld default uses Image Stabilization Mode 1.
+  - Raise ISO as needed for a safe handheld shutter speed; use ISO 100 on a tripod.
+  - Turn IS off on a solid tripod.
+  - Mechanical shutter. EFCS under evaluation.
+  - Enable Long Exposure NR only for multi-second/night exposures.

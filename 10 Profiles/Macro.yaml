@@ -1,0 +1,33 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: false
+title: Macro
+inherits: baseline
+
+card:
+  icons:
+    left: macro
+  colors:
+    background:
+    text:
+
+overrides:
+  exposure:
+    mode: Av
+
+  autofocus:
+    operation: One Shot AF
+    subject_detection: None
+    eye_detection: Disable
+    method: Spot AF
+checklist:
+  - Stable support
+  - Focus confirmed
+watch_for:
+  - Extremely shallow depth of field
+common_mistakes:
+  - Camera movement
+notes:
+  - Use manual focus when appropriate.

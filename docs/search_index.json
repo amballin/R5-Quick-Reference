@@ -1577,10 +1577,10 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
-    "section": "R5 Quick Reference",
+    "section": "Overview",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
-    "anchor": "r5-quick-reference",
+    "anchor": "overview",
     "text": "Use this quick reference when a card setting is not obvious, especially AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference."
   },
   {
@@ -1590,7 +1590,34 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "topic-index",
-    "text": "- AF Operation\n- Subject Detection\n- Eye Detection\n- AF Method\n- Focus Mode\n- Drive Mode\n- Metering Mode\n- Shutter Speed\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Shutter Type\n- Focus Bracketing\n- Long Exposure Noise Reduction\n- Subject Detection and AF Method Combinations"
+    "text": "- Shooting Modes\n- Focus Features\n- AF Operation\n- Subject Detection\n- Eye Detection\n- AF Method\n- Focus Mode\n- Drive Mode\n- Metering Mode\n- Shutter Speed\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Shutter Type\n- Focus Bracketing\n- Long Exposure Noise Reduction\n- Subject Detection and AF Method Combinations"
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Shooting Modes",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "shooting-modes",
+    "text": "Canon EOS R5 shooting modes define how exposure decisions are divided between the photographer and the camera."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Choosing Shooting Mode: P vs Fv vs Av/Tv/M",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "choosing-shooting-mode-p-vs-fv-vs-av-tv-m",
+    "text": "Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.\nUse Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast.\nUse Av when aperture and depth of field are the main decision, such as landscapes, portraits, perched birds, natural-light macro, and tripod/still scenes.\nUse Tv when shutter speed is the main decision, such as birds in flight, sports, active wildlife, and fast action.\nUse M when controlled or repeatable exposure matters more than camera automation, such as waterdrops, flash macro, studio flash, and repeatable night setups.\nUse Bulb only for long manual exposures where you directly control how long the shutter stays open.\n  Icon   Setting   Canon Name   What it Does  \n --- --- --- --- \n  !A+   A+   Scene Intelligent Auto   Camera analyzes the scene and sets optimum settings automatically.  \n  !Fv   Fv   Flexible-priority AE   Allows shutter speed, aperture, ISO, and exposure compensation to be manual or automatic.  \n  !P   P   Program AE   Camera automatically sets shutter speed and aperture for subject brightness.  \n  !Tv   Tv   Shutter-priority AE   You set shutter speed; the camera sets aperture for standard exposure.  \n  !Av   Av   Aperture-priority AE   You set aperture; the camera sets shutter speed for standard exposure.  \n  !M   M   Manual exposure   You set shutter speed and aperture and judge exposure from the exposure indicator.  \n  !BULB   BULB   Bulb   Shutter remains open while the shutter button is held for long exposures.  \n  !C1   C1   Custom shooting mode 1   Recalls registered camera settings.  \n  !C2   C2   Custom shooting mode 2   Recalls registered camera settings.  \n  !C3   C3   Custom shooting mode 3   Recalls registered camera settings.  \n**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3).\n**Quick Menu:** Exposure mode is normally changed with the MODE button, not the Q screen."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Focus Features",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "focus-features",
+    "text": "These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.\n  Icon   Setting   Canon Name   What it Does  \n --- --- --- --- \n  !Focus Bracketing   Focus Bracketing   Focus Bracketing   Captures a sequence while automatically shifting focus after each shot.  \n  !Focus Guide   Focus Guide   Focus Guide   Displays a guide frame showing direction and amount of manual focus adjustment.  \n  !MF Peaking   MF Peaking   MF Peaking (Outline Emphasis)   Displays in-focus edges in color to make manual focusing easier.  \n**Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.\n**Quick Menu:** Menu only."
   },
   {
     "appendix_id": "r5_quick_reference",

@@ -1,0 +1,201 @@
+fields:
+  mode:
+    label: "Shooting Mode"
+    svg: "icons/card_icons/SVG/mode.svg"
+    png: "icons/card_icons/PNG/mode.png"
+  af_operation:
+    label: "AF Operation"
+    svg: "icons/card_icons/SVG/af_operation.svg"
+    png: "icons/card_icons/PNG/af_operation.png"
+  af_method:
+    label: "AF Method"
+    svg: "icons/card_icons/SVG/af_method.svg"
+    png: "icons/card_icons/PNG/af_method.png"
+  subject_detection:
+    label: "Subject Detection"
+    svg: "icons/card_icons/SVG/subject_detection.svg"
+    png: "icons/card_icons/PNG/subject_detection.png"
+  af_area:
+    label: "AF Area"
+    svg: "icons/card_icons/SVG/af_area.svg"
+    png: "icons/card_icons/PNG/af_area.png"
+  drive:
+    label: "Drive Mode"
+    svg: "icons/card_icons/SVG/drive.svg"
+    png: "icons/card_icons/PNG/drive.png"
+  shutter:
+    label: "Shutter Speed"
+    svg: "icons/card_icons/SVG/shutter.svg"
+    png: "icons/card_icons/PNG/shutter.png"
+  aperture:
+    label: "Aperture"
+    svg: "icons/card_icons/SVG/aperture.svg"
+    png: "icons/card_icons/PNG/aperture.png"
+  iso:
+    label: "ISO Speed"
+    svg: "icons/card_icons/SVG/iso.svg"
+    png: "icons/card_icons/PNG/iso.png"
+  exposure_compensation:
+    label: "Exposure Comp."
+    svg: "icons/card_icons/SVG/exposure_compensation.svg"
+    png: "icons/card_icons/PNG/exposure_compensation.png"
+  metering:
+    label: "Metering Mode"
+    svg: "icons/card_icons/SVG/metering.svg"
+    png: "icons/card_icons/PNG/metering.png"
+  white_balance:
+    label: "White Balance"
+    svg: "icons/card_icons/SVG/white_balance.svg"
+    png: "icons/card_icons/PNG/white_balance.png"
+  picture_style:
+    label: "Picture Style"
+    svg: "icons/card_icons/SVG/picture_style.svg"
+    png: "icons/card_icons/PNG/picture_style.png"
+  image_quality_raw:
+    label: "Image Quality RAW"
+    svg: "icons/card_icons/SVG/image_quality_raw.svg"
+    png: "icons/card_icons/PNG/image_quality_raw.png"
+  image_quality_jpeg:
+    label: "Image Quality JPEG"
+    svg: "icons/card_icons/SVG/image_quality_jpeg.svg"
+    png: "icons/card_icons/PNG/image_quality_jpeg.png"
+  highlight_tone_priority:
+    label: "Highlight Tone Priority"
+    svg: "icons/card_icons/SVG/highlight_tone_priority.svg"
+    png: "icons/card_icons/PNG/highlight_tone_priority.png"
+  high_iso_noise_reduction:
+    label: "High ISO Speed NR"
+    svg: "icons/card_icons/SVG/high_iso_noise_reduction.svg"
+    png: "icons/card_icons/PNG/high_iso_noise_reduction.png"
+  long_exposure_nr:
+    label: "Long Exposure NR"
+    svg: "icons/card_icons/SVG/long_exposure_nr.svg"
+    png: "icons/card_icons/PNG/long_exposure_nr.png"
+  lens_digital_correction:
+    label: "Lens Digital Correction"
+    svg: "icons/card_icons/SVG/lens_digital_correction.svg"
+    png: "icons/card_icons/PNG/lens_digital_correction.png"
+  histogram:
+    label: "Histogram"
+    svg: "icons/card_icons/SVG/histogram.svg"
+    png: "icons/card_icons/PNG/histogram.png"
+  highlight_alert:
+    label: "Highlight Alert"
+    svg: "icons/card_icons/SVG/highlight_alert.svg"
+    png: "icons/card_icons/PNG/highlight_alert.png"
+  focus_peaking:
+    label: "Focus Peaking"
+    svg: "icons/card_icons/SVG/focus_peaking.svg"
+    png: "icons/card_icons/PNG/focus_peaking.png"
+  auto_lighting_optimizer:
+    label: "Auto Lighting Optimizer"
+    svg: "icons/card_icons/SVG/auto_lighting_optimizer.svg"
+    png: "icons/card_icons/PNG/auto_lighting_optimizer.png"
+  peripheral_illumination_correction:
+    label: "Peripheral Illum. Corr."
+    svg: "icons/card_icons/SVG/peripheral_illumination_correction.svg"
+    png: "icons/card_icons/PNG/peripheral_illumination_correction.png"
+  chromatic_aberration_correction:
+    label: "Chromatic Aberration Corr."
+    svg: "icons/card_icons/SVG/chromatic_aberration_correction.svg"
+    png: "icons/card_icons/PNG/chromatic_aberration_correction.png"
+  diffraction_correction:
+    label: "Diffraction Correction"
+    svg: "icons/card_icons/SVG/diffraction_correction.svg"
+    png: "icons/card_icons/PNG/diffraction_correction.png"
+  image_stabilization:
+    label: "Image Stabilizer (IBIS)"
+    svg: "icons/card_icons/SVG/image_stabilization.svg"
+    png: "icons/card_icons/PNG/image_stabilization.png"
+  lens_is:
+    label: "Lens IS (Optical IS)"
+    svg: "icons/card_icons/SVG/lens_is.svg"
+    png: "icons/card_icons/PNG/lens_is.png"
+  multiple_exposure:
+    label: "Multiple Exposure"
+    svg: "icons/card_icons/SVG/multiple_exposure.svg"
+    png: "icons/card_icons/PNG/multiple_exposure.png"
+  hdr_mode:
+    label: "HDR Mode"
+    svg: "icons/card_icons/SVG/hdr_mode.svg"
+    png: "icons/card_icons/PNG/hdr_mode.png"
+  exposure_bracketing:
+    label: "Bracketing (AEB)"
+    svg: "icons/card_icons/SVG/exposure_bracketing.svg"
+    png: "icons/card_icons/PNG/exposure_bracketing.png"
+  white_balance_bracketing:
+    label: "White Balance Bracketing"
+    svg: "icons/card_icons/SVG/white_balance_bracketing.svg"
+    png: "icons/card_icons/PNG/white_balance_bracketing.png"
+  flash_exposure_compensation:
+    label: "Flash Exposure Comp."
+    svg: "icons/card_icons/SVG/flash_exposure_compensation.svg"
+    png: "icons/card_icons/PNG/flash_exposure_compensation.png"
+  flash_mode:
+    label: "Flash Mode"
+    svg: "icons/card_icons/SVG/flash_mode.svg"
+    png: "icons/card_icons/PNG/flash_mode.png"
+  flash_sync_speed:
+    label: "Flash Sync Speed"
+    svg: "icons/card_icons/SVG/flash_sync_speed.svg"
+    png: "icons/card_icons/PNG/flash_sync_speed.png"
+  red_eye_reduction:
+    label: "Red-Eye Reduction"
+    svg: "icons/card_icons/SVG/red_eye_reduction.svg"
+    png: "icons/card_icons/PNG/red_eye_reduction.png"
+  self_timer:
+    label: "Self Timer"
+    svg: "icons/card_icons/SVG/self_timer.svg"
+    png: "icons/card_icons/PNG/self_timer.png"
+  remote_release:
+    label: "Remote Release"
+    svg: "icons/card_icons/SVG/remote_release.svg"
+    png: "icons/card_icons/PNG/remote_release.png"
+  interval_timer:
+    label: "Interval Timer"
+    svg: "icons/card_icons/SVG/interval_timer.svg"
+    png: "icons/card_icons/PNG/interval_timer.png"
+  bulb:
+    label: "Bulb (Shutter Mode)"
+    svg: "icons/card_icons/SVG/bulb.svg"
+    png: "icons/card_icons/PNG/bulb.png"
+  custom_shooting_mode:
+    label: "Custom Shooting Mode (C1-C3)"
+    svg: "icons/card_icons/SVG/custom_shooting_mode.svg"
+    png: "icons/card_icons/PNG/custom_shooting_mode.png"
+  movie_recording_mode:
+    label: "Movie Recording Mode"
+    svg: "icons/card_icons/SVG/movie_recording_mode.svg"
+    png: "icons/card_icons/PNG/movie_recording_mode.png"
+  movie_quality:
+    label: "Movie Quality"
+    svg: "icons/card_icons/SVG/movie_quality.svg"
+    png: "icons/card_icons/PNG/movie_quality.png"
+  movie_servo_af:
+    label: "Movie Servo AF"
+    svg: "icons/card_icons/SVG/movie_servo_af.svg"
+    png: "icons/card_icons/PNG/movie_servo_af.png"
+  sound_recording:
+    label: "Sound Recording"
+    svg: "icons/card_icons/SVG/sound_recording.svg"
+    png: "icons/card_icons/PNG/sound_recording.png"
+  zebra_display:
+    label: "Zebra Display"
+    svg: "icons/card_icons/SVG/zebra_display.svg"
+    png: "icons/card_icons/PNG/zebra_display.png"
+  grid_display:
+    label: "Grid Display"
+    svg: "icons/card_icons/SVG/grid_display.svg"
+    png: "icons/card_icons/PNG/grid_display.png"
+  electronic_level:
+    label: "Electronic Level"
+    svg: "icons/card_icons/SVG/electronic_level.svg"
+    png: "icons/card_icons/PNG/electronic_level.png"
+  viewfinder_info_display:
+    label: "Viewfinder Info Display"
+    svg: "icons/card_icons/SVG/viewfinder_info_display.svg"
+    png: "icons/card_icons/PNG/viewfinder_info_display.png"
+  touch_shutter:
+    label: "Touch Shutter"
+    svg: "icons/card_icons/SVG/touch_shutter.svg"
+    png: "icons/card_icons/PNG/touch_shutter.png"

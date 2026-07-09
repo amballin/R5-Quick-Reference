@@ -1,0 +1,78 @@
+- id: mode-a-plus
+  label: A+
+  canon_name: Scene Intelligent Auto
+  plain_description: Fully automatic shooting mode where the camera analyzes the scene and sets optimum settings automatically.
+  icon: mode-a-plus.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0020.html
+- id: mode-fv
+  label: Fv
+  canon_name: Flexible-priority AE
+  plain_description: User can set shutter speed, aperture value, ISO speed, and exposure compensation manually or automatically.
+  icon: mode-fv.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0040.html
+- id: mode-p
+  label: P
+  canon_name: Program AE
+  plain_description: Camera automatically sets shutter speed and aperture value to suit subject brightness.
+  icon: mode-p.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0050.html
+- id: mode-tv
+  label: Tv
+  canon_name: Shutter-priority AE
+  plain_description: User sets shutter speed while the camera sets aperture for standard exposure.
+  icon: mode-tv.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0060.html
+- id: mode-av
+  label: Av
+  canon_name: Aperture-priority AE
+  plain_description: User sets aperture while the camera sets shutter speed for standard exposure.
+  icon: mode-av.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0070.html
+- id: mode-m
+  label: M
+  canon_name: Manual exposure
+  plain_description: User sets both shutter speed and aperture value and checks exposure with the exposure level indicator.
+  icon: mode-m.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0080.html
+- id: mode-bulb
+  label: BULB
+  canon_name: Bulb
+  plain_description: Shutter stays open while the shutter button is held down, for long exposures such as night scenes or fireworks.
+  icon: mode-bulb.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0090.html
+- id: mode-c1
+  label: C1
+  canon_name: Custom shooting mode 1
+  plain_description: Registered camera settings can be recalled as custom shooting mode C1.
+  icon: mode-c1.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-07_Set-up_0300.html
+- id: mode-c2
+  label: C2
+  canon_name: Custom shooting mode 2
+  plain_description: Registered camera settings can be recalled as custom shooting mode C2.
+  icon: mode-c2.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-07_Set-up_0300.html
+- id: mode-c3
+  label: C3
+  canon_name: Custom shooting mode 3
+  plain_description: Registered camera settings can be recalled as custom shooting mode C3.
+  icon: mode-c3.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-07_Set-up_0300.html
+- id: focus-bracketing
+  label: Focus Bracketing
+  canon_name: Focus Bracketing
+  plain_description: Captures continuous shots while automatically changing focal distance after a single shot.
+  icon: focus-bracketing.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html
+- id: focus-guide
+  label: Focus Guide
+  canon_name: Focus Guide
+  plain_description: Displays a guide frame showing focus adjustment direction and the amount of adjustment needed.
+  icon: focus-guide.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html#Focus_Guide
+- id: focus-mf-peaking
+  label: MF Peaking
+  canon_name: MF Peaking (Outline Emphasis)
+  plain_description: Displays edges of subjects in focus in color to make manual focusing easier.
+  icon: focus-mf-peaking.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html#Setting_MF_Peaking_Outline_Emphasis

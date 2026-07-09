@@ -1,0 +1,27 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: true
+title: Wildlife
+card:
+  icons:
+    left: wildlife
+inherits: baseline
+overrides:
+  autofocus:
+    subject_detection: Animals
+  drive:
+    mode: High Speed Continuous
+checklist:
+  - Eye detected
+  - Histogram
+  - Background checked
+watch_for:
+  - Busy background
+  - Subject movement
+common_mistakes:
+  - Shutter too slow
+  - Focus on body instead of eye
+notes:
+  - Use Expand AF if Face + Tracking struggles through branches.

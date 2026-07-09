@@ -1,0 +1,69 @@
+version: 1.0
+
+metadata:
+  version: string
+  status: Draft|Review|Final
+  last_updated: date
+  release: optional boolean
+
+title: string
+subtitle: optional string
+default subtitle in baseline: optional string
+
+card:
+  icons:
+    left: optional asset path or icon id
+    right: optional asset path or icon id
+  colors:
+    background: optional color string
+    text: optional color string
+
+inherits: baseline
+
+settings:
+
+  mode: string
+
+  af_operation: string
+
+  subject_detection: string
+
+  eye_detection: string
+
+  af_method: string
+
+  drive: string
+
+  shutter:
+    type: string
+    target: string
+
+  aperture: string
+
+  auto_iso:
+    enabled: boolean
+    value: integer
+    max: integer
+
+  exposure_comp: string
+
+  image_stabilization:
+    mode: string
+    notes: string
+
+  camera_setup:
+    electronic_full_time_mf: string
+    ibis_high_res_shot: string
+    continuous_af: string
+
+checklist:
+  - string
+
+watch_for:
+  - string
+
+common_mistakes:
+  - string
+
+notes:
+  - string

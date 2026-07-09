@@ -1,0 +1,398 @@
+appendices:
+  - id: shutter_modes
+    legacy_appendix: "06"
+    title: "Electronic vs EFCS vs Mechanical Shutter"
+    file: "Appendices/Electronic vs EFCS vs Mechanical Shutter.md"
+    profiles:
+      - Birds in Flight
+      - Fireworks
+      - Sports
+      - Wildlife
+    related_appendices:
+      - flash_photography
+      - drive_modes
+    required_topics:
+      - What each shutter mode is
+      - Advantages
+      - Disadvantages
+      - Rolling shutter
+      - Flash limitations
+      - Banding / flicker considerations
+      - Bokeh implications
+      - Silent shooting implications
+      - Recommended uses
+      - Decision tree
+      - Subject recommendations
+      - Canon-specific notes
+      - Cross references from profiles
+  - id: af_cases_tracking
+    legacy_appendix: "08"
+    title: "AF Cases & Tracking Behavior"
+    file: "Appendices/AF Cases & Tracking Behavior.md"
+    profiles:
+      - Birds in Flight
+      - People
+      - Sports
+      - Wildlife
+    related_appendices:
+      - custom_controls
+      - drive_modes
+    required_topics:
+      - Servo AF behavior
+      - Tracking sensitivity
+      - Accel/Decel Tracking
+      - Subject switching
+      - Eye detection
+      - Animal detection
+      - Vehicle detection
+      - Recommended settings
+      - Subject examples
+      - Decision tree
+      - Cross references
+  - id: metering_modes
+    legacy_appendix: "09"
+    title: "Metering Modes"
+    file: "Appendices/Metering Modes.md"
+    profiles:
+      - Camera Defaults
+      - Fireworks
+      - Landscape
+      - People
+      - Wildlife
+    related_appendices:
+      - flash_photography
+    required_topics:
+      - Evaluative
+      - Partial
+      - Spot
+      - Center-weighted
+      - How it works
+      - Advantages
+      - Disadvantages
+      - Typical uses
+      - Exposure compensation considerations
+      - Examples
+      - Decision tree
+  - id: focus_bracketing_depth_compositing
+    legacy_appendix: "14"
+    title: "Focus Bracketing & In-Camera Depth Compositing"
+    file: "Appendices/Focus Bracketing & In-Camera Depth Compositing.md"
+    profiles:
+      - Landscape
+      - Macro
+    related_appendices:
+      - drive_modes
+      - flash_photography
+    required_topics:
+      - What Focus Bracketing is
+      - How it works
+      - Depth Compositing
+      - Increment settings
+      - Number of shots
+      - Camera Requirements
+      - Every Camera Setting Explained
+      - Focus Increment
+      - Exposure Smoothing
+      - Tripod recommendations
+      - Flash considerations
+      - Landscape recommendations
+      - Macro recommendations
+      - Product photography recommendations
+      - How to Choose Settings
+      - Starting Point Tables
+      - Lens x Magnification x Aperture Quick Reference
+      - Lens Considerations
+      - Common Problems
+      - Troubleshooting Guide
+      - Decision Trees
+      - Profile Recommendations
+      - Common mistakes
+      - Decision tree
+      - Recommended starting values
+  - id: image_stabilization
+    title: "Image Stabilization"
+    file: "Appendices/Image Stabilization.md"
+    profiles:
+      - Birds in Flight
+      - Camera Defaults
+      - Landscape
+      - Macro
+      - Sports
+      - Travel
+      - Waterdrops
+      - Wildlife
+    related_appendices:
+      - shutter_modes
+      - drive_modes
+      - focus_bracketing_depth_compositing
+    required_topics:
+      - Lens IS
+      - IBIS
+      - Coordinated IS
+      - Mode 1
+      - Mode 2
+      - Mode 3
+      - Off
+      - EF 100-400mm L IS II
+      - EF-EOS R adapter
+      - Tripod recommendations
+      - Long exposure recommendations
+      - Panning recommendations
+      - Wildlife recommendations
+      - Birds in flight recommendations
+      - Macro recommendations
+      - Profile recommendations
+  - id: lens_settings
+    title: "Lens Capabilities"
+    file: "Appendices/Lens Capabilities.md"
+    release: true
+    profiles:
+      - Birds in Flight
+      - Birds Perched
+      - Camera Defaults
+      - Camera Setup
+      - Fireworks
+      - Landscape
+      - Macro
+      - People
+      - Sports
+      - Travel
+      - Waterdrops
+      - Wildlife
+    related_appendices:
+      - image_stabilization
+      - focus_bracketing_depth_compositing
+      - r5_quick_reference
+      - shutter_modes
+    skip_required_sections:
+      - Purpose
+      - What it Does
+      - How it Works
+      - Advantages
+      - Disadvantages
+      - Recommended Uses
+      - When Not to Use
+      - Decision Guide
+      - Recommended Settings by Profile
+      - Canon-Specific Notes
+      - Tips
+    required_topics:
+      - Canon EF 100-400mm f/4.5-5.6L IS II USM
+      - Canon EF 100mm f/2.8L Macro IS USM
+      - Canon EF 50mm f/1.4 USM
+      - Canon Extender EF 1.4x
+      - Canon RF 24-240mm F4-6.3 IS USM
+      - EF-EOS R control ring adapter
+      - Lens switches
+      - Stabilization modes
+      - Tripod recommendations
+      - Gimbal recommendations
+      - Subject and profile recommendations
+  - id: long_exposure_night_photography
+    title: "Long Exposure & Night Photography"
+    file: "Appendices/Long Exposure & Night Photography.md"
+    profiles:
+      - Camera Defaults
+      - Fireworks
+      - Landscape
+      - Macro
+      - Waterdrops
+    related_appendices:
+      - shutter_modes
+      - image_stabilization
+      - drive_modes
+      - focus_bracketing_depth_compositing
+      - metering_modes
+      - flash_photography
+    required_topics:
+      - Long Exposure Noise Reduction
+      - LENR
+      - What Long Exposure Noise Reduction is
+      - Dark frame subtraction
+      - When it activates
+      - Hot pixels
+      - Amp glow
+      - RAW files
+      - JPEG files
+      - Processing delay
+      - AUTO setting
+      - Fireworks recommendations
+      - Landscape recommendations
+      - Waterdrops recommendations
+      - Astrophotography considerations
+      - Multiple exposure workflow
+      - Stacking workflow
+      - Recommended starting values
+  - id: flash_photography
+    legacy_appendix: "16"
+    title: "Flash Photography"
+    file: "Appendices/Flash Photography.md"
+    profiles:
+      - Fireworks
+      - Macro
+      - People
+      - Travel
+    related_appendices:
+      - shutter_modes
+      - metering_modes
+    required_topics:
+      - E-TTL
+      - Manual flash
+      - Flash Exposure Compensation
+      - High Speed Sync
+      - Rear Curtain Sync
+      - Fill Flash
+      - Bounce Flash
+      - Multiple flash
+      - Wireless flash
+      - External triggers
+      - Pluto trigger notes
+      - Canon Speedlite notes
+      - Decision tree
+  - id: custom_controls
+    legacy_appendix: "17"
+    title: "Custom Controls"
+    file: "Appendices/Custom Controls.md"
+    profiles:
+      - Birds in Flight
+      - Landscape
+      - Sports
+      - Travel
+      - Wildlife
+    related_appendices:
+      - af_cases_tracking
+      - drive_modes
+    required_topics:
+      - Button customization
+      - M-Fn button
+      - AF-ON
+      - AE Lock
+      - Control Ring
+      - Joystick
+      - Register/Recall Shooting Function
+      - Recommended layouts
+      - Wildlife recommendations
+      - Landscape recommendations
+      - Sports recommendations
+      - Travel recommendations
+  - id: drive_modes
+    legacy_appendix: "18"
+    title: "Drive Modes"
+    file: "Appendices/Drive Modes.md"
+    profiles:
+      - Birds in Flight
+      - Camera Defaults
+      - Sports
+      - Wildlife
+    related_appendices:
+      - shutter_modes
+      - af_cases_tracking
+    required_topics:
+      - Single Shot
+      - Low Continuous
+      - High Continuous
+      - High+ Continuous
+      - Silent modes
+      - Self Timer
+      - Electronic drive considerations
+      - Recommended uses
+      - Decision tree
+  - id: canon_r5_official_icon_reference
+    title: "Canon EOS R5 Official Icon Reference"
+    file: "Appendices/Canon EOS R5 Official Icon Reference.md"
+    release: true
+    profiles:
+      - Birds in Flight
+      - Camera Defaults
+      - Fireworks
+      - Landscape
+      - Macro
+      - People
+      - Sports
+      - Travel
+      - Waterdrops
+      - Wildlife
+    related_appendices:
+      - r5_quick_reference
+      - af_cases_tracking
+      - drive_modes
+      - metering_modes
+      - shutter_modes
+    skip_required_sections:
+      - Purpose
+      - What it Does
+      - How it Works
+      - Advantages
+      - Disadvantages
+      - Recommended Uses
+      - When Not to Use
+      - Decision Guide
+      - Recommended Settings by Profile
+      - Canon-Specific Notes
+      - Tips
+      - Common Mistakes
+      - Cross References
+    required_topics:
+      - Canon official icon names
+      - AF icons
+      - Drive icons
+      - Metering icons
+      - Shutter indicators
+      - Information display icons
+      - Source page links
+  - id: r5_quick_reference
+    title: "R5 Quick Reference"
+    file: "Appendices/R5 Quick Reference.md"
+    release: true
+    profiles:
+      - Birds in Flight
+      - Camera Defaults
+      - Fireworks
+      - Landscape
+      - Macro
+      - People
+      - Sports
+      - Travel
+      - Waterdrops
+      - Wildlife
+    related_appendices:
+      - af_cases_tracking
+      - image_stabilization
+      - metering_modes
+      - focus_bracketing_depth_compositing
+      - shutter_modes
+      - drive_modes
+      - long_exposure_night_photography
+    skip_required_sections:
+      - Recommended Uses
+    required_topics:
+      - AF Operation
+      - Subject Detection
+      - Eye Detection
+      - AF Method
+      - Focus Mode
+      - Drive Mode
+      - Metering Mode
+      - Shutter Speed
+      - Image Stabilization Mode
+      - IBIS
+      - Lens IS
+      - Shutter Type
+      - Focus Bracketing
+      - Long Exposure Noise Reduction
+      - Subject Detection and AF Method Combinations
+
+required_sections:
+  - Purpose
+  - What it Does
+  - How it Works
+  - Advantages
+  - Disadvantages
+  - Recommended Uses
+  - When Not to Use
+  - Decision Guide
+  - Recommended Settings by Profile
+  - Canon-Specific Notes
+  - Tips
+  - Common Mistakes
+  - Cross References

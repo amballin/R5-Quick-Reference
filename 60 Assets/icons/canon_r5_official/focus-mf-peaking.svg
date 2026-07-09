@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 32 24" role="img" aria-labelledby="title">
+  <title id="title">MF Peaking</title>
+  <rect width="32" height="24" fill="none"/>
+  <path d="M5 16c3-7 6-7 9 0s6 7 13 0" fill="none" stroke="#111" stroke-width="1.7" stroke-linecap="round"/>
+  <path d="M5 8c3 4 6 4 9 0s6-4 13 0" fill="none" stroke="#111" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="1.5 2.2"/>
+</svg>

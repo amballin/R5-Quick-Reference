@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 32 24" role="img" aria-labelledby="title">
+  <title id="title">Focus Guide</title>
+  <rect width="32" height="24" fill="none"/>
+  <path d="M6 12h7M19 12h7M16 5v14" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M13 8l3-3 3 3M13 16l3 3 3-3" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

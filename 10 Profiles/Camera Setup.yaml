@@ -1,0 +1,43 @@
+metadata:
+  version: 1.0
+  status: Final
+  last_updated: 2026-07-08
+  release: true
+title: Camera Setup
+subtitle: Set & Forget
+card:
+  icons:
+    left: camera_default
+inherits: baseline
+overrides:
+  display:
+    histogram: RGB
+    highlight_alert: Enabled
+  image:
+    highlight_tone_priority: "Off"
+    high_iso_noise_reduction: "Off"
+    long_exposure_noise_reduction:
+      value: "Off"
+  camera_setup:
+    electronic_full_time_mf: "Off"
+    ibis_high_res_shot: "Off"
+    continuous_af: "Off"
+checklist:
+  - RGB Histogram on
+  - Highlight Alert enabled
+  - Continuous AF off
+  - Electronic full-time MF off
+  - IBIS High Resolution Shot off
+watch_for:
+  - Noise reduction accidentally enabled
+  - JPEG-only specialty modes left on
+  - Lens-specific focus options not available
+common_mistakes:
+  - Treating setup items like field profile choices
+  - Leaving a specialty mode enabled after testing
+notes:
+  - Highlight tools stay on because exposure warnings are useful in the field.
+  - Noise reduction stays off because Lightroom handles RAW cleanup better.
+  - Continuous AF is off because it can drain battery by focusing when you are not shooting.
+  - Electronic full-time MF is off because it is not useful for your lens.
+  - IBIS High Resolution Shot is off because it is a static-scene specialty mode with very large JPEG output.

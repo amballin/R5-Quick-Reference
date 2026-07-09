@@ -1,0 +1,82 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+
+subtitle:
+
+card:
+  icons:
+    left:
+    right: Card Logos/png/Silver Logo.png
+  colors:
+    background:
+    text:
+
+camera:
+  manufacturer: Canon
+  model: EOS R5
+  firmware: "2.2.1"
+
+workflow:
+  capture_format: cRAW
+  post_processing:
+    application: Lightroom Classic
+    ai_denoise:
+      enabled: true
+
+philosophy:
+  - Capture the image first.
+  - Sharp is better than noise.
+  - Lightroom is part of the camera.
+  - Change as few settings as possible in the field.
+  - Subject profiles override only what is necessary.
+
+defaults:
+  exposure:
+    mode: "Fv"
+    metering: Evaluative
+    exposure_compensation: "0"
+    iso:
+      mode: Auto
+      value:
+    auto_iso:
+      maximum: 12800
+  autofocus:
+    operation: Servo AF
+    subject_detection: People
+    eye_detection: Enable
+    method: Face + Tracking
+  drive:
+    mode: "Single Shooting"
+  shutter:
+    type: "Mechanical"
+    target:
+    efcs:
+      status: Under Evaluation
+  lens:
+    aperture:
+      target:
+      strategy: Camera Selected
+      note: Actual aperture depends on the attached lens and focal length.
+  stabilization:
+    image_stabilization:
+      mode: Mode 1
+    ibis: "On"
+    lens_is: "On"
+  display:
+    histogram: RGB
+    highlight_alert: Enabled
+  image:
+    quality: cRAW
+    white_balance: "AWB"
+    picture_style: "Neutral"
+    highlight_tone_priority: "Off"
+    high_iso_noise_reduction: "Off"
+    long_exposure_noise_reduction:
+      value: "Off"
+      note: Enable only for multi-second or night exposures.
+  camera_setup:
+    electronic_full_time_mf: "Off"
+    ibis_high_res_shot: "Off"
+    continuous_af: "Off"

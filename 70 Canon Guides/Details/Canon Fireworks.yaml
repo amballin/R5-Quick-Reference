@@ -1,0 +1,186 @@
+profile:
+  name: Fireworks
+  camera: Canon EOS R5
+  category: Events / Night
+  priority: Long-exposure fireworks with clean color, sharp trails, and controlled highlights
+
+summary:
+  purpose: >
+    Capture fireworks as sharp, colorful light trails while keeping the sky dark and avoiding
+    washed-out bursts. Best used from a tripod with manual exposure, manual focus, low ISO,
+    and either timed shutter speeds or Bulb mode.
+  source_basis:
+    - Canon fireworks guidance: manual exposure, low ISO, tripod, remote release, manual focus, Bulb/timed exposures.
+    - R5 reference-system enhancement: RGB histogram, highlight alert, EFCS, electronic shutter off.
+
+starting_point:
+  exposure_mode: Manual
+  shutter_speed: 4 sec
+  aperture: f/11
+  iso: 100
+  white_balance: Daylight
+  file_format: RAW
+
+exposure:
+  mode: Manual
+  shutter:
+    default: 4 sec
+    normal_range: 2-10 sec
+    multiple_bursts: 8-20 sec
+    max_timed: 30 sec
+    bulb: Use Bulb when timing each burst manually or when exposures need to exceed 30 sec.
+  aperture:
+    default: f/11
+    brighter_fireworks: f/13-f/16
+    dimmer_fireworks: f/8
+    short_exposure_option: f/4-f/5.6 if using very short Bulb/timed exposures around 1-2 sec
+  iso:
+    default: 100
+    alternate: 200
+    auto_iso: Off
+  metering:
+    mode: Evaluative
+    note: Ignore the meter after setup; fireworks require deliberate underexposure of the dark sky.
+
+focus:
+  af_operation: Manual Focus
+  method:
+    - Before the show starts, focus on a distant object near the launch area.
+    - Use magnified view if needed.
+    - Switch lens to MF and leave it there.
+    - For RF lenses, use the camera focus-distance display when useful.
+  focus_target: Infinity / distant launch area
+  warning: Do not let AF hunt against the dark sky during the show.
+
+drive_and_release:
+  drive_mode: Single Shot
+  release_method:
+    preferred: Remote shutter release or Canon Camera Connect
+    alternate: 2-second self-timer for timed exposures
+  bulb_remote:
+    canon_r5_compatible:
+      - RS-80N3
+      - TC-80N3
+      - Canon Camera Connect app
+  notes:
+    - Remote release is strongly preferred so timing is precise and camera shake is minimized.
+    - Self-timer reduces vibration but makes timing less precise.
+
+stabilization:
+  tripod: Required
+  lens_is: Off when mounted on tripod
+  ibis: Off when mounted on tripod
+  reason: Prevent stabilization drift during long tripod exposures.
+
+canon_r5_settings:
+  shutter_mode:
+    electronic_first_curtain: On
+    electronic_shutter: Off
+    mechanical_shutter: Acceptable alternate
+  image_review: 2 sec
+  histogram: RGB Histogram enabled
+  highlight_alert: Enabled
+  exposure_simulation: Enabled
+  long_exposure_noise_reduction: Off
+  high_iso_noise_reduction: Off
+  highlight_tone_priority: Off
+  picture_style: Standard or Neutral
+  anti_flicker: Off
+  touch_shutter: Off
+
+white_balance_and_color:
+  white_balance: Daylight
+  raw_note: RAW allows white balance refinement later.
+  color_priority: Protect bright colors from clipping; use RGB histogram and blinkies.
+
+composition:
+  guidance:
+    - Use wide angle when you want the whole display, skyline, reflections, or foreground context.
+    - Leave room above the launch area for high bursts.
+    - Shoot both horizontal and vertical compositions.
+    - Recompose if smoke drifts into the frame.
+  lenses:
+    wide_context:
+      - RF 15-35mm
+      - RF 14-35mm
+      - RF 24-105mm
+    tighter_views:
+      - RF 24-70mm
+      - RF 70-200mm
+
+technique:
+  timed_exposure:
+    - Start with 4 sec at f/11, ISO 100.
+    - Open the shutter just before the shell bursts.
+    - Review histogram and blinkies after the first few shots.
+  bulb_single_burst:
+    - Open shutter as the shell rises.
+    - Close shutter after the trails fade.
+  bulb_multiple_bursts:
+    - Keep exposure open for two or three bursts only.
+    - Avoid very long exposures that stack too many bursts and overexpose the frame.
+  black_card_or_hat:
+    use: Cover the lens between bursts while Bulb remains open.
+    caution: Avoid touching or shaking the camera/lens.
+
+adjustments:
+  fireworks_too_bright_or_washed_out:
+    - Stop down to f/13 or f/16.
+    - Reduce number of bursts per frame.
+    - Shorten shutter if trails are excessive.
+  fireworks_too_dark:
+    - Open aperture to f/8.
+    - Use ISO 200 only if needed.
+  trails_too_short:
+    - Lengthen shutter time.
+    - Use Bulb and close after trails fade.
+  trails_too_long_or_messy:
+    - Shorten shutter time.
+    - Capture fewer bursts per exposure.
+  sky_not_black:
+    - Reduce exposure time.
+    - Stop down aperture.
+    - Avoid raising ISO.
+  smoke_problem:
+    - Shoot early in the show.
+    - Recompose based on wind direction.
+
+avoid:
+  - Auto ISO
+  - Autofocus during the show
+  - Handholding
+  - Electronic shutter
+  - Flash for distant fireworks
+  - Relying on the meter for exposure
+
+gear:
+  required:
+    - Tripod
+    - Remote release or Canon Camera Connect
+  recommended:
+    - Wide-angle zoom
+    - Fully charged battery
+    - Extra card
+    - Lens cloth
+  optional:
+    - Black card or hat for Bulb masking
+    - Small flashlight or headlamp
+
+field_checklist:
+  before_show:
+    - RAW enabled
+    - Manual exposure set
+    - ISO 100
+    - f/11
+    - 4 sec starting shutter
+    - Manual focus locked
+    - Tripod stable
+    - IS/IBIS off
+    - Remote release ready
+    - RGB histogram enabled
+    - Highlight alert enabled
+  during_show:
+    - Check first few frames
+    - Watch RGB histogram and blinkies
+    - Adjust aperture before ISO
+    - Recompose if smoke builds

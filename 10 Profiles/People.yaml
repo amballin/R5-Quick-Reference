@@ -1,0 +1,25 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: true
+title: People
+card:
+  icons:
+    left: people
+inherits: baseline
+overrides:
+  exposure:
+    mode: Av
+
+  drive:
+    mode: Low Speed Continuous
+checklist:
+  - Eye detected
+  - Catchlight in eyes
+watch_for:
+  - Distracting backgrounds
+common_mistakes:
+  - Focus on nose instead of eye
+notes:
+  - Face + Tracking inherited from baseline.

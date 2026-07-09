@@ -1,0 +1,49 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-02
+  release: true
+
+title: Birds in Flight
+card:
+  icons:
+    left: bird_in_flight
+inherits: baseline
+overrides:
+  exposure:
+    mode: Tv
+    exposure_compensation: "0 to +1/3"
+
+  autofocus:
+    subject_detection: None
+    eye_detection: Disable
+    method: Expand AF Area
+
+  drive:
+    mode: High Speed Continuous+
+
+  shutter:
+    target: "1/2000–1/4000"
+  stabilization:
+    image_stabilization:
+      mode: Mode 3
+
+checklist:
+  - Servo AF
+  - Bird acquired
+  - Shutter speed verified
+  - Histogram checked
+
+watch_for:
+  - Motion blur
+  - Busy background
+  - Lost tracking
+
+common_mistakes:
+  - Shutter too slow
+  - AF area too small
+  - Poor panning
+
+notes:
+  - Use Image Stabilization Mode 3 for erratic flight and action.
+  - Switch to Mode 2 only for deliberate steady panning.

@@ -1,0 +1,351 @@
+icons:
+  - field_id: mode
+    label: "Shooting Mode"
+    original_png: "Originals/mode_original.png"
+    png: "PNG/mode.png"
+    svg: "SVG/mode.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: af_operation
+    label: "AF Operation"
+    original_png: "Originals/af_operation_original.png"
+    png: "PNG/af_operation.png"
+    svg: "SVG/af_operation.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: af_method
+    label: "AF Method"
+    original_png: "Originals/af_method_original.png"
+    png: "PNG/af_method.png"
+    svg: "SVG/af_method.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: subject_detection
+    label: "Subject Detection"
+    original_png: "Originals/subject_detection_original.png"
+    png: "PNG/subject_detection.png"
+    svg: "SVG/subject_detection.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: af_area
+    label: "AF Area"
+    original_png: "Originals/af_area_original.png"
+    png: "PNG/af_area.png"
+    svg: "SVG/af_area.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: drive
+    label: "Drive Mode"
+    original_png: "Originals/drive_original.png"
+    png: "PNG/drive.png"
+    svg: "SVG/drive.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: shutter
+    label: "Shutter Speed"
+    original_png: "Originals/shutter_original.png"
+    png: "PNG/shutter.png"
+    svg: "SVG/shutter.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: aperture
+    label: "Aperture"
+    original_png: "Originals/aperture_original.png"
+    png: "PNG/aperture.png"
+    svg: "SVG/aperture.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: iso
+    label: "ISO Speed"
+    original_png: "Originals/iso_original.png"
+    png: "PNG/iso.png"
+    svg: "SVG/iso.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: exposure_compensation
+    label: "Exposure Comp."
+    original_png: "Originals/exposure_compensation_original.png"
+    png: "PNG/exposure_compensation.png"
+    svg: "SVG/exposure_compensation.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: metering
+    label: "Metering Mode"
+    original_png: "Originals/metering_original.png"
+    png: "PNG/metering.png"
+    svg: "SVG/metering.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: white_balance
+    label: "White Balance"
+    original_png: "Originals/white_balance_original.png"
+    png: "PNG/white_balance.png"
+    svg: "SVG/white_balance.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: picture_style
+    label: "Picture Style"
+    original_png: "Originals/picture_style_original.png"
+    png: "PNG/picture_style.png"
+    svg: "SVG/picture_style.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: image_quality_raw
+    label: "Image Quality RAW"
+    original_png: "Originals/image_quality_raw_original.png"
+    png: "PNG/image_quality_raw.png"
+    svg: "SVG/image_quality_raw.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: image_quality_jpeg
+    label: "Image Quality JPEG"
+    original_png: "Originals/image_quality_jpeg_original.png"
+    png: "PNG/image_quality_jpeg.png"
+    svg: "SVG/image_quality_jpeg.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: highlight_tone_priority
+    label: "Highlight Tone Priority"
+    original_png: "Originals/highlight_tone_priority_original.png"
+    png: "PNG/highlight_tone_priority.png"
+    svg: "SVG/highlight_tone_priority.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: high_iso_noise_reduction
+    label: "High ISO Speed NR"
+    original_png: "Originals/high_iso_noise_reduction_original.png"
+    png: "PNG/high_iso_noise_reduction.png"
+    svg: "SVG/high_iso_noise_reduction.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: long_exposure_nr
+    label: "Long Exposure NR"
+    original_png: "Originals/long_exposure_nr_original.png"
+    png: "PNG/long_exposure_nr.png"
+    svg: "SVG/long_exposure_nr.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: lens_digital_correction
+    label: "Lens Digital Correction"
+    original_png: "Originals/lens_digital_correction_original.png"
+    png: "PNG/lens_digital_correction.png"
+    svg: "SVG/lens_digital_correction.svg"
+    confidence: medium
+    notes: "Composite correction/off symbol converted from raster mask."
+  - field_id: histogram
+    label: "Histogram"
+    original_png: "Originals/histogram_original.png"
+    png: "PNG/histogram.png"
+    svg: "SVG/histogram.svg"
+    confidence: low
+    notes: "Fine stair-step histogram detail converted from raster mask."
+  - field_id: highlight_alert
+    label: "Highlight Alert"
+    original_png: "Originals/highlight_alert_original.png"
+    png: "PNG/highlight_alert.png"
+    svg: "SVG/highlight_alert.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: focus_peaking
+    label: "Focus Peaking"
+    original_png: "Originals/focus_peaking_original.png"
+    png: "PNG/focus_peaking.png"
+    svg: "SVG/focus_peaking.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: auto_lighting_optimizer
+    label: "Auto Lighting Optimizer"
+    original_png: "Originals/auto_lighting_optimizer_original.png"
+    png: "PNG/auto_lighting_optimizer.png"
+    svg: "SVG/auto_lighting_optimizer.svg"
+    confidence: medium
+    notes: "Composite framed A symbol converted from raster mask."
+  - field_id: peripheral_illumination_correction
+    label: "Peripheral Illum. Corr."
+    original_png: "Originals/peripheral_illumination_correction_original.png"
+    png: "PNG/peripheral_illumination_correction.png"
+    svg: "SVG/peripheral_illumination_correction.svg"
+    confidence: low
+    notes: "Curved dashed detail converted from raster mask."
+  - field_id: chromatic_aberration_correction
+    label: "Chromatic Aberration Corr."
+    original_png: "Originals/chromatic_aberration_correction_original.png"
+    png: "PNG/chromatic_aberration_correction.png"
+    svg: "SVG/chromatic_aberration_correction.svg"
+    confidence: low
+    notes: "Original includes colored bars; normalized asset converts artwork to black."
+  - field_id: diffraction_correction
+    label: "Diffraction Correction"
+    original_png: "Originals/diffraction_correction_original.png"
+    png: "PNG/diffraction_correction.png"
+    svg: "SVG/diffraction_correction.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: image_stabilization
+    label: "Image Stabilizer (IBIS)"
+    original_png: "Originals/image_stabilization_original.png"
+    png: "PNG/image_stabilization.png"
+    svg: "SVG/image_stabilization.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: lens_is
+    label: "Lens IS (Optical IS)"
+    original_png: "Originals/lens_is_original.png"
+    png: "PNG/lens_is.png"
+    svg: "SVG/lens_is.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: multiple_exposure
+    label: "Multiple Exposure"
+    original_png: "Originals/multiple_exposure_original.png"
+    png: "PNG/multiple_exposure.png"
+    svg: "SVG/multiple_exposure.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: hdr_mode
+    label: "HDR Mode"
+    original_png: "Originals/hdr_mode_original.png"
+    png: "PNG/hdr_mode.png"
+    svg: "SVG/hdr_mode.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: exposure_bracketing
+    label: "Bracketing (AEB)"
+    original_png: "Originals/exposure_bracketing_original.png"
+    png: "PNG/exposure_bracketing.png"
+    svg: "SVG/exposure_bracketing.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: white_balance_bracketing
+    label: "White Balance Bracketing"
+    original_png: "Originals/white_balance_bracketing_original.png"
+    png: "PNG/white_balance_bracketing.png"
+    svg: "SVG/white_balance_bracketing.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: flash_exposure_compensation
+    label: "Flash Exposure Comp."
+    original_png: "Originals/flash_exposure_compensation_original.png"
+    png: "PNG/flash_exposure_compensation.png"
+    svg: "SVG/flash_exposure_compensation.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: flash_mode
+    label: "Flash Mode"
+    original_png: "Originals/flash_mode_original.png"
+    png: "PNG/flash_mode.png"
+    svg: "SVG/flash_mode.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: flash_sync_speed
+    label: "Flash Sync Speed"
+    original_png: "Originals/flash_sync_speed_original.png"
+    png: "PNG/flash_sync_speed.png"
+    svg: "SVG/flash_sync_speed.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: red_eye_reduction
+    label: "Red-Eye Reduction"
+    original_png: "Originals/red_eye_reduction_original.png"
+    png: "PNG/red_eye_reduction.png"
+    svg: "SVG/red_eye_reduction.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: self_timer
+    label: "Self Timer"
+    original_png: "Originals/self_timer_original.png"
+    png: "PNG/self_timer.png"
+    svg: "SVG/self_timer.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: remote_release
+    label: "Remote Release"
+    original_png: "Originals/remote_release_original.png"
+    png: "PNG/remote_release.png"
+    svg: "SVG/remote_release.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: interval_timer
+    label: "Interval Timer"
+    original_png: "Originals/interval_timer_original.png"
+    png: "PNG/interval_timer.png"
+    svg: "SVG/interval_timer.svg"
+    confidence: medium
+    notes: "Composite timer/stack symbol converted from raster mask."
+  - field_id: bulb
+    label: "Bulb (Shutter Mode)"
+    original_png: "Originals/bulb_original.png"
+    png: "PNG/bulb.png"
+    svg: "SVG/bulb.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: custom_shooting_mode
+    label: "Custom Shooting Mode (C1-C3)"
+    original_png: "Originals/custom_shooting_mode_original.png"
+    png: "PNG/custom_shooting_mode.png"
+    svg: "SVG/custom_shooting_mode.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: movie_recording_mode
+    label: "Movie Recording Mode"
+    original_png: "Originals/movie_recording_mode_original.png"
+    png: "PNG/movie_recording_mode.png"
+    svg: "SVG/movie_recording_mode.svg"
+    confidence: medium
+    notes: "Tripod/camera symbol converted from raster mask."
+  - field_id: movie_quality
+    label: "Movie Quality"
+    original_png: "Originals/movie_quality_original.png"
+    png: "PNG/movie_quality.png"
+    svg: "SVG/movie_quality.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: movie_servo_af
+    label: "Movie Servo AF"
+    original_png: "Originals/movie_servo_af_original.png"
+    png: "PNG/movie_servo_af.png"
+    svg: "SVG/movie_servo_af.svg"
+    confidence: medium
+    notes: "Composite AF/movie symbol converted from raster mask."
+  - field_id: sound_recording
+    label: "Sound Recording"
+    original_png: "Originals/sound_recording_original.png"
+    png: "PNG/sound_recording.png"
+    svg: "SVG/sound_recording.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: zebra_display
+    label: "Zebra Display"
+    original_png: "Originals/zebra_display_original.png"
+    png: "PNG/zebra_display.png"
+    svg: "SVG/zebra_display.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: grid_display
+    label: "Grid Display"
+    original_png: "Originals/grid_display_original.png"
+    png: "PNG/grid_display.png"
+    svg: "SVG/grid_display.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: electronic_level
+    label: "Electronic Level"
+    original_png: "Originals/electronic_level_original.png"
+    png: "PNG/electronic_level.png"
+    svg: "SVG/electronic_level.svg"
+    confidence: low
+    notes: "Fine circular level marks converted from raster mask."
+  - field_id: viewfinder_info_display
+    label: "Viewfinder Info Display"
+    original_png: "Originals/viewfinder_info_display_original.png"
+    png: "PNG/viewfinder_info_display.png"
+    svg: "SVG/viewfinder_info_display.svg"
+    confidence: high
+    notes: "Extracted from Canon reference image and normalized to black artwork."
+  - field_id: touch_shutter
+    label: "Touch Shutter"
+    original_png: "Originals/touch_shutter_original.png"
+    png: "PNG/touch_shutter.png"
+    svg: "SVG/touch_shutter.svg"
+    confidence: low
+    notes: "Fine hand/touch detail converted from raster mask."

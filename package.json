@@ -1,0 +1,12 @@
+{
+  "name": "r5-quick-reference",
+  "private": true,
+  "scripts": {
+    "build:website": "python3 build.py build website",
+    "build:pages": "python3 build.py build pages"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.5"
+  }
+}

@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+node_modules/
+npm-debug.log*
+
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+80 Build/.render_payload.json
+80 Build/Backups/
+output/

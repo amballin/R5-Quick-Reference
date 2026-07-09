@@ -1,0 +1,25 @@
+metadata:
+  version: 1.0
+  status: Final
+  last_updated: 2026-07-02
+  release: true
+title: Camera Defaults
+subtitle:
+card:
+  icons:
+    left: camera_default
+inherits: baseline
+overrides: {}
+checklist:
+  - Lens clean
+  - Battery charged
+  - Memory card installed
+  - Histogram checked
+watch_for:
+  - Clipped highlights
+  - Exposure compensation left set
+common_mistakes:
+  - Wrong shooting mode
+  - Forgetting exposure compensation
+notes:
+  - Standard starting configuration.

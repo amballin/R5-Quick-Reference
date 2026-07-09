@@ -1,0 +1,70 @@
+metadata:
+  version: 1.0
+  status: Draft
+  last_updated: 2026-07-03
+  release: true
+
+title: Fireworks
+subtitle: 
+inherits: baseline
+
+card:
+  icons:
+    left: fireworks
+  colors:
+    background:
+    text:
+
+overrides:
+  exposure:
+    mode: Manual
+    iso:
+      mode: Fixed
+      value: 100
+
+  shutter:
+    target: 4 s
+
+  lens:
+    aperture:
+      target: f/11
+
+  autofocus:
+    operation: Manual Focus
+    subject_detection: None
+    eye_detection: Disable
+    method: Not Used
+
+  drive:
+    mode: Single Shot
+
+  stabilization:
+    ibis: "Off"
+    lens_is: "Off"
+
+checklist:
+  - Tripod secure
+  - Manual focus locked
+  - Remote release or 2-second timer
+  - RGB Histogram checked
+  - Highlight Alert enabled
+  - Leave room for highest bursts
+  - Watch smoke direction
+
+watch_for:
+  - Blown highlights
+  - Smoke obscuring display
+  - Cropped bursts
+  - Camera vibration
+
+common_mistakes:
+  - ISO too high
+  - Aperture too wide
+  - Autofocus hunting
+  - IS left on while on tripod
+
+notes:
+  - Prefocus on a distant object before the show.
+  - Start at 4 s, f/11, ISO 100.
+  - Use f/8 for dim fireworks and f/13–f/16 for very bright displays.
+  - Increase shutter time to capture multiple bursts or use Bulb mode for complete control.
