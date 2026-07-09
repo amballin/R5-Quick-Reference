@@ -34,6 +34,7 @@ FIELD_ALIASES = {
 }
 
 OFFICIAL_MODE_METADATA = "60 Assets/icons/canon_r5_official/modes.yaml"
+MODE_SELECT_ICON = "60 Assets/icons/canon_r5_official/mode-select.svg"
 
 SHOOTING_MODE_VALUE_IDS = {
     "A+": "mode-a-plus",
@@ -133,6 +134,10 @@ class IconManager:
         }
 
     def _icon_path(self, field_key, value=None):
+        if field_key == "exposure.mode":
+            mode_select_path = self.paths.root / MODE_SELECT_ICON
+            if mode_select_path.exists():
+                return mode_select_path
         official_id = self._official_metadata_id(field_key, value)
         if official_id:
             entry = self.official_modes.get(official_id)

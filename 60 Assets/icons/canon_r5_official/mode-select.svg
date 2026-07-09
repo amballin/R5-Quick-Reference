@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 32 24" role="img" aria-labelledby="title">
+  <title id="title">Mode selection dial</title>
+  <rect width="32" height="24" fill="none"/>
+  <g fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="16" cy="12" r="10.6" stroke-width="1.2"/>
+    <circle cx="16" cy="12" r="3.2" stroke-width="1"/>
+  </g>
+  <g fill="#111" font-family="Arial, Helvetica, sans-serif" font-size="3.9" font-weight="700" text-anchor="middle" dominant-baseline="middle">
+    <text x="16" y="5.1">Av</text>
+    <text x="22.6" y="9.9">Tv</text>
+    <text x="20.1" y="17.6">B</text>
+    <text x="11.9" y="17.6">M</text>
+    <text x="9.4" y="9.9">Fv</text>
+  </g>
+</svg>

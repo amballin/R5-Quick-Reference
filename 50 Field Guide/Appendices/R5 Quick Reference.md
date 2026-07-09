@@ -46,16 +46,16 @@ Use Bulb only for long manual exposures where you directly control how long the 
 
 | Icon | Setting | Canon Name | What it Does |
 |---|---|---|---|
-| ![A+](../../60 Assets/icons/canon_r5_official/mode-a-plus.svg) | A+ | Scene Intelligent Auto | Camera analyzes the scene and sets optimum settings automatically. |
-| ![Fv](../../60 Assets/icons/canon_r5_official/mode-fv.svg) | Fv | Flexible-priority AE | Allows shutter speed, aperture, ISO, and exposure compensation to be manual or automatic. |
-| ![P](../../60 Assets/icons/canon_r5_official/mode-p.svg) | P | Program AE | Camera automatically sets shutter speed and aperture for subject brightness. |
-| ![Tv](../../60 Assets/icons/canon_r5_official/mode-tv.svg) | Tv | Shutter-priority AE | You set shutter speed; the camera sets aperture for standard exposure. |
-| ![Av](../../60 Assets/icons/canon_r5_official/mode-av.svg) | Av | Aperture-priority AE | You set aperture; the camera sets shutter speed for standard exposure. |
-| ![M](../../60 Assets/icons/canon_r5_official/mode-m.svg) | M | Manual exposure | You set shutter speed and aperture and judge exposure from the exposure indicator. |
-| ![BULB](../../60 Assets/icons/canon_r5_official/mode-bulb.svg) | BULB | Bulb | Shutter remains open while the shutter button is held for long exposures. |
-| ![C1](../../60 Assets/icons/canon_r5_official/mode-c1.svg) | C1 | Custom shooting mode 1 | Recalls registered camera settings. |
-| ![C2](../../60 Assets/icons/canon_r5_official/mode-c2.svg) | C2 | Custom shooting mode 2 | Recalls registered camera settings. |
-| ![C3](../../60 Assets/icons/canon_r5_official/mode-c3.svg) | C3 | Custom shooting mode 3 | Recalls registered camera settings. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **A+** | Scene Intelligent Auto | Camera analyzes the scene and sets optimum settings automatically. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **Fv** | Flexible-priority AE | Allows shutter speed, aperture, ISO, and exposure compensation to be manual or automatic. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **P** | Program AE | Camera automatically sets shutter speed and aperture for subject brightness. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **Tv** | Shutter-priority AE | You set shutter speed; the camera sets aperture for standard exposure. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **Av** | Aperture-priority AE | You set aperture; the camera sets shutter speed for standard exposure. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **M** | Manual exposure | You set shutter speed and aperture and judge exposure from the exposure indicator. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **BULB** | Bulb | Shutter remains open while the shutter button is held for long exposures. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C1** | Custom shooting mode 1 | Recalls registered camera settings. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C2** | Custom shooting mode 2 | Recalls registered camera settings. |
+| ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C3** | Custom shooting mode 3 | Recalls registered camera settings. |
 
 **Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3).
 

@@ -4,6 +4,12 @@
   plain_description: Fully automatic shooting mode where the camera analyzes the scene and sets optimum settings automatically.
   icon: mode-a-plus.svg
   source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0020.html
+- id: mode-select
+  label: MODE
+  canon_name: Mode selection
+  plain_description: Generic shooting mode selector used to choose Canon EOS R5 exposure modes.
+  icon: mode-select.svg
+  source: https://cam.start.canon/en/C003/manual/html/UG-02_ShootingMode_0010.html
 - id: mode-fv
   label: Fv
   canon_name: Flexible-priority AE
