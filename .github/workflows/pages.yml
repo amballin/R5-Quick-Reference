@@ -28,5 +28,6 @@ jobs:
           test -f docs/.nojekyll
           test -d docs/Cards
           test -d docs/appendices
-          test -d docs/assets
-          test -d docs/icons
+          test -d docs/app-assets
+          ! find docs -name '* [0-9]*' -print -quit | grep -q .
+          ! find docs -name '.DS_Store' -print -quit | grep -q .
