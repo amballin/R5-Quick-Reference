@@ -15,7 +15,7 @@ GUIDE_DISPLAY_ORDER = {
     "R5 Quick Reference": 10,
     "Canon EOS R5 Official Icon Reference": 20,
 }
-APP_TITLE = "R5 Settings"
+APP_TITLE = "Camera Settings"
 
 
 def render_offline_index(paths):

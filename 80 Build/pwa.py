@@ -85,7 +85,7 @@ def _write_offline_page(path):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="{THEME_COLOR}">
-<title>Offline - R5 Settings</title>
+<title>Offline - Camera Settings</title>
 <style>
 :root{{color-scheme:dark;--bg:{THEME_COLOR};--text:#f7fbff;--muted:#b9d5ec;--panel:#1d395b}}
 *{{box-sizing:border-box}}
@@ -99,7 +99,7 @@ a{{color:#9bd2ff}}
 <body>
 <main>
 <h1>Offline</h1>
-<p>The photography reference is available after the first online visit. Return to <a href="index.html">R5 Settings</a> when the cached files are ready.</p>
+<p>The photography reference is available after the first online visit. Return to <a href="index.html">Camera Settings</a> when the cached files are ready.</p>
 </main>
 </body>
 </html>
