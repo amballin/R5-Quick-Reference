@@ -41,9 +41,9 @@ PDF outputs are written to:
 | `00 Master/` | Baseline camera settings, schema, layout rules, and decision log. | Yes |
 | `10 Profiles/` | Subject/profile YAML files such as Wildlife, Sports, Landscape. | Yes |
 | `20 Templates/` | Card HTML/style templates used by the renderer. | Yes, carefully |
-| `40 Assets/` | Older static Canon icon reference images. Keep until confirmed unused. | Rarely |
+| `40 Assets/` | Legacy colors and fonts only; old Canon icon cheatsheet images moved to `60 Assets/icons/cheatsheet/`. | Rarely |
 | `50 Field Guide/Appendices/` | Editable field-guide source pages. | Yes |
-| `60 Assets/` | Source visual assets used by cards and guides, including `60 Assets/icons/`. | Yes |
+| `60 Assets/` | Source visual assets used by cards and guides: active card icons in `icons/card_icons/`, official Canon R5 icons in `icons/canon_r5_official/`, cheatsheet reference pages in `icons/cheatsheet/`, and retained photography icons in `Photography Icons/`. | Yes |
 | `60 Reference Tables/` | Empty placeholder. Remove later if no reference-table data is planned. | No |
 | `70 Canon Guides/` | Canon guide source/extraction material. | Yes |
 | `80 Build/` | Build, validation, PWA, iOS wrapper, and extraction code. | Yes, for tooling |

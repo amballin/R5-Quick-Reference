@@ -75,9 +75,12 @@ output/merged-build/   # canonical generated web/PWA bundle
 
 The normal build refreshes `output/merged-build/` and `docs/`. The `build website` target also creates `output/website/`. The `build ios` target copies `output/website/` into `ios/Resources/Website/` for Xcode.
 
-Legacy or support folders:
+Asset support folders:
 
-- `40 Assets/`: older static Canon icon reference images. Keep until confirmed no longer needed.
+- `60 Assets/icons/card_icons/`: active card setting icons used by generated cards and quick references.
+- `60 Assets/icons/canon_r5_official/`: official Canon EOS R5 icons extracted from Canon manual assets.
+- `60 Assets/icons/cheatsheet/`: static Canon icon reference/cheatsheet pages preserved from the older asset set.
+- `60 Assets/Photography Icons/`: retained photography icon collection; not the active card icon source.
 - `60 Reference Tables/`: currently empty; keep only if reference-table source data is added.
 - `data/`: support data used by the reference system.
 
