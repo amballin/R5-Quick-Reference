@@ -83,7 +83,7 @@ Legacy or support folders:
 
 ## iPhone Install
 
-Open the live URL in Safari, then use Share -> Add to Home Screen. The installed app is labeled `Settings by Subject`.
+Open the live URL in Safari, then use Share -> Add to Home Screen. The installed app is labeled `Camera Settings`.
 
 The first online visit caches the cards, guide pages, icons, and supporting assets for offline use.
 

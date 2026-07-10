@@ -175,7 +175,7 @@ This rebuilds the site and refreshes `docs/`.
 
 ## Install On iPhone
 
-Open the live URL in Safari, then use Share -> Add to Home Screen. The installed app is labeled `Settings by Subject`.
+Open the live URL in Safari, then use Share -> Add to Home Screen. The installed app is labeled `Camera Settings`.
 
 The first online visit registers the service worker and caches the generated cards, guide pages, icons, and supporting web assets. After that, the app can open without a network connection.
 

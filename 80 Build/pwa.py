@@ -145,7 +145,7 @@ self.addEventListener("fetch", (event) => {{
 
   if (request.mode === "navigate") {{
     event.respondWith(
-      fetch(request)
+      fetch(request, {{ cache: "reload" }})
         .then((response) => {{
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
@@ -213,7 +213,7 @@ def _inject_pwa_head(index_path):
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {{
   window.addEventListener("load", () => {{
-    navigator.serviceWorker.register("service-worker.js");
+    navigator.serviceWorker.register("service-worker.js", {{ updateViaCache: "none" }});
   }});
 }}
 </script>"""
@@ -308,7 +308,7 @@ def _validate_index(output_dir):
     for needle in [
         'href="manifest.webmanifest"',
         'href="app-assets/apple-touch-icon.png"',
-        'navigator.serviceWorker.register("service-worker.js")',
+        'navigator.serviceWorker.register("service-worker.js"',
     ]:
         if needle not in html:
             results.append(("error", "merged_build_pwa_index_registration", needle))
