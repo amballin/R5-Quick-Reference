@@ -9,7 +9,7 @@ from urllib.parse import quote, unquote, urlparse
 from generated_output import clean_generated_tree, numbered_duplicates
 
 
-PWA_TITLE = "Settings by Subject"
+PWA_TITLE = "Camera Settings"
 THEME_COLOR = "#132742"
 CACHE_PREFIX = "photography-reference"
 CACHE_EXTENSIONS = {
@@ -85,7 +85,7 @@ def _write_offline_page(path):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="{THEME_COLOR}">
-<title>Offline - Settings by Subject</title>
+<title>Offline - Camera Settings</title>
 <style>
 :root{{color-scheme:dark;--bg:{THEME_COLOR};--text:#f7fbff;--muted:#b9d5ec;--panel:#1d395b}}
 *{{box-sizing:border-box}}
@@ -99,7 +99,7 @@ a{{color:#9bd2ff}}
 <body>
 <main>
 <h1>Offline</h1>
-<p>The photography reference is available after the first online visit. Return to <a href="index.html">Settings by Subject</a> when the cached files are ready.</p>
+<p>The photography reference is available after the first online visit. Return to <a href="index.html">Camera Settings</a> when the cached files are ready.</p>
 </main>
 </body>
 </html>

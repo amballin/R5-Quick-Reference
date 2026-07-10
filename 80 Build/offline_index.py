@@ -15,7 +15,7 @@ GUIDE_DISPLAY_ORDER = {
     "R5 Quick Reference": 10,
     "Canon EOS R5 Official Icon Reference": 20,
 }
-APP_TITLE = "Settings by Subject"
+APP_TITLE = "Camera Settings"
 
 
 def render_offline_index(paths):
@@ -119,7 +119,7 @@ def _write_index(path, card_files, guides):
 :root{{color-scheme:dark;--bg:#132742;--panel:#1d395b;--text:#f7fbff;--muted:#b9d5ec;--rule:#5b7893;--accent:#9bd2ff}}
 *{{box-sizing:border-box}}
 body{{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}}
-header{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
+#top{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
 h1{{font-size:24px;margin:0}}
 .sub{{color:var(--muted);font-size:14px;margin-top:4px}}
 main{{padding:16px 14px 32px}}
@@ -160,7 +160,7 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
 <h1>{APP_TITLE}</h1>
 </header>
 <main>
-<h2>Cards</h2>
+<h2>Subject Cards</h2>
 <div class="cards">
 {cards}
 </div>

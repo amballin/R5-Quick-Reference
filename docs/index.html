@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Settings by Subject</title>
+<title>Camera Settings</title>
 <style>
 :root{color-scheme:dark;--bg:#132742;--panel:#1d395b;--text:#f7fbff;--muted:#b9d5ec;--rule:#5b7893;--accent:#9bd2ff}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}
-header{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}
+#top{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}
 h1{font-size:24px;margin:0}
 .sub{color:var(--muted);font-size:14px;margin-top:4px}
 main{padding:16px 14px 32px}
@@ -48,7 +48,7 @@ details[open]{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)}
 <link rel="apple-touch-icon" href="app-assets/apple-touch-icon.png">
 <meta name="theme-color" content="#132742">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Settings by Subject">
+<meta name="apple-mobile-web-app-title" content="Camera Settings">
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   window.addEventListener("load", () => {
@@ -60,10 +60,10 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </head>
 <body>
 <header id="top">
-<h1>Settings by Subject</h1>
+<h1>Camera Settings</h1>
 </header>
 <main>
-<h2>Cards</h2>
+<h2>Subject Cards</h2>
 <div class="cards">
 <details>
 <summary class="card">Birds in Flight<span>Show</span></summary>
