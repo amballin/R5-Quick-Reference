@@ -1,6 +1,6 @@
 {
-  "name": "Photography Reference System",
-  "short_name": "Photo Cards",
+  "name": "R5 Settings",
+  "short_name": "R5 Settings",
   "description": "Offline photography cards and Canon EOS R5 field guide.",
   "start_url": "./",
   "scope": "./",
