@@ -10,7 +10,7 @@
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}
 #top{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}
 h1{font-size:24px;margin:0}
-.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.publish-meta{color:var(--muted);font-size:13px;margin:3px 0 0}
 main{padding:16px 14px 32px}
 h2{font-size:18px;color:var(--accent);margin:18px 4px 10px}
 .cards{display:grid;gap:9px}
@@ -61,6 +61,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <body>
 <header id="top">
 <h1>Camera Settings</h1>
+<p class="publish-meta">v1.1 • 2026/07/11 09:08 AM</p>
 </header>
 <main>
 <h2>Subject Cards</h2>
