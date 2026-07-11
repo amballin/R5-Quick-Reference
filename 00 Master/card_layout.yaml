@@ -6,6 +6,8 @@ card_layout:
       label: AF Operation
     - key: autofocus.subject_detection
       label: Subject Detection
+    - key: autofocus.eye_detection
+      label: Eye Detection
     - key: autofocus.method
       label: AF Method
     - key: drive.mode
@@ -16,17 +18,7 @@ card_layout:
       label: Aperture
     - key: exposure.auto_iso.maximum
       label: Auto ISO Max
-    - key: exposure.exposure_compensation
-      label: Exposure Compensation
     - key: stabilization.image_stabilization.mode
       label: Image Stabilization
-    - key: stabilization.ibis
-      label: IBIS
-    - key: stabilization.lens_is
-      label: Lens IS
     - key: exposure.iso.mode
       label: ISO
-    - key: display.histogram
-      label: Histogram
-    - key: display.highlight_alert
-      label: Highlight Alert

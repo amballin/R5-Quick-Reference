@@ -3,10 +3,13 @@ import json
 import os
 import re
 import shutil
+import tempfile
 from textwrap import wrap
+from pathlib import Path
 from urllib.parse import quote, unquote, urlparse
 
 from validators.common import load_yaml_checked
+from generated_output import clean_generated_tree, mirror_tree
 
 
 def render_appendices(paths, include_pdf=False):
@@ -17,13 +20,7 @@ def render_appendices(paths, include_pdf=False):
     manifest = load_yaml_checked(manifest_path) or {}
     appendices = manifest.get("appendices", []) or []
     html_dir = paths.field_guide_html_output_dir
-    html_stage_dir = html_dir.parent / f".{html_dir.name}.staging"
     pdf_dir = paths.field_guide_pdf_output_dir
-    if html_stage_dir.exists():
-        shutil.rmtree(html_stage_dir)
-    html_stage_dir.mkdir(parents=True, exist_ok=True)
-    if html_dir.exists():
-        shutil.rmtree(html_dir)
     if include_pdf:
         if pdf_dir.exists():
             shutil.rmtree(pdf_dir)
@@ -31,29 +28,30 @@ def render_appendices(paths, include_pdf=False):
 
     search_entries = []
     generated = {"Appendix HTML": 0, "Appendix PDF": 0, "Search": 0}
-    for entry in appendices:
-        source = paths.root / "50 Field Guide" / entry.get("file", "")
-        if not source.exists():
-            continue
-        title = entry.get("title") or source.stem
-        markdown = source.read_text(encoding="utf-8", errors="replace")
-        html_path = html_stage_dir / f"{source.stem}.html"
-        if entry.get("id") == "canon_r5_official_icon_reference":
-            html_path.write_text(_canon_icon_reference_html(paths), encoding="utf-8")
-        else:
-            rendered_html = _html_document(title, markdown)
-            rendered_html = _rewrite_local_image_sources(source, html_path, rendered_html)
-            html_path.write_text(rendered_html, encoding="utf-8")
-        if include_pdf:
-            pdf_path = pdf_dir / f"{source.stem}.pdf"
-            _write_simple_pdf(pdf_path, title, _plain_text(markdown))
-            generated["Appendix PDF"] += 1
-        search_entries.extend(_search_entries(entry, source, html_path, markdown))
-        generated["Appendix HTML"] += 1
-
-    if html_dir.exists():
-        shutil.rmtree(html_dir)
-    os.replace(html_stage_dir, html_dir)
+    with tempfile.TemporaryDirectory(prefix="prs-field-guide-html-") as staging:
+        html_stage_dir = Path(staging)
+        for entry in appendices:
+            source = paths.root / "50 Field Guide" / entry.get("file", "")
+            if not source.exists():
+                continue
+            title = entry.get("title") or source.stem
+            markdown = source.read_text(encoding="utf-8", errors="replace")
+            html_path = html_stage_dir / f"{source.stem}.html"
+            final_html_path = html_dir / html_path.name
+            if entry.get("id") == "canon_r5_official_icon_reference":
+                html_path.write_text(_canon_icon_reference_html(paths), encoding="utf-8")
+            else:
+                rendered_html = _html_document(title, markdown)
+                rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
+                html_path.write_text(rendered_html, encoding="utf-8")
+            if include_pdf:
+                pdf_path = pdf_dir / f"{source.stem}.pdf"
+                _write_simple_pdf(pdf_path, title, _plain_text(markdown))
+                generated["Appendix PDF"] += 1
+            search_entries.extend(_search_entries(entry, source, final_html_path, markdown))
+            generated["Appendix HTML"] += 1
+        mirror_tree(html_stage_dir, html_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
+        clean_generated_tree(html_dir)
 
     search_path = paths.field_guide_search_index_file
     search_path.parent.mkdir(parents=True, exist_ok=True)

@@ -4,6 +4,8 @@ This project builds Canon R5 subject-setting cards, guide pages, an installable 
 
 The primary delivery path is GitHub Pages. That works in phone, iPad, and desktop browsers, and can be installed from Safari with Add to Home Screen.
 
+Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
+
 ## Build
 
 ```bash

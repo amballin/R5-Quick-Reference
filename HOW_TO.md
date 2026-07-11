@@ -1,5 +1,7 @@
 # Photography Reference System How-To
 
+For governing rules and authority, see [`PROJECT_RULES.md`](PROJECT_RULES.md). For normative architecture, profile, card, appendix, asset, and build requirements, see [`00 Master/specifications/`](00%20Master/specifications/). This guide contains operational procedures rather than duplicate governance.
+
 ## Build Everything
 
 ```bash
@@ -233,3 +235,5 @@ When camera firmware changes settings, menus, terminology, or behavior:
 6. Run `python3 build.py`.
 7. Review generated HTML/PNG cards. Add `--pdf` only if PDFs need to be refreshed.
 8. Record the firmware-related decision in `00 Master/decision-log.md`.
+
+Mark the entry `Proposed`, `Accepted`, `Superseded`, or `Rejected`; only `Accepted` decisions are binding. Follow the rule-change process in `PROJECT_RULES.md` when the firmware change affects architecture or permanent rules.

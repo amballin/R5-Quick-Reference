@@ -12,12 +12,21 @@ REQUIRED_FOLDERS = [
 ]
 
 REQUIRED_FILES = [
+    "PROJECT_RULES.md",
+    "00 Master/project_memory.md",
+    "00 Master/decision-log.md",
     "00 Master/baseline.yaml",
     "00 Master/schema.yaml",
     "00 Master/card_layout.yaml",
     "20 Templates/card.html",
     "60 Assets/icon-map.yaml",
     "build.py",
+    "00 Master/specifications/Architecture.md",
+    "00 Master/specifications/Profile Specification.md",
+    "00 Master/specifications/Card Specification.md",
+    "00 Master/specifications/Appendix Specification.md",
+    "00 Master/specifications/Asset Specification.md",
+    "00 Master/specifications/Build and Validation Specification.md",
 ]
 
 

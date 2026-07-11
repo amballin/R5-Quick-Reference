@@ -9,19 +9,7 @@ card:
   icons:
     left: camera_default
 inherits: baseline
-overrides:
-  display:
-    histogram: RGB
-    highlight_alert: Enabled
-  image:
-    highlight_tone_priority: "Off"
-    high_iso_noise_reduction: "Off"
-    long_exposure_noise_reduction:
-      value: "Off"
-  camera_setup:
-    electronic_full_time_mf: "Off"
-    ibis_high_res_shot: "Off"
-    continuous_af: "Off"
+overrides: {}
 checklist:
   - RGB Histogram on
   - Highlight Alert enabled

@@ -3,12 +3,15 @@ import base64
 import mimetypes
 import os
 import re
+import tempfile
 import time
 from html import escape
 from pathlib import Path
 from urllib.parse import unquote
 
 import yaml
+
+from generated_output import clean_generated_tree, mirror_tree
 
 
 GUIDE_DISPLAY_ORDER = {
@@ -22,18 +25,19 @@ def render_offline_index(paths):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
     final_dir = paths.merged_build_output_dir
-    if output_dir.exists():
-        _remove_tree(output_dir)
-    cards_dir = output_dir / "Cards"
-    cards_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="prs-merged-build-") as staging:
+        output_dir = Path(staging)
+        cards_dir = output_dir / "Cards"
+        cards_dir.mkdir(parents=True, exist_ok=True)
 
-    card_files = _copy_release_cards(paths, cards_dir)
-    guides = _release_guides(paths)
-    _write_appendices(output_dir / "appendices", guides)
-    _write_index(output_dir / "index.html", card_files, guides)
-    _write_readme(output_dir / "README.txt")
-    (output_dir / ".nojekyll").touch()
-    _publish_staging_dir(output_dir, final_dir)
+        card_files = _copy_release_cards(paths, cards_dir)
+        guides = _release_guides(paths)
+        _write_appendices(output_dir / "appendices", guides)
+        _write_index(output_dir / "index.html", card_files, guides)
+        _write_readme(output_dir / "README.txt")
+        (output_dir / ".nojekyll").touch()
+        mirror_tree(output_dir, final_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
+        clean_generated_tree(final_dir)
     return {"Merged Build": 1 if (final_dir / "index.html").exists() else 0}
 
 
@@ -259,7 +263,4 @@ def _staging_output_dir(paths):
 
 
 def _publish_staging_dir(staging_dir, final_dir):
-    if final_dir.exists():
-        _remove_tree(final_dir)
-    final_dir.parent.mkdir(parents=True, exist_ok=True)
-    os.replace(staging_dir, final_dir)
+    mirror_tree(staging_dir, final_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))

@@ -9,9 +9,11 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from validators import (  # noqa: E402
     baseline_validator,
+    card_layout_validator,
     appendix_validator,
     canon_guides_validator,
     icon_validator,
+    governance_validator,
     link_validator,
     output_validator,
     pwa_validator,
@@ -25,6 +27,8 @@ VALIDATORS = [
     ("Project Structure", structure.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
+    ("Card Layout", card_layout_validator.validate),
+    ("Governance Documents", governance_validator.validate),
     ("Required Appendices", appendix_validator.validate),
     ("Profiles and Overrides", profile_validator.validate),
     ("Icon Library", icon_validator.validate),

@@ -49,7 +49,7 @@ def _node_modules(paths):
 
 def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, include_pdf=False):
     rows = []
-    for row in settings_rows(profile, merged):
+    for row in settings_rows(profile, merged, paths):
         icon_path = icon_manager.icon_path(row["key"], row["value"])
         rows.append(
             {

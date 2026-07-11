@@ -25,6 +25,8 @@ def validate(root):
         if not isinstance(entry, dict):
             issues.append(error("appendices", manifest_path, "Each appendix entry must be a mapping."))
             continue
+        if "release" in entry and not isinstance(entry["release"], bool):
+            issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} release must be a boolean."))
         appendix_id = entry.get("id")
         if not appendix_id:
             issues.append(error("appendices", manifest_path, "Appendix entry is missing id."))

@@ -58,8 +58,10 @@ def _required_profile_keys(path, data):
     for key in ("metadata", "title", "inherits"):
         if key not in data:
             issues.append(error("profiles", path, f"Missing required key: {key}."))
-    if "metadata" in data and not isinstance(data["metadata"], dict):
-        issues.append(error("profiles", path, "metadata must be a mapping."))
+        if "metadata" in data and not isinstance(data["metadata"], dict):
+            issues.append(error("profiles", path, "metadata must be a mapping."))
+        elif "metadata" in data and "release" in data["metadata"] and not isinstance(data["metadata"]["release"], bool):
+            issues.append(error("profiles", path, "metadata.release must be a boolean."))
     if "title" in data and not isinstance(data["title"], str):
         issues.append(error("profiles", path, "title must be a string."))
     if "subtitle" in data and data["subtitle"] is not None and not isinstance(data["subtitle"], str):
@@ -80,6 +82,8 @@ def _validate_overrides(path, overrides, baseline_paths, baseline_values):
             expected = type(baseline_values[override_path]).__name__
             actual = type(override_value).__name__
             issues.append(error("overrides", path, f"Override path {override_path} has type {actual}; expected {expected}."))
+        elif override_path in baseline_values and baseline_values[override_path] == override_value:
+            issues.append(error("overrides", path, f"Override duplicates the baseline value: {override_path}"))
     return issues
 
 

@@ -14,7 +14,7 @@ from asset_manager import ProjectPaths
 from appendix_renderer import render_appendices
 from baseline import merge
 from build_validator import discover_profiles, profile_name_from_path, validate_project
-from generated_output import clean_generated_tree, fresh_copy, numbered_duplicates, remove_numbered_duplicates
+from generated_output import clean_generated_tree, mirror_tree, numbered_duplicates, remove_numbered_duplicates
 from html_renderer import render_card, write_html_card
 from icon_manager import IconManager
 from ios_wrapper import build_xcode_project, prepare_website_output, update_ios_resources, validate_ios_wrapper
@@ -287,7 +287,7 @@ def sync_pages_output(paths):
     if not source.exists():
         raise FileNotFoundError(f"Generated merged-build output is missing: {source}")
     remove_numbered_duplicates(source, require_original=False)
-    mirror_copy_tree(source, target)
+    mirror_tree(source, target, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
     settle_clean_pages_mirror(source, target)
     mirror_issues = mirror_differences(source, target)
     if mirror_issues:
@@ -319,39 +319,6 @@ def settle_clean_generated_roots(*roots):
             time.sleep(0.5)
 
 
-def mirror_copy_tree(source, target):
-    target.mkdir(parents=True, exist_ok=True)
-    source_paths = _mirror_paths(source)
-
-    for path in sorted(target.rglob("*"), key=lambda item: len(item.parts), reverse=True):
-        if path.name == ".DS_Store":
-            path.unlink()
-            continue
-        if "__pycache__" in path.parts:
-            if path.is_dir():
-                shutil.rmtree(path)
-            elif path.exists():
-                path.unlink()
-            continue
-        relative = path.relative_to(target)
-        if relative not in source_paths:
-            if path.is_dir():
-                shutil.rmtree(path)
-            elif path.exists():
-                path.unlink()
-
-    for relative in sorted(source_paths):
-        source_path = source / relative
-        target_path = target / relative
-        if source_path.is_dir():
-            target_path.mkdir(parents=True, exist_ok=True)
-        elif source_path.is_file():
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            if not target_path.exists() or target_path.read_bytes() != source_path.read_bytes():
-                shutil.copy2(source_path, target_path)
-    clean_generated_tree(target)
-
-
 def mirror_differences(source, target):
     source_paths = _mirror_paths(source)
     target_paths = _mirror_paths(target)
@@ -378,7 +345,6 @@ def _mirror_paths(root):
 def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full_build=False):
     obsolete_generated_roots = [
         paths.root / "Website",
-        paths.root / "ios" / "Resources" / "Website",
         paths.root / "30 Cards" / "HTML",
         paths.root / "30 Cards" / "Merged",
         paths.root / "30 Cards" / "PNG",
@@ -389,15 +355,11 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
         paths.root / "assets",
     ]
     if not keep_website:
-        obsolete_generated_roots.append(paths.website_output_dir)
+        obsolete_generated_roots.append(paths.root / "output" / "Website")
     if full_build:
         obsolete_generated_roots.extend(
             [
-                paths.root / "output" / "cards",
-                paths.root / "output" / "field-guide",
-                paths.merged_build_output_dir,
                 paths.merged_build_output_dir.parent / f".{paths.merged_build_output_dir.name}.staging",
-                paths.field_guide_html_output_dir,
                 paths.field_guide_html_output_dir.parent / f".{paths.field_guide_html_output_dir.name}.staging",
             ]
         )
@@ -425,6 +387,7 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
         shutil.rmtree(obsolete_icons)
 
     generated_roots = [
+        paths.root / "output",
         paths.merged_build_output_dir,
         paths.website_output_dir,
         paths.pages_output_dir,

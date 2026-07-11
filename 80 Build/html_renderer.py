@@ -2,6 +2,8 @@ from html import escape
 from pathlib import Path
 from urllib.parse import quote
 
+from validators.common import load_yaml_checked
+
 from utilities import flatten
 
 
@@ -65,15 +67,26 @@ CAMERA_DEFAULT_EXTRA_SETTINGS = {
     "image.long_exposure_noise_reduction.value",
 }
 
+CAMERA_SETUP_SETTINGS = {
+    "display.histogram",
+    "display.highlight_alert",
+    "image.highlight_tone_priority",
+    "image.high_iso_noise_reduction",
+    "image.long_exposure_noise_reduction.value",
+    "camera_setup.electronic_full_time_mf",
+    "camera_setup.ibis_high_res_shot",
+    "camera_setup.continuous_af",
+}
 
-def settings_rows(profile, merged):
+
+def settings_rows(profile, merged, paths=None):
     """Return the settings rows in the same order used by the HTML table."""
     merged_fields = flatten(merged)
     override_fields = flatten(profile.get("overrides", {}))
     if is_camera_setup(profile):
-        keys = set(override_fields)
+        keys = set(CAMERA_SETUP_SETTINGS) | set(override_fields)
     else:
-        keys = REQUIRED_CARD_SETTINGS | set(override_fields)
+        keys = required_card_settings(paths) | set(override_fields)
     if is_camera_defaults(profile):
         keys |= CAMERA_DEFAULT_EXTRA_SETTINGS
     rows = []
@@ -100,7 +113,7 @@ def settings_rows(profile, merged):
                 continue
             value = merged_fields[key]
             if value is None:
-                continue
+                value = "—"
             if key == "exposure.auto_iso.maximum":
                 continue
             if key == "exposure.iso.value":
@@ -109,6 +122,19 @@ def settings_rows(profile, merged):
                 value = iso_display_value(merged_fields)
             rows.append({"key": key, "label": label, "value": value})
     return rows
+
+
+def required_card_settings(paths=None):
+    if paths is None:
+        return set(REQUIRED_CARD_SETTINGS)
+    layout_path = paths.root / "00 Master" / "card_layout.yaml"
+    try:
+        layout = load_yaml_checked(layout_path) or {}
+        entries = (layout.get("card_layout") or {}).get("always_show") or []
+        keys = {entry.get("key") for entry in entries if isinstance(entry, dict) and entry.get("key")}
+        return keys or set(REQUIRED_CARD_SETTINGS)
+    except (OSError, ValueError):
+        return set(REQUIRED_CARD_SETTINGS)
 
 
 def is_camera_defaults(profile):
@@ -159,10 +185,10 @@ def iso_display_value(merged_fields):
     return mode
 
 
-def table(profile, merged, icon_manager=None):
+def table(profile, merged, icon_manager=None, paths=None):
     """Render the settings table with optional field-based icons."""
     html = "<table>"
-    for row in settings_rows(profile, merged):
+    for row in settings_rows(profile, merged, paths):
         rendered_label = row["label"]
         if icon_manager is not None:
             rendered_label = icon_manager.icon_html(row["key"], row["label"], row["value"])
@@ -184,7 +210,7 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{TEXT_COLOR}}", colors["text"])
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
-        .replace("{{SETTINGS}}", table(profile, merged, icon_manager))
+        .replace("{{SETTINGS}}", table(profile, merged, icon_manager, paths))
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
