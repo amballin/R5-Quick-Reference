@@ -12,10 +12,44 @@ table{border-collapse:collapse;width:100%;margin:16px 0}
 th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
 code{background:#eef2f7;padding:2px 4px;border-radius:4px}
 a{color:#165d9c}
+
+.back-button{display:inline-flex;align-items:center;gap:.35rem;margin-bottom:1rem;padding:.45rem .8rem;border:1px solid var(--border-color,#b8b8b8);border-radius:6px;background:var(--surface-color,#fff);color:inherit;font:inherit;line-height:1.2;cursor:pointer}
+.back-button:hover{background:var(--surface-hover-color,#f2f2f2)}
+.back-button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.output-mode .back-button{display:none!important}
+@media print{.back-button{display:none!important}}
+
 </style>
 </head>
 <body>
 <h1 id="custom-controls">Custom Controls</h1>
+<button class="back-button" type="button" onclick="goBack()">
+  <span aria-hidden="true">←</span> Back
+</button>
+<script>
+function getSiteHomeUrl() {
+  return "../index.html";
+}
+
+function goBack() {
+  let sameSiteReferrer = false;
+
+  try {
+    sameSiteReferrer =
+      document.referrer &&
+      new URL(document.referrer).origin === window.location.origin;
+  } catch (error) {
+    sameSiteReferrer = false;
+  }
+
+  if (sameSiteReferrer && window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+
+  window.location.assign(getSiteHomeUrl());
+}
+</script>
 <h2 id="purpose">Purpose</h2>
 <p>Define recommended Canon R5 control customization patterns for faster field operation.</p>
 <h2 id="what-it-does">What it Does</h2>
