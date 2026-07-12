@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Long Exposure &amp; Night Photography</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;max-width:860px;margin:40px auto;padding:0 24px;color:#172033}
+h1{font-size:34px}
+h2{border-bottom:1px solid #d7dee8;padding-bottom:4px;margin-top:32px}
+h3{margin-top:24px}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
+code{background:#eef2f7;padding:2px 4px;border-radius:4px}
+a{color:#165d9c}
+</style>
+</head>
+<body>
+<h1 id="long-exposure-night-photography">Long Exposure &amp; Night Photography</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Explain the Canon R5 choices that matter for long exposures, night photography, fireworks, waterfalls, light painting, Milky Way images, and other tripod-based low-light work.</p>
+<p>This appendix is the single source of truth for Long Exposure Noise Reduction (LENR). Profiles should reference this appendix rather than duplicating LENR explanations.</p>
+<p>Table of contents:</p>
+<ul>
+<li><a href="#long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</a></li>
+<li><a href="#processing-time">Processing Time</a></li>
+<li><a href="#auto-setting">AUTO Setting</a></li>
+<li><a href="#decision-guide">Decision Guide</a></li>
+<li><a href="#recommended-settings-by-profile">Recommended Settings by Profile</a></li>
+<li><a href="#cross-references">Cross References</a></li>
+</ul>
+<h2 id="what-it-does">What it Does</h2>
+<p>Long exposure settings control how the R5 handles multi-second captures, sensor heat, tripod stability, shutter behavior, stabilization, and processing delays.</p>
+<h3 id="long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</h3>
+<p>Long Exposure Noise Reduction performs a second exposure, called a dark frame, immediately after the original exposure with the shutter closed.</p>
+<p>The camera compares the dark frame with the original exposure and removes or reduces:</p>
+<ul>
+<li>Hot pixels.</li>
+<li>Thermal noise.</li>
+<li>Amp glow.</li>
+<li>Fixed-pattern sensor noise.</li>
+</ul>
+<p>LENR is different from High ISO Noise Reduction. High ISO Noise Reduction targets high-sensitivity noise; LENR targets artifacts created or revealed by longer exposure times.</p>
+<h2 id="how-it-works">How it Works</h2>
+<p>The camera uses dark frame subtraction. If the original exposure is 30 seconds, the R5 records the main image, then spends roughly another 30 seconds recording a dark frame. The dark frame contains sensor noise patterns but no scene detail, allowing the camera to subtract those artifacts.</p>
+<p>During the dark-frame exposure, the camera cannot take another photograph.</p>
+<h3 id="processing-time">Processing Time</h3>
+<p>LENR effectively doubles capture time.</p>
+<table>
+<tr><th>Exposure</th><th>Camera Busy Time</th></tr>
+<tr><td>5 sec</td><td>10 sec</td></tr>
+<tr><td>15 sec</td><td>30 sec</td></tr>
+<tr><td>30 sec</td><td>60 sec</td></tr>
+<tr><td>1 minute</td><td>2 minutes</td></tr>
+<tr><td>5 minutes</td><td>10 minutes</td></tr>
+</table>
+<p>The camera may display <code>BUSY</code> while the dark frame is being captured or processed.</p>
+<h2 id="advantages">Advantages</h2>
+<ul>
+<li>Reduces hot pixels.</li>
+<li>Reduces thermal noise.</li>
+<li>Reduces fixed-pattern sensor noise.</li>
+<li>Helps control amp glow.</li>
+<li>Improves single long exposures.</li>
+<li>Is especially useful on warm nights.</li>
+<li>Produces cleaner night photographs directly from the camera.</li>
+</ul>
+<h2 id="disadvantages">Disadvantages</h2>
+<ul>
+<li>Doubles shooting time.</li>
+<li>Makes the camera unavailable during processing.</li>
+<li>Increases battery usage.</li>
+<li>Can cause missed opportunities.</li>
+<li>Is not efficient for image stacking workflows.</li>
+<li>Can interrupt fireworks, lightning, time-lapse, and changing-light sequences.</li>
+</ul>
+<h2 id="recommended-uses">Recommended Uses</h2>
+<p>Turn LENR On for important one-off long exposures where maximum single-frame image quality is more important than speed.</p>
+<p>Recommended On:</p>
+<ul>
+<li>Single night landscapes.</li>
+<li>Single cityscapes.</li>
+<li>Single waterfall exposures.</li>
+<li>Single light-painting images.</li>
+<li>Single fireworks exposures.</li>
+<li>Single Milky Way exposures.</li>
+<li>Any important one-off long exposure where maximum image quality is desired.</li>
+</ul>
+<p>For exposures under a few seconds, the benefit is usually minimal. LENR becomes more valuable as exposure duration and sensor heat increase.</p>
+<h2 id="when-not-to-use">When Not to Use</h2>
+<p>Turn LENR Off for workflows where many images will be captured or combined later.</p>
+<p>Recommended Off:</p>
+<ul>
+<li>Focus bracketing.</li>
+<li>Exposure bracketing.</li>
+<li>Time-lapse.</li>
+<li>Astrophotography stacking.</li>
+<li>Star trails.</li>
+<li>Multiple waterfall exposures.</li>
+<li>Burst long exposures.</li>
+<li>Waterdrop flash work.</li>
+<li>Any workflow where many images will be combined later.</li>
+</ul>
+<p>Post-processing software generally provides better results for stacked images than applying LENR to every frame in camera. If shooting many long exposures, disable LENR and remove hot pixels during post-processing or with a planned dark-frame workflow.</p>
+<h3 id="auto-setting">AUTO Setting</h3>
+<p>AUTO lets the camera decide when to apply Long Exposure Noise Reduction.</p>
+<p>AUTO is suitable for general photography and travel, but the user may experience unexpected processing delays. If timing matters, choose On or Off deliberately instead of leaving the decision to the camera.</p>
+<h2 id="decision-guide">Decision Guide</h2>
+<p>Long exposure?</p>
+<ul>
+<li>No: Off or Auto.</li>
+<li>Yes: continue.</li>
+</ul>
+<p>More than one exposure?</p>
+<ul>
+<li>Yes: Off.</li>
+<li>No: continue.</li>
+</ul>
+<p>Maximum single-frame image quality required?</p>
+<ul>
+<li>Yes: On.</li>
+<li>No: Auto.</li>
+</ul>
+<p>If timing matters more than maximum single-frame cleanup, choose Off.</p>
+<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<table>
+<tr><th>Photography Type</th><th>Recommended Setting</th></tr>
+<tr><td>Normal</td><td>Auto</td></tr>
+<tr><td>Travel</td><td>Auto</td></tr>
+<tr><td>Landscape (single exposure)</td><td>On</td></tr>
+<tr><td>Landscape (multiple exposures)</td><td>Off</td></tr>
+<tr><td>Night Landscape</td><td>On</td></tr>
+<tr><td>Milky Way (single image)</td><td>On</td></tr>
+<tr><td>Milky Way (stacking)</td><td>Off</td></tr>
+<tr><td>Star Trails</td><td>Off</td></tr>
+<tr><td>Waterfalls</td><td>Off</td></tr>
+<tr><td>Light Painting</td><td>On</td></tr>
+<tr><td>Fireworks (single exposure)</td><td>On</td></tr>
+<tr><td>Fireworks (sequence)</td><td>Off</td></tr>
+<tr><td>Focus Bracketing</td><td>Off</td></tr>
+<tr><td>Wildlife</td><td>Off</td></tr>
+<tr><td>Birds in Flight</td><td>Off</td></tr>
+<tr><td>Sports</td><td>Off</td></tr>
+<tr><td>Waterdrops</td><td>Off</td></tr>
+</table>
+<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<p>On the Canon EOS R5, Long Exposure Noise Reduction can affect RAW and JPEG workflows because the correction is applied by the camera, not merely stored as a post-processing suggestion.</p>
+<p>The project baseline should avoid forcing LENR On. Use Auto for general/travel workflows when convenience matters, On for single critical long exposures, and Off for stacked or repeated-capture workflows.</p>
+<p>LENR is separate from High ISO Noise Reduction. Do not use LENR as a general high-ISO cleanup tool.</p>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>For exposures under a few seconds, the benefit is usually minimal.</li>
+<li>LENR is most valuable for long exposures where sensor heating becomes significant.</li>
+<li>If shooting many long exposures, disable LENR and remove hot pixels during post-processing.</li>
+<li>Expect the camera to display <code>BUSY</code> while capturing the dark frame.</li>
+<li>Decide before the sequence starts; changing mid-shoot can make files inconsistent.</li>
+<li>Watch battery life during long exposure sessions.</li>
+</ul>
+<h2 id="common-mistakes">Common Mistakes</h2>
+<ul>
+<li>Leaving LENR On after a night shoot.</li>
+<li>Using LENR for waterdrop flash work.</li>
+<li>Confusing LENR with High ISO Noise Reduction.</li>
+<li>Missing fireworks or lightning because the camera is busy processing.</li>
+<li>Applying LENR to every frame in a stacking workflow.</li>
+<li>Forgetting that processing delay scales with exposure length.</li>
+</ul>
+<h2 id="cross-references">Cross References</h2>
+<ul>
+<li>Profiles: Camera Defaults, Fireworks, Landscape, Macro, Travel, Waterdrops.</li>
+<li>Settings: <code>image.long_exposure_noise_reduction.value</code>, shutter speed, drive mode, ISO, flash mode.</li>
+<li>Related appendices:</li>
+<li><a href="Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">Focus Bracketing &amp; In-Camera Depth Compositing</a></li>
+<li><a href="Image%20Stabilization.html">Image Stabilization</a></li>
+<li><a href="Electronic%20vs%20EFCS%20vs%20Mechanical%20Shutter.html">Electronic vs EFCS vs Mechanical Shutter</a></li>
+<li><a href="Metering%20Modes.html">Metering Modes</a></li>
+<li><a href="Flash%20Photography.html">Flash Photography</a></li>
+</ul>
+</body>
+</html>
