@@ -183,8 +183,8 @@ LENR is separate from High ISO Noise Reduction. Do not use LENR as a general hig
 - Profiles: Camera Defaults, Fireworks, Landscape, Macro, Travel, Waterdrops.
 - Settings: `image.long_exposure_noise_reduction.value`, shutter speed, drive mode, ISO, flash mode.
 - Related appendices:
-  - [Focus Bracketing & In-Camera Depth Compositing](Focus%20Bracketing%20&%20In-Camera%20Depth%20Compositing.md)
-  - [Image Stabilization](Image%20Stabilization.md)
-  - [Electronic vs EFCS vs Mechanical Shutter](Electronic%20vs%20EFCS%20vs%20Mechanical%20Shutter.md)
-  - [Metering Modes](Metering%20Modes.md)
-  - [Flash Photography](Flash%20Photography.md)
+  - [Focus Bracketing & In-Camera Depth Compositing](appendix:focus_bracketing_depth_compositing)
+  - [Image Stabilization](appendix:image_stabilization)
+  - [Electronic vs EFCS vs Mechanical Shutter](appendix:shutter_modes)
+  - [Metering Modes](appendix:metering_modes)
+  - [Flash Photography](appendix:flash_photography)

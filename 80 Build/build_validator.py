@@ -1,5 +1,6 @@
 from collections import Counter
 from pathlib import Path
+import re
 import xml.etree.ElementTree as ET
 
 import yaml
@@ -220,6 +221,21 @@ def validate_required_appendices(paths):
     profile_titles = _profile_titles(paths)
     appendix_ids = {entry.get("id") for entry in appendices if isinstance(entry, dict)}
 
+    for profile_path in discover_profiles(paths):
+        try:
+            profile = _load_yaml(profile_path)
+        except Exception:
+            continue
+        links = profile.get("appendix_links")
+        if links is None:
+            continue
+        if not isinstance(links, list):
+            results.append(("error", "invalid_profile_appendix_links", f"{profile_path}: appendix_links must be a list"))
+            continue
+        for item in links:
+            if not isinstance(item, dict) or item.get("id") not in appendix_ids:
+                results.append(("error", "missing_profile_appendix_ref", f"{profile_path}: {item}"))
+
     for entry in appendices:
         if not isinstance(entry, dict):
             results.append(("error", "invalid_required_appendix_entry", str(manifest_path)))
@@ -235,6 +251,9 @@ def validate_required_appendices(paths):
             results.append(("error", "missing_required_appendix", f"{title}: {path}"))
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
+        for linked_id in re.findall(r"\]\(appendix:([a-z0-9_]+)\)", text):
+            if linked_id not in appendix_ids:
+                results.append(("error", "missing_markdown_appendix_ref", f"{path}: {linked_id}"))
         headings = _headings(text)
         skipped_sections = set(entry.get("skip_required_sections", []) or [])
         for section in required_sections:

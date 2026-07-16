@@ -1,3 +1,5 @@
+import re
+
 from .common import error, load_yaml_checked
 
 
@@ -67,6 +69,9 @@ def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_
         issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id')} with content_type {content_type} must be stored under {expected_folder}/."))
 
     text = path.read_text(encoding="utf-8", errors="replace")
+    for linked_id in re.findall(r"\]\(appendix:([a-z0-9_]+)\)", text):
+        if linked_id not in ids:
+            issues.append(error("appendices", path, f"Markdown references missing appendix id: {linked_id}"))
     headings = _headings(text)
     if title and headings and headings[0] != title:
         issues.append(error("appendices", path, f"Top-level heading must be: {title}"))

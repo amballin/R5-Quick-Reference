@@ -11,6 +11,7 @@ This specification governs Field Guides and Setting Deep Dives. Both are core ex
 - A missing required appendix or an unparseable/invalid manifest fails validation.
 - Filenames and titles do not need numbers. Legacy appendix numbers may remain as manifest metadata for continuity.
 - Appendices should cross-reference relevant profiles, camera settings, lens notes, and related appendices. Profiles should reference appendices instead of duplicating their explanations.
+- Internal Markdown links to another manifest entry use `(appendix:manifest_id)`. The renderer resolves the ID to the correct generated filename, and validation rejects missing IDs.
 - Sources with `content_type: field_guide`, or with no `content_type` for backward compatibility, live under `50 Field Guide/Appendices/`.
 - Sources with `content_type: setting_deep_dive` live under `50 Field Guide/Setting Deep Dives/` and provide focused guidance for an individual camera setting or tightly scoped feature.
 

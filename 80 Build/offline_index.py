@@ -7,7 +7,7 @@ import tempfile
 import time
 from html import escape
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 import yaml
 
@@ -66,7 +66,11 @@ def _copy_release_cards(paths, target_dir):
             continue
         target = target_dir / source.name
         shutil.copy2(source, target)
-        copied.append({"path": target, "card_type": profile.get("card_type", "profile")})
+        copied.append({
+            "path": target,
+            "card_type": profile.get("card_type", "profile"),
+            "appendix_links": profile.get("appendix_links") or [],
+        })
     return copied
 
 
@@ -81,6 +85,7 @@ def _all_guides(paths):
             continue
         html = _inline_local_images(source, source.read_text(encoding="utf-8", errors="replace"))
         guides.append({
+            "id": entry.get("id"),
             "title": title,
             "filename": source.name,
             "html": html,
@@ -114,8 +119,9 @@ def _load_yaml(path):
 
 
 def _write_index(path, card_files, guides, publish_metadata):
-    cards = "\n".join(_card_details(card["path"]) for card in card_files if card["card_type"] == "profile")
-    reference_cards = "\n".join(_card_details(card["path"]) for card in card_files if card["card_type"] == "reference")
+    guide_targets = {guide.get("id"): guide["filename"] for guide in guides if guide.get("id")}
+    cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "profile")
+    reference_cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "reference")
     reference_section = (
         '<h2>Reference Cards</h2>\n<div class="cards">\n'
         f'{reference_cards}\n</div>'
@@ -162,6 +168,8 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 details{{display:block}}
 details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)}}
 .card-image{{display:block;width:100%;max-width:393px;height:auto;margin:12px auto 0;background:#1e3553}}
+.card-links{{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:10px auto 0}}
+.card-links a{{color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:8px 11px;text-decoration:none}}
 .guide-panel{{background:#f8fafc;color:#172033;border-radius:10px;padding:16px;overflow:auto}}
 .guide-panel h1{{font-size:26px;color:#172033}}
 .guide-panel h2{{color:#172033;border-bottom:1px solid #d7dee8}}
@@ -206,12 +214,22 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
     )
 
 
-def _card_details(card):
-    label = escape(card.stem)
-    image_data = base64.b64encode(card.read_bytes()).decode("ascii")
+def _card_details(card, guide_targets):
+    path = card["path"]
+    label = escape(path.stem)
+    image_data = base64.b64encode(path.read_bytes()).decode("ascii")
+    links = []
+    for item in card.get("appendix_links") or []:
+        if not isinstance(item, dict) or item.get("id") not in guide_targets:
+            continue
+        target = quote(f"appendices/{guide_targets[item['id']]}", safe="/:#%")
+        link_label = escape(item.get("label") or item["id"])
+        links.append(f'<a href="{target}">{link_label}</a>')
+    link_markup = f'<div class="card-links">{"".join(links)}</div>' if links else ""
     return f"""<details>
 <summary class="card">{label}<span>Show</span></summary>
 <img class="card-image" src="data:image/png;base64,{image_data}" alt="{label} card">
+{link_markup}
 </details>"""
 
 

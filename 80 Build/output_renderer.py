@@ -5,7 +5,7 @@ import re
 import shutil
 import subprocess
 
-from html_renderer import card_colors, card_icon_paths, profile_subtitle, settings_rows
+from html_renderer import appendix_link_entries, card_colors, card_icon_paths, profile_subtitle, settings_rows
 
 
 DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
@@ -76,7 +76,8 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, 
         "checklist": _plain_text_items(profile.get("checklist") or []),
         "watch_for": _plain_text_items(profile.get("watch_for") or []),
         "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),
-        "notes": _plain_text_items(profile.get("notes") or []),
+        "notes": _plain_text_items(profile.get("notes") or [])
+        + [entry["label"] for entry in appendix_link_entries(profile, paths)],
     }
 
 

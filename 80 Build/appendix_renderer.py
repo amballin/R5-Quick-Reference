@@ -19,6 +19,11 @@ def render_appendices(paths, include_pdf=False):
 
     manifest = load_yaml_checked(manifest_path) or {}
     appendices = manifest.get("appendices", []) or []
+    appendix_targets = {
+        entry.get("id"): f"{Path(entry.get('file', '')).stem}.html"
+        for entry in appendices
+        if entry.get("id") and entry.get("file")
+    }
     html_dir = paths.field_guide_html_output_dir
     pdf_dir = paths.field_guide_pdf_output_dir
     if include_pdf:
@@ -48,6 +53,7 @@ def render_appendices(paths, include_pdf=False):
                 )
             else:
                 rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled)
+                rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
                 rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html)
                 html_path.write_text(rendered_html, encoding="utf-8")
@@ -424,6 +430,25 @@ def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
         return f'<a{before}href="{relative}"{after}>'
 
     return re.sub(r'<a([^>]*?)href="([^"]+)"([^>]*)>', replace, rendered_html, flags=re.IGNORECASE)
+
+
+def _rewrite_appendix_id_links(rendered_html, appendix_targets):
+    def replace(match):
+        before = match.group(1)
+        appendix_id = html.unescape(match.group(2))
+        after = match.group(3)
+        target = appendix_targets.get(appendix_id)
+        if not target:
+            return match.group(0)
+        quoted_target = quote(target, safe="/:#%")
+        return f'<a{before}href="{quoted_target}"{after}>'
+
+    return re.sub(
+        r'<a([^>]*?)href="appendix:([^"]+)"([^>]*)>',
+        replace,
+        rendered_html,
+        flags=re.IGNORECASE,
+    )
 
 
 def _link(match):

@@ -39,5 +39,6 @@ watch_for:
 common_mistakes:
   - Expecting shutter half-press to autofocus after enabling back-button AF
   - Treating recommended assignments as confirmation of the camera's current settings
-notes:
-  - '<a href="../appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">Back-Button AF &amp; Custom Button Strategies appendix</a>'
+appendix_links:
+  - id: back_button_af_custom_button_strategies
+    label: Back-Button AF & Custom Button Strategies appendix

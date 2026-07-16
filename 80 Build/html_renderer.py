@@ -223,8 +223,37 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
-        .replace("{{NOTES}}", bullets(profile.get("notes") or []))
+        .replace("{{NOTES}}", bullets(card_note_items(profile, paths)))
     )
+
+
+def appendix_link_entries(profile, paths=None):
+    configured = profile.get("appendix_links") or []
+    if not configured or paths is None:
+        return []
+    manifest = load_yaml_checked(paths.root / "50 Field Guide" / "required_appendices.yaml") or {}
+    targets = {
+        entry.get("id"): f"{Path(entry.get('file', '')).stem}.html"
+        for entry in manifest.get("appendices", []) or []
+        if entry.get("id") and entry.get("file")
+    }
+    return [
+        {
+            "id": item["id"],
+            "label": item.get("label") or item["id"],
+            "filename": targets[item["id"]],
+        }
+        for item in configured
+        if isinstance(item, dict) and item.get("id") in targets
+    ]
+
+
+def card_note_items(profile, paths=None):
+    items = list(profile.get("notes") or [])
+    for link in appendix_link_entries(profile, paths):
+        href = quote(f"../../field-guide/html/{link['filename']}", safe="/:#%")
+        items.append(f'<a href="{href}">{escape(link["label"])}</a>')
+    return items
 
 
 def settings_section(profile, merged, icon_manager=None, paths=None):

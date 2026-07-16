@@ -23,6 +23,7 @@ def validate(root):
     profile_paths = sorted((root / "10 Profiles").glob("*.yaml"))
     stems = [path.stem.lower() for path in profile_paths]
     titles = []
+    appendix_ids = _appendix_ids(root)
 
     for duplicate in _duplicates(stems):
         issues.append(error("profiles", root / "10 Profiles", f"Duplicate profile filename stem: {duplicate}"))
@@ -57,9 +58,44 @@ def validate(root):
         for key in LIST_KEYS:
             if key in data and not isinstance(data[key], list):
                 issues.append(error("profiles", path, f"{key} must be a list."))
+        issues.extend(_validate_appendix_links(path, data.get("appendix_links"), appendix_ids))
 
     for duplicate in _duplicates(titles):
         issues.append(error("profiles", root / "10 Profiles", f"Duplicate profile title: {duplicate}"))
+    return issues
+
+
+def _appendix_ids(root):
+    manifest_path = root / "50 Field Guide" / "required_appendices.yaml"
+    try:
+        manifest = load_yaml_checked(manifest_path) or {}
+    except Exception:
+        return set()
+    return {
+        entry.get("id")
+        for entry in manifest.get("appendices", []) or []
+        if isinstance(entry, dict) and entry.get("id")
+    }
+
+
+def _validate_appendix_links(path, links, appendix_ids):
+    if links is None:
+        return []
+    if not isinstance(links, list):
+        return [error("profiles", path, "appendix_links must be a list.")]
+    issues = []
+    for index, item in enumerate(links, start=1):
+        if not isinstance(item, dict):
+            issues.append(error("profiles", path, f"appendix_links item {index} must be a mapping."))
+            continue
+        appendix_id = item.get("id")
+        if not isinstance(appendix_id, str) or not appendix_id.strip():
+            issues.append(error("profiles", path, f"appendix_links item {index} requires a non-empty id."))
+        elif appendix_id not in appendix_ids:
+            issues.append(error("profiles", path, f"appendix_links item {index} references missing appendix id: {appendix_id}"))
+        label = item.get("label")
+        if label is not None and (not isinstance(label, str) or not label.strip()):
+            issues.append(error("profiles", path, f"appendix_links item {index} label must be a non-empty string."))
     return issues
 
 

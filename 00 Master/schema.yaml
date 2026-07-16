@@ -24,6 +24,11 @@ reference_settings item:
   control: string
   assignment: string
 
+appendix_links: optional list
+appendix_links item:
+  id: string from 50 Field Guide/required_appendices.yaml
+  label: optional string
+
 inherits: baseline (required for profile cards; omitted for reference cards)
 
 settings:

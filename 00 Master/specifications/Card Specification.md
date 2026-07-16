@@ -10,6 +10,8 @@ Cards use `card_type: profile` by default. Profile cards inherit the baseline an
 
 Each `reference_settings` entry contains a non-empty `control` and `assignment`. Reference-card checklists contain concise recommendations or verification steps rather than repeating the Settings table.
 
+Cards may define `appendix_links` as a list of manifest appendix IDs with optional display labels. Renderers resolve these IDs for each output context; profile YAML must not contain generated-output paths.
+
 Cards render required settings from fully merged baseline + profile data, including inherited values:
 
 - `exposure.mode`
@@ -50,5 +52,6 @@ Released profile cards appear under **Subject Cards**. Released permanent refere
 - Card renderers and templates under `80 Build/` and `20 Templates/` implement formatting and conditional rows.
 - `80 Build/validators/output_validator.py` checks expected generated card artifacts.
 - `80 Build/validators/pwa_validator.py` checks the merged offline bundle.
+- Profile validation checks that every `appendix_links` ID exists in the appendix manifest.
 
 Not every conditional rendering rule has a dedicated validator; visual/generated-output review remains required after relevant changes.
