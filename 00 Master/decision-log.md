@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Explicit Approval Before Git Branch Changes
+
+**Status:** Accepted
+**Date:** 2026-07-16
+
+Before creating or switching to a Git branch, explain its purpose, risks, additional workflow and cleanup steps, and whether direct work on `main` is appropriate for the approved change. Obtain explicit project-owner approval before creating or switching branches. Do not introduce a separate branch automatically merely because it is a common precaution.
+
 ## External Machine-Local Workspace and Computer Handoffs
 
 **Status:** Accepted

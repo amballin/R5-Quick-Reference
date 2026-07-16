@@ -27,6 +27,7 @@ Proposed, Rejected, and Superseded decisions are non-binding. Conversation histo
 - Before changing project files, create a timestamped backup under the sibling local workspace's `Backups/` folder sufficient to restore the affected state.
 - Validate relevant YAML, documentation references, project structure, and generated behavior before publishing.
 - Publishing, committing, and pushing are separate explicit actions; do not perform them without authorization.
+- Before creating or switching to a new Git branch, explain why the branch may be useful, the risks and additional workflow steps it creates, and whether working directly on `main` is appropriate. Obtain explicit project-owner approval before creating or switching branches.
 - Finish work on the computer where it began. Before continuing on another computer, validate, commit all intentional source changes, push the current branch, and leave the working tree clean. A computer handoff does not require publishing.
 
 ## Rule-Change Process
