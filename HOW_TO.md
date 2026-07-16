@@ -12,16 +12,16 @@ This regenerates the card outputs, guide pages, installable web app, and GitHub 
 
 Generated or refreshed:
 
-- `output/cards/`
-- `output/field-guide/`
-- `output/merged-build/`
+- `../Photography Reference System Local/Build Output/cards/`
+- `../Photography Reference System Local/Build Output/field-guide/`
+- `../Photography Reference System Local/Build Output/merged-build/`
 - `docs/`
-- `output/reports/BUILD_REPORT.md`
+- `../Photography Reference System Local/Build Output/reports/BUILD_REPORT.md`
 
 The default build also removes stale generated PDFs:
 
-- `output/cards/pdf/`
-- `output/field-guide/pdf/`
+- `../Photography Reference System Local/Build Output/cards/pdf/`
+- `../Photography Reference System Local/Build Output/field-guide/pdf/`
 
 ## Optional PDFs
 
@@ -33,8 +33,8 @@ python3 "80 Build/build.py" --pdf
 
 PDF outputs are written to:
 
-- `output/cards/pdf/`
-- `output/field-guide/pdf/`
+- `../Photography Reference System Local/Build Output/cards/pdf/`
+- `../Photography Reference System Local/Build Output/field-guide/pdf/`
 
 ## Current Folder Structure
 
@@ -53,24 +53,35 @@ PDF outputs are written to:
 | `data/` | Support data for the reference system. | Yes, carefully |
 | `docs/` | Generated GitHub Pages publish folder. GitHub serves this. | No |
 | `ios/` | Optional native Xcode wrapper project. Not required for Pages/browser/iPhone install. | Yes, if keeping native wrapper |
-| `output/cards/` | Generated card artifacts. Disposable. | No |
-| `output/field-guide/` | Generated guide HTML, search index, and optional PDFs. Disposable. | No |
-| `output/merged-build/` | Canonical generated web/PWA bundle. Disposable. | No |
-| `output/reports/` | Generated build, validation, and cleanup reports. | No |
-| `output/website/` | Optional generated staging copy for non-GitHub hosts and native iOS wrapping. Disposable. | No |
+| `../Photography Reference System Local/Build Output/` | All disposable card, guide, PWA, website, PDF, and report output. | No |
+| `../Photography Reference System Local/Backups/` | Timestamped pre-change recovery snapshots. | No |
+| `../Photography Reference System Local/Native Wrapper/` | Generated website resources consumed by the optional Xcode wrapper. | No |
 
-Everything under `output/` is rebuilt and safe to discard.
+Everything under local `Build Output/` is rebuilt and safe to discard. The sibling local workspace is the default; set `PRS_LOCAL_WORKSPACE` when a different machine-local path is needed.
 
 ## Generated Site Flow
 
 ```text
-output/merged-build/   # canonical generated web/PWA bundle
+../Photography Reference System Local/Build Output/merged-build/
         -> docs/        # GitHub Pages publishing copy
-        -> output/website/
-              -> ios/Resources/Website/ when building the native iOS wrapper
+        -> ../Photography Reference System Local/Build Output/website/
+              -> ../Photography Reference System Local/Native Wrapper/Website/
+                    -> ios/Resources/Website symlink for Xcode
 ```
 
-The normal build refreshes `output/merged-build/` and `docs/`. The `build website` target also creates `output/website/`. The `build ios` target copies `output/website/` into `ios/Resources/Website/` for Xcode.
+The normal build refreshes local `merged-build/` and repository `docs/`. The website and iOS targets create their disposable outputs in the local workspace.
+
+## Continue Work on Another Computer
+
+Finish the current unit of work before changing computers:
+
+1. Run `python3 "80 Build/validator.py"`.
+2. If this was only a development build, restore generated `docs/` changes with `git restore docs` so they are not mistaken for a release.
+3. Commit all intentional source changes.
+4. Push the current branch.
+5. Confirm `git status --short` produces no output.
+
+Publishing is not required for a computer handoff. Run the publishing command only when you intentionally want to update the live Pages site, version, and timestamp. Local build output is rebuilt on the next computer rather than transferred through Git.
 
 ## Why `docs/` Is Still Top Level
 
@@ -138,7 +149,7 @@ Publish the optional website staging folder:
 The generated folder is:
 
 ```text
-output/website/
+../Photography Reference System Local/Build Output/website/
 ```
 
 ## Build Optional Native iOS Wrapper
@@ -151,8 +162,9 @@ python3 "80 Build/build.py" build ios
 
 That command refreshes:
 
-- `output/website/`
-- `ios/Resources/Website/`
+- `../Photography Reference System Local/Build Output/website/`
+- `../Photography Reference System Local/Native Wrapper/Website/`
+- the ignored `ios/Resources/Website` symlink used by Xcode
 
 Normal Pages builds do not keep `ios/Resources/Website/` populated, so the top-level project does not carry another duplicate copy of the same site.
 

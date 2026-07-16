@@ -120,15 +120,15 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/output_renderer.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
-        "- `output/cards/merged/`",
-        "- `output/cards/html/`",
-        "- `output/cards/png/`",
-        "- `output/cards/phone-png/`",
-        "- `output/field-guide/html/`",
-        "- `output/field-guide/search_index.json`",
-        "- `output/merged-build/`",
+        f"- `{paths.merged_output_dir}`",
+        f"- `{paths.html_output_dir}`",
+        f"- `{paths.png_output_dir}`",
+        f"- `{paths.phone_png_output_dir}`",
+        f"- `{paths.field_guide_html_output_dir}`",
+        f"- `{paths.field_guide_search_index_file}`",
+        f"- `{paths.merged_build_output_dir}`",
         "- `docs/`",
-        "- `output/reports/BUILD_REPORT.md`",
+        f"- `{paths.reports_output_dir / 'BUILD_REPORT.md'}`",
         "",
         "## Profiles Built",
         "",
@@ -290,7 +290,7 @@ def build_site(paths, requested_profile=None, start=None, include_pdf=False, kee
     generated.update(appendix_generated)
     generated.update(render_offline_index(paths, publish_display))
     generated.update(generate_pwa(paths))
-    settle_clean_generated_roots(paths.root / "output", paths.merged_build_output_dir)
+    settle_clean_generated_roots(paths.output_dir, paths.merged_build_output_dir)
     pwa_validation_results = validate_merged_build_pwa(paths)
     validation_results.extend(pwa_validation_results)
     pwa_validation_errors = [result for result in pwa_validation_results if result[0] == "error"]
@@ -333,7 +333,7 @@ def publish(paths, metadata_path, current_metadata, start):
 
 
 def sync_pages_output(paths):
-    """Mirror output/merged-build into docs/ for branch-based GitHub Pages."""
+    """Mirror the local merged build into docs/ for branch-based GitHub Pages."""
     source = paths.merged_build_output_dir
     target = paths.pages_output_dir
     if not source.exists():
@@ -344,7 +344,7 @@ def sync_pages_output(paths):
     mirror_issues = mirror_differences(source, target)
     if mirror_issues:
         sample = ", ".join(mirror_issues[:10])
-        raise RuntimeError(f"docs is not an exact mirror of output/merged-build: {sample}")
+        raise RuntimeError(f"docs is not an exact mirror of the local merged build: {sample}")
     duplicates = numbered_duplicates(target, require_original=False)
     if duplicates:
         sample = ", ".join(str(path.relative_to(target)) for path in duplicates[:10])
@@ -352,7 +352,7 @@ def sync_pages_output(paths):
     source_duplicates = numbered_duplicates(source, require_original=False)
     if source_duplicates:
         sample = ", ".join(str(path.relative_to(source)) for path in source_duplicates[:10])
-        raise RuntimeError(f"Numbered duplicate generated files remain in output/merged-build: {sample}")
+        raise RuntimeError(f"Numbered duplicate generated files remain in the local merged build: {sample}")
 
 
 def settle_clean_pages_mirror(source, target):
@@ -405,6 +405,7 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
         paths.root / "50 Field Guide" / "HTML",
         paths.root / "output" / "Website",
         paths.root / "assets",
+        paths.root / "output",
     ]
     if not keep_website:
         obsolete_generated_roots.append(paths.root / "output" / "Website")
@@ -427,8 +428,8 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
         paths.root / "service-worker.js",
         paths.root / "60 Assets" / ".DS_Store",
         paths.root / "ios" / ".DS_Store",
-        paths.root / "output" / ".DS_Store",
-        paths.root / "output" / "canon_r5_icon_reference.html",
+        paths.output_dir / ".DS_Store",
+        paths.output_dir / "canon_r5_icon_reference.html",
     ]
     for path in obsolete_generated_files:
         if path.exists():
@@ -439,7 +440,7 @@ def clean_generated_leftovers(paths, include_pdf=False, keep_website=False, full
         shutil.rmtree(obsolete_icons)
 
     generated_roots = [
-        paths.root / "output",
+        paths.output_dir,
         paths.merged_build_output_dir,
         paths.website_output_dir,
         paths.pages_output_dir,

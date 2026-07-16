@@ -8,7 +8,6 @@ REQUIRED_FOLDERS = [
     "40 Assets",
     "60 Assets",
     "80 Build",
-    "output",
 ]
 
 REQUIRED_FILES = [

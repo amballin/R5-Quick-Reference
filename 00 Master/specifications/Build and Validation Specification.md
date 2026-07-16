@@ -12,13 +12,21 @@
 
 ## Output and Release Behavior
 
-- Generated artifacts belong under `output/` or `docs/`, except the optional generated native-wrapper copy at `ios/Resources/Website/`.
-- `output/merged-build/` is the canonical generated web/PWA bundle.
+- Disposable generated artifacts belong in the machine-local workspace's `Build Output/` folder. The default workspace is the sibling folder `<repository name> Local/`; `PRS_LOCAL_WORKSPACE` may set a different absolute or user-relative location.
+- `Build Output/merged-build/` is the canonical generated web/PWA bundle.
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
-- `output/website/` is optional staging and is copied into `ios/Resources/Website/` by the iOS build target.
+- `Build Output/website/` is optional staging. The iOS target copies it into `Native Wrapper/Website/` in the local workspace and exposes that folder to Xcode through the ignored `ios/Resources/Website` symlink.
+- Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
 - Card and field-guide PDFs are opt-in.
 - Profile and appendix release flags independently control inclusion in the offline bundle as defined by their specifications.
 - Validate generated output before publishing. Publishing remains a manual, explicitly authorized Git operation.
+
+## Computer Handoff
+
+- Complete a unit of work on the computer where it began before continuing it elsewhere.
+- Run relevant validation, commit every intentional source change, push the current branch, and verify a clean working tree before handoff.
+- If a development build changed tracked `docs/` but publication is not intended, restore `docs/` to the current commit before the final clean-tree check. Disposable local output does not transfer through Git and is rebuilt on the next computer.
+- Do not run the publishing workflow merely to move work between computers. Publish only when intentionally updating the live site, version, and timestamp.
 
 ## Validation Requirements
 

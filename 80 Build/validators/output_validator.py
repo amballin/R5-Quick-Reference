@@ -1,25 +1,24 @@
 import re
 
+from asset_manager import ProjectPaths
 from .common import error
-
-
-OUTPUT_FOLDERS = {
-    "output": "output",
-    "html": "output/cards/html",
-    "merged": "output/cards/merged",
-    "png": "output/cards/png",
-    "phone-png": "output/cards/phone-png",
-    "merged-build": "output/merged-build",
-    "field-guide-html": "output/field-guide/html",
-    "docs": "docs",
-}
 
 
 def validate(root):
     issues = []
+    paths = ProjectPaths(root)
     profiles = sorted((root / "10 Profiles").glob("*.yaml"))
-    for folder in OUTPUT_FOLDERS.values():
-        path = root / folder
+    output_folders = [
+        paths.output_dir,
+        paths.html_output_dir,
+        paths.merged_output_dir,
+        paths.png_output_dir,
+        paths.phone_png_output_dir,
+        paths.merged_build_output_dir,
+        paths.field_guide_html_output_dir,
+        paths.pages_output_dir,
+    ]
+    for path in output_folders:
         if not path.is_dir():
             issues.append(error("build_output", path, "Output folder is missing."))
             continue
@@ -28,9 +27,9 @@ def validate(root):
     for profile in profiles:
         name = profile.stem
         expected = [
-            root / "output" / "cards" / "html" / f"{name}.html",
-            root / "output" / "cards" / "png" / f"{name}.png",
-            root / "output" / "cards" / "merged" / f"{name}.yaml",
+            paths.html_output_file(name),
+            paths.png_output_file(name),
+            paths.merged_output_file(name),
         ]
         for path in expected:
             if not path.exists():

@@ -22,11 +22,12 @@ Proposed, Rejected, and Superseded decisions are non-binding. Conversation histo
 - Use the baseline + overrides architecture. Profiles inherit from the baseline, contain only differences from it, and never duplicate baseline settings.
 - Keep rendering decisions in the build system, not profile YAML. Keep educational material in appendices rather than profiles.
 - Preserve backward compatibility whenever practical. Identify conflicts instead of silently replacing established constraints.
-- Keep generated files only in documented output locations and source assets only in asset locations. Reuse existing assets whenever practical.
+- Keep generated files only in documented repository or machine-local output locations and source assets only in asset locations. Reuse existing assets whenever practical.
 - Make the smallest change that satisfies the request. Do not modify unrelated work.
-- Before changing project files, create a timestamped backup under `80 Build/Backups/` sufficient to restore the affected state.
+- Before changing project files, create a timestamped backup under the sibling local workspace's `Backups/` folder sufficient to restore the affected state.
 - Validate relevant YAML, documentation references, project structure, and generated behavior before publishing.
 - Publishing, committing, and pushing are separate explicit actions; do not perform them without authorization.
+- Finish work on the computer where it began. Before continuing on another computer, validate, commit all intentional source changes, push the current branch, and leave the working tree clean. A computer handoff does not require publishing.
 
 ## Rule-Change Process
 

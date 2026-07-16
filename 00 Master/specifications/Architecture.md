@@ -20,9 +20,9 @@ This specification defines the system boundaries and ownership of data, content,
 ```text
 baseline.yaml + profile overrides
         -> merged profile data
-        -> cards / guide / web-PWA outputs
+        -> machine-local cards / guide / web-PWA outputs
         -> docs (GitHub Pages mirror)
-        -> optional website staging -> optional iOS wrapper resources
+        -> optional machine-local website staging -> optional iOS wrapper resources
 ```
 
 ## Enforcement and Evidence

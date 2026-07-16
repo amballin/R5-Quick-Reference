@@ -229,7 +229,7 @@ def _copy_search_index(paths, output_dir):
 
 
 def validate_merged_build_pwa(paths):
-    """Validate that output/merged-build is a self-contained PWA."""
+    """Validate that the local merged build is a self-contained PWA."""
     output_dir = paths.merged_build_output_dir
     results = []
     required_files = [

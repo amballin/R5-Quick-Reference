@@ -1,11 +1,31 @@
+import os
 from pathlib import Path
 
 
 class ProjectPaths:
-    """Resolve project paths without changing the established folder layout."""
+    """Resolve source, publishing, and machine-local workspace paths."""
 
     def __init__(self, root):
         self.root = Path(root).resolve()
+
+    @property
+    def local_workspace_dir(self):
+        override = os.environ.get("PRS_LOCAL_WORKSPACE")
+        if override:
+            return Path(override).expanduser().resolve()
+        return self.root.parent / f"{self.root.name} Local"
+
+    @property
+    def output_dir(self):
+        return self.local_workspace_dir / "Build Output"
+
+    @property
+    def backups_dir(self):
+        return self.local_workspace_dir / "Backups"
+
+    @property
+    def native_wrapper_output_dir(self):
+        return self.local_workspace_dir / "Native Wrapper" / "Website"
 
     @property
     def baseline_file(self):
@@ -24,31 +44,31 @@ class ProjectPaths:
 
     @property
     def merged_output_dir(self):
-        return self.root / "output" / "cards" / "merged"
+        return self.output_dir / "cards" / "merged"
 
     @property
     def html_output_dir(self):
-        return self.root / "output" / "cards" / "html"
+        return self.output_dir / "cards" / "html"
 
     @property
     def png_output_dir(self):
-        return self.root / "output" / "cards" / "png"
+        return self.output_dir / "cards" / "png"
 
     @property
     def phone_png_output_dir(self):
-        return self.root / "output" / "cards" / "phone-png"
+        return self.output_dir / "cards" / "phone-png"
 
     @property
     def pdf_output_dir(self):
-        return self.root / "output" / "cards" / "pdf"
+        return self.output_dir / "cards" / "pdf"
 
     @property
     def merged_build_output_dir(self):
-        return self.root / "output" / "merged-build"
+        return self.output_dir / "merged-build"
 
     @property
     def website_output_dir(self):
-        return self.root / "output" / "website"
+        return self.output_dir / "website"
 
     @property
     def pages_output_dir(self):
@@ -56,19 +76,19 @@ class ProjectPaths:
 
     @property
     def reports_output_dir(self):
-        return self.root / "output" / "reports"
+        return self.output_dir / "reports"
 
     @property
     def field_guide_pdf_output_dir(self):
-        return self.root / "output" / "field-guide" / "pdf"
+        return self.output_dir / "field-guide" / "pdf"
 
     @property
     def field_guide_html_output_dir(self):
-        return self.root / "output" / "field-guide" / "html"
+        return self.output_dir / "field-guide" / "html"
 
     @property
     def field_guide_search_index_file(self):
-        return self.root / "output" / "field-guide" / "search_index.json"
+        return self.output_dir / "field-guide" / "search_index.json"
 
     @property
     def icon_map_file(self):

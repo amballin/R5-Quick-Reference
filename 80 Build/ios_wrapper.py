@@ -42,11 +42,11 @@ def website_output_dir(paths):
 
 
 def ios_resources_dir(paths):
-    return paths.root / IOS_DIR / RESOURCE_ROOT / WEBSITE_DIR_NAME
+    return paths.native_wrapper_output_dir
 
 
 def prepare_website_output(paths):
-    """Publish output/merged-build as the canonical Website staging bundle."""
+    """Publish the local merged build as the canonical Website staging bundle."""
     source = paths.merged_build_output_dir
     target = website_output_dir(paths)
     if not source.exists():
@@ -58,7 +58,7 @@ def prepare_website_output(paths):
 
 
 def update_ios_resources(paths):
-    """Refresh generated resources consumed by the Xcode folder reference."""
+    """Refresh generated native-wrapper resources outside the repository."""
     source = website_output_dir(paths)
     if not source.exists():
         source = prepare_website_output(paths)
@@ -66,6 +66,14 @@ def update_ios_resources(paths):
     remove_numbered_duplicates(source, require_original=False)
     fresh_copy(source, target, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
     clean_generated_tree(target)
+    link = paths.root / IOS_DIR / RESOURCE_ROOT / WEBSITE_DIR_NAME
+    link.parent.mkdir(parents=True, exist_ok=True)
+    if link.is_symlink() or link.exists():
+        if link.is_dir() and not link.is_symlink():
+            shutil.rmtree(link)
+        else:
+            link.unlink()
+    link.symlink_to(target, target_is_directory=True)
     return target
 
 
@@ -139,7 +147,7 @@ def write_regression_report(paths, steps):
 
 
 def _report_path(paths, filename):
-    report_dir = paths.root / "output" / "reports"
+    report_dir = paths.reports_output_dir
     report_dir.mkdir(parents=True, exist_ok=True)
     return report_dir / filename
 
@@ -238,6 +246,7 @@ def _skip_reference(reference):
     parsed = urlparse(reference)
     return (
         not reference
+        or reference == "document.referrer"
         or reference.startswith("#")
         or parsed.scheme in {"data", "http", "https", "mailto", "tel", "javascript"}
     )
