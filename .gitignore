@@ -11,6 +11,7 @@ DerivedData/
 xcuserdata/
 
 80 Build/.render_payload.json
+80 Build/.debug_render_payload.json
 80 Build/Backups/
 output/
 ios/Resources/Website/

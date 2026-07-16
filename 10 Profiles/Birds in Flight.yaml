@@ -16,8 +16,6 @@ overrides:
 
   autofocus:
     subject_detection: Animals
-    eye_detection: Enable
-    method: Face + Tracking
 
   drive:
     mode: High Speed Continuous+
