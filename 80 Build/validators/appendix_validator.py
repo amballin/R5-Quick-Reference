@@ -27,6 +27,9 @@ def validate(root):
             continue
         if "release" in entry and not isinstance(entry["release"], bool):
             issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} release must be a boolean."))
+        content_type = entry.get("content_type", "field_guide")
+        if content_type not in {"field_guide", "setting_deep_dive"}:
+            issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} has invalid content_type: {content_type}"))
         appendix_id = entry.get("id")
         if not appendix_id:
             issues.append(error("appendices", manifest_path, "Appendix entry is missing id."))
@@ -57,6 +60,11 @@ def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_
     if not path.exists():
         issues.append(error("appendices", path, f"Required appendix is missing: {title or entry.get('id')}"))
         return issues
+
+    content_type = entry.get("content_type", "field_guide")
+    expected_folder = "Setting Deep Dives" if content_type == "setting_deep_dive" else "Appendices"
+    if not str(relative_file).startswith(f"{expected_folder}/"):
+        issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id')} with content_type {content_type} must be stored under {expected_folder}/."))
 
     text = path.read_text(encoding="utf-8", errors="replace")
     headings = _headings(text)

@@ -135,22 +135,27 @@ function cardContent(data) {
   } else {
     y += 48;
   }
-  content += `<text x="22" y="${y}" class="h2">Settings</text><line x1="22" y1="${y + 8}" x2="371" y2="${y + 8}" class="rule"/>`;
-  y += 30;
+  if (data.rows.length) {
+    content += `<text x="22" y="${y}" class="h2">Settings</text><line x1="22" y1="${y + 8}" x2="371" y2="${y + 8}" class="rule"/>`;
+    y += 30;
+  }
   for (const row of data.rows) {
     const icon = path.extname(row.icon || "").toLowerCase() === ".svg" ? iconSvg(row.icon) : rasterIcon(row.icon, y);
     if (icon) {
       content += `<g transform="translate(22 ${y - 15})">${icon}</g>`;
     }
-    content += `<text x="46" y="${y}" class="label">${esc(row.label)}</text>`;
+    const renderedLabel = textBlock(row.label, 46, y, "label", 20, {
+      lineHeight: 17,
+    });
+    content += renderedLabel[0];
     const renderedValue = textBlock(row.value, 371, y, "value", 22, {
       anchor: "end",
       lineHeight: 17,
     });
     content += renderedValue[0];
-    y = Math.max(y + 24, renderedValue[1] + 5);
+    y = Math.max(y + 24, renderedLabel[1] + 5, renderedValue[1] + 5);
   }
-  y += 18;
+  y += data.rows.length ? 18 : 0;
   for (const [title, items] of [
     ["Checklist", data.checklist],
     ["Watch For", data.watch_for],

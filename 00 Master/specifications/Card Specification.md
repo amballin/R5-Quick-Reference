@@ -6,6 +6,10 @@ This specification governs generated quick-reference card content and conditiona
 
 ## Required Quick-Reference Settings
 
+Cards use `card_type: profile` by default. Profile cards inherit the baseline and render merged camera settings. Permanent reference cards use `card_type: reference`, do not inherit the baseline or define overrides, and render their `reference_settings` entries as a two-column **Settings** table.
+
+Each `reference_settings` entry contains a non-empty `control` and `assignment`. Reference-card checklists contain concise recommendations or verification steps rather than repeating the Settings table.
+
 Cards render required settings from fully merged baseline + profile data, including inherited values:
 
 - `exposure.mode`
@@ -36,6 +40,8 @@ If a required merged value is unset, render the row with `—` rather than omitt
 ## Release Requirement
 
 Only profiles with `metadata.release: true` are included as cards in the offline iPhone/PWA bundle. Other generated development outputs may still exist.
+
+Released profile cards appear under **Subject Cards**. Released permanent reference cards appear under **Reference Cards**.
 
 ## Enforcement and Evidence
 

@@ -362,11 +362,17 @@ def _validate_referenced_assets(output_dir):
 
 def _references(text, suffix):
     patterns = [r"""(?:src|href|poster|action)\s*=\s*["']([^"']+)["']"""]
-    if suffix in {".html", ".css"}:
+    if suffix == ".css":
         patterns.append(r"""url\(\s*["']?([^"')]+)["']?\s*\)""")
     refs = []
     for pattern in patterns:
         refs.extend(match.group(1) for match in re.finditer(pattern, text, flags=re.IGNORECASE))
+    if suffix == ".html":
+        for style in re.findall(r"<style\b[^>]*>(.*?)</style>", text, flags=re.IGNORECASE | re.DOTALL):
+            refs.extend(
+                match.group(1)
+                for match in re.finditer(r"""url\(\s*["']?([^"')]+)["']?\s*\)""", style, flags=re.IGNORECASE)
+            )
     return refs
 
 

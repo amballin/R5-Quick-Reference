@@ -38,11 +38,18 @@ def render_appendices(paths, include_pdf=False):
             markdown = source.read_text(encoding="utf-8", errors="replace")
             html_path = html_stage_dir / f"{source.stem}.html"
             final_html_path = html_dir / html_path.name
+            published_html_path = paths.merged_build_output_dir / "appendices" / html_path.name
+            site_home_url = _site_home_url(published_html_path, paths.merged_build_output_dir)
+            navigation_enabled = entry.get("navigation", True) is not False
             if entry.get("id") == "canon_r5_official_icon_reference":
-                html_path.write_text(_canon_icon_reference_html(paths), encoding="utf-8")
+                html_path.write_text(
+                    _canon_icon_reference_html(paths, site_home_url, navigation_enabled),
+                    encoding="utf-8",
+                )
             else:
-                rendered_html = _html_document(title, markdown)
+                rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
+                rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html)
                 html_path.write_text(rendered_html, encoding="utf-8")
             if include_pdf:
                 pdf_path = pdf_dir / f"{source.stem}.pdf"
@@ -60,7 +67,55 @@ def render_appendices(paths, include_pdf=False):
     return generated
 
 
-def _html_document(title, markdown):
+def _site_home_url(output_path, site_root):
+    return Path(os.path.relpath(site_root / "index.html", output_path.parent)).as_posix()
+
+
+def _back_button_markup(site_home_url):
+    fallback = json.dumps(site_home_url)
+    return f"""<button class="back-button" type="button" onclick="goBack()">
+  <span aria-hidden="true">←</span> Back
+</button>
+<script>
+function getSiteHomeUrl() {{
+  return {fallback};
+}}
+
+function goBack() {{
+  let sameSiteReferrer = false;
+
+  try {{
+    sameSiteReferrer =
+      document.referrer &&
+      new URL(document.referrer).origin === window.location.origin;
+  }} catch (error) {{
+    sameSiteReferrer = false;
+  }}
+
+  if (sameSiteReferrer && window.history.length > 1) {{
+    window.history.back();
+    return;
+  }}
+
+  window.location.assign(getSiteHomeUrl());
+}}
+</script>"""
+
+
+BACK_BUTTON_CSS = """
+.back-button{display:inline-flex;align-items:center;gap:.35rem;margin-bottom:1rem;padding:.45rem .8rem;border:1px solid var(--border-color,#b8b8b8);border-radius:6px;background:var(--surface-color,#fff);color:inherit;font:inherit;line-height:1.2;cursor:pointer}
+.back-button:hover{background:var(--surface-hover-color,#f2f2f2)}
+.back-button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.output-mode .back-button{display:none!important}
+@media print{.back-button{display:none!important}}
+"""
+
+
+def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True):
+    navigation = _back_button_markup(site_home_url) if navigation_enabled else ""
+    content = _markdown_to_html(markdown)
+    if navigation:
+        content = re.sub(r"(</h1>)", rf"\1\n{navigation}", content, count=1, flags=re.IGNORECASE)
     return f"""<!DOCTYPE html>
 <html>
 <head>
@@ -75,16 +130,17 @@ table{{border-collapse:collapse;width:100%;margin:16px 0}}
 th,td{{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}}
 code{{background:#eef2f7;padding:2px 4px;border-radius:4px}}
 a{{color:#165d9c}}
+{BACK_BUTTON_CSS}
 </style>
 </head>
 <body>
-{_markdown_to_html(markdown)}
+{content}
 </body>
 </html>
 """
 
 
-def _canon_icon_reference_html(paths):
+def _canon_icon_reference_html(paths, site_home_url="../index.html", navigation_enabled=True):
     entries = load_yaml_checked(paths.root / "data" / "canon_r5_icons.yaml") or []
     mode_entries = load_yaml_checked(paths.root / "60 Assets" / "icons" / "canon_r5_official" / "modes.yaml") or []
     subject_to_detect_ids = {
@@ -166,6 +222,7 @@ def _canon_icon_reference_html(paths):
             f'<div class="grid">{"".join(cards)}</div></section>'
         )
 
+    navigation = _back_button_markup(site_home_url) if navigation_enabled else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -192,12 +249,13 @@ h2{{margin:0 0 12px;font-size:18px;letter-spacing:0}}
 .label{{margin-top:3px;color:var(--accent);font-size:12px;font-weight:650}}
 .meta{{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.25}}
 a{{color:inherit}}
+{BACK_BUTTON_CSS}
 @media print{{header,main{{padding-left:18px;padding-right:18px}}.grid{{grid-template-columns:repeat(3,1fr)}}.icon-card{{break-inside:avoid}}}}
 </style>
 </head>
 <body>
 <header><h1>Canon EOS R5 Official Icon Reference</h1><p class="subtitle">Official Canon names and extracted assets from Canon EOS R5 Product Manual pages at cam.start.canon.</p></header>
-<main>{"".join(sections)}</main>
+<main>{navigation}{"".join(sections)}</main>
 </body>
 </html>
 """
@@ -344,6 +402,28 @@ def _rewrite_local_image_sources(source_markdown, html_path, rendered_html):
         return f'<img{before}src="{relative}"{after}>'
 
     return re.sub(r'<img([^>]*?)src="([^"]+)"([^>]*)>', replace, rendered_html, flags=re.IGNORECASE)
+
+
+def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
+    def replace(match):
+        before = match.group(1)
+        href = html.unescape(match.group(2))
+        after = match.group(3)
+        parsed = urlparse(href)
+        if parsed.scheme or href.startswith(("#", "/")):
+            return match.group(0)
+        if not parsed.path.lower().endswith((".md", ".html")):
+            return match.group(0)
+        source_target = (source_markdown.parent / unquote(parsed.path)).resolve()
+        target_name = f"{source_target.stem}.html"
+        relative = quote(os.path.relpath(html_path.parent / target_name, html_path.parent), safe="/:#%")
+        if parsed.query:
+            relative = f"{relative}?{parsed.query}"
+        if parsed.fragment:
+            relative = f"{relative}#{parsed.fragment}"
+        return f'<a{before}href="{relative}"{after}>'
+
+    return re.sub(r'<a([^>]*?)href="([^"]+)"([^>]*)>', replace, rendered_html, flags=re.IGNORECASE)
 
 
 def _link(match):

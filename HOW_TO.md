@@ -2,13 +2,13 @@
 
 For governing rules and authority, see [`PROJECT_RULES.md`](PROJECT_RULES.md). For normative architecture, profile, card, appendix, asset, and build requirements, see [`00 Master/specifications/`](00%20Master/specifications/). This guide contains operational procedures rather than duplicate governance.
 
-## Build Everything
+## Build Locally
 
 ```bash
-python3 build.py
+python3 "80 Build/build.py"
 ```
 
-This regenerates the card outputs, guide pages, installable web app, and GitHub Pages folder.
+This regenerates the card outputs, guide pages, installable web app, and GitHub Pages folder without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
 Generated or refreshed:
 
@@ -28,7 +28,7 @@ The default build also removes stale generated PDFs:
 PDFs are off by default. To generate fresh card and guide PDFs:
 
 ```bash
-python3 build.py --pdf
+python3 "80 Build/build.py" --pdf
 ```
 
 PDF outputs are written to:
@@ -89,10 +89,6 @@ GitHub Pages is the simplest useful output because it works in:
 
 The Xcode wrapper is optional. It only adds a native app shell around the same web content. It is not needed for the Pages site or the Safari-installed app.
 
-## Why Publish Is Manual
-
-The local build can safely create the exact files GitHub Pages needs, but pushing to GitHub changes the public website and requires your GitHub authentication. Keeping that last step manual prevents accidental public updates.
-
 ## Publish To GitHub Pages
 
 1. Make sure the GitHub repo settings are:
@@ -103,24 +99,17 @@ Branch: main
 Folder: /docs
 ```
 
-2. Build the local project:
+2. From the repository root, run the single official publishing command:
 
 ```bash
-python3 build.py
+./80\ Build/scripts/publish.sh
 ```
 
-3. Copy or sync the generated `docs/` folder into the GitHub repo if the build project and GitHub repo are separate folders.
+This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to the current branch.
 
-4. From the GitHub repo folder, publish:
+`./80 Build/scripts/publish.sh` is the only supported website publishing command. Do not run the internal `build.py --publish` mode directly. Development and test threads must never run the publishing script.
 
-```bash
-git status
-git add docs
-git commit -m "Update published reference"
-git push origin main
-```
-
-5. Open:
+3. Open:
 
 ```text
 https://amballin.github.io/R5-Quick-Reference/
@@ -129,9 +118,9 @@ https://amballin.github.io/R5-Quick-Reference/
 ## Build One Profile
 
 ```bash
-python3 build.py "Camera Defaults"
-python3 build.py Wildlife
-python3 build.py "Birds in Flight"
+python3 "80 Build/build.py" "Camera Defaults"
+python3 "80 Build/build.py" Wildlife
+python3 "80 Build/build.py" "Birds in Flight"
 ```
 
 Single-profile builds update that card's HTML/PNG outputs. Run the full build before publishing.
@@ -141,7 +130,7 @@ Single-profile builds update that card's HTML/PNG outputs. Run the full build be
 For hosts that publish a selected output folder, such as Cloudflare Pages or Netlify:
 
 ```bash
-python3 build.py build website
+python3 "80 Build/build.py" build website
 ```
 
 Publish the optional website staging folder:
@@ -157,7 +146,7 @@ output/website/
 Only use this if you decide to keep the native Xcode app shell:
 
 ```bash
-python3 build.py build ios
+python3 "80 Build/build.py" build ios
 ```
 
 That command refreshes:
@@ -170,7 +159,7 @@ Normal Pages builds do not keep `ios/Resources/Website/` populated, so the top-l
 ## Build GitHub Pages Folder Only
 
 ```bash
-python3 build.py build pages
+python3 "80 Build/build.py" build pages
 ```
 
 This rebuilds the site and refreshes `docs/`.
@@ -232,7 +221,7 @@ When camera firmware changes settings, menus, terminology, or behavior:
 3. Review every profile in `10 Profiles/` for overrides that may now be outdated.
 4. Update `60 Assets/icon-map.yaml` only if setting names or icons changed.
 5. Run `python3 "80 Build/validator.py"`.
-6. Run `python3 build.py`.
+6. Run `python3 "80 Build/build.py"`.
 7. Review generated HTML/PNG cards. Add `--pdf` only if PDFs need to be refreshed.
 8. Record the firmware-related decision in `00 Master/decision-log.md`.
 

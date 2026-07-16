@@ -21,7 +21,7 @@ GUIDE_DISPLAY_ORDER = {
 APP_TITLE = "Camera Settings"
 
 
-def render_offline_index(paths):
+def render_offline_index(paths, publish_metadata):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
     final_dir = paths.merged_build_output_dir
@@ -31,9 +31,9 @@ def render_offline_index(paths):
         cards_dir.mkdir(parents=True, exist_ok=True)
 
         card_files = _copy_release_cards(paths, cards_dir)
-        guides = _release_guides(paths)
+        guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
-        _write_index(output_dir / "index.html", card_files, guides)
+        _write_index(output_dir / "index.html", card_files, guides, publish_metadata)
         _write_readme(output_dir / "README.txt")
         (output_dir / ".nojekyll").touch()
         mirror_tree(output_dir, final_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
@@ -66,23 +66,27 @@ def _copy_release_cards(paths, target_dir):
             continue
         target = target_dir / source.name
         shutil.copy2(source, target)
-        copied.append(target)
+        copied.append({"path": target, "card_type": profile.get("card_type", "profile")})
     return copied
 
 
-def _release_guides(paths):
+def _all_guides(paths):
     manifest = _load_yaml(paths.root / "50 Field Guide" / "required_appendices.yaml")
     html_dir = paths.field_guide_html_output_dir
     guides = []
     for entry in manifest.get("appendices", []) or []:
-        if entry.get("release") is not True:
-            continue
         title = entry.get("title") or Path(entry.get("file", "")).stem
         source = html_dir / f"{Path(entry.get('file', '')).stem}.html"
         if not source.exists():
             continue
         html = _inline_local_images(source, source.read_text(encoding="utf-8", errors="replace"))
-        guides.append({"title": title, "filename": source.name, "html": html})
+        guides.append({
+            "title": title,
+            "filename": source.name,
+            "html": html,
+            "release": entry.get("release") is True,
+            "content_type": entry.get("content_type", "field_guide"),
+        })
     return sorted(guides, key=lambda guide: (GUIDE_DISPLAY_ORDER.get(guide["title"], 100), guide["title"].lower()))
 
 
@@ -109,9 +113,27 @@ def _load_yaml(path):
         return yaml.safe_load(file) or {}
 
 
-def _write_index(path, card_files, guides):
-    cards = "\n".join(_card_details(card) for card in card_files)
-    guide_markup = "\n".join(_guide_details(guide) for guide in guides)
+def _write_index(path, card_files, guides, publish_metadata):
+    cards = "\n".join(_card_details(card["path"]) for card in card_files if card["card_type"] == "profile")
+    reference_cards = "\n".join(_card_details(card["path"]) for card in card_files if card["card_type"] == "reference")
+    reference_section = (
+        '<h2>Reference Cards</h2>\n<div class="cards">\n'
+        f'{reference_cards}\n</div>'
+        if reference_cards else ""
+    )
+    guide_markup = "\n".join(
+        _guide_details(guide) for guide in guides
+        if guide["release"] and guide["content_type"] == "field_guide"
+    )
+    deep_dive_markup = "\n".join(
+        _guide_details(guide) for guide in guides
+        if guide["release"] and guide["content_type"] == "setting_deep_dive"
+    )
+    deep_dive_section = (
+        '<h2>Setting Deep Dives</h2>\n<div class="guides">\n'
+        f'{deep_dive_markup}\n</div>'
+        if deep_dive_markup else ""
+    )
     path.write_text(
         f"""<!DOCTYPE html>
 <html>
@@ -125,7 +147,7 @@ def _write_index(path, card_files, guides):
 body{{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}}
 #top{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
 h1{{font-size:24px;margin:0}}
-.sub{{color:var(--muted);font-size:14px;margin-top:4px}}
+.publish-meta{{color:var(--muted);font-size:13px;margin:3px 0 0}}
 main{{padding:16px 14px 32px}}
 h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .cards{{display:grid;gap:9px}}
@@ -162,6 +184,7 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
 <body>
 <header id="top">
 <h1>{APP_TITLE}</h1>
+<p class="publish-meta">{escape(publish_metadata)}</p>
 </header>
 <main>
 <h2>Subject Cards</h2>
@@ -169,10 +192,12 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
 {cards}
 </div>
 <div class="hint">Tip: tap a card name to show it inline. No internet is needed.</div>
+{reference_section}
 <h2>Field Guide</h2>
 <div class="guides">
 {guide_markup}
 </div>
+{deep_dive_section}
 </main>
 </body>
 </html>
@@ -204,22 +229,42 @@ def _guide_details(guide):
 def _write_appendices(target_dir, guides):
     target_dir.mkdir(parents=True, exist_ok=True)
     for guide in guides:
-        html = re.sub(r"<a\b([^>]*)>(.*?)</a>", _offline_link, guide["html"], flags=re.IGNORECASE | re.DOTALL)
+        html = re.sub(
+            r"<a\b([^>]*)>(.*?)</a>",
+            lambda match: _offline_link(match, ""),
+            guide["html"],
+            flags=re.IGNORECASE | re.DOTALL,
+        )
         (target_dir / guide["filename"]).write_text(html, encoding="utf-8")
 
 
 def _html_body(html):
     match = re.search(r"<body[^>]*>(.*)</body>", html, flags=re.IGNORECASE | re.DOTALL)
     body = match.group(1) if match else html
-    return re.sub(r"<a\b([^>]*)>(.*?)</a>", _offline_link, body, flags=re.IGNORECASE | re.DOTALL)
+    body = re.sub(
+        r'<button\b[^>]*class="[^"]*\bback-button\b[^"]*"[^>]*>.*?</button>\s*<script>.*?</script>',
+        "",
+        body,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    return re.sub(
+        r"<a\b([^>]*)>(.*?)</a>",
+        lambda link: _offline_link(link, "appendices/"),
+        body,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
 
 
-def _offline_link(match):
+def _offline_link(match, local_prefix):
     attrs = match.group(1)
     label = match.group(2)
     href = re.search(r'href="([^"]+)"', attrs, flags=re.IGNORECASE)
-    if href and href.group(1).startswith("#"):
-        return f'<a href="{href.group(1)}">{label}</a>'
+    if href:
+        target = href.group(1)
+        if target.startswith("#"):
+            return f'<a href="{target}">{label}</a>'
+        if not target.startswith(("http://", "https://", "mailto:")):
+            return f'<a href="{local_prefix}{target}">{label}</a>'
     return label
 
 

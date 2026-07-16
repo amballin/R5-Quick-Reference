@@ -1,5 +1,7 @@
+import html
 import json
 import os
+import re
 import shutil
 import subprocess
 
@@ -71,8 +73,13 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, 
         "phone_png": str(paths.phone_png_output_file(profile_name)),
         "pdf": str(paths.pdf_output_file(profile_name)) if include_pdf else "",
         "rows": rows,
-        "checklist": profile.get("checklist") or [],
-        "watch_for": profile.get("watch_for") or [],
-        "common_mistakes": profile.get("common_mistakes") or [],
-        "notes": profile.get("notes") or [],
+        "checklist": _plain_text_items(profile.get("checklist") or []),
+        "watch_for": _plain_text_items(profile.get("watch_for") or []),
+        "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),
+        "notes": _plain_text_items(profile.get("notes") or []),
     }
+
+
+def _plain_text_items(items):
+    """Keep static card outputs readable when an HTML card item contains a link."""
+    return [html.unescape(re.sub(r"<[^>]+>", "", str(item))) for item in items]

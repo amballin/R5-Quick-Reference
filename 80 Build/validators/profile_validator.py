@@ -4,6 +4,7 @@ from .common import error, flatten_paths, load_yaml_checked
 
 
 LIST_KEYS = ["checklist", "watch_for", "common_mistakes", "notes"]
+CARD_TYPES = {"profile", "reference"}
 
 
 def validate(root):
@@ -39,8 +40,17 @@ def validate(root):
         title = data.get("title")
         if isinstance(title, str):
             titles.append(title.lower())
+        card_type = data.get("card_type", "profile")
+        if card_type not in CARD_TYPES:
+            issues.append(error("profiles", path, f"card_type must be one of: {', '.join(sorted(CARD_TYPES))}."))
         overrides = data.get("overrides", {})
-        if not isinstance(overrides, dict):
+        if card_type == "reference":
+            if "inherits" in data:
+                issues.append(error("profiles", path, "Reference cards must not inherit the shooting baseline."))
+            if "overrides" in data:
+                issues.append(error("profiles", path, "Reference cards must not define shooting-profile overrides."))
+            issues.extend(_validate_reference_settings(path, data.get("reference_settings")))
+        elif not isinstance(overrides, dict):
             issues.append(error("profiles", path, "overrides must be a mapping."))
         else:
             issues.extend(_validate_overrides(path, overrides, baseline_paths, baseline_values))
@@ -53,9 +63,24 @@ def validate(root):
     return issues
 
 
+def _validate_reference_settings(path, settings):
+    issues = []
+    if not isinstance(settings, list) or not settings:
+        return [error("profiles", path, "Reference cards require a non-empty reference_settings list.")]
+    for index, item in enumerate(settings, start=1):
+        if not isinstance(item, dict):
+            issues.append(error("profiles", path, f"reference_settings item {index} must be a mapping."))
+            continue
+        for key in ("control", "assignment"):
+            if not isinstance(item.get(key), str) or not item[key].strip():
+                issues.append(error("profiles", path, f"reference_settings item {index} requires a non-empty {key}."))
+    return issues
+
+
 def _required_profile_keys(path, data):
     issues = []
-    for key in ("metadata", "title", "inherits"):
+    required = ("metadata", "title") if data.get("card_type") == "reference" else ("metadata", "title", "inherits")
+    for key in required:
         if key not in data:
             issues.append(error("profiles", path, f"Missing required key: {key}."))
         if "metadata" in data and not isinstance(data["metadata"], dict):
@@ -66,7 +91,7 @@ def _required_profile_keys(path, data):
         issues.append(error("profiles", path, "title must be a string."))
     if "subtitle" in data and data["subtitle"] is not None and not isinstance(data["subtitle"], str):
         issues.append(error("profiles", path, "subtitle must be a string or null."))
-    if data.get("inherits") != "baseline":
+    if data.get("card_type") != "reference" and data.get("inherits") != "baseline":
         issues.append(error("profiles", path, "inherits must be baseline."))
     return issues
 

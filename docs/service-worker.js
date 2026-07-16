@@ -1,10 +1,11 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1783861256";
+const CACHE_NAME = "photography-reference-1784195823";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
   "Cards/Birds%20Perched.png",
   "Cards/Birds%20in%20Flight.png",
+  "Cards/Camera%20Buttons.png",
   "Cards/Camera%20Defaults.png",
   "Cards/Camera%20Setup.png",
   "Cards/Fireworks.png",
@@ -15,6 +16,7 @@ const CACHE_URLS = [
   "app-assets/icon-192.png",
   "app-assets/icon-512.png",
   "appendices/AF%20Cases%20%26%20Tracking%20Behavior.html",
+  "appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html",
   "appendices/Canon%20EOS%20R5%20Official%20Icon%20Reference.html",
   "appendices/Custom%20Controls.html",
   "appendices/Drive%20Modes.html",

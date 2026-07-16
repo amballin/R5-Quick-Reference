@@ -2,10 +2,12 @@
 
 ## Build Workflow
 
-- `python3 build.py` is the normal full build. It regenerates cards, field-guide HTML, the canonical merged web/PWA bundle, `docs/`, and reports; stale PDF folders are removed because PDFs are off by default.
-- `python3 build.py --pdf` additionally creates current card and appendix PDFs.
-- `python3 build.py <profile>` preserves the existing single-profile workflow; run a full build before publishing.
-- `python3 build.py build website`, `build pages`, and `build ios` preserve their existing staging, Pages, and optional wrapper behaviors.
+- `python3 "80 Build/build.py"` is the normal full development build. It regenerates cards, field-guide HTML, the canonical merged web/PWA bundle, `docs/`, and reports; stale PDF folders are removed because PDFs are off by default. It does not change publish metadata, commit, push, or deploy.
+- `./80 Build/scripts/publish.sh` is the only supported website publishing command. It runs an authorized publish-mode build, increments the minor version once, generates one timestamp, commits only `docs/` and finalized publish metadata through a temporary Git index, and pushes to the current branch.
+- Development and test threads must never run the publishing script.
+- `python3 "80 Build/build.py" --pdf` additionally creates current card and appendix PDFs.
+- `python3 "80 Build/build.py" <profile>` preserves the existing single-profile workflow; run a full build before publishing.
+- `python3 "80 Build/build.py" build website`, `build pages`, and `build ios` preserve their existing staging, Pages, and optional wrapper behaviors.
 - Do not place rendering decisions in profile YAML or change build logic as a side effect of documentation/content work.
 
 ## Output and Release Behavior

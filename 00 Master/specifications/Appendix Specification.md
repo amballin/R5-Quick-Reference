@@ -2,7 +2,7 @@
 
 ## Scope and Purpose
 
-This specification governs field-guide appendices. Appendices are core explanatory content generated during builds; they prevent educational material from being duplicated in profiles.
+This specification governs Field Guides and Setting Deep Dives. Both are core explanatory content generated during builds; they prevent educational material from being duplicated in profiles.
 
 ## Manifest and Required Content
 
@@ -11,6 +11,8 @@ This specification governs field-guide appendices. Appendices are core explanato
 - A missing required appendix or an unparseable/invalid manifest fails validation.
 - Filenames and titles do not need numbers. Legacy appendix numbers may remain as manifest metadata for continuity.
 - Appendices should cross-reference relevant profiles, camera settings, lens notes, and related appendices. Profiles should reference appendices instead of duplicating their explanations.
+- Sources with `content_type: field_guide`, or with no `content_type` for backward compatibility, live under `50 Field Guide/Appendices/`.
+- Sources with `content_type: setting_deep_dive` live under `50 Field Guide/Setting Deep Dives/` and provide focused guidance for an individual camera setting or tightly scoped feature.
 
 ## Standard Section Order
 
@@ -34,8 +36,9 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 
 ## Build and Release Requirements
 
-- Builds include required appendices in applicable HTML, optional PDF, navigation, search, icon/index, and offline outputs.
-- `release: true` on an appendix manifest entry selects it for the offline iPhone/PWA bundle. Absence or false does not select it.
+- Builds generate all manifest entries in applicable HTML and search outputs. PDF remains optional.
+- `release: true` controls whether an entry is shown in the published GitHub Pages/offline index. Released `field_guide` entries appear under **Field Guide**; released `setting_deep_dive` entries appear under **Setting Deep Dives**.
+- Entries without `release: true` remain generated and linkable from released documentation, but are not listed in either published index section.
 - Preserve existing appendix sources, manifest compatibility, rendering, and output locations unless explicitly approved.
 
 ## Enforcement and Evidence

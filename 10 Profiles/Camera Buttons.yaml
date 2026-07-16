@@ -1,0 +1,43 @@
+metadata:
+  version: 1.0
+  status: Final
+  last_updated: 2026-07-16
+  release: true
+title: Camera Buttons
+subtitle: Controls & Dials
+card_type: reference
+card:
+  icons:
+    left: camera_default
+reference_settings:
+  - control: Shutter button half-press
+    assignment: Metering start
+  - control: AF-ON button
+    assignment: Metering and AF start
+  - control: AE Lock button
+    assignment: Switch to registered AF function
+  - control: SET button
+    assignment: Set AF point to center
+  - control: Depth-of-field preview button
+    assignment: One-Shot AF ↔ Servo AF
+  - control: Main Dial
+    assignment: Shutter Speed
+  - control: Quick Control Dial (Rear Wheel)
+    assignment: Aperture
+  - control: Multi-function Dial (Top Rear Dial)
+    assignment: ISO Speed
+  - control: Control Ring
+    assignment: Exposure Compensation
+checklist:
+  - Practice back-button AF before a critical shoot.
+  - Configure and test the registered AF function.
+  - Confirm Manual + Auto ISO before using exposure compensation.
+  - Recheck assignments after a reset or firmware update.
+watch_for:
+  - Registered AF behavior not configured or tested
+  - Exposure Compensation on Control Ring requires Auto ISO in Manual exposure
+common_mistakes:
+  - Expecting shutter half-press to autofocus after enabling back-button AF
+  - Treating recommended assignments as confirmation of the camera's current settings
+notes:
+  - '<a href="../appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">Back-Button AF &amp; Custom Button Strategies appendix</a>'

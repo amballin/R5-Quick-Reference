@@ -4,23 +4,47 @@ This project builds Canon R5 subject-setting cards, guide pages, an installable 
 
 The primary delivery path is GitHub Pages. That works in phone, iPad, and desktop browsers, and can be installed from Safari with Add to Home Screen.
 
-Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
+## Set Up on Another Computer
 
-## Build
+Install Git, Python 3, Node.js, and npm, then clone the repository and install its JavaScript dependencies:
 
 ```bash
+git clone https://github.com/amballin/R5-Quick-Reference.git
+cd R5-Quick-Reference
+npm install
+python3 "80 Build/validator.py"
 python3 build.py
 ```
 
-The default build regenerates the Pages-ready site and removes stale generated PDF folders. PDFs are off by default.
+The repository contains the editable profiles, reference cards, appendices, templates, build code, assets, and published `docs/` site. Generated `output/`, local backups, dependency folders, caches, Finder metadata, and the generated iOS website copy are intentionally excluded and can be recreated by the build.
+
+Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
+
+## Build locally
+
+```bash
+python3 "80 Build/build.py"
+```
+
+This rebuilds local outputs without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
+
+The default build removes stale generated PDF folders. PDFs are off by default.
 
 To create fresh PDFs only when you actually need them:
 
 ```bash
-python3 build.py --pdf
+python3 "80 Build/build.py" --pdf
 ```
 
-## Publish
+## Publish the website
+
+```bash
+./80\ Build/scripts/publish.sh
+```
+
+This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
+
+`./80 Build/scripts/publish.sh` is the only supported publishing command. The internal `build.py --publish` mode cannot be run directly.
 
 GitHub Pages must be configured to publish from:
 
@@ -28,19 +52,18 @@ GitHub Pages must be configured to publish from:
 main / docs
 ```
 
-After a build, publish the updated site:
-
-```bash
-git add docs
-git commit -m "Update published reference"
-git push origin main
-```
-
 Live URL:
 
 ```text
 https://amballin.github.io/R5-Quick-Reference/
 ```
+
+Standalone field-guide pages get their `← Back` button from `80 Build/appendix_renderer.py`.
+The generator calculates the fallback link relative to each page's published output location,
+so nested pages return to the repository's `index.html` without a hardcoded GitHub Pages URL.
+Set `navigation: false` on an entry in `50 Field Guide/required_appendices.yaml` to disable the
+button for that page. The button is omitted from embedded index content and hidden for print and
+output-mode rendering.
 
 ## Folder Map
 
@@ -99,5 +122,5 @@ The Xcode wrapper in `ios/` is not required for GitHub Pages, Safari, iPhone, iP
 To refresh and build that optional wrapper:
 
 ```bash
-python3 build.py build ios
+python3 "80 Build/build.py" build ios
 ```

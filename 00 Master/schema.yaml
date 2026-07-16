@@ -8,6 +8,7 @@ metadata:
 
 title: string
 subtitle: optional string
+card_type: optional profile|reference (defaults to profile)
 default subtitle in baseline: optional string
 
 card:
@@ -18,7 +19,12 @@ card:
     background: optional color string
     text: optional color string
 
-inherits: baseline
+reference_settings: optional list for card_type reference
+reference_settings item:
+  control: string
+  assignment: string
+
+inherits: baseline (required for profile cards; omitted for reference cards)
 
 settings:
 

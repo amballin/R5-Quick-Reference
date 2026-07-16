@@ -11,6 +11,10 @@ def discover_profiles(paths):
     return sorted(paths.profiles_dir.glob("*.yaml"))
 
 
+def is_reference_card(data):
+    return data.get("card_type") == "reference"
+
+
 def profile_name_from_path(path):
     return path.stem
 
@@ -32,7 +36,7 @@ def validate_project(paths):
         except Exception as exc:
             results.append(("error", "profile_yaml_syntax", f"{path}: {exc}"))
             continue
-        if data.get("inherits") != "baseline":
+        if not is_reference_card(data) and data.get("inherits") != "baseline":
             results.append(("error", "profile_inheritance", f"{path}: inherits must be baseline"))
 
     results.extend(validate_assets(paths))
@@ -174,6 +178,8 @@ def validate_profile_canon_icon_references(paths, entries_by_id):
             profile = _load_yaml(path)
             baseline = _load_yaml(paths.baseline_file).get("defaults", {})
         except Exception:
+            continue
+        if is_reference_card(profile):
             continue
         merged = _deep_merge(baseline, profile.get("overrides", {}) or {})
         fields = flatten(merged)

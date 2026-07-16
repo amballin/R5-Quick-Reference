@@ -34,7 +34,7 @@ Canon EOS R5 shooting modes define how exposure decisions are divided between th
 
 Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.
 
-Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast.
+Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast. For full setup guidance, see [Fv (Flexible Priority)](../Setting Deep Dives/Fv - Flexible Priority.md).
 
 Use Av when aperture and depth of field are the main decision, such as landscapes, portraits, perched birds, natural-light macro, and tripod/still scenes.
 
@@ -250,7 +250,7 @@ Mechanical is the safest general default. EFCS can reduce vibration. Electronic 
 
 ### Focus Bracketing
 
-Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see [Focus Bracketing & In-Camera Depth Compositing](Focus Bracketing & In-Camera Depth Compositing.md).
+Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see [Focus Bracketing & In-Camera Depth Compositing](../Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md).
 
 | Setting | What it Does |
 |---|---|

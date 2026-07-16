@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import argparse
+import os
+from datetime import datetime
 from pathlib import Path
 import shutil
 import sys
@@ -13,7 +15,7 @@ if str(BUILD_DIR) not in sys.path:
 from asset_manager import ProjectPaths
 from appendix_renderer import render_appendices
 from baseline import merge
-from build_validator import discover_profiles, profile_name_from_path, validate_project
+from build_validator import discover_profiles, is_reference_card, profile_name_from_path, validate_project
 from generated_output import clean_generated_tree, mirror_tree, numbered_duplicates, remove_numbered_duplicates
 from html_renderer import render_card, write_html_card
 from icon_manager import IconManager
@@ -22,6 +24,13 @@ from offline_index import render_offline_index
 from output_renderer import render_png_pdf
 from profile_loader import canonical_profile_name, load_baseline, load_profile, write_merged_profile
 from pwa import generate_pwa, validate_merged_build_pwa
+from publish_metadata import (
+    PublishMetadataError,
+    display_publish_metadata,
+    load_publish_metadata,
+    next_publish_metadata,
+    write_publish_metadata_atomic,
+)
 
 
 PAGES_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__")
@@ -34,6 +43,7 @@ def parse_args():
     parser.add_argument("profile", nargs="?")
     parser.add_argument("--root", default=".")
     parser.add_argument("--pdf", action="store_true", help="Also generate card and appendix PDFs. Off by default.")
+    parser.add_argument("--publish", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
 
 
@@ -42,7 +52,7 @@ def build_profile(profile_name, root=".", include_pdf=False):
     paths = ProjectPaths(root)
     baseline = load_baseline(paths)
     profile = load_profile(paths, profile_name)
-    merged = merge(baseline["defaults"], profile.get("overrides", {}))
+    merged = {} if is_reference_card(profile) else merge(baseline["defaults"], profile.get("overrides", {}))
     write_merged_profile(paths, profile_name, merged)
     template = paths.card_template.read_text()
     icon_manager = IconManager(paths)
@@ -200,12 +210,28 @@ def main():
     start = time.perf_counter()
     args = parse_args()
     paths = ProjectPaths(args.root)
+    metadata_path = paths.root / "80 Build" / "publish_metadata.yaml"
+    try:
+        current_metadata = load_publish_metadata(metadata_path)
+    except PublishMetadataError as exc:
+        print(f"Publish metadata error: {exc}", file=sys.stderr)
+        return 2
+    if args.publish:
+        if os.environ.get("PRS_PUBLISH_AUTHORIZED") != "1":
+            print("Publish-mode builds must be run through ./80 Build/scripts/publish.sh", file=sys.stderr)
+            return 2
+        if args.command or args.target or args.profile or args.pdf:
+            print("--publish cannot be combined with a profile, build target, or --pdf.", file=sys.stderr)
+            return 2
+        return publish(paths, metadata_path, current_metadata, start)
+    publish_display = display_publish_metadata(current_metadata)
     if args.command == "build" and args.target in {"website", "pages", "ios"}:
         status = build_site(
             paths,
             requested_profile=args.profile,
             include_pdf=args.pdf,
             keep_website=args.target in {"website", "ios"},
+            publish_display=publish_display,
         )
         if status != 0:
             return status
@@ -237,7 +263,7 @@ def main():
         print("Unknown build target. Use: python build.py build website, python build.py build pages, or python build.py build ios")
         return 2
     requested_profile = args.command or args.profile
-    status = build_site(paths, requested_profile=requested_profile, start=start, include_pdf=args.pdf)
+    status = build_site(paths, requested_profile=requested_profile, start=start, include_pdf=args.pdf, publish_display=publish_display)
     if status == 0 and requested_profile is None:
         sync_pages_output(paths)
         clean_generated_leftovers(paths, include_pdf=args.pdf, keep_website=False)
@@ -245,7 +271,7 @@ def main():
     return status
 
 
-def build_site(paths, requested_profile=None, start=None, include_pdf=False, keep_website=False):
+def build_site(paths, requested_profile=None, start=None, include_pdf=False, keep_website=False, publish_display=None):
     start = start or time.perf_counter()
     validation_results = validate_project(paths)
     validation_errors = [result for result in validation_results if result[0] == "error"]
@@ -262,7 +288,7 @@ def build_site(paths, requested_profile=None, start=None, include_pdf=False, kee
     appendix_generated = render_appendices(paths, include_pdf=include_pdf)
     successes, failures, generated = build_profiles(paths, profile_names, include_pdf=include_pdf)
     generated.update(appendix_generated)
-    generated.update(render_offline_index(paths))
+    generated.update(render_offline_index(paths, publish_display))
     generated.update(generate_pwa(paths))
     settle_clean_generated_roots(paths.root / "output", paths.merged_build_output_dir)
     pwa_validation_results = validate_merged_build_pwa(paths)
@@ -278,6 +304,32 @@ def build_site(paths, requested_profile=None, start=None, include_pdf=False, kee
         return 1
     print_summary(len(profile_names), successes, failures, generated, elapsed)
     return 1 if failures else 0
+
+
+def publish(paths, metadata_path, current_metadata, start):
+    override = os.environ.get("PRS_PUBLISH_TIME")
+    try:
+        published = datetime.fromisoformat(override) if override else None
+        candidate = next_publish_metadata(current_metadata, published)
+    except (ValueError, PublishMetadataError) as exc:
+        print(f"Publish timestamp error: {exc}", file=sys.stderr)
+        return 2
+    display = display_publish_metadata(candidate)
+    status = build_site(paths, start=start, publish_display=display)
+    if status != 0:
+        print("Publish aborted: build failed; version metadata was not changed.", file=sys.stderr)
+        return status
+    try:
+        sync_pages_output(paths)
+        clean_generated_leftovers(paths, keep_website=False)
+        candidate_path = metadata_path.with_name(".publish_metadata.candidate.yaml")
+        write_publish_metadata_atomic(candidate_path, candidate)
+    except OSError as exc:
+        print(f"Publish candidate creation failed: {exc}; version metadata was not changed.", file=sys.stderr)
+        return 1
+    print(f"Publish candidate built: {display}")
+    print(f"Candidate metadata: {candidate_path}")
+    return 0
 
 
 def sync_pages_output(paths):

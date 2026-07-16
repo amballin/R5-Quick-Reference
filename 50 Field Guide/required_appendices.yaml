@@ -76,7 +76,9 @@ appendices:
   - id: focus_bracketing_depth_compositing
     legacy_appendix: "14"
     title: "Focus Bracketing & In-Camera Depth Compositing"
-    file: "Appendices/Focus Bracketing & In-Camera Depth Compositing.md"
+    file: "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md"
+    content_type: setting_deep_dive
+    release: true
     profiles:
       - Landscape
       - Macro
@@ -275,6 +277,36 @@ appendices:
       - Landscape recommendations
       - Sports recommendations
       - Travel recommendations
+  - id: back_button_af_custom_button_strategies
+    title: "Back-Button AF & Custom Button Strategies"
+    file: "Appendices/Back-Button AF & Custom Button Strategies.md"
+    release: true
+    profiles:
+      - Birds in Flight
+      - Birds Perched
+      - Camera Buttons
+      - Macro
+      - Sports
+      - Wildlife
+    related_appendices:
+      - custom_controls
+      - af_cases_tracking
+      - r5_quick_reference
+    required_topics:
+      - Back-button AF
+      - Metering start
+      - Metering and AF start
+      - Switch to registered AF function
+      - Set AF point to center
+      - One-Shot AF
+      - Servo AF
+      - Main Dial
+      - Quick Control Dial
+      - Multi-function Dial
+      - Control Ring
+      - Exposure Compensation
+      - Recommended custom button layout
+      - Recommended dial layout
   - id: drive_modes
     legacy_appendix: "18"
     title: "Drive Modes"
@@ -381,6 +413,36 @@ appendices:
       - Focus Bracketing
       - Long Exposure Noise Reduction
       - Subject Detection and AF Method Combinations
+  - id: fv_flexible_priority
+    title: "Fv (Flexible Priority)"
+    file: "Setting Deep Dives/Fv - Flexible Priority.md"
+    content_type: setting_deep_dive
+    release: true
+    profiles: []
+    related_appendices:
+      - r5_quick_reference
+    skip_required_sections:
+      - Purpose
+      - What it Does
+      - How it Works
+      - Advantages
+      - Disadvantages
+      - Recommended Uses
+      - When Not to Use
+      - Decision Guide
+      - Recommended Settings by Profile
+      - Canon-Specific Notes
+      - Tips
+      - Common Mistakes
+      - Cross References
+    required_topics:
+      - Flexible Priority
+      - Shutter Speed
+      - Aperture
+      - ISO
+      - Exposure Compensation
+      - Common Configurations
+      - Traditional Modes
 
 required_sections:
   - Purpose

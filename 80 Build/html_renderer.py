@@ -81,6 +81,15 @@ CAMERA_SETUP_SETTINGS = {
 
 def settings_rows(profile, merged, paths=None):
     """Return the settings rows in the same order used by the HTML table."""
+    if profile.get("card_type") == "reference":
+        return [
+            {
+                "key": f"reference.{index}",
+                "label": item["control"],
+                "value": item["assignment"],
+            }
+            for index, item in enumerate(profile.get("reference_settings") or [])
+        ]
     merged_fields = flatten(merged)
     override_fields = flatten(profile.get("overrides", {}))
     if is_camera_setup(profile):
@@ -210,12 +219,16 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{TEXT_COLOR}}", colors["text"])
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
-        .replace("{{SETTINGS}}", table(profile, merged, icon_manager, paths))
+        .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths))
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
         .replace("{{NOTES}}", bullets(profile.get("notes") or []))
     )
+
+
+def settings_section(profile, merged, icon_manager=None, paths=None):
+    return f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths)}"
 
 
 def profile_subtitle(profile, baseline=None):
