@@ -34,6 +34,7 @@ LABEL = {
     "display.highlight_alert": "Highlight Alert",
     "image.quality": "Image Quality",
     "image.white_balance": "White Balance",
+    "image.focus_bracketing": "Focus Bracketing",
     "image.highlight_tone_priority": "Highlight Tone Priority",
     "image.high_iso_noise_reduction": "High ISO NR",
     "image.long_exposure_noise_reduction.value": "Long Exposure NR",

@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-16
   release: true
 
 title: Birds in Flight
@@ -12,12 +12,12 @@ inherits: baseline
 overrides:
   exposure:
     mode: Tv
-    exposure_compensation: "0 to +1/3"
+    exposure_compensation: "Adjust for background"
 
   autofocus:
-    subject_detection: None
-    eye_detection: Disable
-    method: Expand AF Area
+    subject_detection: Animals
+    eye_detection: Enable
+    method: Face + Tracking
 
   drive:
     mode: High Speed Continuous+
@@ -30,20 +30,24 @@ overrides:
 
 checklist:
   - Servo AF
-  - Bird acquired
+  - Bird/eye acquired
   - Shutter speed verified
   - Histogram checked
+  - Focus limiter set for distance
 
 watch_for:
   - Motion blur
-  - Busy background
-  - Lost tracking
+  - Tracking the wrong bird
+  - Bright-sky underexposure
+  - Buffer filling
 
 common_mistakes:
   - Shutter too slow
-  - AF area too small
+  - Failing to adjust exposure for the background
+  - Staying with subject detection when it repeatedly selects the wrong target
   - Poor panning
 
 notes:
+  - Use Expand AF Area with Subject Detection None when the bird is small or obscured, the background is busy, or subject detection repeatedly selects the wrong target.
   - Use Image Stabilization Mode 3 for erratic flight and action.
   - Switch to Mode 2 only for deliberate steady panning.

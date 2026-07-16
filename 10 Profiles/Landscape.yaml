@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-16
   release: true
 title: Landscape
 card:
@@ -38,6 +38,7 @@ common_mistakes:
 notes:
   - Handheld default uses Image Stabilization Mode 1.
   - Raise ISO as needed for a safe handheld shutter speed; use ISO 100 on a tripod.
+  - For static scenes requiring large near-to-far depth of field, consider focus bracketing at f/8-f/11 instead of stopping down further; use a tripod and watch for wind movement.
   - Turn IS off on a solid tripod.
   - Mechanical shutter. EFCS under evaluation.
   - Enable Long Exposure NR only for multi-second/night exposures.

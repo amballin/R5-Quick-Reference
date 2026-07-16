@@ -71,6 +71,7 @@ defaults:
     quality: cRAW
     white_balance: "AWB"
     picture_style: "Neutral"
+    focus_bracketing: Disable
     highlight_tone_priority: "Off"
     high_iso_noise_reduction: "Off"
     long_exposure_noise_reduction:
