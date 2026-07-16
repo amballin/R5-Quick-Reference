@@ -41,4 +41,6 @@ common_mistakes:
 notes:
   - Use manual focus when appropriate.
   - Focus bracketing is the starting point for macro; begin around f/8, increment 1-3, and 80-200 shots, then adjust for magnification and subject depth.
-  - '<a href="../appendices/Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">Focus Bracketing &amp; In-Camera Depth Compositing appendix</a>'
+appendix_links:
+  - id: focus_bracketing_depth_compositing
+    label: Focus Bracketing & In-Camera Depth Compositing appendix
