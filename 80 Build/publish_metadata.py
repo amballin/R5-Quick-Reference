@@ -51,7 +51,7 @@ def next_publish_metadata(current, published=None):
 
 def display_publish_metadata(metadata):
     version = metadata["version"]
-    return f"v{version['major']}.{version['minor']} • {metadata['published'].strftime('%Y/%m/%d %I:%M %p')}"
+    return f"Format v{version['major']}.{version['minor']:02d} • {metadata['published'].strftime('%Y/%m/%d %I:%M %p')}"
 
 
 def write_publish_metadata_atomic(path, metadata):

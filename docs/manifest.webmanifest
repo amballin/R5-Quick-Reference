@@ -1,6 +1,6 @@
 {
-  "name": "R5 Settings",
-  "short_name": "R5 Settings",
+  "name": "Camera Settings",
+  "short_name": "Camera Settings",
   "description": "Offline photography cards and Canon EOS R5 field guide.",
   "start_url": "./",
   "scope": "./",

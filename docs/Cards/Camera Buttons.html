@@ -7,13 +7,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Camera Settings">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="{{BACKGROUND_COLOR}}">
-<title>{{TITLE}} - Camera Settings</title>
+<meta name="theme-color" content="#1e3553">
+<title>Camera Buttons - Camera Settings</title>
 <style>
-html{box-sizing:border-box;-webkit-text-size-adjust:100%;background:{{BACKGROUND_COLOR}}}
+html{box-sizing:border-box;-webkit-text-size-adjust:100%;background:#1e3553}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0;min-width:0;background:{{BACKGROUND_COLOR}};color:{{TEXT_COLOR}};font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(14px,3.75vw,16px);line-height:1.3;overflow-x:hidden}
-.card{width:min(100%,430px);min-height:100svh;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(16px,env(safe-area-inset-left,0px));background:{{BACKGROUND_COLOR}}}
+body{margin:0;min-width:0;background:#1e3553;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(14px,3.75vw,16px);line-height:1.3;overflow-x:hidden}
+.card{width:min(100%,430px);min-height:100svh;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(16px,env(safe-area-inset-left,0px));background:#1e3553}
 .header{min-height:38px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin-bottom:4px}
 .header-spacer{min-width:0}
 .header-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center}
@@ -39,21 +39,21 @@ a{color:#b7dfff;text-underline-offset:2px}
 <body>
 <article class="card">
 <div class="header">
-<div class="header-icon left">{{HEADER_ICON_LEFT}}</div>
+<div class="header-icon left"><img src="../web-assets/Card%20Logos/png/Camera%20Default.png" alt="" aria-hidden="true" onerror="this.hidden=true"></div>
 <div class="header-spacer" aria-hidden="true"></div>
-<div class="header-icon right">{{HEADER_ICON_RIGHT}}</div>
+<div class="header-icon right"><img src="../web-assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true" onerror="this.hidden=true"></div>
 </div>
-<h1>{{TITLE}}</h1>
-{{SUBTITLE_BLOCK}}
-{{SETTINGS_SECTION}}
+<h1>Camera Buttons</h1>
+<div class="sub">Controls & Dials</div>
+<h2>Settings</h2><table><tr><td>Shutter button half-press</td><td>Metering start</td></tr><tr><td>AF-ON button</td><td>Metering and AF start</td></tr><tr><td>AE Lock button</td><td>Switch to registered AF function</td></tr><tr><td>SET button</td><td>Set AF point to center</td></tr><tr><td>Depth-of-field preview button</td><td>One-Shot AF ↔ Servo AF</td></tr><tr><td>Main Dial</td><td>Shutter Speed</td></tr><tr><td>Quick Control Dial (Rear Wheel)</td><td>Aperture</td></tr><tr><td>Multi-function Dial (Top Rear Dial)</td><td>ISO Speed</td></tr><tr><td>Control Ring</td><td>Exposure Compensation</td></tr></table>
 <h2>Checklist</h2>
-{{CHECKLIST}}
+<ul><li>Practice back-button AF before a critical shoot.</li><li>Configure and test the registered AF function.</li><li>Confirm Manual + Auto ISO before using exposure compensation.</li><li>Recheck assignments after a reset or firmware update.</li></ul>
 <h2>Watch For</h2>
-{{WATCH}}
+<ul><li>Registered AF behavior not configured or tested</li><li>Exposure Compensation on Control Ring requires Auto ISO in Manual exposure</li></ul>
 <h2>Common Mistakes</h2>
-{{MISTAKES}}
+<ul><li>Expecting shutter half-press to autofocus after enabling back-button AF</li><li>Treating recommended assignments as confirmation of the camera's current settings</li></ul>
 <h2>Notes</h2>
-{{NOTES}}
+<ul><li><a href="../appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">Back-Button AF &amp; Custom Button Strategies appendix</a></li></ul>
 </article>
 </body>
 </html>

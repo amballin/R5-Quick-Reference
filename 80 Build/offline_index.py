@@ -30,7 +30,7 @@ def render_offline_index(paths, publish_metadata):
         cards_dir = output_dir / "Cards"
         cards_dir.mkdir(parents=True, exist_ok=True)
 
-        card_files = _copy_release_cards(paths, cards_dir)
+        card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets")
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
         _write_index(output_dir / "index.html", card_files, guides, publish_metadata)
@@ -52,26 +52,61 @@ def _copy_files(source_dir, target_dir, pattern):
     return copied
 
 
-def _copy_release_cards(paths, target_dir):
+def _copy_release_cards(paths, target_dir, web_assets_dir):
     copied = []
     for profile_path in sorted(paths.profiles_dir.glob("*.yaml"), key=lambda path: path.stem.lower()):
         profile = _load_yaml(profile_path)
         if not ((profile.get("metadata") or {}).get("release") is True):
             continue
         profile_name = profile.get("title") or profile_path.stem
-        source = paths.phone_png_output_file(profile_name)
-        if not source.exists():
-            source = paths.png_output_file(profile_name)
-        if not source.exists():
+        png_source = paths.phone_png_output_file(profile_name)
+        if not png_source.exists():
+            png_source = paths.png_output_file(profile_name)
+        html_source = paths.html_output_file(profile_name)
+        if not png_source.exists() or not html_source.exists():
             continue
-        target = target_dir / source.name
-        shutil.copy2(source, target)
+        png_target = target_dir / png_source.name
+        html_target = target_dir / html_source.name
+        shutil.copy2(png_source, png_target)
+        html = _published_card_html(paths, html_source, web_assets_dir)
+        html_target.write_text(html, encoding="utf-8")
         copied.append({
-            "path": target,
+            "png_path": png_target,
+            "html_path": html_target,
             "card_type": profile.get("card_type", "profile"),
             "appendix_links": profile.get("appendix_links") or [],
         })
     return copied
+
+
+def _published_card_html(paths, source_html, web_assets_dir):
+    """Copy a card's local images and rewrite links for a relocatable Pages bundle."""
+    html = source_html.read_text(encoding="utf-8", errors="replace")
+
+    def replace_image(match):
+        before, src, after = match.groups()
+        if src.startswith(("data:", "http://", "https://")):
+            return match.group(0)
+        source_asset = (source_html.parent / unquote(src)).resolve()
+        if not source_asset.is_file():
+            return f'<img{before}hidden{after}>'
+        try:
+            relative_asset = source_asset.relative_to(paths.icon_asset_dir)
+        except ValueError:
+            relative_asset = Path("misc") / source_asset.name
+        target_asset = web_assets_dir / relative_asset
+        target_asset.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_asset, target_asset)
+        published_src = quote((Path("../web-assets") / relative_asset).as_posix(), safe="/.")
+        return f'<img{before}src="{published_src}"{after}>'
+
+    html = re.sub(r'<img([^>]*?)src="([^"]+)"([^>]*)>', replace_image, html, flags=re.IGNORECASE)
+    return re.sub(
+        r'href="\.\./\.\./field-guide/html/([^"]+)"',
+        lambda match: f'href="../appendices/{match.group(1)}"',
+        html,
+        flags=re.IGNORECASE,
+    )
 
 
 def _all_guides(paths):
@@ -146,28 +181,30 @@ def _write_index(path, card_files, guides, publish_metadata):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Camera Settings">
+<meta name="mobile-web-app-capable" content="yes">
 <title>{APP_TITLE}</title>
 <style>
 :root{{color-scheme:dark;--bg:#132742;--panel:#1d395b;--text:#f7fbff;--muted:#b9d5ec;--rule:#5b7893;--accent:#9bd2ff}}
 *{{box-sizing:border-box}}
 body{{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}}
-#top{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:18px 18px 12px;border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
+#top{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:calc(env(safe-area-inset-top,0px) + 18px) max(18px,env(safe-area-inset-right,0px)) 12px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
 h1{{font-size:24px;margin:0}}
 .publish-meta{{color:var(--muted);font-size:13px;margin:3px 0 0}}
-main{{padding:16px 14px 32px}}
+main{{width:min(100%,640px);margin:0 auto;padding:16px max(14px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 32px) max(14px,env(safe-area-inset-left,0px))}}
 h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .cards{{display:grid;gap:9px}}
-.card{{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:13px 14px;min-height:48px;font-weight:700;list-style:none}}
-.card::-webkit-details-marker{{display:none}}
-.card span{{color:var(--muted);font-weight:400}}
+.card-row{{display:flex;align-items:stretch;gap:8px}}
+.card-primary{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:13px 14px;min-height:48px;font-weight:700;text-decoration:none}}
+.card-primary span{{color:var(--muted);font-weight:400}}
+.card-png{{display:grid;place-items:center;min-width:58px;min-height:48px;color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px;text-decoration:none;font-size:13px;font-weight:700}}
 .guides{{display:grid;gap:9px}}
 .guide{{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:13px 14px;min-height:48px;list-style:none}}
 .guide::-webkit-details-marker{{display:none}}
 .guide span{{color:var(--muted)}}
 .hint{{color:var(--muted);font-size:13px;margin:8px 4px 0}}
-details{{display:block}}
-details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)}}
-.card-image{{display:block;width:100%;max-width:393px;height:auto;margin:12px auto 0;background:#1e3553}}
 .card-links{{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:10px auto 0}}
 .card-links a{{color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:8px 11px;text-decoration:none}}
 .guide-panel{{background:#f8fafc;color:#172033;border-radius:10px;padding:16px;overflow:auto}}
@@ -199,7 +236,7 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
 <div class="cards">
 {cards}
 </div>
-<div class="hint">Tip: tap a card name to show it inline. No internet is needed.</div>
+<div class="hint">Tap a profile to open its responsive card. PNG is the secondary offline and sharing format.</div>
 {reference_section}
 <h2>Field Guide</h2>
 <div class="guides">
@@ -215,22 +252,15 @@ details[open]{{padding-bottom:14px;border-bottom:1px solid rgba(155,210,255,.18)
 
 
 def _card_details(card, guide_targets):
-    path = card["path"]
-    label = escape(path.stem)
-    image_data = base64.b64encode(path.read_bytes()).decode("ascii")
-    links = []
-    for item in card.get("appendix_links") or []:
-        if not isinstance(item, dict) or item.get("id") not in guide_targets:
-            continue
-        target = quote(f"appendices/{guide_targets[item['id']]}", safe="/:#%")
-        link_label = escape(item.get("label") or item["id"])
-        links.append(f'<a href="{target}">{link_label}</a>')
-    link_markup = f'<div class="card-links">{"".join(links)}</div>' if links else ""
-    return f"""<details>
-<summary class="card">{label}<span>Show</span></summary>
-<img class="card-image" src="data:image/png;base64,{image_data}" alt="{label} card">
-{link_markup}
-</details>"""
+    html_path = card["html_path"]
+    png_path = card["png_path"]
+    label = escape(html_path.stem)
+    html_href = quote(f"Cards/{html_path.name}", safe="/:#%")
+    png_href = quote(f"Cards/{png_path.name}", safe="/:#%")
+    return f"""<div class="card-row">
+<a class="card-primary" href="{html_href}">{label}<span>Open</span></a>
+<a class="card-png" href="{png_href}" aria-label="Open {label} PNG">PNG</a>
+</div>"""
 
 
 def _guide_details(guide):

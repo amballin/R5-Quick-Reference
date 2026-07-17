@@ -9,7 +9,7 @@ from urllib.parse import quote, unquote, urlparse
 from generated_output import clean_generated_tree, numbered_duplicates
 
 
-PWA_TITLE = "R5 Settings"
+PWA_TITLE = "Camera Settings"
 THEME_COLOR = "#132742"
 CACHE_PREFIX = "photography-reference"
 CACHE_EXTENSIONS = {
@@ -59,8 +59,8 @@ def generate_pwa(paths, build_version=None):
 
 def _write_manifest(path):
     manifest = {
-        "name": "R5 Settings",
-        "short_name": "R5 Settings",
+        "name": "Camera Settings",
+        "short_name": "Camera Settings",
         "description": "Offline photography cards and Canon EOS R5 field guide.",
         "start_url": "./",
         "scope": "./",
@@ -254,6 +254,7 @@ def validate_merged_build_pwa(paths):
         results.extend(_validate_manifest(output_dir))
     if (output_dir / "index.html").exists():
         results.extend(_validate_index(output_dir))
+    results.extend(_validate_card_pages(paths, output_dir))
     if (output_dir / "service-worker.js").exists():
         results.extend(_validate_service_worker(output_dir))
     results.extend(_validate_referenced_assets(output_dir))
@@ -306,12 +307,54 @@ def _validate_index(output_dir):
     results = []
     html = (output_dir / "index.html").read_text(encoding="utf-8", errors="replace")
     for needle in [
+        'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"',
         'href="manifest.webmanifest"',
         'href="app-assets/apple-touch-icon.png"',
         'navigator.serviceWorker.register("service-worker.js"',
     ]:
         if needle not in html:
             results.append(("error", "merged_build_pwa_index_registration", needle))
+    return results
+
+
+def _validate_card_pages(paths, output_dir):
+    results = []
+    index_path = output_dir / "index.html"
+    if not index_path.exists():
+        return results
+    index_html = index_path.read_text(encoding="utf-8", errors="replace")
+    linked_cards = {
+        unquote(match)
+        for match in re.findall(r'href=["\'](Cards/[^"\']+\.html)["\']', index_html, flags=re.IGNORECASE)
+    }
+    released = []
+    for profile_path in sorted(paths.profiles_dir.glob("*.yaml")):
+        try:
+            import yaml
+            profile = yaml.safe_load(profile_path.read_text(encoding="utf-8")) or {}
+        except Exception:
+            continue
+        if (profile.get("metadata") or {}).get("release") is True:
+            released.append(f"Cards/{profile.get('title') or profile_path.stem}.html")
+    for relative in released:
+        if relative not in linked_cards:
+            results.append(("error", "merged_build_card_not_indexed", relative))
+    for relative in sorted(linked_cards):
+        path = output_dir / relative
+        if not path.is_file():
+            results.append(("error", "merged_build_card_missing", relative))
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if 'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"' not in text:
+            results.append(("error", "merged_build_card_viewport", relative))
+        if re.search(r'(?:file://|/Users/|[A-Za-z]:\\\\)', text):
+            results.append(("error", "merged_build_card_absolute_path", relative))
+        if re.search(r'\{\{[^}]+\}\}|(?:PLACEHOLDER|TEMPLATE_VARIABLE)', text, flags=re.IGNORECASE):
+            results.append(("error", "merged_build_card_unresolved_template", relative))
+        ids = re.findall(r'\bid=["\']([^"\']+)["\']', text, flags=re.IGNORECASE)
+        duplicates = sorted({value for value in ids if ids.count(value) > 1})
+        if duplicates:
+            results.append(("error", "merged_build_card_duplicate_id", f"{relative}: {', '.join(duplicates)}"))
     return results
 
 

@@ -1,4 +1,5 @@
 from html import escape
+import os
 from pathlib import Path
 from urllib.parse import quote
 
@@ -305,12 +306,8 @@ def header_icon_html(paths, profile, baseline, side):
     icon_path = card_icon_paths(paths, profile, baseline).get(side)
     if not icon_path:
         return ""
-    try:
-        src = icon_path.relative_to(paths.html_output_dir).as_posix()
-    except ValueError:
-        src = Path("../../") / icon_path.relative_to(paths.root)
-        src = src.as_posix()
-    return f'<img src="{quote(str(src), safe="/.")}" alt="" aria-hidden="true">'
+    src = os.path.relpath(icon_path, paths.html_output_dir).replace(os.sep, "/")
+    return f'<img src="{quote(str(src), safe="/.")}" alt="" aria-hidden="true" onerror="this.hidden=true">'
 
 
 def resolve_card_icon(paths, value):

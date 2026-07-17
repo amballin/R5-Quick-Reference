@@ -2,6 +2,20 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## No GitHub CLI
+
+**Status:** Accepted
+**Date:** 2026-07-17
+
+Do not install or use the GitHub CLI (`gh`) for this project. Preserve the established workflow: use local `git` commands for authorized staging, commits, and pushes, and use `80 Build/scripts/publish.sh` only when website publishing is explicitly authorized. Introducing another GitHub workflow or dependency requires separate project-owner approval.
+
+## Responsive HTML as Primary Published Card Format
+
+**Status:** Accepted
+**Date:** 2026-07-17
+
+Publish released camera cards as responsive standalone HTML pages optimized for iPhone safe areas and readable browser text. Make each HTML card the primary action on the Camera Settings index while retaining fixed PNG cards as secondary exports. Generate both presentations from the same merged baseline-plus-overrides data. Keep responsive styling in `20 Templates/card.html`, fixed PNG styling in `80 Build/render_card_outputs.js`, and publish required card icons through generated relative asset paths.
+
 ## Explicit Approval Before Git Branch Changes
 
 **Status:** Accepted

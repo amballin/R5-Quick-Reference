@@ -27,6 +27,8 @@ jobs:
           test -f docs/service-worker.js
           test -f docs/.nojekyll
           test -d docs/Cards
+          test -n "$(find docs/Cards -maxdepth 1 -name '*.html' -print -quit)"
+          test -d docs/web-assets
           test -d docs/appendices
           test -d docs/app-assets
           ! find docs -name '* [0-9]*' -print -quit | grep -q .

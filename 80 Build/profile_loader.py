@@ -1,13 +1,8 @@
 import yaml
 
 
-PROFILE_ALIASES = {
-    "Normal": "Camera Defaults",
-}
-
-
 def canonical_profile_name(profile_name):
-    return PROFILE_ALIASES.get(profile_name, profile_name)
+    return profile_name
 
 
 def load_yaml(path):

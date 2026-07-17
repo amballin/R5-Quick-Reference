@@ -10,6 +10,8 @@ python3 "80 Build/build.py"
 
 This regenerates the card outputs, guide pages, installable web app, and GitHub Pages folder without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
+Responsive HTML is the primary published phone card. PNG remains a secondary fixed-size export. Both are resolved from `00 Master/baseline.yaml` plus profile overrides during this same build—there is no separate HTML publishing step.
+
 Generated or refreshed:
 
 - `../Photography Reference System Local/Build Output/cards/`
@@ -42,13 +44,13 @@ PDF outputs are written to:
 | --- | --- | --- |
 | `00 Master/` | Baseline camera settings, schema, layout rules, and decision log. | Yes |
 | `10 Profiles/` | Subject/profile YAML files such as Wildlife, Sports, Landscape. | Yes |
-| `20 Templates/` | Card HTML/style templates used by the renderer. | Yes, carefully |
+| `20 Templates/` | `card.html` controls responsive HTML card layout and styling. | Yes, carefully |
 | `40 Assets/` | Legacy colors and fonts only; old Canon icon cheatsheet images moved to `60 Assets/icons/cheatsheet/`. | Rarely |
 | `50 Field Guide/Appendices/` | Editable field-guide source pages. | Yes |
 | `60 Assets/` | Source visual assets used by cards and guides: active card icons in `icons/card_icons/`, official Canon R5 icons in `icons/canon_r5_official/`, cheatsheet reference pages in `icons/cheatsheet/`, and retained photography icons in `Photography Icons/`. | Yes |
 | `60 Reference Tables/` | Empty placeholder. Remove later if no reference-table data is planned. | No |
 | `70 Canon Guides/` | Canon guide source/extraction material. | Yes |
-| `80 Build/` | Build, validation, PWA, iOS wrapper, and extraction code. | Yes, for tooling |
+| `80 Build/` | Build, validation, PWA, iOS wrapper, extraction code, and fixed PNG presentation in `render_card_outputs.js`. | Yes, for tooling |
 | `90 Testing/` | Test material and checks. | Yes, for tests |
 | `data/` | Support data for the reference system. | Yes, carefully |
 | `docs/` | Generated GitHub Pages publish folder. GitHub serves this. | No |
@@ -70,6 +72,8 @@ Everything under local `Build Output/` is rebuilt and safe to discard. The sibli
 ```
 
 The normal build refreshes local `merged-build/` and repository `docs/`. The website and iOS targets create their disposable outputs in the local workspace.
+
+Generated responsive cards are in `Build Output/cards/html/`. Fixed PNGs are in `Build Output/cards/png/` and `Build Output/cards/phone-png/`. Published released HTML and PNG cards are mirrored into `docs/Cards/`; their generated icon copies are under `docs/web-assets/`. Source Canon icons remain in `60 Assets/icons/canon_r5_official/`, with SVG preferred and PNG used only when no SVG mapping is available.
 
 ## Continue Work on Another Computer
 
@@ -119,6 +123,8 @@ Folder: /docs
 This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to the current branch.
 
 `./80 Build/scripts/publish.sh` is the only supported website publishing command. Do not run the internal `build.py --publish` mode directly. Development and test threads must never run the publishing script.
+
+Do not install or use the GitHub CLI (`gh`) for this project. Authorized commits and pushes use the existing local `git` workflow; authorized website publication uses the publishing script above.
 
 3. Open:
 
@@ -178,7 +184,7 @@ This rebuilds the site and refreshes `docs/`.
 
 ## Install On iPhone
 
-Open the live URL in Safari, then use Share -> Add to Home Screen. The installed app is labeled `Camera Settings`.
+Open the live URL in Safari. Tap a profile name for the responsive HTML version; use the smaller PNG action when you want the fixed image export. To install the site, use Safari's Share button, choose **Add to Home Screen**, keep the `Camera Settings` name, and tap Add.
 
 The first online visit registers the service worker and caches the generated cards, guide pages, icons, and supporting web assets. After that, the app can open without a network connection.
 

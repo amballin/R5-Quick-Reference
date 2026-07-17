@@ -13,7 +13,7 @@
 ## Output and Release Behavior
 
 - Disposable generated artifacts belong in the machine-local workspace's `Build Output/` folder. The default workspace is the sibling folder `<repository name> Local/`; `PRS_LOCAL_WORKSPACE` may set a different absolute or user-relative location.
-- `Build Output/merged-build/` is the canonical generated web/PWA bundle.
+- `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html`, secondary PNGs under `Cards/*.png`, and copied card assets under `web-assets/`.
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
 - `Build Output/website/` is optional staging. The iOS target copies it into `Native Wrapper/Website/` in the local workspace and exposes that folder to Xcode through the ignored `ios/Resources/Website` symlink.
 - Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
@@ -44,6 +44,8 @@ Run `python3 "80 Build/validator.py"` after relevant changes. It orchestrates va
 - generated artifacts (`output_validator.py`);
 - merged PWA integrity (`pwa_validator.py`);
 - supported links (`link_validator.py`).
+
+Generated-output validation also checks responsive viewport metadata, local path portability, referenced HTML assets, released index/card correspondence, duplicate HTML IDs, unresolved template text, and both fixed PNG output variants.
 
 Run the dedicated `validators/validate_canon_r5_icons.py` when Canon icon reference data/assets change. For documentation consolidation, also search Markdown/YAML/code for stale paths and contradictory normative statements; the project validator does not validate documentation links or rule uniqueness comprehensively.
 

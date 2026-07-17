@@ -38,10 +38,13 @@ If a required merged value is unset, render the row with `—` rather than omitt
 - When AF Method is `Not Used`, omit Subject Detection and Eye Detection.
 - Preserve existing card formats, filenames, proportions/behavior, output locations, and backward compatibility unless explicitly approved.
 - Card styling and conditional presentation are renderer concerns, not profile-data concerns.
+- Responsive HTML is the primary published phone format. It uses the full phone width, a centered maximum width on larger screens, safe-area padding, and browser-rendered text without horizontal scrolling or pinch-to-zoom.
+- PNG remains a secondary fixed-size export generated from the same merged data. Responsive HTML presentation is controlled by `20 Templates/card.html`; fixed PNG presentation is controlled by `80 Build/render_card_outputs.js`.
+- Published HTML copies required card icons into the generated site and uses relative URLs so local files and repository-subdirectory GitHub Pages hosting remain portable. SVG is preferred when available and PNG is the fallback.
 
 ## Release Requirement
 
-Only profiles with `metadata.release: true` are included as cards in the offline iPhone/PWA bundle. Other generated development outputs may still exist.
+Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action and their PNG remains available as a secondary action. Other generated development outputs may still exist.
 
 Released profile cards appear under **Subject Cards**. Released permanent reference cards appear under **Reference Cards**.
 

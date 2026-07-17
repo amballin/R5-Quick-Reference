@@ -1,4 +1,5 @@
 import re
+from urllib.parse import unquote, urlparse
 
 from asset_manager import ProjectPaths
 from .common import error
@@ -29,11 +30,39 @@ def validate(root):
         expected = [
             paths.html_output_file(name),
             paths.png_output_file(name),
+            paths.phone_png_output_file(name),
             paths.merged_output_file(name),
         ]
         for path in expected:
             if not path.exists():
                 issues.append(error("build_output", path, "Expected generated output is missing."))
+        html_path = paths.html_output_file(name)
+        if html_path.exists():
+            issues.extend(_html_issues(html_path))
+    return issues
+
+
+def _html_issues(path):
+    issues = []
+    text = path.read_text(encoding="utf-8", errors="replace")
+    viewport = 'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"'
+    if viewport not in text:
+        issues.append(error("html_viewport", path, "Responsive viewport metadata is missing."))
+    if re.search(r'(?:file://|/Users/|[A-Za-z]:\\\\)', text):
+        issues.append(error("html_absolute_path", path, "Generated HTML contains an absolute local filesystem path."))
+    if re.search(r'\{\{[^}]+\}\}|(?:PLACEHOLDER|TEMPLATE_VARIABLE)', text, flags=re.IGNORECASE):
+        issues.append(error("html_template", path, "Generated HTML contains unresolved template text."))
+    ids = re.findall(r'\bid=["\']([^"\']+)["\']', text, flags=re.IGNORECASE)
+    duplicates = sorted({value for value in ids if ids.count(value) > 1})
+    if duplicates:
+        issues.append(error("html_duplicate_id", path, f"Duplicate HTML IDs: {', '.join(duplicates)}"))
+    for reference in re.findall(r'(?:src|href)=["\']([^"\']+)["\']', text, flags=re.IGNORECASE):
+        parsed = urlparse(reference)
+        if not reference or reference.startswith("#") or parsed.scheme in {"data", "http", "https", "mailto", "tel"}:
+            continue
+        target = (path.parent / unquote(parsed.path)).resolve()
+        if not target.exists():
+            issues.append(error("html_asset", path, f"Referenced local file is missing: {reference}"))
     return issues
 
 

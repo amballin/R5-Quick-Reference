@@ -101,10 +101,9 @@ class IconManager:
             return label
         src = self._relative_url(icon_path)
         return (
-            '<span style="display:inline-flex;align-items:center;gap:6px;">'
+            '<span class="setting-label">'
             f'<img src="{src}" alt="" aria-hidden="true" '
-            'style="width:18px;height:18px;object-fit:contain;flex:0 0 18px;'
-            f'filter:{ICON_COLOR_FILTER};">'
+            'class="setting-icon" onerror="this.hidden=true">'
             f"<span>{label}</span>"
             "</span>"
         )

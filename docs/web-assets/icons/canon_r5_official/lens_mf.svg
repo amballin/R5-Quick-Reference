@@ -1,0 +1,12 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="21" height="16" viewBox="0 0 21 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_lens-mf</title>
+  <path d="M12.84,15.5H11.23l0-13h0l-3.73,13H5.9l-3.73-13h0v13H0.53V0.5H3.18L6.71,13,10.17,0.5h2.67v15Zm7.63-15V2.39H16.11v4.4h4.17V8.68H16.11V15.5H14.48V0.5h6Z"/>
+  <rect class="cls-1" width="21" height="16"/>
+</svg>
