@@ -1725,7 +1725,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "topic-index",
-    "text": "- Shooting Modes\n- Focus Features\n- AF Operation\n- Subject Detection\n- Eye Detection\n- AF Method\n- Focus Mode\n- Drive Mode\n- Metering Mode\n- Shutter Speed\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Shutter Type\n- Focus Bracketing\n- Long Exposure Noise Reduction\n- Subject Detection and AF Method Combinations"
+    "text": "- Exposure and Shutter\n- Shooting Modes\n- Metering Mode\n- Shutter Speed\n- Shutter Type\n- Autofocus and Manual Focus\n- Focus Mode\n- AF Operation\n- AF Method\n- Subject Detection\n- Eye Detection\n- Subject Detection and AF Method Combinations\n- Capture and Timing\n- Drive Mode\n- Stabilization\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Specialized Focus and Long-Exposure Tools\n- Focus Features\n- Focus Bracketing\n- Long Exposure Noise Reduction"
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1748,11 +1748,38 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
-    "section": "Focus Features",
+    "section": "Metering Mode",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
-    "anchor": "focus-features",
-    "text": "These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.\n  Icon   Setting   Canon Name   What it Does  \n --- --- --- --- \n  !Focus Bracketing   Focus Bracketing   Focus Bracketing   Captures a sequence while automatically shifting focus after each shot.  \n  !Focus Guide   Focus Guide   Focus Guide   Displays a guide frame showing direction and amount of manual focus adjustment.  \n  !MF Peaking   MF Peaking   MF Peaking (Outline Emphasis)   Displays in-focus edges in color to make manual focusing easier.  \n**Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.\n**Quick Menu:** Menu only."
+    "anchor": "metering-mode",
+    "text": "Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Evaluative metering   Evaluative   Reads the whole scene and is the safest general default.  \n  !Partial metering   Partial   Meters a central area when the background should matter less.  \n  !Spot metering   Spot   Meters a very small area when one subject tone must control exposure.  \n  !Center-weighted average metering   Center-weighted   Emphasizes the center while still considering the whole frame.  \n**Camera Menu:** Shooting menu > Metering mode.\n**Quick Menu:** Q screen / M-Fn."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Shutter Speed",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "shutter-speed",
+    "text": "Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.\n  Setting   What it Does  \n --- --- \n  Fast shutter speed   Freezes motion for action, wildlife, or sports.  \n  Slow shutter speed   Allows long exposures for fireworks, night work, or blur effects.  \n  Camera-selected shutter speed   Lets the camera choose shutter speed from the exposure mode.  \n**Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.\n**Quick Menu:** Top dial / Q screen depending on exposure mode."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Shutter Type",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "shutter-type",
+    "text": "Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.\n  Setting   What it Does  \n --- --- \n  Mechanical   Safest general default with broad flash and motion compatibility.  \n  EFCS   Reduces vibration while avoiding many electronic shutter tradeoffs.  \n  Electronic   Silent shooting, but watch for rolling shutter, banding, and flash limits.  \n**Camera Menu:** Shooting 6 > Shutter mode.\n**Quick Menu:** Menu only."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "Focus Mode",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "focus-mode",
+    "text": "AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.\n  Icon   Setting   What it Does  \n --- --- --- \n  !AF   AF   Lets the camera or lens drive focus.  \n  !MF   MF   Leaves focus under manual control from the lens or camera setting.  \n**Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.\n**Quick Menu:** Lens switch; usually not a Q item."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1762,6 +1789,15 @@
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "af-operation",
     "text": "Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.\n  Icon   Setting   What it Does  \n --- --- --- \n  !AF   Servo AF   Continuously updates focus for moving subjects.  \n  !AF   One-Shot AF   Locks focus for static or slow subjects.  \n  !MF   Manual Focus   Stops autofocus hunting and keeps focus under manual control.  \n**Camera Menu:** AF1 > AF operation; for Manual Focus use the lens AF/MF switch or AF1 > Focus mode when shown.\n**Quick Menu:** Q screen / M-Fn for AF Operation. Manual Focus is usually the lens switch, not Q."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
+    "section": "AF Method",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "af-method",
+    "text": "Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking   Tracks recognized subjects across the frame.  \n  !1-point AF   1-Point AF   Gives predictable focus control on one selected point.  \n  !Spot AF   Spot AF   Uses a smaller point for very precise placement.  \n  !Expand AF area   Expand AF Area   Starts from one point but uses surrounding points to help with action.  \n  screen-only   Not Used   AF method does not matter because autofocus is not controlling focus.  \n**Camera Menu:** AF1 > AF method.\n**Quick Menu:** AF point selection button, then M-Fn."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1784,20 +1820,11 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
-    "section": "AF Method",
+    "section": "Subject Detection and AF Method Combinations",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
-    "anchor": "af-method",
-    "text": "Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking   Tracks recognized subjects across the frame.  \n  !1-point AF   1-Point AF   Gives predictable focus control on one selected point.  \n  !Spot AF   Spot AF   Uses a smaller point for very precise placement.  \n  !Expand AF area   Expand AF Area   Starts from one point but uses surrounding points to help with action.  \n  screen-only   Not Used   AF method does not matter because autofocus is not controlling focus.  \n**Camera Menu:** AF1 > AF method.\n**Quick Menu:** AF point selection button, then M-Fn."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
-    "section": "Focus Mode",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "focus-mode",
-    "text": "AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.\n  Icon   Setting   What it Does  \n --- --- --- \n  !AF   AF   Lets the camera or lens drive focus.  \n  !MF   MF   Leaves focus under manual control from the lens or camera setting.  \n**Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.\n**Quick Menu:** Lens switch; usually not a Q item."
+    "anchor": "subject-detection-and-af-method-combinations",
+    "text": "Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking + subject detection   Best when the camera should identify and follow the subject.  \n  !Expand AF area   Expand AF Area + Subject Detection None   Useful when action is hard to track and the camera might choose the wrong subject.  \n  !MF   Manual Focus   Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.  \n**Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.\n**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1807,24 +1834,6 @@
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "drive-mode",
     "text": "Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Single shooting   Single Shooting   Takes one frame per shutter press for deliberate work.  \n  !Low-speed continuous shooting   Low Speed Continuous   Captures short bursts without creating too many files.  \n  !High-speed continuous shooting   High Speed Continuous   Increases capture rate for movement and changing expressions.  \n  !High-speed continuous shooting plus   High Speed Continuous+   Maximizes capture rate for fast action, with more files to sort later.  \n  !10 sec. self-timer   Self-timer: 10 sec.   Delays capture for tripod work, group frames, or remote release timing.  \n  !2 sec. self-timer   Self-timer: 2 sec.   Delays capture briefly to let tripod shake settle after pressing the shutter.  \n**Camera Menu:** M-Fn drive mode item.\n**Quick Menu:** Q screen / M-Fn."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
-    "section": "Metering Mode",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "metering-mode",
-    "text": "Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Evaluative metering   Evaluative   Reads the whole scene and is the safest general default.  \n  !Partial metering   Partial   Meters a central area when the background should matter less.  \n  !Spot metering   Spot   Meters a very small area when one subject tone must control exposure.  \n  !Center-weighted average metering   Center-weighted   Emphasizes the center while still considering the whole frame.  \n**Camera Menu:** Shooting menu > Metering mode.\n**Quick Menu:** Q screen / M-Fn."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
-    "section": "Shutter Speed",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "shutter-speed",
-    "text": "Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.\n  Setting   What it Does  \n --- --- \n  Fast shutter speed   Freezes motion for action, wildlife, or sports.  \n  Slow shutter speed   Allows long exposures for fireworks, night work, or blur effects.  \n  Camera-selected shutter speed   Lets the camera choose shutter speed from the exposure mode.  \n**Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.\n**Quick Menu:** Top dial / Q screen depending on exposure mode."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1856,11 +1865,11 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
-    "section": "Shutter Type",
+    "section": "Focus Features",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
-    "anchor": "shutter-type",
-    "text": "Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.\n  Setting   What it Does  \n --- --- \n  Mechanical   Safest general default with broad flash and motion compatibility.  \n  EFCS   Reduces vibration while avoiding many electronic shutter tradeoffs.  \n  Electronic   Silent shooting, but watch for rolling shutter, banding, and flash limits.  \n**Camera Menu:** Shooting 6 > Shutter mode.\n**Quick Menu:** Menu only."
+    "anchor": "focus-features",
+    "text": "These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.\n  Icon   Setting   Canon Name   What it Does  \n --- --- --- --- \n  !Focus Bracketing   Focus Bracketing   Focus Bracketing   Captures a sequence while automatically shifting focus after each shot.  \n  !Focus Guide   Focus Guide   Focus Guide   Displays a guide frame showing direction and amount of manual focus adjustment.  \n  !MF Peaking   MF Peaking   MF Peaking (Outline Emphasis)   Displays in-focus edges in color to make manual focusing easier.  \n**Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.\n**Quick Menu:** Menu only."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1883,20 +1892,11 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
-    "section": "Subject Detection and AF Method Combinations",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "subject-detection-and-af-method-combinations",
-    "text": "Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Face+Tracking   Face + Tracking + subject detection   Best when the camera should identify and follow the subject.  \n  !Expand AF area   Expand AF Area + Subject Detection None   Useful when action is hard to track and the camera might choose the wrong subject.  \n  !MF   Manual Focus   Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.  \n**Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.\n**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
     "section": "Recommended Settings by Profile",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "recommended-settings-by-profile",
-    "text": "- Birds in Flight: Servo AF, Animals when tracking is useful, Expand AF Area, High Speed Continuous+.\n- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous.\n- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.\n- Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.\n- Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.\n- People: Servo AF, People, Eye Detection, Face + Tracking.\n- Sports: Servo AF, Expand AF Area, High Speed Continuous+, fast shutter target.\n- Travel: Baseline settings unless the subject demands a specialized profile.\n- Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.\n- Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive."
+    "text": "- Birds in Flight: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous+. If subject detection repeatedly selects the wrong target, use Expand AF Area with Subject Detection None.\n- Birds Perched: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous. Use Expand AF Area if tracking struggles.\n- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.\n- Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.\n- Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.\n- People: Servo AF, People, Eye Detection, Face + Tracking.\n- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.\n- Travel: Baseline settings unless the subject demands a specialized profile.\n- Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.\n- Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive."
   },
   {
     "appendix_id": "r5_quick_reference",

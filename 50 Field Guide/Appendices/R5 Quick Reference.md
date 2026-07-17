@@ -6,31 +6,38 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 
 ## Topic Index
 
-- [Shooting Modes](#shooting-modes)
-- [Focus Features](#focus-features)
-- [AF Operation](#af-operation)
-- [Subject Detection](#subject-detection)
-- [Eye Detection](#eye-detection)
-- [AF Method](#af-method)
-- [Focus Mode](#focus-mode)
-- [Drive Mode](#drive-mode)
-- [Metering Mode](#metering-mode)
-- [Shutter Speed](#shutter-speed)
-- [Image Stabilization Mode](#image-stabilization-mode)
-- [IBIS](#ibis)
-- [Lens IS](#lens-is)
-- [Shutter Type](#shutter-type)
-- [Focus Bracketing](#focus-bracketing)
-- [Long Exposure Noise Reduction](#long-exposure-noise-reduction)
-- [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
+- [Exposure and Shutter](#exposure-and-shutter)
+  - [Shooting Modes](#shooting-modes)
+  - [Metering Mode](#metering-mode)
+  - [Shutter Speed](#shutter-speed)
+  - [Shutter Type](#shutter-type)
+- [Autofocus and Manual Focus](#autofocus-and-manual-focus)
+  - [Focus Mode](#focus-mode)
+  - [AF Operation](#af-operation)
+  - [AF Method](#af-method)
+  - [Subject Detection](#subject-detection)
+  - [Eye Detection](#eye-detection)
+  - [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
+- [Capture and Timing](#capture-and-timing)
+  - [Drive Mode](#drive-mode)
+- [Stabilization](#stabilization)
+  - [Image Stabilization Mode](#image-stabilization-mode)
+  - [IBIS](#ibis)
+  - [Lens IS](#lens-is)
+- [Specialized Focus and Long-Exposure Tools](#specialized-focus-and-long-exposure-tools)
+  - [Focus Features](#focus-features)
+  - [Focus Bracketing](#focus-bracketing)
+  - [Long Exposure Noise Reduction](#long-exposure-noise-reduction)
 
 ## Decision Guide
 
-### Shooting Modes
+### Exposure and Shutter
+
+#### Shooting Modes
 
 Canon EOS R5 shooting modes define how exposure decisions are divided between the photographer and the camera.
 
-#### Choosing Shooting Mode: P vs Fv vs Av/Tv/M
+##### Choosing Shooting Mode: P vs Fv vs Av/Tv/M
 
 Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.
 
@@ -61,21 +68,65 @@ Use Bulb only for long manual exposures where you directly control how long the 
 
 **Quick Menu:** Exposure mode is normally changed with the MODE button, not the Q screen.
 
-### Focus Features
+#### Metering Mode
 
-These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.
+Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.
 
-| Icon | Setting | Canon Name | What it Does |
-|---|---|---|---|
-| ![Focus Bracketing](../../60 Assets/icons/canon_r5_official/focus-bracketing.svg) | Focus Bracketing | Focus Bracketing | Captures a sequence while automatically shifting focus after each shot. |
-| ![Focus Guide](../../60 Assets/icons/canon_r5_official/focus-guide.svg) | Focus Guide | Focus Guide | Displays a guide frame showing direction and amount of manual focus adjustment. |
-| ![MF Peaking](../../60 Assets/icons/canon_r5_official/focus-mf-peaking.svg) | MF Peaking | MF Peaking (Outline Emphasis) | Displays in-focus edges in color to make manual focusing easier. |
+| Icon | Setting | What it Does |
+|---|---|---|
+| ![Evaluative metering](../../60 Assets/icons/canon_r5_official/evaluative_metering.svg) | Evaluative | Reads the whole scene and is the safest general default. |
+| ![Partial metering](../../60 Assets/icons/canon_r5_official/partial_metering.svg) | Partial | Meters a central area when the background should matter less. |
+| ![Spot metering](../../60 Assets/icons/canon_r5_official/spot_metering.svg) | Spot | Meters a very small area when one subject tone must control exposure. |
+| ![Center-weighted average metering](../../60 Assets/icons/canon_r5_official/center_weighted_average_metering.svg) | Center-weighted | Emphasizes the center while still considering the whole frame. |
 
-**Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.
+**Camera Menu:** Shooting menu > Metering mode.
+
+**Quick Menu:** Q screen / M-Fn.
+
+#### Shutter Speed
+
+Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.
+
+| Setting | What it Does |
+|---|---|
+| Fast shutter speed | Freezes motion for action, wildlife, or sports. |
+| Slow shutter speed | Allows long exposures for fireworks, night work, or blur effects. |
+| Camera-selected shutter speed | Lets the camera choose shutter speed from the exposure mode. |
+
+**Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.
+
+**Quick Menu:** Top dial / Q screen depending on exposure mode.
+
+#### Shutter Type
+
+Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.
+
+| Setting | What it Does |
+|---|---|
+| Mechanical | Safest general default with broad flash and motion compatibility. |
+| EFCS | Reduces vibration while avoiding many electronic shutter tradeoffs. |
+| Electronic | Silent shooting, but watch for rolling shutter, banding, and flash limits. |
+
+**Camera Menu:** Shooting 6 > Shutter mode.
 
 **Quick Menu:** Menu only.
 
-### AF Operation
+### Autofocus and Manual Focus
+
+#### Focus Mode
+
+AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.
+
+| Icon | Setting | What it Does |
+|---|---|---|
+| ![AF](../../60 Assets/icons/canon_r5_official/lens_af.svg) | AF | Lets the camera or lens drive focus. |
+| ![MF](../../60 Assets/icons/canon_r5_official/lens_mf.svg) | MF | Leaves focus under manual control from the lens or camera setting. |
+
+**Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.
+
+**Quick Menu:** Lens switch; usually not a Q item.
+
+#### AF Operation
 
 Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.
 
@@ -89,36 +140,7 @@ Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus whe
 
 **Quick Menu:** Q screen / M-Fn for AF Operation. Manual Focus is usually the lens switch, not Q.
 
-### Subject Detection
-
-Use People, Animals, or Vehicles when the camera can recognize the subject. Use None when a smaller AF area or manual focus should control the point.
-
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![People](../../60 Assets/icons/canon_r5_official/subject_to_detect_people.png) | People | Prioritizes human faces, heads, and eyes. |
-| ![Animals](../../60 Assets/icons/canon_r5_official/subject_to_detect_animals.png) | Animals | Prioritizes animals and birds when recognized. |
-| ![Vehicles](../../60 Assets/icons/canon_r5_official/subject_to_detect_vehicles.png) | Vehicles | Prioritizes racing cars and motorcycles when recognized. |
-| ![None](../../60 Assets/icons/canon_r5_official/subject_to_detect_none.png) | None | Prevents subject recognition from pulling focus away from the chosen area. |
-
-**Camera Menu:** AF1 > Subject to detect.
-
-**Quick Menu:** Menu only.
-
-### Eye Detection
-
-Enable it when Face + Tracking and subject detection are useful. It is not useful when AF is manual or when the selected AF method cannot use eye tracking.
-
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Enable | Lets compatible AF methods prioritize the subject's eye. |
-| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Disable | Prevents eye priority when the AF area or subject choice should stay simpler. |
-| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Not shown | Usually means AF is manual or the AF method cannot use eye tracking. |
-
-**Camera Menu:** AF1 > Eye detection.
-
-**Quick Menu:** AF point selection button, then INFO toggle when available.
-
-### AF Method
+#### AF Method
 
 Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.
 
@@ -134,20 +156,52 @@ Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predict
 
 **Quick Menu:** AF point selection button, then M-Fn.
 
-### Focus Mode
+#### Subject Detection
 
-AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.
+Use People, Animals, or Vehicles when the camera can recognize the subject. Use None when a smaller AF area or manual focus should control the point.
 
 | Icon | Setting | What it Does |
 |---|---|---|
-| ![AF](../../60 Assets/icons/canon_r5_official/lens_af.svg) | AF | Lets the camera or lens drive focus. |
-| ![MF](../../60 Assets/icons/canon_r5_official/lens_mf.svg) | MF | Leaves focus under manual control from the lens or camera setting. |
+| ![People](../../60 Assets/icons/canon_r5_official/subject_to_detect_people.png) | People | Prioritizes human faces, heads, and eyes. |
+| ![Animals](../../60 Assets/icons/canon_r5_official/subject_to_detect_animals.png) | Animals | Prioritizes animals and birds when recognized. |
+| ![Vehicles](../../60 Assets/icons/canon_r5_official/subject_to_detect_vehicles.png) | Vehicles | Prioritizes racing cars and motorcycles when recognized. |
+| ![None](../../60 Assets/icons/canon_r5_official/subject_to_detect_none.png) | None | Prevents subject recognition from pulling focus away from the chosen area. |
 
-**Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.
+**Camera Menu:** AF1 > Subject to detect.
 
-**Quick Menu:** Lens switch; usually not a Q item.
+**Quick Menu:** Menu only.
 
-### Drive Mode
+#### Eye Detection
+
+Enable it when Face + Tracking and subject detection are useful. It is not useful when AF is manual or when the selected AF method cannot use eye tracking.
+
+| Icon | Setting | What it Does |
+|---|---|---|
+| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Enable | Lets compatible AF methods prioritize the subject's eye. |
+| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Disable | Prevents eye priority when the AF area or subject choice should stay simpler. |
+| ![Eye detection](../../60 Assets/icons/canon_r5_official/eye_detection.svg) | Not shown | Usually means AF is manual or the AF method cannot use eye tracking. |
+
+**Camera Menu:** AF1 > Eye detection.
+
+**Quick Menu:** AF point selection button, then INFO toggle when available.
+
+#### Subject Detection and AF Method Combinations
+
+Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.
+
+| Icon | Setting | What it Does |
+|---|---|---|
+| ![Face+Tracking](../../60 Assets/icons/canon_r5_official/face_tracking.svg) | Face + Tracking + subject detection | Best when the camera should identify and follow the subject. |
+| ![Expand AF area](../../60 Assets/icons/canon_r5_official/expand_af_area.svg) | Expand AF Area + Subject Detection None | Useful when action is hard to track and the camera might choose the wrong subject. |
+| ![MF](../../60 Assets/icons/canon_r5_official/lens_mf.svg) | Manual Focus | Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card. |
+
+**Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.
+
+**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch.
+
+### Capture and Timing
+
+#### Drive Mode
 
 Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.
 
@@ -164,36 +218,9 @@ Single Shooting is deliberate. Low or High Speed Continuous helps with expressio
 
 **Quick Menu:** Q screen / M-Fn.
 
-### Metering Mode
+### Stabilization
 
-Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.
-
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![Evaluative metering](../../60 Assets/icons/canon_r5_official/evaluative_metering.svg) | Evaluative | Reads the whole scene and is the safest general default. |
-| ![Partial metering](../../60 Assets/icons/canon_r5_official/partial_metering.svg) | Partial | Meters a central area when the background should matter less. |
-| ![Spot metering](../../60 Assets/icons/canon_r5_official/spot_metering.svg) | Spot | Meters a very small area when one subject tone must control exposure. |
-| ![Center-weighted average metering](../../60 Assets/icons/canon_r5_official/center_weighted_average_metering.svg) | Center-weighted | Emphasizes the center while still considering the whole frame. |
-
-**Camera Menu:** Shooting menu > Metering mode.
-
-**Quick Menu:** Q screen / M-Fn.
-
-### Shutter Speed
-
-Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.
-
-| Setting | What it Does |
-|---|---|
-| Fast shutter speed | Freezes motion for action, wildlife, or sports. |
-| Slow shutter speed | Allows long exposures for fireworks, night work, or blur effects. |
-| Camera-selected shutter speed | Lets the camera choose shutter speed from the exposure mode. |
-
-**Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.
-
-**Quick Menu:** Top dial / Q screen depending on exposure mode.
-
-### Image Stabilization Mode
+#### Image Stabilization Mode
 
 Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod.
 
@@ -208,7 +235,7 @@ Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for e
 
 **Quick Menu:** Menu/lens control; not usually Q.
 
-### IBIS
+#### IBIS
 
 In-body image stabilization moves the camera sensor to reduce shake. It helps handheld work and should usually be off for solid tripod long exposures.
 
@@ -221,7 +248,7 @@ In-body image stabilization moves the camera sensor to reduce shake. It helps ha
 
 **Quick Menu:** Menu only.
 
-### Lens IS
+#### Lens IS
 
 Lens stabilization moves lens elements to reduce shake. With compatible lenses, Lens IS and IBIS may work together. Turn it off on a solid tripod when the profile calls for locked-down work.
 
@@ -234,21 +261,23 @@ Lens stabilization moves lens elements to reduce shake. With compatible lenses, 
 
 **Quick Menu:** Lens switch; not Q.
 
-### Shutter Type
+### Specialized Focus and Long-Exposure Tools
 
-Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.
+#### Focus Features
 
-| Setting | What it Does |
-|---|---|
-| Mechanical | Safest general default with broad flash and motion compatibility. |
-| EFCS | Reduces vibration while avoiding many electronic shutter tradeoffs. |
-| Electronic | Silent shooting, but watch for rolling shutter, banding, and flash limits. |
+These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.
 
-**Camera Menu:** Shooting 6 > Shutter mode.
+| Icon | Setting | Canon Name | What it Does |
+|---|---|---|---|
+| ![Focus Bracketing](../../60 Assets/icons/canon_r5_official/focus-bracketing.svg) | Focus Bracketing | Focus Bracketing | Captures a sequence while automatically shifting focus after each shot. |
+| ![Focus Guide](../../60 Assets/icons/canon_r5_official/focus-guide.svg) | Focus Guide | Focus Guide | Displays a guide frame showing direction and amount of manual focus adjustment. |
+| ![MF Peaking](../../60 Assets/icons/canon_r5_official/focus-mf-peaking.svg) | MF Peaking | MF Peaking (Outline Emphasis) | Displays in-focus edges in color to make manual focusing easier. |
+
+**Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.
 
 **Quick Menu:** Menu only.
 
-### Focus Bracketing
+#### Focus Bracketing
 
 Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see [Focus Bracketing & In-Camera Depth Compositing](appendix:focus_bracketing_depth_compositing).
 
@@ -265,7 +294,7 @@ Recommended: create a new folder for each subject or stack so bracket sequences 
 
 **Quick Menu:** Menu only.
 
-### Long Exposure Noise Reduction
+#### Long Exposure Noise Reduction
 
 LENR takes a dark frame after a long exposure. It can clean hot pixels but doubles wait time and is usually poor for repeated captures, stacking, or fireworks sequences.
 
@@ -279,29 +308,15 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 **Quick Menu:** Menu only.
 
-### Subject Detection and AF Method Combinations
-
-Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.
-
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![Face+Tracking](../../60 Assets/icons/canon_r5_official/face_tracking.svg) | Face + Tracking + subject detection | Best when the camera should identify and follow the subject. |
-| ![Expand AF area](../../60 Assets/icons/canon_r5_official/expand_af_area.svg) | Expand AF Area + Subject Detection None | Useful when action is hard to track and the camera might choose the wrong subject. |
-| ![MF](../../60 Assets/icons/canon_r5_official/lens_mf.svg) | Manual Focus | Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card. |
-
-**Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.
-
-**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch.
-
 ## Recommended Settings by Profile
 
-- Birds in Flight: Servo AF, Animals when tracking is useful, Expand AF Area, High Speed Continuous+.
-- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous.
+- Birds in Flight: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous+. If subject detection repeatedly selects the wrong target, use Expand AF Area with Subject Detection None.
+- Birds Perched: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous. Use Expand AF Area if tracking struggles.
 - Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.
 - Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
 - Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
 - People: Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Servo AF, Expand AF Area, High Speed Continuous+, fast shutter target.
+- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.
 - Travel: Baseline settings unless the subject demands a specialized profile.
 - Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.
 - Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive.
