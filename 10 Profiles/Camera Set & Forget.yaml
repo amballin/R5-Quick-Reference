@@ -3,8 +3,8 @@ metadata:
   status: Final
   last_updated: 2026-07-17
   release: true
-title: Camera Setup
-subtitle: Set & Forget
+title: Camera Set & Forget
+subtitle:
 card:
   icons:
     left: camera_default
