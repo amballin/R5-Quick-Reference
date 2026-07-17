@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-03
+  last_updated: 2026-07-17
   release: true
 
 title: Fireworks
@@ -23,22 +23,22 @@ overrides:
       value: 100
 
   shutter:
-    target: 4 s
+    target: 2–6 s (start at 4 s)
 
   lens:
     aperture:
-      target: f/11
+      target: f/8–f/11
 
   autofocus:
     operation: Manual Focus
-    subject_detection: None
-    eye_detection: Disable
     method: Not Used
 
   drive:
     mode: Single Shot
 
   stabilization:
+    image_stabilization:
+      mode: "Off"
     ibis: "Off"
     lens_is: "Off"
 
@@ -48,6 +48,7 @@ checklist:
   - Remote release or 2-second timer
   - RGB Histogram checked
   - Highlight Alert enabled
+  - Long Exposure NR off during show
   - Leave room for highest bursts
   - Watch smoke direction
 
@@ -65,6 +66,7 @@ common_mistakes:
 
 notes:
   - Prefocus on a distant object before the show.
-  - Start at 4 s, f/11, ISO 100.
-  - Use f/8 for dim fireworks and f/13–f/16 for very bright displays.
+  - Start at 4 s, f/8–f/11, ISO 100; adjust shutter time for the number and length of trails.
+  - Use a smaller aperture only for unusually bright displays.
   - Increase shutter time to capture multiple bursts or use Bulb mode for complete control.
+  - Keep Long Exposure NR off during an active show because its dark-frame cycle can cause missed bursts.

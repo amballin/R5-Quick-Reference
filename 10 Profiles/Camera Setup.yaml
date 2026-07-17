@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-08
+  last_updated: 2026-07-17
   release: true
 title: Camera Setup
 subtitle: Set & Forget
@@ -25,7 +25,8 @@ common_mistakes:
   - Leaving a specialty mode enabled after testing
 notes:
   - Highlight tools stay on because exposure warnings are useful in the field.
-  - Noise reduction stays off because Lightroom handles RAW cleanup better.
+  - High ISO Noise Reduction stays off because Lightroom/Topaz handles RAW cleanup better.
+  - Long Exposure NR can reduce hot pixels and fixed-pattern noise in selected multi-second exposures, but its additional dark-frame wait interrupts shooting; leave it off when cadence matters.
   - Continuous AF is off because it can drain battery by focusing when you are not shooting.
   - Electronic full-time MF is off because it is not useful for your lens.
   - IBIS High Resolution Shot is off because it is a static-scene specialty mode with very large JPEG output.

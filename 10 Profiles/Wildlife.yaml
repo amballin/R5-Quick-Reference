@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: true
 title: Wildlife
 card:
@@ -11,6 +11,7 @@ inherits: baseline
 overrides:
   autofocus:
     subject_detection: Animals
+    eye_detection: Enable
   drive:
     mode: High Speed Continuous
 checklist:
@@ -21,8 +22,8 @@ watch_for:
   - Busy background
   - Subject movement
 common_mistakes:
-  - Shutter too slow
   - Focus on body instead of eye
 notes:
   - Use Expand AF if Face + Tracking struggles through branches.
   - Use Tv for active wildlife when shutter speed must dominate; Fv may be better for mixed safari or walkaround wildlife.
+  - Switch to Mode 3 for active wildlife

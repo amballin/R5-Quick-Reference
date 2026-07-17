@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: false
 title: Sports
 inherits: baseline
@@ -17,19 +17,26 @@ overrides:
   exposure:
     mode: Tv
   autofocus:
-    subject_detection: None
-    eye_detection: Disable
-    method: Expand AF Area
+    subject_detection: People
+    eye_detection: Enable
+    method: Face + Tracking
   drive:
     mode: High Speed Continuous+
   shutter:
-    target: 1/2000
+    target: 1/1000–1/2000 outdoor; 1/640–1/1000 indoor
+  stabilization:
+    image_stabilization:
+      mode: Mode 3
 checklist:
   - Servo AF
   - Subject acquired
+  - Check flicker/banding under artificial light
 watch_for:
   - Motion blur
+  - Artificial-light flicker or banding
 common_mistakes:
   - Shutter too slow
 notes:
-  - Subject Detection depends on sport.
+  - Use People detection and Face + Tracking for people sports; switch to Expand AF Area if detection is unreliable.
+  - Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
+  - Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.

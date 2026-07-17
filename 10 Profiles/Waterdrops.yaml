@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: false
 title: Waterdrops
 card:
@@ -16,20 +16,28 @@ overrides:
       value: 100
   autofocus:
     operation: Manual Focus
-    subject_detection: None
-    eye_detection: Disable
     method: Not Used
   shutter:
     target: 1/200
   lens:
     aperture:
-      target: f/11
+      target: f/8–f/11
+  stabilization:
+    image_stabilization:
+      mode: "Off"
+    ibis: "Off"
+    lens_is: "Off"
 checklist:
   - Pluto armed
   - Flash ready
+  - Manual flash about 1/16–1/64 power
+  - Trigger and flash sync verified
 watch_for:
   - Ambient light
+  - Flash recycle consistency
+  - Depth of field
 common_mistakes:
   - Incorrect trigger timing
 notes:
-  - Manual flash operation.
+  - Use manual flash; its short duration freezes the drop, while 1/200 controls ambient light and stays within the trigger/flash synchronization setup.
+  - Lower flash power usually gives a shorter flash duration; start around 1/16–1/64 and adjust exposure, recycle performance, and motion freezing.

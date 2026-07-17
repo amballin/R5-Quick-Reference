@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: true
 title: People
 card:
@@ -9,8 +9,17 @@ card:
     left: people
 inherits: baseline
 overrides:
+  autofocus:
+    subject_detection: People
+    eye_detection: Enable
+    method: Face + Tracking
   drive:
     mode: Low Speed Continuous
+  shutter:
+    target: 1/200–1/320 portraits; 1/500+ action
+  lens:
+    aperture:
+      target: f/1.8–f/4 single; f/4–f/8 groups
 checklist:
   - Eye detected
   - Catchlight in eyes
@@ -19,5 +28,5 @@ watch_for:
 common_mistakes:
   - Focus on nose instead of eye
 notes:
-  - Face + Tracking inherited from baseline.
+  - Use short bursts to capture expressions without filling the buffer unnecessarily.
   - Consider Av for intentional portraits; use Fv for casual family and event people photography.

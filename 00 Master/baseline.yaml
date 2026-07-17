@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
 
 subtitle:
 
@@ -44,9 +44,9 @@ defaults:
       maximum: 12800
   autofocus:
     operation: Servo AF
-    subject_detection: People
-    eye_detection: Enable
-    method: Face + Tracking
+    subject_detection: None
+    eye_detection: Disable
+    method: 1-Point AF
   drive:
     mode: "Single Shooting"
   shutter:

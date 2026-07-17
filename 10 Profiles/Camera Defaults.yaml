@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: true
 title: Camera Defaults
 subtitle:
@@ -14,6 +14,7 @@ checklist:
   - Lens clean
   - Battery charged
   - Memory card installed
+  - Shutter speed checked
   - Histogram checked
 watch_for:
   - Clipped highlights

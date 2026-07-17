@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-16
+  last_updated: 2026-07-17
   release: false
 title: Macro
 inherits: baseline
@@ -26,8 +26,6 @@ overrides:
 
   autofocus:
     operation: One Shot AF
-    subject_detection: None
-    eye_detection: Disable
     method: Spot AF
 checklist:
   - Stable support

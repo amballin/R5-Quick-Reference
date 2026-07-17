@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-02
+  last_updated: 2026-07-17
   release: false
 title: Travel
 inherits: baseline
@@ -17,9 +17,13 @@ overrides: {}
 checklist:
   - Battery
   - Spare card
+  - Shutter speed safe for focal length and subject
+  - ISO and stabilization checked
+  - Exposure compensation checked
 watch_for:
   - Changing light
 common_mistakes:
   - Leaving exposure compensation set
 notes:
-  - Baseline configuration is normally sufficient.
+  - Use neutral 1-Point AF for general travel subjects; switch to People detection and Face + Tracking for portraits and family photographs.
+  - Raise ISO when needed to protect shutter speed as light or subject movement changes.

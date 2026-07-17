@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-16
+  last_updated: 2026-07-17
   release: true
 
 title: Birds in Flight
@@ -16,6 +16,7 @@ overrides:
 
   autofocus:
     subject_detection: Animals
+    eye_detection: Enable
 
   drive:
     mode: High Speed Continuous+
