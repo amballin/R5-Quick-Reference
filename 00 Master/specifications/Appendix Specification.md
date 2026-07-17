@@ -41,6 +41,7 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 - `release: true` controls whether an entry is shown in the published GitHub Pages/offline index. Released `field_guide` entries appear under **Field Guide**; released `setting_deep_dive` entries appear under **Setting Deep Dives**.
 - Entries without `release: true` remain generated and linkable from released documentation, but are not listed in either published index section.
 - Preserve existing appendix sources, manifest compatibility, rendering, and output locations unless explicitly approved.
+- Standalone published appendices and Setting Deep Dives use the same Camera Settings header as profile cards. The centered title always links to the main index. Back returns to the originating profile card when a valid generated card return target is supplied; otherwise it returns to the main index. Navigation must remain inside the generated reference system and must not depend on browser history.
 
 ## Enforcement and Evidence
 

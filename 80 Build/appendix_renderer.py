@@ -10,6 +10,7 @@ from urllib.parse import quote, unquote, urlparse
 
 from validators.common import load_yaml_checked
 from generated_output import clean_generated_tree, mirror_tree
+from site_navigation import SITE_NAV_CSS, site_navigation
 
 
 def render_appendices(paths, include_pdf=False):
@@ -77,70 +78,32 @@ def _site_home_url(output_path, site_root):
     return Path(os.path.relpath(site_root / "index.html", output_path.parent)).as_posix()
 
 
-def _back_button_markup(site_home_url):
-    fallback = json.dumps(site_home_url)
-    return f"""<button class="back-button" type="button" onclick="goBack()">
-  <span aria-hidden="true">←</span> Back
-</button>
-<script>
-function getSiteHomeUrl() {{
-  return {fallback};
-}}
-
-function goBack() {{
-  let sameSiteReferrer = false;
-
-  try {{
-    sameSiteReferrer =
-      document.referrer &&
-      new URL(document.referrer).origin === window.location.origin;
-  }} catch (error) {{
-    sameSiteReferrer = false;
-  }}
-
-  if (sameSiteReferrer && window.history.length > 1) {{
-    window.history.back();
-    return;
-  }}
-
-  window.location.assign(getSiteHomeUrl());
-}}
-</script>"""
-
-
-BACK_BUTTON_CSS = """
-.back-button{display:inline-flex;align-items:center;gap:.35rem;margin-bottom:1rem;padding:.45rem .8rem;border:1px solid var(--border-color,#b8b8b8);border-radius:6px;background:var(--surface-color,#fff);color:inherit;font:inherit;line-height:1.2;cursor:pointer}
-.back-button:hover{background:var(--surface-hover-color,#f2f2f2)}
-.back-button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
-.output-mode .back-button{display:none!important}
-@media print{.back-button{display:none!important}}
-"""
-
-
 def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True):
-    navigation = _back_button_markup(site_home_url) if navigation_enabled else ""
+    navigation = site_navigation(site_home_url, site_home_url, dynamic_return=True) if navigation_enabled else ""
     content = _markdown_to_html(markdown)
-    if navigation:
-        content = re.sub(r"(</h1>)", rf"\1\n{navigation}", content, count=1, flags=re.IGNORECASE)
     return f"""<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{html.escape(title)}</title>
 <style>
-body{{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;max-width:860px;margin:40px auto;padding:0 24px;color:#172033}}
+*{{box-sizing:border-box}}
+body{{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;color:#172033;--site-nav-bg:#132742;--site-nav-text:#f7fbff;--site-nav-muted:#b9d5ec}}
+main{{max-width:860px;margin:0 auto;padding:24px 24px 40px}}
 h1{{font-size:34px}}
 h2{{border-bottom:1px solid #d7dee8;padding-bottom:4px;margin-top:32px}}
 h3{{margin-top:24px}}
-table{{border-collapse:collapse;width:100%;margin:16px 0}}
+table{{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;width:100%;margin:16px 0;-webkit-overflow-scrolling:touch}}
 th,td{{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}}
 code{{background:#eef2f7;padding:2px 4px;border-radius:4px}}
 a{{color:#165d9c}}
-{BACK_BUTTON_CSS}
+{SITE_NAV_CSS}
 </style>
 </head>
 <body>
-{content}
+{navigation}
+<main>{content}</main>
 </body>
 </html>
 """
@@ -228,7 +191,7 @@ def _canon_icon_reference_html(paths, site_home_url="../index.html", navigation_
             f'<div class="grid">{"".join(cards)}</div></section>'
         )
 
-    navigation = _back_button_markup(site_home_url) if navigation_enabled else ""
+    navigation = site_navigation(site_home_url, site_home_url, dynamic_return=True) if navigation_enabled else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -255,13 +218,14 @@ h2{{margin:0 0 12px;font-size:18px;letter-spacing:0}}
 .label{{margin-top:3px;color:var(--accent);font-size:12px;font-weight:650}}
 .meta{{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.25}}
 a{{color:inherit}}
-{BACK_BUTTON_CSS}
+{SITE_NAV_CSS}
 @media print{{header,main{{padding-left:18px;padding-right:18px}}.grid{{grid-template-columns:repeat(3,1fr)}}.icon-card{{break-inside:avoid}}}}
 </style>
 </head>
 <body>
+{navigation}
 <header><h1>Canon EOS R5 Official Icon Reference</h1><p class="subtitle">Official Canon names and extracted assets from Canon EOS R5 Product Manual pages at cam.start.canon.</p></header>
-<main>{navigation}{"".join(sections)}</main>
+<main>{"".join(sections)}</main>
 </body>
 </html>
 """
@@ -415,6 +379,8 @@ def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
         before = match.group(1)
         href = html.unescape(match.group(2))
         after = match.group(3)
+        if "site-nav__" in before:
+            return match.group(0)
         parsed = urlparse(href)
         if parsed.scheme or href.startswith(("#", "/")):
             return match.group(0)

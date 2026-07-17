@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from validators.common import load_yaml_checked
+from site_navigation import SITE_NAV_CSS, site_navigation
 
 from utilities import flatten
 
@@ -219,6 +220,8 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{SUBTITLE_BLOCK}}", subtitle_block(profile, baseline))
         .replace("{{BACKGROUND_COLOR}}", colors["background"])
         .replace("{{TEXT_COLOR}}", colors["text"])
+        .replace("{{SITE_NAV_CSS}}", SITE_NAV_CSS)
+        .replace("{{NAVIGATION_HEADER}}", site_navigation("../../merged-build/index.html", "../../merged-build/index.html"))
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
         .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths))
@@ -253,7 +256,9 @@ def appendix_link_entries(profile, paths=None):
 def card_note_items(profile, paths=None):
     items = list(profile.get("notes") or [])
     for link in appendix_link_entries(profile, paths):
+        return_target = quote(f"../Cards/{profile.get('title', 'Card')}.html", safe="/.")
         href = quote(f"../../field-guide/html/{link['filename']}", safe="/:#%")
+        href = f"{href}?return={return_target}"
         items.append(f'<a href="{href}">{escape(link["label"])}</a>')
     return items
 

@@ -308,6 +308,8 @@ def _validate_index(output_dir):
     html = (output_dir / "index.html").read_text(encoding="utf-8", errors="replace")
     for needle in [
         'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"',
+        'data-site-navigation',
+        '>Camera Settings</a>',
         'href="manifest.webmanifest"',
         'href="app-assets/apple-touch-icon.png"',
         'navigator.serviceWorker.register("service-worker.js"',
@@ -347,6 +349,9 @@ def _validate_card_pages(paths, output_dir):
         text = path.read_text(encoding="utf-8", errors="replace")
         if 'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"' not in text:
             results.append(("error", "merged_build_card_viewport", relative))
+        for needle in ['data-site-navigation', 'class="site-nav__back"', 'href="../index.html"', '>Camera Settings</a>']:
+            if needle not in text:
+                results.append(("error", "merged_build_card_navigation", f"{relative}: missing {needle}"))
         if re.search(r'(?:file://|/Users/|[A-Za-z]:\\\\)', text):
             results.append(("error", "merged_build_card_absolute_path", relative))
         if re.search(r'\{\{[^}]+\}\}|(?:PLACEHOLDER|TEMPLATE_VARIABLE)', text, flags=re.IGNORECASE):

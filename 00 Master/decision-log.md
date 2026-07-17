@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Shared Internal Web Navigation
+
+**Status:** Accepted
+**Date:** 2026-07-17
+
+Use one safe-area-aware Camera Settings header on the published index, responsive cards, Field Guide appendices, Setting Deep Dives, and generated reference pages. Standalone content pages provide a real internal Back destination and a centered Camera Settings link to the index. Appendix links from cards may supply a validated generated-card return target; invalid or absent targets fall back to the index. Do not depend on browser history or navigate outside the reference system.
+
 ## No GitHub CLI
 
 **Status:** Accepted

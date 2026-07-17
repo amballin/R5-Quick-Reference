@@ -41,6 +41,7 @@ If a required merged value is unset, render the row with `—` rather than omitt
 - Responsive HTML is the primary published phone format. It uses the full phone width, a centered maximum width on larger screens, safe-area padding, and browser-rendered text without horizontal scrolling or pinch-to-zoom.
 - PNG remains a secondary fixed-size export generated from the same merged data. Responsive HTML presentation is controlled by `20 Templates/card.html`; fixed PNG presentation is controlled by `80 Build/render_card_outputs.js`.
 - Published HTML copies required card icons into the generated site and uses relative URLs so local files and repository-subdirectory GitHub Pages hosting remain portable. SVG is preferred when available and PNG is the fallback.
+- Every published HTML card uses the shared Camera Settings header. Its Back control and centered title both use real internal relative links to the main index so navigation works in an iPhone Home Screen installation without browser controls.
 
 ## Release Requirement
 

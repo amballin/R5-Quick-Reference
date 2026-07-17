@@ -12,6 +12,7 @@ from urllib.parse import quote, unquote
 import yaml
 
 from generated_output import clean_generated_tree, mirror_tree
+from site_navigation import SITE_NAV_CSS, site_navigation
 
 
 GUIDE_DISPLAY_ORDER = {
@@ -101,6 +102,7 @@ def _published_card_html(paths, source_html, web_assets_dir):
         return f'<img{before}src="{published_src}"{after}>'
 
     html = re.sub(r'<img([^>]*?)src="([^"]+)"([^>]*)>', replace_image, html, flags=re.IGNORECASE)
+    html = html.replace('href="../../merged-build/index.html"', 'href="../index.html"')
     return re.sub(
         r'href="\.\./\.\./field-guide/html/([^"]+)"',
         lambda match: f'href="../appendices/{match.group(1)}"',
@@ -190,9 +192,7 @@ def _write_index(path, card_files, guides, publish_metadata):
 :root{{color-scheme:dark;--bg:#132742;--panel:#1d395b;--text:#f7fbff;--muted:#b9d5ec;--rule:#5b7893;--accent:#9bd2ff}}
 *{{box-sizing:border-box}}
 body{{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}}
-#top{{position:sticky;top:0;background:rgba(19,39,66,.96);backdrop-filter:blur(16px);padding:calc(env(safe-area-inset-top,0px) + 18px) max(18px,env(safe-area-inset-right,0px)) 12px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid rgba(155,210,255,.22);z-index:1}}
-h1{{font-size:24px;margin:0}}
-.publish-meta{{color:var(--muted);font-size:13px;margin:3px 0 0}}
+{SITE_NAV_CSS}
 main{{width:min(100%,640px);margin:0 auto;padding:16px max(14px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 32px) max(14px,env(safe-area-inset-left,0px))}}
 h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .cards{{display:grid;gap:9px}}
@@ -227,10 +227,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 </style>
 </head>
 <body>
-<header id="top">
-<h1>{APP_TITLE}</h1>
-<p class="publish-meta">{escape(publish_metadata)}</p>
-</header>
+{site_navigation("index.html", metadata=publish_metadata)}
 <main>
 <h2>Subject Cards</h2>
 <div class="cards">
@@ -290,11 +287,14 @@ def _html_body(html):
     match = re.search(r"<body[^>]*>(.*)</body>", html, flags=re.IGNORECASE | re.DOTALL)
     body = match.group(1) if match else html
     body = re.sub(
-        r'<button\b[^>]*class="[^"]*\bback-button\b[^"]*"[^>]*>.*?</button>\s*<script>.*?</script>',
+        r'<header\b[^>]*data-site-navigation[^>]*>.*?</header>\s*(?:<script>.*?</script>)?',
         "",
         body,
         flags=re.IGNORECASE | re.DOTALL,
     )
+    main = re.search(r"<main\b[^>]*>(.*)</main>", body, flags=re.IGNORECASE | re.DOTALL)
+    if main:
+        body = main.group(1)
     return re.sub(
         r"<a\b([^>]*)>(.*?)</a>",
         lambda link: _offline_link(link, "appendices/"),
@@ -310,9 +310,16 @@ def _offline_link(match, local_prefix):
     if href:
         target = href.group(1)
         if target.startswith("#"):
-            return f'<a href="{target}">{label}</a>'
+            return match.group(0)
         if not target.startswith(("http://", "https://", "mailto:")):
-            return f'<a href="{local_prefix}{target}">{label}</a>'
+            rewritten = re.sub(
+                r'href="[^"]+"',
+                f'href="{local_prefix}{target}"',
+                attrs,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+            return f'<a{rewritten}>{label}</a>'
     return label
 
 
