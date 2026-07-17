@@ -12,13 +12,10 @@ from urllib.parse import quote, unquote
 import yaml
 
 from generated_output import clean_generated_tree, mirror_tree
-from site_navigation import SITE_NAV_CSS, site_navigation
+from html_renderer import shared_header_icon_path
+from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
 
-GUIDE_DISPLAY_ORDER = {
-    "R5 Quick Reference": 10,
-    "Canon EOS R5 Official Icon Reference": 20,
-}
 APP_TITLE = "Camera Settings"
 
 
@@ -34,7 +31,7 @@ def render_offline_index(paths, publish_metadata, include_png=False):
         card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
-        _write_index(output_dir / "index.html", card_files, guides, publish_metadata)
+        _write_index(output_dir / "index.html", card_files, guides, publish_metadata, paths)
         _write_readme(output_dir / "README.txt")
         (output_dir / ".nojekyll").touch()
         mirror_tree(output_dir, final_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
@@ -133,8 +130,9 @@ def _all_guides(paths):
             "html": html,
             "release": entry.get("release") is True,
             "content_type": entry.get("content_type", "field_guide"),
+            "display_order": entry.get("display_order", 100),
         })
-    return sorted(guides, key=lambda guide: (GUIDE_DISPLAY_ORDER.get(guide["title"], 100), guide["title"].lower()))
+    return sorted(guides, key=lambda guide: (guide["display_order"], guide["title"].lower()))
 
 
 def _copy_named_files(source_dir, target_dir, filenames, inline_html_assets=False):
@@ -160,7 +158,7 @@ def _load_yaml(path):
         return yaml.safe_load(file) or {}
 
 
-def _write_index(path, card_files, guides, publish_metadata):
+def _write_index(path, card_files, guides, publish_metadata, paths):
     guide_targets = {guide.get("id"): guide["filename"] for guide in guides if guide.get("id")}
     cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "profile")
     reference_cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "reference")
@@ -182,6 +180,12 @@ def _write_index(path, card_files, guides, publish_metadata):
         f'{deep_dive_markup}\n</div>'
         if deep_dive_markup else ""
     )
+    icon_path = shared_header_icon_path(paths)
+    logo = ""
+    if icon_path is not None:
+        logo_data = base64.b64encode(icon_path.read_bytes()).decode("ascii")
+        mime = "image/svg+xml" if icon_path.suffix.lower() == ".svg" else "image/png"
+        logo = brand_image(f"data:{mime};base64,{logo_data}")
     path.write_text(
         f"""<!DOCTYPE html>
 <html>
@@ -232,7 +236,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 </style>
 </head>
 <body>
-{site_navigation("index.html", metadata=publish_metadata)}
+{site_navigation("index.html", metadata=publish_metadata, right_html=logo)}
 <main>
 <h2>Subject Cards</h2>
 <div class="cards">

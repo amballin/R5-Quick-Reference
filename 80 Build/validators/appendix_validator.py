@@ -29,6 +29,8 @@ def validate(root):
             continue
         if "release" in entry and not isinstance(entry["release"], bool):
             issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} release must be a boolean."))
+        if "display_order" in entry and (not isinstance(entry["display_order"], int) or isinstance(entry["display_order"], bool)):
+            issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} display_order must be an integer."))
         content_type = entry.get("content_type", "field_guide")
         if content_type not in {"field_guide", "setting_deep_dive"}:
             issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id', '<unknown>')} has invalid content_type: {content_type}"))

@@ -56,7 +56,7 @@ Run the dedicated `validators/validate_canon_r5_icons.py` when Canon icon refere
 | --- | --- | --- |
 | `00 Master/baseline.yaml` | Shared defaults and camera/workflow context | `baseline_validator.py`, `profile_validator.py`, `yaml_validator.py` |
 | `00 Master/schema.yaml` | Intended profile/YAML field structure | `yaml_validator.py`; parts are enforced directly by `profile_validator.py` |
-| `00 Master/card_layout.yaml` | Always-shown card rows and labels | `card_layout_validator.py`, `yaml_validator.py`; consumed by rendering/build code, with output review |
+| `00 Master/card_layout.yaml` | Card-row display order plus always-shown rows and labels | `card_layout_validator.py`, `yaml_validator.py`; consumed by rendering/build code, with output review |
 | `50 Field Guide/required_appendices.yaml` | Required appendices, sections, relationships, topics, exceptions, release flags | `appendix_validator.py`, rendering/build and PWA validation |
 
 `80 Build/validator.py` is the validation entry point. A passing validator means its implemented checks passed; it does not replace visual card review, documentation-reference review, or review of requirements not yet encoded as checks.

@@ -60,6 +60,7 @@ They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/
 | `20 Templates/` | `card.html` controls responsive HTML card layout and styling. | Yes, carefully |
 | `40 Assets/` | Legacy colors and fonts only; old Canon icon cheatsheet images moved to `60 Assets/icons/cheatsheet/`. | Rarely |
 | `50 Field Guide/Appendices/` | Editable field-guide source pages. | Yes |
+| `50 Field Guide/Setting Deep Dives/` | Editable focused guides for individual settings or tightly scoped features. | Yes |
 | `60 Assets/` | Source visual assets used by cards and guides: active card icons in `icons/card_icons/`, official Canon R5 icons in `icons/canon_r5_official/`, cheatsheet reference pages in `icons/cheatsheet/`, and retained photography icons in `Photography Icons/`. | Yes |
 | `60 Reference Tables/` | Empty placeholder. Remove later if no reference-table data is planned. | No |
 | `70 Canon Guides/` | Canon guide source/extraction material. | Yes |
@@ -87,6 +88,27 @@ Everything under local `Build Output/` is rebuilt and safe to discard. The sibli
 The normal build refreshes local `merged-build/` and repository `docs/`. The website and iOS targets create their disposable outputs in the local workspace.
 
 Generated responsive cards are in `Build Output/cards/html/`. An explicit `--png` build adds fixed PNGs in `Build Output/cards/png/` and `Build Output/cards/phone-png/` and mirrors released PNGs into `docs/Cards/`. Generated icon copies are under `docs/web-assets/`. Source Canon icons remain in `60 Assets/icons/canon_r5_official/`, with SVG preferred and PNG used only when no SVG mapping is available.
+
+## Control Field Guide and Setting Deep Dive Order
+
+The published sections are controlled by each entry in `50 Field Guide/required_appendices.yaml`:
+
+```yaml
+- id: example_guide
+  title: "Example Guide"
+  file: "Appendices/Example Guide.md"
+  content_type: field_guide
+  release: true
+  display_order: 20
+```
+
+- Use `content_type: field_guide` for the **Field Guide** section and store the source under `50 Field Guide/Appendices/`.
+- Use `content_type: setting_deep_dive` for the **Setting Deep Dives** section and store the source under `50 Field Guide/Setting Deep Dives/`.
+- Use `release: true` to list the entry on the published index.
+- Use `display_order` to control its position within its own section. Lower numbers appear first, equal numbers sort alphabetically, and an omitted value defaults to `100`.
+- Leave gaps such as `10`, `20`, and `30` so another entry can be inserted later without renumbering the entire section.
+
+After changing classification or order, run the validator and normal build, then review both published sections in `docs/index.html`.
 
 ## Continue Work on Another Computer
 

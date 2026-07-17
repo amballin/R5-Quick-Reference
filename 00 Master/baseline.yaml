@@ -7,8 +7,9 @@ subtitle:
 
 card:
   icons:
+    header: Card Logos/png/Silver Logo.png
     left:
-    right: Card Logos/png/Silver Logo.png
+    right:
   colors:
     background:
     text:

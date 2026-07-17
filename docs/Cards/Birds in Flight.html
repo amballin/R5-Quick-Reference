@@ -15,13 +15,13 @@ html{box-sizing:border-box;-webkit-text-size-adjust:100%;background:#1e3553}
 body{margin:0;min-width:0;background:#1e3553;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(14px,3.75vw,16px);line-height:1.3;overflow-x:hidden}
 .site-nav{max-width:430px;margin:0 auto;--site-nav-bg:#1e3553;--site-nav-text:#ffffff}
 .card{width:min(100%,430px);min-height:calc(100svh - 68px);margin:0 auto;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(16px,env(safe-area-inset-left,0px));background:#1e3553}
-.header{min-height:38px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin-bottom:4px}
+.header{min-height:44px;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;margin-bottom:4px}
 .header-spacer{min-width:0}
 .header-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center}
 .header-icon.left{justify-self:start}
 .header-icon.right{justify-self:end}
 .header-icon img{display:block;max-width:38px;max-height:38px;width:auto;height:auto;object-fit:contain}
-h1{text-align:center;font-size:clamp(26px,7.5vw,32px);line-height:1.08;margin:0 0 8px;overflow-wrap:anywhere}
+h1{text-align:center;font-size:clamp(26px,7.5vw,32px);line-height:1.08;margin:0;overflow-wrap:anywhere}
 .sub{text-align:center;color:#b7d2e8;margin:4px 0 12px}
 h2{color:#8dc8ff;border-bottom:1px solid #53738c;padding-bottom:3px;margin:12px 0 5px;font-size:clamp(19px,5vw,21px);line-height:1.1}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
@@ -39,6 +39,8 @@ a{color:#b7dfff;text-underline-offset:2px}
 .site-nav__back{justify-self:start;font-size:15px;font-weight:600}
 .site-nav__home{justify-self:center;text-align:center;font-size:20px;font-weight:750;white-space:nowrap}
 .site-nav__spacer{min-width:0}
+.site-nav__brand{justify-self:end;width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.site-nav__brand img{display:block;max-width:38px;max-height:38px;width:auto;height:auto;object-fit:contain}
 .site-nav__meta{grid-column:1/-1;text-align:center;color:var(--site-nav-muted,#b9d5ec);font-size:13px;margin:-5px 0 0}
 .site-nav__back:focus-visible,.site-nav__home:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:4px}
 .output-mode .site-nav{display:none!important}
@@ -50,16 +52,15 @@ a{color:#b7dfff;text-underline-offset:2px}
 </style>
 </head>
 <body>
-<header class="site-nav" data-site-navigation><a class="site-nav__back" href="../index.html"><span aria-hidden="true">←</span>&nbsp;Back</a><a class="site-nav__home" href="../index.html">Camera Settings</a><span class="site-nav__spacer" aria-hidden="true"></span></header>
+<header class="site-nav" data-site-navigation><a class="site-nav__back" href="../index.html"><span aria-hidden="true">←</span>&nbsp;Back</a><a class="site-nav__home" href="../index.html">Camera Settings</a><span class="site-nav__brand"><img src="../web-assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true" onerror="this.hidden=true"></span></header>
 <article class="card">
 <div class="header">
 <div class="header-icon left"><img src="../web-assets/Card%20Logos/png/Bird%20in%20Flight.png" alt="" aria-hidden="true" onerror="this.hidden=true"></div>
-<div class="header-spacer" aria-hidden="true"></div>
-<div class="header-icon right"><img src="../web-assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true" onerror="this.hidden=true"></div>
-</div>
 <h1>Birds in Flight</h1>
+<div class="header-icon right"></div>
+</div>
 
-<h2>Settings</h2><table><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td>Tv</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td>Servo AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/subject_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Subject Detection</span></span></td><td>Animals</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/eye_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Eye Detection</span></span></td><td>Enable</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/one_point_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Method</span></span></td><td>1-Point AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td>High Speed Continuous+</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td>1/2000–1/4000</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td>—</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td>Mode 3</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td>Auto - 12800</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/exposure_compensation.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Exposure Comp</span></span></td><td>Adjust for background</td></tr></table>
+<h2>Settings</h2><table><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td>Tv</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td>1/2000–1/4000</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td>—</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td>Auto - 12800</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/exposure_compensation.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Exposure Comp</span></span></td><td>Adjust for background</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td>Servo AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/one_point_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Method</span></span></td><td>1-Point AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/subject_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Subject Detection</span></span></td><td>Animals</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/eye_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Eye Detection</span></span></td><td>Enable</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td>High Speed Continuous+</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td>Mode 3</td></tr></table>
 <h2>Checklist</h2>
 <ul><li>Servo AF</li><li>Bird/eye acquired</li><li>Shutter speed verified</li><li>Histogram checked</li><li>Focus limiter set for distance</li></ul>
 <h2>Watch For</h2>

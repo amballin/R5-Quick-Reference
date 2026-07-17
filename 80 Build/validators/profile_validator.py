@@ -5,6 +5,7 @@ from .common import error, flatten_paths, load_yaml_checked
 
 LIST_KEYS = ["checklist", "watch_for", "common_mistakes", "notes"]
 CARD_TYPES = {"profile", "reference"}
+ICON_POSITIONS = {"header", "left", "right"}
 
 
 def validate(root):
@@ -58,10 +59,31 @@ def validate(root):
         for key in LIST_KEYS:
             if key in data and not isinstance(data[key], list):
                 issues.append(error("profiles", path, f"{key} must be a list."))
+        issues.extend(_validate_card_icons(path, data.get("card")))
         issues.extend(_validate_appendix_links(path, data.get("appendix_links"), appendix_ids))
 
     for duplicate in _duplicates(titles):
         issues.append(error("profiles", root / "10 Profiles", f"Duplicate profile title: {duplicate}"))
+    return issues
+
+
+def _validate_card_icons(path, card):
+    if card is None:
+        return []
+    if not isinstance(card, dict):
+        return [error("profiles", path, "card must be a mapping.")]
+    icons = card.get("icons")
+    if icons is None:
+        return []
+    if not isinstance(icons, dict):
+        return [error("profiles", path, "card.icons must be a mapping.")]
+    issues = []
+    unknown = sorted(set(icons) - ICON_POSITIONS)
+    if unknown:
+        issues.append(error("profiles", path, f"Unknown card icon positions: {', '.join(unknown)}."))
+    for position, value in icons.items():
+        if value is not None and not isinstance(value, str):
+            issues.append(error("profiles", path, f"card.icons.{position} must be a string or null."))
     return issues
 
 

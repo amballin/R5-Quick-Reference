@@ -1,4 +1,5 @@
 import html
+import base64
 import json
 import os
 import re
@@ -10,7 +11,8 @@ from urllib.parse import quote, unquote, urlparse
 
 from validators.common import load_yaml_checked
 from generated_output import clean_generated_tree, mirror_tree
-from site_navigation import SITE_NAV_CSS, site_navigation
+from html_renderer import shared_header_icon_path
+from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
 
 def render_appendices(paths, include_pdf=False):
@@ -53,7 +55,7 @@ def render_appendices(paths, include_pdf=False):
                     encoding="utf-8",
                 )
             else:
-                rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled)
+                rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled, paths)
                 rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets, html_path.name)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
                 rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html, html_path.name)
@@ -78,8 +80,8 @@ def _site_home_url(output_path, site_root):
     return Path(os.path.relpath(site_root / "index.html", output_path.parent)).as_posix()
 
 
-def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True):
-    navigation = site_navigation(site_home_url, site_home_url, dynamic_return=True) if navigation_enabled else ""
+def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True, paths=None):
+    navigation = _appendix_navigation(site_home_url, navigation_enabled, paths)
     content = _markdown_to_html(markdown)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -191,7 +193,7 @@ def _canon_icon_reference_html(paths, site_home_url="../index.html", navigation_
             f'<div class="grid">{"".join(cards)}</div></section>'
         )
 
-    navigation = site_navigation(site_home_url, site_home_url, dynamic_return=True) if navigation_enabled else ""
+    navigation = _appendix_navigation(site_home_url, navigation_enabled, paths)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -229,6 +231,24 @@ a{{color:inherit}}
 </body>
 </html>
 """
+
+
+def _appendix_navigation(site_home_url, navigation_enabled, paths=None):
+    if not navigation_enabled:
+        return ""
+    if paths is None:
+        return site_navigation(site_home_url, site_home_url, dynamic_return=True)
+    icon_path = shared_header_icon_path(paths)
+    if icon_path is None:
+        return site_navigation(site_home_url, site_home_url, dynamic_return=True)
+    logo_data = base64.b64encode(icon_path.read_bytes()).decode("ascii")
+    mime = "image/svg+xml" if icon_path.suffix.lower() == ".svg" else "image/png"
+    return site_navigation(
+        site_home_url,
+        site_home_url,
+        dynamic_return=True,
+        right_html=brand_image(f"data:{mime};base64,{logo_data}"),
+    )
 
 
 def _canon_mode_reference_section(paths, entries, title, predicate):

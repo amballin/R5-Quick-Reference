@@ -39,9 +39,10 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 
 - Builds generate all manifest entries in applicable HTML and search outputs. PDF remains optional.
 - `release: true` controls whether an entry is shown in the published GitHub Pages/offline index. Released `field_guide` entries appear under **Field Guide**; released `setting_deep_dive` entries appear under **Setting Deep Dives**.
+- Optional integer `display_order` controls position independently within the published Field Guide or Setting Deep Dives section. Lower numbers appear first; entries with the same number are ordered alphabetically. Entries without the field default to `100`. Changing `content_type` moves an entry between sections; its source file must also be stored in the matching folder.
 - Entries without `release: true` remain generated and linkable from released documentation, but are not listed in either published index section.
 - Preserve existing appendix sources, manifest compatibility, rendering, and output locations unless explicitly approved.
-- Standalone published appendices and Setting Deep Dives use the same Camera Settings header as profile cards. The centered title always links to the main index. Back returns to the originating profile card when a valid generated card return target is supplied; otherwise it returns to the main index. Navigation must remain inside the generated reference system and must not depend on browser history.
+- Standalone published appendices and Setting Deep Dives use the same Camera Settings header and inherited baseline `card.icons.header` as profile cards. The centered title always links to the main index. Back returns to the originating profile card when a valid generated card return target is supplied; otherwise it returns to the main index. Navigation must remain inside the generated reference system and must not depend on browser history.
 
 ## Enforcement and Evidence
 

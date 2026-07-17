@@ -13,6 +13,7 @@ default subtitle in baseline: optional string
 
 card:
   icons:
+    header: optional asset path or icon id; defaults from baseline
     left: optional asset path or icon id
     right: optional asset path or icon id
   colors:

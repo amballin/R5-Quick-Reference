@@ -1,6 +1,9 @@
 from .common import error, load_yaml_checked
 
 
+ICON_POSITIONS = {"header", "left", "right"}
+
+
 def validate(root):
     path = root / "00 Master" / "baseline.yaml"
     issues = []
@@ -20,5 +23,16 @@ def validate(root):
         issues.append(error("baseline", path, "Missing required key: defaults."))
     elif not isinstance(data["defaults"], dict):
         issues.append(error("baseline", path, "defaults must be a mapping."))
+    icons = ((data.get("card") or {}).get("icons") or {})
+    if not isinstance(icons, dict):
+        issues.append(error("baseline", path, "card.icons must be a mapping."))
+    else:
+        unknown = sorted(set(icons) - ICON_POSITIONS)
+        if unknown:
+            issues.append(error("baseline", path, f"Unknown card icon positions: {', '.join(unknown)}."))
+        if not isinstance(icons.get("header"), str) or not icons["header"].strip():
+            issues.append(error("baseline", path, "card.icons.header must define the shared header icon."))
+        for position, value in icons.items():
+            if value is not None and not isinstance(value, str):
+                issues.append(error("baseline", path, f"card.icons.{position} must be a string or null."))
     return issues
-

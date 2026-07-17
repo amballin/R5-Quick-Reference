@@ -1,24 +1,53 @@
 card_layout:
+  display_order:
+    - exposure.mode
+    - exposure.metering
+    - shutter.target
+    - shutter.type
+    - lens.aperture.target
+    - exposure.iso.mode
+    - exposure.iso.value
+    - exposure.auto_iso.maximum
+    - exposure.exposure_compensation
+    - autofocus.operation
+    - autofocus.method
+    - autofocus.subject_detection
+    - autofocus.eye_detection
+    - drive.mode
+    - stabilization.image_stabilization.mode
+    - stabilization.ibis
+    - stabilization.lens_is
+    - image.focus_bracketing
+    - image.long_exposure_noise_reduction.value
+    - display.histogram
+    - display.highlight_alert
+    - image.quality
+    - image.white_balance
+    - image.highlight_tone_priority
+    - image.high_iso_noise_reduction
+    - camera_setup.electronic_full_time_mf
+    - camera_setup.ibis_high_res_shot
+    - camera_setup.continuous_af
   always_show:
     - key: exposure.mode
       label: Mode
-    - key: autofocus.operation
-      label: AF Operation
-    - key: autofocus.subject_detection
-      label: Subject Detection
-    - key: autofocus.eye_detection
-      label: Eye Detection
-    - key: autofocus.method
-      label: AF Method
-    - key: drive.mode
-      label: Drive
     - key: shutter.target
       label: Shutter
     - key: lens.aperture.target
       label: Aperture
-    - key: exposure.auto_iso.maximum
-      label: Auto ISO Max
-    - key: stabilization.image_stabilization.mode
-      label: Image Stabilization
     - key: exposure.iso.mode
       label: ISO
+    - key: exposure.auto_iso.maximum
+      label: Auto ISO Max
+    - key: autofocus.operation
+      label: AF Operation
+    - key: autofocus.method
+      label: AF Method
+    - key: autofocus.subject_detection
+      label: Subject Detection
+    - key: autofocus.eye_detection
+      label: Eye Detection
+    - key: drive.mode
+      label: Drive
+    - key: stabilization.image_stabilization.mode
+      label: Image Stabilization

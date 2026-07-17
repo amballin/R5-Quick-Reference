@@ -102,7 +102,8 @@ def settings_rows(profile, merged, paths=None):
     if is_camera_defaults(profile):
         keys |= CAMERA_DEFAULT_EXTRA_SETTINGS
     rows = []
-    for key, label in LABEL.items():
+    for key in card_setting_order(paths):
+        label = LABEL[key]
         if key in keys and key in merged_fields:
             if manual_focus(merged_fields) and key in {
                 "autofocus.subject_detection",
@@ -147,6 +148,20 @@ def required_card_settings(paths=None):
         return keys or set(REQUIRED_CARD_SETTINGS)
     except (OSError, ValueError):
         return set(REQUIRED_CARD_SETTINGS)
+
+
+def card_setting_order(paths=None):
+    """Return the configured display order, followed by any unconfigured legacy fields."""
+    configured = []
+    if paths is not None:
+        layout_path = paths.root / "00 Master" / "card_layout.yaml"
+        try:
+            layout = load_yaml_checked(layout_path) or {}
+            configured = (layout.get("card_layout") or {}).get("display_order") or []
+        except (OSError, ValueError):
+            configured = []
+    known = [key for key in configured if key in LABEL]
+    return known + [key for key in LABEL if key not in known]
 
 
 def is_camera_defaults(profile):
@@ -221,7 +236,14 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{BACKGROUND_COLOR}}", colors["background"])
         .replace("{{TEXT_COLOR}}", colors["text"])
         .replace("{{SITE_NAV_CSS}}", SITE_NAV_CSS)
-        .replace("{{NAVIGATION_HEADER}}", site_navigation("../../merged-build/index.html", "../../merged-build/index.html"))
+        .replace(
+            "{{NAVIGATION_HEADER}}",
+            site_navigation(
+                "../../merged-build/index.html",
+                "../../merged-build/index.html",
+                right_html=header_icon_html(paths, profile, baseline, "header"),
+            ),
+        )
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
         .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths))
@@ -300,9 +322,21 @@ def card_colors(profile, baseline=None):
 def card_icon_paths(paths, profile, baseline=None):
     icons = (card_options(profile, baseline).get("icons") or {})
     return {
+        "header": resolve_card_icon(paths, icons.get("header")),
         "left": resolve_card_icon(paths, icons.get("left")),
         "right": resolve_card_icon(paths, icons.get("right")),
     }
+
+
+def shared_header_icon_path(paths):
+    """Return the baseline icon used by shared Camera Settings headers."""
+    if paths is None:
+        return None
+    try:
+        baseline = load_yaml_checked(paths.baseline_file) or {}
+    except (OSError, ValueError):
+        return None
+    return card_icon_paths(paths, {}, baseline).get("header")
 
 
 def header_icon_html(paths, profile, baseline, side):

@@ -79,6 +79,7 @@ appendices:
     file: "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md"
     content_type: setting_deep_dive
     release: true
+    display_order: 20
     profiles:
       - Landscape
       - Macro
@@ -148,6 +149,7 @@ appendices:
     title: "Lens Capabilities"
     file: "Appendices/Lens Capabilities.md"
     release: true
+    display_order: 30
     profiles:
       - Birds in Flight
       - Birds Perched
@@ -279,8 +281,10 @@ appendices:
       - Travel recommendations
   - id: back_button_af_custom_button_strategies
     title: "Back-Button AF & Custom Button Strategies"
-    file: "Appendices/Back-Button AF & Custom Button Strategies.md"
+    file: "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md"
+    content_type: setting_deep_dive
     release: true
+    display_order: 30
     profiles:
       - Birds in Flight
       - Birds Perched
@@ -333,6 +337,7 @@ appendices:
     title: "Canon EOS R5 Official Icon Reference"
     file: "Appendices/Canon EOS R5 Official Icon Reference.md"
     release: true
+    display_order: 999
     profiles:
       - Birds in Flight
       - Camera Defaults
@@ -376,6 +381,7 @@ appendices:
     title: "R5 Quick Reference"
     file: "Appendices/R5 Quick Reference.md"
     release: true
+    display_order: 10
     profiles:
       - Birds in Flight
       - Camera Defaults
@@ -418,6 +424,7 @@ appendices:
     file: "Setting Deep Dives/Fv - Flexible Priority.md"
     content_type: setting_deep_dive
     release: true
+    display_order: 10
     profiles: []
     related_appendices:
       - r5_quick_reference
