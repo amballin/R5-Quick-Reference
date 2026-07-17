@@ -1,6 +1,6 @@
 # Photography Reference System
 
-Responsive HTML is the primary published phone format. Each released profile opens as a crisp, width-responsive card from the Camera Settings page; PNG cards remain secondary exports for Photos, sharing, wallpaper, and immediate offline access. Both formats are generated from the same baseline-plus-overrides YAML data.
+Responsive HTML is the primary and default published phone format. Each released profile opens as a crisp, width-responsive card from the Camera Settings page. Fixed PNG cards remain optional exports for Photos, sharing, wallpaper, and offline files; use `--png` when they are wanted. Both formats use the same baseline-plus-overrides YAML data.
 
 This project builds Canon R5 subject-setting cards, guide pages, an installable web app, and the `docs/` folder served by GitHub Pages.
 
@@ -30,7 +30,13 @@ python3 "80 Build/build.py"
 
 This rebuilds local outputs without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
-The default build removes stale generated PDF folders. PDFs are off by default.
+The default build omits and removes stale fixed PNG and PDF output. Both are off by default.
+
+To create fixed PNG cards and include their secondary index links:
+
+```bash
+python3 "80 Build/build.py" --png
+```
 
 To create fresh PDFs only when you actually need them:
 
@@ -45,6 +51,8 @@ python3 "80 Build/build.py" --pdf
 ```
 
 This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
+
+The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published.
 
 The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML and PNG cards do not include it.
 
@@ -62,9 +70,9 @@ Live URL:
 https://amballin.github.io/R5-Quick-Reference/
 ```
 
-Standalone field-guide pages get their `← Back` button from `80 Build/appendix_renderer.py`.
-The generator calculates the fallback link relative to each page's published output location,
-so nested pages return to the repository's `index.html` without a hardcoded GitHub Pages URL.
+Standalone field-guide pages get their `← Back` button from the shared site navigation.
+Links from cards and between generated appendix pages carry a validated internal return target;
+pages opened directly fall back to the repository's `index.html` without a hardcoded GitHub Pages URL.
 Set `navigation: false` on an entry in `50 Field Guide/required_appendices.yaml` to disable the
 button for that page. The button is omitted from embedded index content and hidden for print and
 output-mode rendering.
@@ -85,7 +93,7 @@ Source folders:
 Generated folders:
 
 - `../Photography Reference System Local/Build Output/cards/html/`: generated responsive HTML for every profile.
-- `../Photography Reference System Local/Build Output/cards/png/` and `cards/phone-png/`: generated fixed PNG exports.
+- `../Photography Reference System Local/Build Output/cards/png/` and `cards/phone-png/`: optional fixed PNG exports from a `--png` build.
 - `../Photography Reference System Local/Build Output/field-guide/`: generated guide HTML, search index, and optional PDFs.
 - `../Photography Reference System Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
 - `../Photography Reference System Local/Build Output/website/`: optional staging copy for non-GitHub hosts and the native iOS wrapper.
@@ -120,7 +128,7 @@ Asset support folders:
 
 ## iPhone Install
 
-Open the live URL in Safari, select a profile to open its responsive HTML card, then use Share -> Add to Home Screen. The installed site is labeled `Camera Settings`. PNG links remain available beside each profile for saving to Photos or offline use.
+Open the live URL in Safari, select a profile to open its responsive HTML card, then use Share -> Add to Home Screen. The installed site is labeled `Camera Settings`. PNG links appear only when the site was explicitly published with `--png`.
 
 The first online visit caches the cards, guide pages, icons, and supporting assets for offline use.
 

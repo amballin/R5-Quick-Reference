@@ -2,9 +2,10 @@
 
 ## Build Workflow
 
-- `python3 "80 Build/build.py"` is the normal full development build. It regenerates cards, field-guide HTML, the canonical merged web/PWA bundle, `docs/`, and reports; stale PDF folders are removed because PDFs are off by default. It does not change publish metadata, commit, push, or deploy.
+- `python3 "80 Build/build.py"` is the normal full development build. It regenerates responsive HTML cards, field-guide HTML, the canonical merged web/PWA bundle, `docs/`, and reports; stale PNG and PDF folders are removed because both fixed formats are off by default. It does not change publish metadata, commit, push, or deploy.
 - `./80 Build/scripts/publish.sh` is the only supported website publishing command. It runs an authorized publish-mode build, increments the minor version once, generates one timestamp, commits only `docs/` and finalized publish metadata through a temporary Git index, and pushes to the current branch.
 - Development and test threads must never run the publishing script.
+- `python3 "80 Build/build.py" --png` additionally creates fixed PNG cards and includes PNG actions in the generated site. `./80 Build/scripts/publish.sh --png` explicitly publishes them; the normal publish command omits them.
 - `python3 "80 Build/build.py" --pdf` additionally creates current card and appendix PDFs.
 - `python3 "80 Build/build.py" <profile>` preserves the existing single-profile workflow; run a full build before publishing.
 - `python3 "80 Build/build.py" build website`, `build pages`, and `build ios` preserve their existing staging, Pages, and optional wrapper behaviors.
@@ -13,7 +14,7 @@
 ## Output and Release Behavior
 
 - Disposable generated artifacts belong in the machine-local workspace's `Build Output/` folder. The default workspace is the sibling folder `<repository name> Local/`; `PRS_LOCAL_WORKSPACE` may set a different absolute or user-relative location.
-- `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html`, secondary PNGs under `Cards/*.png`, and copied card assets under `web-assets/`.
+- `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html`, optional secondary PNGs under `Cards/*.png` only for a `--png` build, and copied card assets under `web-assets/`.
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
 - `Build Output/website/` is optional staging. The iOS target copies it into `Native Wrapper/Website/` in the local workspace and exposes that folder to Xcode through the ignored `ios/Resources/Website` symlink.
 - Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
@@ -45,7 +46,7 @@ Run `python3 "80 Build/validator.py"` after relevant changes. It orchestrates va
 - merged PWA integrity (`pwa_validator.py`);
 - supported links (`link_validator.py`).
 
-Generated-output validation also checks responsive viewport metadata, local path portability, referenced HTML assets, released index/card correspondence, duplicate HTML IDs, unresolved template text, and both fixed PNG output variants.
+Generated-output validation also checks responsive viewport metadata, local path portability, referenced HTML assets, released index/card correspondence, duplicate HTML IDs, and unresolved template text. PNG output counts are checked during an explicit `--png` build.
 
 Run the dedicated `validators/validate_canon_r5_icons.py` when Canon icon reference data/assets change. For documentation consolidation, also search Markdown/YAML/code for stale paths and contradictory normative statements; the project validator does not validate documentation links or rule uniqueness comprehensively.
 

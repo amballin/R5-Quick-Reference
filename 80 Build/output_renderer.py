@@ -12,14 +12,15 @@ DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependen
 DEFAULT_NODE_MODULES = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"
 
 
-def render_png_pdf(paths, profile_name, profile, merged, icon_manager, baseline=None, include_pdf=False):
-    """Generate PNG card outputs, with PDF output only when explicitly requested."""
-    paths.png_output_dir.mkdir(parents=True, exist_ok=True)
-    paths.phone_png_output_dir.mkdir(parents=True, exist_ok=True)
+def render_png_pdf(paths, profile_name, profile, merged, icon_manager, baseline=None, include_png=False, include_pdf=False):
+    """Generate explicitly requested fixed PNG and/or PDF card outputs."""
+    if include_png:
+        paths.png_output_dir.mkdir(parents=True, exist_ok=True)
+        paths.phone_png_output_dir.mkdir(parents=True, exist_ok=True)
     if include_pdf:
         paths.pdf_output_dir.mkdir(parents=True, exist_ok=True)
     payload_path = paths.root / "80 Build" / ".render_payload.json"
-    payload = _payload(paths, profile_name, profile, merged, icon_manager, baseline, include_pdf)
+    payload = _payload(paths, profile_name, profile, merged, icon_manager, baseline, include_png, include_pdf)
     payload_path.parent.mkdir(parents=True, exist_ok=True)
     payload_path.write_text(json.dumps(payload), encoding="utf-8")
     try:
@@ -49,7 +50,7 @@ def _node_modules(paths):
     return ""
 
 
-def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, include_pdf=False):
+def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, include_png=False, include_pdf=False):
     rows = []
     for row in settings_rows(profile, merged, paths):
         icon_path = icon_manager.icon_path(row["key"], row["value"])
@@ -69,8 +70,8 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None, 
             "left": str(header_icons["left"]) if header_icons["left"] else "",
             "right": str(header_icons["right"]) if header_icons["right"] else "",
         },
-        "png": str(paths.png_output_file(profile_name)),
-        "phone_png": str(paths.phone_png_output_file(profile_name)),
+        "png": str(paths.png_output_file(profile_name)) if include_png else "",
+        "phone_png": str(paths.phone_png_output_file(profile_name)) if include_png else "",
         "pdf": str(paths.pdf_output_file(profile_name)) if include_pdf else "",
         "rows": rows,
         "checklist": _plain_text_items(profile.get("checklist") or []),

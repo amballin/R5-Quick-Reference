@@ -54,9 +54,9 @@ def render_appendices(paths, include_pdf=False):
                 )
             else:
                 rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled)
-                rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets)
+                rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets, html_path.name)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
-                rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html)
+                rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html, html_path.name)
                 html_path.write_text(rendered_html, encoding="utf-8")
             if include_pdf:
                 pdf_path = pdf_dir / f"{source.stem}.pdf"
@@ -374,7 +374,7 @@ def _rewrite_local_image_sources(source_markdown, html_path, rendered_html):
     return re.sub(r'<img([^>]*?)src="([^"]+)"([^>]*)>', replace, rendered_html, flags=re.IGNORECASE)
 
 
-def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
+def _rewrite_local_link_sources(source_markdown, html_path, rendered_html, return_target):
     def replace(match):
         before = match.group(1)
         href = html.unescape(match.group(2))
@@ -389,8 +389,12 @@ def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
         source_target = (source_markdown.parent / unquote(parsed.path)).resolve()
         target_name = f"{source_target.stem}.html"
         relative = quote(os.path.relpath(html_path.parent / target_name, html_path.parent), safe="/:#%")
-        if parsed.query:
-            relative = f"{relative}?{parsed.query}"
+        query = parsed.query
+        if not re.search(r"(?:^|&)return=", query):
+            query = f"{query}&" if query else ""
+            query = f"{query}return={quote(return_target, safe='')}"
+        if query:
+            relative = f"{relative}?{query}"
         if parsed.fragment:
             relative = f"{relative}#{parsed.fragment}"
         return f'<a{before}href="{relative}"{after}>'
@@ -398,7 +402,7 @@ def _rewrite_local_link_sources(source_markdown, html_path, rendered_html):
     return re.sub(r'<a([^>]*?)href="([^"]+)"([^>]*)>', replace, rendered_html, flags=re.IGNORECASE)
 
 
-def _rewrite_appendix_id_links(rendered_html, appendix_targets):
+def _rewrite_appendix_id_links(rendered_html, appendix_targets, return_target):
     def replace(match):
         before = match.group(1)
         appendix_id = html.unescape(match.group(2))
@@ -406,7 +410,7 @@ def _rewrite_appendix_id_links(rendered_html, appendix_targets):
         target = appendix_targets.get(appendix_id)
         if not target:
             return match.group(0)
-        quoted_target = quote(target, safe="/:#%")
+        quoted_target = f"{quote(target, safe='/:#%')}?return={quote(return_target, safe='')}"
         return f'<a{before}href="{quoted_target}"{after}>'
 
     return re.sub(

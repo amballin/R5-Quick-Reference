@@ -195,8 +195,10 @@ async function main() {
   const payload = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
   const svg = cardSvg(payload, { height: HEIGHT, scaleToFit: true });
   const png = await sharp(Buffer.from(svg)).png().toBuffer();
-  fs.mkdirSync(path.dirname(payload.png), { recursive: true });
-  fs.writeFileSync(payload.png, png);
+  if (payload.png) {
+    fs.mkdirSync(path.dirname(payload.png), { recursive: true });
+    fs.writeFileSync(payload.png, png);
+  }
 
   if (payload.phone_png) {
     const phoneSvg = cardSvg(payload, { scaleToFit: false });

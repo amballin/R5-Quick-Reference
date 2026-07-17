@@ -22,7 +22,7 @@ GUIDE_DISPLAY_ORDER = {
 APP_TITLE = "Camera Settings"
 
 
-def render_offline_index(paths, publish_metadata):
+def render_offline_index(paths, publish_metadata, include_png=False):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
     final_dir = paths.merged_build_output_dir
@@ -31,7 +31,7 @@ def render_offline_index(paths, publish_metadata):
         cards_dir = output_dir / "Cards"
         cards_dir.mkdir(parents=True, exist_ok=True)
 
-        card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets")
+        card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
         _write_index(output_dir / "index.html", card_files, guides, publish_metadata)
@@ -53,30 +53,35 @@ def _copy_files(source_dir, target_dir, pattern):
     return copied
 
 
-def _copy_release_cards(paths, target_dir, web_assets_dir):
+def _copy_release_cards(paths, target_dir, web_assets_dir, include_png=False):
     copied = []
     for profile_path in sorted(paths.profiles_dir.glob("*.yaml"), key=lambda path: path.stem.lower()):
         profile = _load_yaml(profile_path)
         if not ((profile.get("metadata") or {}).get("release") is True):
             continue
         profile_name = profile.get("title") or profile_path.stem
-        png_source = paths.phone_png_output_file(profile_name)
-        if not png_source.exists():
-            png_source = paths.png_output_file(profile_name)
         html_source = paths.html_output_file(profile_name)
-        if not png_source.exists() or not html_source.exists():
+        if not html_source.exists():
             continue
-        png_target = target_dir / png_source.name
         html_target = target_dir / html_source.name
-        shutil.copy2(png_source, png_target)
         html = _published_card_html(paths, html_source, web_assets_dir)
         html_target.write_text(html, encoding="utf-8")
-        copied.append({
-            "png_path": png_target,
+        card = {
+            "png_path": None,
             "html_path": html_target,
             "card_type": profile.get("card_type", "profile"),
             "appendix_links": profile.get("appendix_links") or [],
-        })
+        }
+        if include_png:
+            png_source = paths.phone_png_output_file(profile_name)
+            if not png_source.exists():
+                png_source = paths.png_output_file(profile_name)
+            if not png_source.exists():
+                continue
+            png_target = target_dir / png_source.name
+            shutil.copy2(png_source, png_target)
+            card["png_path"] = png_target
+        copied.append(card)
     return copied
 
 
@@ -233,7 +238,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 <div class="cards">
 {cards}
 </div>
-<div class="hint">Tap a profile to open its responsive card. PNG is the secondary offline and sharing format.</div>
+<div class="hint">Tap a profile to open its responsive HTML card.</div>
 {reference_section}
 <h2>Field Guide</h2>
 <div class="guides">
@@ -250,13 +255,16 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 
 def _card_details(card, guide_targets):
     html_path = card["html_path"]
-    png_path = card["png_path"]
     label = escape(html_path.stem)
     html_href = quote(f"Cards/{html_path.name}", safe="/:#%")
-    png_href = quote(f"Cards/{png_path.name}", safe="/:#%")
+    png_path = card.get("png_path")
+    png_link = ""
+    if png_path:
+        png_href = quote(f"Cards/{png_path.name}", safe="/:#%")
+        png_link = f'<a class="card-png" href="{png_href}" aria-label="Open {label} PNG">PNG</a>'
     return f"""<div class="card-row">
 <a class="card-primary" href="{html_href}">{label}<span>Open</span></a>
-<a class="card-png" href="{png_href}" aria-label="Open {label} PNG">PNG</a>
+{png_link}
 </div>"""
 
 

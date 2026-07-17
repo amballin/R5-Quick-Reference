@@ -13,8 +13,6 @@ def validate(root):
         paths.output_dir,
         paths.html_output_dir,
         paths.merged_output_dir,
-        paths.png_output_dir,
-        paths.phone_png_output_dir,
         paths.merged_build_output_dir,
         paths.field_guide_html_output_dir,
         paths.pages_output_dir,
@@ -29,8 +27,6 @@ def validate(root):
         name = profile.stem
         expected = [
             paths.html_output_file(name),
-            paths.png_output_file(name),
-            paths.phone_png_output_file(name),
             paths.merged_output_file(name),
         ]
         for path in expected:

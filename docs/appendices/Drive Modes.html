@@ -35,7 +35,9 @@ a{color:#165d9c}
   const back = document.querySelector(".site-nav__back");
   if (!back) return;
   const candidate = new URLSearchParams(window.location.search).get("return");
-  if (candidate && /^\.\.\/Cards\/[^/?#]+\.html$/.test(candidate)) {
+  const cardReturn = /^\.\.\/Cards\/[^/?#]+\.html$/;
+  const appendixReturn = /^[^/?#]+\.html$/;
+  if (candidate && (cardReturn.test(candidate) || appendixReturn.test(candidate))) {
     back.setAttribute("href", candidate);
   } else {
     back.setAttribute("href", "../index.html");

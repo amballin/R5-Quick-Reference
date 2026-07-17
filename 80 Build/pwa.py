@@ -255,10 +255,26 @@ def validate_merged_build_pwa(paths):
     if (output_dir / "index.html").exists():
         results.extend(_validate_index(output_dir))
     results.extend(_validate_card_pages(paths, output_dir))
+    results.extend(_validate_appendix_navigation(output_dir))
     if (output_dir / "service-worker.js").exists():
         results.extend(_validate_service_worker(output_dir))
     results.extend(_validate_referenced_assets(output_dir))
     results.extend(_validate_no_numbered_duplicates(output_dir))
+    return results
+
+
+def _validate_appendix_navigation(output_dir):
+    results = []
+    appendix_dir = output_dir / "appendices"
+    if not appendix_dir.is_dir():
+        return results
+    for path in sorted(appendix_dir.glob("*.html")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if text.count("return=") != len(re.findall(r"[?&]return=", text)):
+            results.append(("error", "merged_build_appendix_return_encoding", path.name))
+        for href in re.findall(r'href=["\']([^"\']+)["\']', text, flags=re.IGNORECASE):
+            if len(re.findall(r"[?&]return=", href)) > 1:
+                results.append(("error", "merged_build_appendix_duplicate_return", f"{path.name}: {href}"))
     return results
 
 

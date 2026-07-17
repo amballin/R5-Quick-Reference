@@ -35,7 +35,9 @@ a{color:#165d9c}
   const back = document.querySelector(".site-nav__back");
   if (!back) return;
   const candidate = new URLSearchParams(window.location.search).get("return");
-  if (candidate && /^\.\.\/Cards\/[^/?#]+\.html$/.test(candidate)) {
+  const cardReturn = /^\.\.\/Cards\/[^/?#]+\.html$/;
+  const appendixReturn = /^[^/?#]+\.html$/;
+  if (candidate && (cardReturn.test(candidate) || appendixReturn.test(candidate))) {
     back.setAttribute("href", candidate);
   } else {
     back.setAttribute("href", "../index.html");
@@ -70,7 +72,7 @@ a{color:#165d9c}
 <p>Canon EOS R5 shooting modes define how exposure decisions are divided between the photographer and the camera.</p>
 <h4 id="choosing-shooting-mode-p-vs-fv-vs-av-tv-m">Choosing Shooting Mode: P vs Fv vs Av/Tv/M</h4>
 <p>Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.</p>
-<p>Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast. For full setup guidance, see <a href="Fv%20-%20Flexible%20Priority.html">Fv (Flexible Priority)</a>.</p>
+<p>Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast. For full setup guidance, see <a href="Fv%20-%20Flexible%20Priority.html?return=R5%20Quick%20Reference.html">Fv (Flexible Priority)</a>.</p>
 <p>Use Av when aperture and depth of field are the main decision, such as landscapes, portraits, perched birds, natural-light macro, and tripod/still scenes.</p>
 <p>Use Tv when shutter speed is the main decision, such as birds in flight, sports, active wildlife, and fast action.</p>
 <p>Use M when controlled or repeatable exposure matters more than camera automation, such as waterdrops, flash macro, studio flash, and repeatable night setups.</p>
@@ -226,7 +228,7 @@ a{color:#165d9c}
 <p><strong>Camera Menu:</strong> Shooting 6 &gt; Shutter mode.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h3 id="focus-bracketing">Focus Bracketing</h3>
-<p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
+<p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=R5%20Quick%20Reference.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
 <tr><td>Enable</td><td>Turns on focus-bracket capture for near-to-far focus stacks.</td></tr>

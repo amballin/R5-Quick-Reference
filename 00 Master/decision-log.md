@@ -2,12 +2,19 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Opt-In PNG Card Exports
+
+**Status:** Accepted
+**Date:** 2026-07-17
+
+Responsive HTML is the default and primary card output. Fixed PNG cards remain available from the same merged baseline-plus-overrides data, but generation and publication are opt-in with `--png`. A normal build or publish omits PNG cards and PNG index actions. PDF generation remains independently opt-in and may use the fixed renderer internally without retaining PNG files.
+
 ## Shared Internal Web Navigation
 
 **Status:** Accepted
 **Date:** 2026-07-17
 
-Use one safe-area-aware Camera Settings header on the published index, responsive cards, Field Guide appendices, Setting Deep Dives, and generated reference pages. Standalone content pages provide a real internal Back destination and a centered Camera Settings link to the index. Appendix links from cards may supply a validated generated-card return target; invalid or absent targets fall back to the index. Do not depend on browser history or navigate outside the reference system.
+Use one safe-area-aware Camera Settings header on the published index, responsive cards, Field Guide appendices, Setting Deep Dives, and generated reference pages. Standalone content pages provide a real internal Back destination and a centered Camera Settings link to the index. Appendix links from cards and links between generated appendix pages supply a validated internal return target; invalid or absent targets fall back to the index. Do not depend on browser history or navigate outside the reference system.
 
 ## No GitHub CLI
 

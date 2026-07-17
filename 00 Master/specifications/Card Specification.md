@@ -39,13 +39,13 @@ If a required merged value is unset, render the row with `—` rather than omitt
 - Preserve existing card formats, filenames, proportions/behavior, output locations, and backward compatibility unless explicitly approved.
 - Card styling and conditional presentation are renderer concerns, not profile-data concerns.
 - Responsive HTML is the primary published phone format. It uses the full phone width, a centered maximum width on larger screens, safe-area padding, and browser-rendered text without horizontal scrolling or pinch-to-zoom.
-- PNG remains a secondary fixed-size export generated from the same merged data. Responsive HTML presentation is controlled by `20 Templates/card.html`; fixed PNG presentation is controlled by `80 Build/render_card_outputs.js`.
+- PNG remains an optional secondary fixed-size export generated with `--png` from the same merged data. Responsive HTML presentation is controlled by `20 Templates/card.html`; fixed PNG presentation is controlled by `80 Build/render_card_outputs.js`.
 - Published HTML copies required card icons into the generated site and uses relative URLs so local files and repository-subdirectory GitHub Pages hosting remain portable. SVG is preferred when available and PNG is the fallback.
 - Every published HTML card uses the shared Camera Settings header. Its Back control and centered title both use real internal relative links to the main index so navigation works in an iPhone Home Screen installation without browser controls.
 
 ## Release Requirement
 
-Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action and their PNG remains available as a secondary action. Other generated development outputs may still exist.
+Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action. A PNG secondary action appears only when the build or publish is explicitly run with `--png`. Other generated development outputs may still exist.
 
 Released profile cards appear under **Subject Cards**. Released permanent reference cards appear under **Reference Cards**.
 

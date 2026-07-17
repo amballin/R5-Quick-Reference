@@ -7,7 +7,17 @@ candidate="80 Build/.publish_metadata.candidate.yaml"
 metadata="80 Build/publish_metadata.yaml"
 rm -f "$candidate"
 
-PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" --publish
+case "${1:-}" in
+  "") png_arg=() ;;
+  --png) png_arg=(--png) ;;
+  *) echo "Usage: $0 [--png]" >&2; exit 2 ;;
+esac
+if (( $# > 1 )); then
+  echo "Usage: $0 [--png]" >&2
+  exit 2
+fi
+
+PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" --publish "${png_arg[@]}"
 
 test -f docs/index.html || { echo "Publish failed: docs/index.html was not generated." >&2; exit 1; }
 test -f "$candidate" || { echo "Publish failed: candidate metadata was not generated." >&2; exit 1; }

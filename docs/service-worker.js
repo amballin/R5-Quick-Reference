@@ -1,26 +1,17 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1784303750";
+const CACHE_NAME = "photography-reference-1784305352";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
   "Cards/Birds%20Perched.html",
-  "Cards/Birds%20Perched.png",
   "Cards/Birds%20in%20Flight.html",
-  "Cards/Birds%20in%20Flight.png",
   "Cards/Camera%20Buttons.html",
-  "Cards/Camera%20Buttons.png",
   "Cards/Camera%20Defaults.html",
-  "Cards/Camera%20Defaults.png",
   "Cards/Camera%20Setup.html",
-  "Cards/Camera%20Setup.png",
   "Cards/Fireworks.html",
-  "Cards/Fireworks.png",
   "Cards/Landscape.html",
-  "Cards/Landscape.png",
   "Cards/People.html",
-  "Cards/People.png",
   "Cards/Wildlife.html",
-  "Cards/Wildlife.png",
   "app-assets/apple-touch-icon.png",
   "app-assets/icon-192.png",
   "app-assets/icon-512.png",
