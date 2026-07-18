@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Independent Card Display Categories
+
+**Status:** Accepted
+**Date:** 2026-07-18
+
+Separate index placement from card rendering behavior. Profiles may use `display_category: subject|reference` and integer `display_order`; category defaults from `card_type`, order defaults to `100`, lower values appear first, and ties sort alphabetically. This allows baseline-driven operational cards to appear under **Reference Cards** without converting them to permanent reference-card data. Label the published sections **Subjects**, **Reference Cards**, **Field Guides**, and **Deep Dive**.
+
+This decision supersedes the index-placement restriction in **Permanent Reference-Card Type** and the published section labels in **Setting Deep Dives**; their remaining requirements stay binding.
+
 ## Opt-In PNG Card Exports
 
 **Status:** Accepted

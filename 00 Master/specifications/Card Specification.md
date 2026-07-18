@@ -8,6 +8,8 @@ This specification governs generated quick-reference card content and conditiona
 
 Cards use `card_type: profile` by default. Profile cards inherit the baseline and render merged camera settings. Permanent reference cards use `card_type: reference`, do not inherit the baseline or define overrides, and render their `reference_settings` entries as a two-column **Settings** table.
 
+Index placement is independent of rendering behavior. Optional `display_category` is `subject` or `reference`; when omitted, it defaults to `subject` for profile cards and `reference` for permanent reference cards. Optional integer `display_order` defaults to `100`; lower values appear first within a category and ties sort alphabetically. This allows a baseline-driven profile card to appear with operational references without duplicating baseline settings.
+
 Each `reference_settings` entry contains a non-empty `control` and `assignment`. Reference-card checklists contain concise recommendations or verification steps rather than repeating the Settings table.
 
 Cards may define `appendix_links` as a list of manifest appendix IDs with optional display labels. Renderers resolve these IDs for each output context; profile YAML must not contain generated-output paths.
@@ -50,7 +52,7 @@ If a required merged value is unset, render the row with `—` rather than omitt
 
 Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action. A PNG secondary action appears only when the build or publish is explicitly run with `--png`. Other generated development outputs may still exist.
 
-Released profile cards appear under **Subject Cards**. Released permanent reference cards appear under **Reference Cards**.
+Released cards with `display_category: subject` appear under **Subjects**. Cards with `display_category: reference` appear under **Reference Cards**, regardless of whether their rendering behavior is profile-based or permanent-reference-based.
 
 ## Enforcement and Evidence
 

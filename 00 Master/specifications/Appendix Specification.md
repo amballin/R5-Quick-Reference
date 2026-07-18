@@ -38,7 +38,7 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 ## Build and Release Requirements
 
 - Builds generate all manifest entries in applicable HTML and search outputs. PDF remains optional.
-- `release: true` controls whether an entry is shown in the published GitHub Pages/offline index. Released `field_guide` entries appear under **Field Guide**; released `setting_deep_dive` entries appear under **Setting Deep Dives**.
+- `release: true` controls whether an entry is shown in the published GitHub Pages/offline index. Released `field_guide` entries appear under **Field Guides**; released `setting_deep_dive` entries appear under **Deep Dive**.
 - Optional integer `display_order` controls position independently within the published Field Guide or Setting Deep Dives section. Lower numbers appear first; entries with the same number are ordered alphabetically. Entries without the field default to `100`. Changing `content_type` moves an entry between sections; its source file must also be stored in the matching folder.
 - Entries without `release: true` remain generated and linkable from released documentation, but are not listed in either published index section.
 - Preserve existing appendix sources, manifest compatibility, rendering, and output locations unless explicitly approved.

@@ -3,8 +3,10 @@ metadata:
   status: Final
   last_updated: 2026-07-17
   release: true
-title: Camera Set & Forget
-subtitle:
+title: Camera Setup Essentials
+subtitle: Set & Forget
+display_category: reference
+display_order: 30
 card:
   icons:
     left: camera_default

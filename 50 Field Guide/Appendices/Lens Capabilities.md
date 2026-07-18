@@ -171,6 +171,6 @@ Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does
 
 ## Cross References
 
-- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Set & Forget, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
+- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
 - Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.
 - Related appendices: Image Stabilization, Focus Bracketing & In-Camera Depth Compositing, R5 Quick Reference, Electronic vs EFCS vs Mechanical Shutter.

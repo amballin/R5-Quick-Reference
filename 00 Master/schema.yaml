@@ -9,6 +9,8 @@ metadata:
 title: string
 subtitle: optional string
 card_type: optional profile|reference (defaults to profile)
+display_category: optional subject|reference (defaults from card_type)
+display_order: optional integer (defaults to 100; lower values appear first within the category)
 default subtitle in baseline: optional string
 
 card:

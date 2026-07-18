@@ -67,6 +67,10 @@ def _copy_release_cards(paths, target_dir, web_assets_dir, include_png=False):
             "png_path": None,
             "html_path": html_target,
             "card_type": profile.get("card_type", "profile"),
+            "display_category": profile.get("display_category") or (
+                "reference" if profile.get("card_type") == "reference" else "subject"
+            ),
+            "display_order": profile.get("display_order", 100),
             "appendix_links": profile.get("appendix_links") or [],
         }
         if include_png:
@@ -160,8 +164,15 @@ def _load_yaml(path):
 
 def _write_index(path, card_files, guides, publish_metadata, paths):
     guide_targets = {guide.get("id"): guide["filename"] for guide in guides if guide.get("id")}
-    cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "profile")
-    reference_cards = "\n".join(_card_details(card, guide_targets) for card in card_files if card["card_type"] == "reference")
+    ordered_cards = sorted(card_files, key=lambda card: (card["display_order"], card["html_path"].stem.lower()))
+    cards = "\n".join(
+        _card_details(card, guide_targets) for card in ordered_cards
+        if card["display_category"] == "subject"
+    )
+    reference_cards = "\n".join(
+        _card_details(card, guide_targets) for card in ordered_cards
+        if card["display_category"] == "reference"
+    )
     reference_section = (
         '<h2>Reference Cards</h2>\n<div class="cards">\n'
         f'{reference_cards}\n</div>'
@@ -176,7 +187,7 @@ def _write_index(path, card_files, guides, publish_metadata, paths):
         if guide["release"] and guide["content_type"] == "setting_deep_dive"
     )
     deep_dive_section = (
-        '<h2>Setting Deep Dives</h2>\n<div class="guides">\n'
+        '<h2>Deep Dive</h2>\n<div class="guides">\n'
         f'{deep_dive_markup}\n</div>'
         if deep_dive_markup else ""
     )
@@ -238,13 +249,13 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 <body>
 {site_navigation("index.html", metadata=publish_metadata, right_html=logo)}
 <main>
-<h2>Subject Cards</h2>
+<h2>Subjects</h2>
 <div class="cards">
 {cards}
 </div>
-<div class="hint">Tap a profile to open its responsive HTML card.</div>
+<div class="hint">Tap for details</div>
 {reference_section}
-<h2>Field Guide</h2>
+<h2>Field Guides</h2>
 <div class="guides">
 {guide_markup}
 </div>

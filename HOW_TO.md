@@ -102,13 +102,27 @@ The published sections are controlled by each entry in `50 Field Guide/required_
   display_order: 20
 ```
 
-- Use `content_type: field_guide` for the **Field Guide** section and store the source under `50 Field Guide/Appendices/`.
-- Use `content_type: setting_deep_dive` for the **Setting Deep Dives** section and store the source under `50 Field Guide/Setting Deep Dives/`.
+- Use `content_type: field_guide` for the published **Field Guides** section and store the source under `50 Field Guide/Appendices/`.
+- Use `content_type: setting_deep_dive` for the published **Deep Dive** section and store the source under `50 Field Guide/Setting Deep Dives/`.
 - Use `release: true` to list the entry on the published index.
 - Use `display_order` to control its position within its own section. Lower numbers appear first, equal numbers sort alphabetically, and an omitted value defaults to `100`.
 - Leave gaps such as `10`, `20`, and `30` so another entry can be inserted later without renumbering the entire section.
 
 After changing classification or order, run the validator and normal build, then review both published sections in `docs/index.html`.
+
+## Control Card Category and Order
+
+Use `display_category` and `display_order` in a profile YAML file to control index placement without changing how the card inherits or renders settings:
+
+```yaml
+display_category: reference
+display_order: 20
+```
+
+- `display_category: subject` places the card under **Subjects**.
+- `display_category: reference` places the card under **Reference Cards**.
+- Lower `display_order` values appear first within the category; equal values sort alphabetically; omitted values default to `100`.
+- Category affects index placement only. Keep `card_type: reference` for explicitly authored permanent references, and keep baseline-driven cards as normal profile cards.
 
 ## Continue Work on Another Computer
 

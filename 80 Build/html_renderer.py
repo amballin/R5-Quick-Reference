@@ -169,7 +169,7 @@ def is_camera_defaults(profile):
 
 
 def is_camera_setup(profile):
-    return profile.get("title") == "Camera Set & Forget"
+    return profile.get("title") == "Camera Setup Essentials"
 
 
 def manual_focus(merged_fields):

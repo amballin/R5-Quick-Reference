@@ -5,6 +5,7 @@ from .common import error, flatten_paths, load_yaml_checked
 
 LIST_KEYS = ["checklist", "watch_for", "common_mistakes", "notes"]
 CARD_TYPES = {"profile", "reference"}
+DISPLAY_CATEGORIES = {"subject", "reference"}
 ICON_POSITIONS = {"header", "left", "right"}
 
 
@@ -45,6 +46,12 @@ def validate(root):
         card_type = data.get("card_type", "profile")
         if card_type not in CARD_TYPES:
             issues.append(error("profiles", path, f"card_type must be one of: {', '.join(sorted(CARD_TYPES))}."))
+        display_category = data.get("display_category")
+        if display_category is not None and display_category not in DISPLAY_CATEGORIES:
+            issues.append(error("profiles", path, f"display_category must be one of: {', '.join(sorted(DISPLAY_CATEGORIES))}."))
+        display_order = data.get("display_order")
+        if display_order is not None and (not isinstance(display_order, int) or isinstance(display_order, bool)):
+            issues.append(error("profiles", path, "display_order must be an integer."))
         overrides = data.get("overrides", {})
         if card_type == "reference":
             if "inherits" in data:
