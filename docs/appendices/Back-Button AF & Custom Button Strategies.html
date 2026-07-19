@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Back-Button AF &amp; Custom Button Strategies</title>
+<title>Custom Controls, Back-Button AF &amp; Dial Strategies</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;color:#172033;--site-nav-bg:#132742;--site-nav-text:#f7fbff;--site-nav-muted:#b9d5ec}
@@ -46,11 +46,12 @@ a{color:#165d9c}
   }
 })();
 </script>
-<main><h1 id="back-button-af-custom-button-strategies">Back-Button AF &amp; Custom Button Strategies</h1>
+<main><h1 id="custom-controls-back-button-af-dial-strategies">Custom Controls, Back-Button AF &amp; Dial Strategies</h1>
 <h2 id="purpose">Purpose</h2>
-<p>Document a consistent Canon EOS R5 back-button autofocus and exposure-control layout for birds, wildlife, sports, macro, and general field use. This is a recommended configuration, not a record of settings verified from the current-camera screenshots.</p>
+<p>Document a consistent Canon EOS R5 button, dial, back-button autofocus, and exposure-control layout for birds, wildlife, sports, macro, landscape, travel, and general field use. This is a recommended configuration, not a record of settings verified from the current-camera screenshots.</p>
 <h2 id="what-it-does">What it Does</h2>
 <p>Back-button AF separates autofocus activation from the shutter release. The recommended layout keeps normal autofocus on <strong>AF-ON</strong>, places a temporary alternate AF behavior on the <strong>AE Lock button</strong>, and assigns recovery and AF-operation changes to controls that can be reached without opening a menu.</p>
+<p>Custom controls can also assign frequently used functions to <strong>M-Fn</strong>, the joystick, the lens or adapter <strong>Control Ring</strong>, and Register/Recall Shooting Function. Keep one consistent base layout and add a specialized assignment only when it solves a repeated field problem.</p>
 <h3 id="recommended-custom-button-layout">Recommended Custom Button Layout</h3>
 <table>
 <tr><th>Control</th><th>Canon assignment</th><th>Purpose</th></tr>
@@ -59,6 +60,14 @@ a{color:#165d9c}
 <tr><td><strong>AE Lock button</strong></td><td><strong>Switch to registered AF function</strong></td><td>Recalls the configured registered AF function while the button is held.</td></tr>
 <tr><td><strong>SET button</strong></td><td><strong>Set AF point to center</strong></td><td>Returns the active AF point to the center.</td></tr>
 <tr><td><strong>Depth-of-field preview button</strong></td><td><strong>One-Shot AF ↔ Servo AF</strong></td><td>Changes AF operation between One-Shot AF and Servo AF.</td></tr>
+</table>
+<p>Additional control guidance:</p>
+<table>
+<tr><th>Control</th><th>Recommended role</th><th>Reason</th></tr>
+<tr><td><strong>M-Fn button</strong></td><td>Retain fast access to a small set of frequently changed shooting controls</td><td>Useful for choices that change often but do not deserve a dedicated prime button</td></tr>
+<tr><td><strong>Joystick / Multi-controller</strong></td><td>Direct AF-point movement</td><td>Precise and predictable subject acquisition</td></tr>
+<tr><td><strong>Register/Recall Shooting Function</strong></td><td>Temporary action or exposure override after it has been configured and tested</td><td>Recalls a known group of settings only while needed</td></tr>
+<tr><td><strong>Control Ring</strong></td><td>Exposure Compensation by default; ISO or aperture when the exposure workflow makes that more valuable</td><td>Adds a direct dial without disturbing the main shutter/aperture controls</td></tr>
 </table>
 <h3 id="recommended-dial-layout">Recommended Dial Layout</h3>
 <table>
@@ -71,6 +80,7 @@ a{color:#165d9c}
 <h2 id="how-it-works">How it Works</h2>
 <p>With <strong>Shutter button half-press</strong> assigned to <strong>Metering start</strong>, pressing the shutter button does not refocus the camera. Press or hold <strong>AF-ON</strong> when autofocus is required, then release it when autofocus should stop.</p>
 <p><strong>Switch to registered AF function</strong> provides a temporary alternate AF behavior configured in the camera. Hold the assigned <strong>AE Lock button</strong> when the alternate behavior is needed; release the button to return to the normal AF behavior. The registered choices must be configured and tested on the camera before field use.</p>
+<p><strong>Register/Recall Shooting Function</strong> is broader than <strong>Switch to registered AF function</strong>: it can recall a configured shooting state rather than only an alternate AF behavior. Use it sparingly, document exactly what it changes, and avoid assigning an unverified recall state before a critical shoot.</p>
 <p>The <strong>SET button</strong> provides a consistent recovery action when the active AF point has moved away from the desired starting position. The <strong>Depth-of-field preview button</strong> provides direct access to the selected One-Shot AF/Servo AF change.</p>
 <h2 id="advantages">Advantages</h2>
 <ul>
@@ -78,6 +88,7 @@ a{color:#165d9c}
 <li>Stops autofocus immediately when <strong>AF-ON</strong> is released.</li>
 <li>Provides a temporary alternate AF behavior without navigating menus.</li>
 <li>Provides a one-press method to return the AF point to center.</li>
+<li>Keeps direct AF-point movement on the joystick and frequently changed secondary controls within reach of M-Fn.</li>
 <li>Keeps shutter speed, aperture, ISO speed, and exposure compensation on separate direct controls.</li>
 <li>Makes exposure compensation directly available when using Manual exposure with Auto ISO.</li>
 </ul>
@@ -103,6 +114,7 @@ a{color:#165d9c}
 <li>Do not use back-button AF if shutter-button autofocus is preferred or required by another camera user.</li>
 <li>Do not assign <strong>Switch to registered AF function</strong> until the registered behavior has been configured and tested.</li>
 <li>Do not rely on exposure compensation in Manual exposure unless Auto ISO is active.</li>
+<li>Do not assign a broad Register/Recall state until every recalled setting has been documented and tested.</li>
 </ul>
 <h2 id="decision-guide">Decision Guide</h2>
 <table>
@@ -115,6 +127,8 @@ a{color:#165d9c}
 <tr><td>Change aperture</td><td><strong>Quick Control Dial (Rear Wheel)</strong></td><td>Rotate the dial.</td></tr>
 <tr><td>Change ISO speed</td><td><strong>Multi-function Dial (Top Rear Dial)</strong></td><td>Rotate the dial.</td></tr>
 <tr><td>Adjust exposure with Manual + Auto ISO</td><td><strong>Control Ring</strong></td><td>Apply <strong>Exposure Compensation</strong>.</td></tr>
+<tr><td>Move the AF point directly</td><td><strong>Joystick / Multi-controller</strong></td><td>Move the selected point or starting area.</td></tr>
+<tr><td>Recall a tested temporary shooting state</td><td>Assigned recall control</td><td>Hold or activate <strong>Register/Recall Shooting Function</strong> as configured.</td></tr>
 </table>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
@@ -124,6 +138,8 @@ a{color:#165d9c}
 <tr><td><strong>Wildlife</strong></td><td>Hold <strong>AF-ON</strong> while the subject is moving.</td><td>Hold <strong>AE Lock</strong> when the registered AF behavior is better suited to an obstructed or difficult scene.</td></tr>
 <tr><td><strong>Sports</strong></td><td>Hold <strong>AF-ON</strong> for continuous tracking.</td><td>Use the registered AF behavior for a temporary alternate AF response.</td></tr>
 <tr><td><strong>Macro</strong></td><td>Use <strong>AF-ON</strong> only when autofocus is wanted.</td><td>Use <strong>One-Shot AF ↔ Servo AF</strong> only when the subject or camera movement requires the change.</td></tr>
+<tr><td><strong>Landscape</strong></td><td>Keep a simple base layout; use the joystick for deliberate AF placement.</td><td>Use the Control Ring for Exposure Compensation when working in an automatic exposure mode.</td></tr>
+<tr><td><strong>Travel</strong></td><td>Keep the common base layout and M-Fn access predictable.</td><td>Avoid specialized recall states that are difficult to remember under changing conditions.</td></tr>
 </table>
 <p>These recommendations define control behavior only. AF method, subject detection, eye detection, and other shooting settings remain owned by the baseline and subject-profile overrides.</p>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
@@ -153,7 +169,10 @@ a{color:#165d9c}
 <h2 id="cross-references">Cross References</h2>
 <ul>
 <li>Cards and profiles: Camera Buttons, Birds in Flight, Birds Perched, Wildlife, Sports, Macro.</li>
-<li>Related appendices: Custom Controls; AF Cases &amp; Tracking Behavior; Canon EOS R5 Custom Controls Current Configuration; R5 Quick Reference.</li>
+<li>Related guides:</li>
+<li><a href="AF%20Cases%20%26%20Tracking%20Behavior.html?return=Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">AF Cases &amp; Tracking Behavior</a></li>
+<li><a href="R5%20Quick%20Reference.html?return=Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">R5 Quick Reference</a></li>
+<li>Supporting draft: Canon EOS R5 Custom Controls Current Configuration (not currently published or manifest-controlled).</li>
 </ul></main>
 </body>
 </html>

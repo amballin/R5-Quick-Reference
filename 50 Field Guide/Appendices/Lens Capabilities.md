@@ -2,6 +2,8 @@
 
 Use this guide as a quick lens-by-lens setup check before choosing a profile card. Lens switches can override or shape camera behavior, especially stabilization, manual focus, extenders, and adapted EF lenses.
 
+Image stabilization reduces blur caused by camera movement; it does not freeze a moving subject. Shutter speed still controls subject-motion blur. Lens IS moves optical elements, IBIS moves the R5 sensor, and compatible combinations may coordinate them automatically. In the field, choose the available lens/body mode for the subject and turn stabilization off for a solid, locked tripod when the profile calls for it.
+
 ## Index
 
 1. [Match by Subject](#match-by-subject)
@@ -173,4 +175,6 @@ Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does
 
 - Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
 - Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.
-- Related appendices: Image Stabilization, Focus Bracketing & In-Camera Depth Compositing, R5 Quick Reference, Electronic vs EFCS vs Mechanical Shutter.
+- Related guides:
+  - [Focus Bracketing & In-Camera Depth Compositing](appendix:focus_bracketing_depth_compositing)
+  - [R5 Quick Reference](appendix:r5_quick_reference)

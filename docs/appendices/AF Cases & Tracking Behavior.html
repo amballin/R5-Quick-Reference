@@ -48,52 +48,91 @@ a{color:#165d9c}
 </script>
 <main><h1 id="af-cases-tracking-behavior">AF Cases &amp; Tracking Behavior</h1>
 <h2 id="purpose">Purpose</h2>
-<p>Explain Servo AF behavior, tracking response, and subject detection choices for moving subjects.</p>
+<p>Explain how Canon EOS R5 Servo AF tracking controls change camera response, and provide a repeatable way to correct tracking problems without changing several interacting settings at once.</p>
 <h2 id="what-it-does">What it Does</h2>
-<p>AF tracking controls how quickly the camera follows subjects, ignores distractions, and switches targets.</p>
+<p>Servo AF continuously updates focus while autofocus is active. AF Cases and their parameters tune how the camera responds when subject distance, speed, direction, visibility, or priority changes.</p>
+<p>These controls work alongside AF Method, Subject Detection, Eye Detection, and the selected AF area. They do not replace initial subject acquisition or accurate framing.</p>
 <h2 id="how-it-works">How it Works</h2>
-<p>Servo AF continuously updates focus. Tracking sensitivity, Accel/Decel Tracking, and subject switching tune how the camera responds to subject movement and interruptions.</p>
+<table>
+<tr><th>Control</th><th>Lower / locked-on behavior</th><th>Higher / responsive behavior</th></tr>
+<tr><td>Tracking Sensitivity</td><td>Stays with the current subject through brief obstacles</td><td>Transfers focus more quickly when a new target enters the active area</td></tr>
+<tr><td>Accel./Decel. Tracking</td><td>Assumes steadier motion</td><td>Responds more strongly to abrupt starts, stops, and speed changes</td></tr>
+<tr><td>Subject switching</td><td>Resists transferring detection priority</td><td>Moves priority more readily to another recognized subject</td></tr>
+</table>
+<p>Canon AF Cases combine starting values for tracking behavior. Treat a Case as a starting point, then diagnose the observed failure before adjusting an individual parameter.</p>
+<p>Subject Detection identifies People, Animals, or Vehicles. Eye Detection can refine priority to an eye when the subject and AF method support it. The AF area still controls where the camera can begin or continue looking.</p>
 <h2 id="advantages">Advantages</h2>
 <ul>
-<li>Eye detection improves people and animal focus accuracy.</li>
-<li>Animal detection helps wildlife and birds.</li>
-<li>Vehicle detection supports motorsports and similar subjects.</li>
-<li>Servo AF keeps moving subjects in focus.</li>
+<li>A locked-on response can hold focus through branches, players, or momentary obstructions.</li>
+<li>A responsive setting can make intentional target changes faster.</li>
+<li>Increased Accel./Decel. Tracking can help with erratic or rapidly changing motion.</li>
+<li>Subject and Eye Detection can reduce the need to keep a small AF point precisely on a face or eye.</li>
 </ul>
 <h2 id="disadvantages">Disadvantages</h2>
 <ul>
-<li>Too much sensitivity can jump to distractions.</li>
-<li>Too little sensitivity can cling to the wrong subject.</li>
-<li>Subject detection can fail with blocked, small, or low-contrast subjects.</li>
+<li>Over-responsive settings can jump to backgrounds, foreground obstacles, or another subject.</li>
+<li>Overly locked-on settings can cling to the wrong subject after an intentional change.</li>
+<li>Aggressive acceleration response may make steady, predictable subjects less consistent.</li>
+<li>Detection can fail when subjects are small, blocked, low contrast, or outside the useful AF area.</li>
+<li>Changing several controls together makes it difficult to identify which change helped.</li>
 </ul>
 <h2 id="recommended-uses">Recommended Uses</h2>
-<p>Use Servo AF for moving subjects. Use subject detection when the subject type is clear. Use AF-ON/back-button focus when separating focus from shutter release helps.</p>
+<p>Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.</p>
+<p>Leave tracking behavior near its default until a repeatable failure appears. Tune the failure, not the subject label alone.</p>
 <h2 id="when-not-to-use">When Not to Use</h2>
-<p>Avoid aggressive tracking settings in cluttered scenes. Avoid subject detection when the camera repeatedly chooses the wrong target.</p>
+<p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. Disable or simplify subject detection when the camera repeatedly chooses the wrong object. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
 <h2 id="decision-guide">Decision Guide</h2>
-<p>Predictable subject: moderate tracking. Erratic subject: increase Accel/Decel support. Busy background: reduce subject switching and use a smaller AF area.</p>
+<table>
+<tr><th>Observed problem</th><th>First adjustment</th><th>Also check</th></tr>
+<tr><td>Focus jumps to a branch, player, or foreground obstacle</td><td>Move Tracking Sensitivity toward locked-on</td><td>AF area may be too broad</td></tr>
+<tr><td>Camera is slow to accept an intentional new subject</td><td>Move Tracking Sensitivity toward responsive</td><td>Release and reacquire AF if needed</td></tr>
+<tr><td>Focus lags abrupt starts, stops, or direction changes</td><td>Increase Accel./Decel. Tracking one step</td><td>Shutter speed and AF acquisition</td></tr>
+<tr><td>Camera abandons the intended detected subject</td><td>Reduce subject switching</td><td>Confirm correct subject type and AF area</td></tr>
+<tr><td>Camera will not transfer to a new recognized subject</td><td>Increase subject switching cautiously</td><td>Confirm the new subject is recognizable</td></tr>
+<tr><td>Eye Detection chooses the wrong person or animal</td><td>Reduce switching or use a controlled AF area</td><td>Initial point placement and subject size</td></tr>
+<tr><td>Background is selected before the subject</td><td>Start with 1-Point or Expand AF Area</td><td>Reacquire on visible subject detail</td></tr>
+</table>
+<p>After each adjustment, test the same kind of pass or movement again. If the result does not improve, return that control to its prior value before changing another.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
-<ul>
-<li>Birds in Flight: Servo AF, animal detection, Expand AF Area.</li>
-<li>People: Servo AF or One-Shot depending on movement, eye detection.</li>
-<li>Sports: Servo AF, tuned tracking sensitivity.</li>
-<li>Wildlife: Servo AF, animal eye detection when available.</li>
-</ul>
+<table>
+<tr><th>Profile</th><th>Starting behavior</th><th>Adjustment trigger</th></tr>
+<tr><td>Birds in Flight</td><td>Servo AF, Animals, Eye Detection when reliable; default tracking response</td><td>Lock on more through branches; raise Accel./Decel. for abrupt flight changes</td></tr>
+<tr><td>People</td><td>Servo AF for movement, People and Eye Detection; default response</td><td>Reduce subject switching in groups when the camera changes faces</td></tr>
+<tr><td>Sports</td><td>Servo AF, appropriate people/vehicle detection; default response</td><td>Lock on through players crossing; raise Accel./Decel. for stop-start action</td></tr>
+<tr><td>Wildlife</td><td>Servo AF, Animals and Eye Detection when reliable; default response</td><td>Lock on through vegetation; use a smaller area when detection chooses the background</td></tr>
+</table>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
-<p>Canon R5 AF cases and subject detection work together. Subject detection is powerful, but AF area selection still matters.</p>
+<ul>
+<li>AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.</li>
+<li>Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.</li>
+<li>Eye Detection is most useful when the eye is large and distinct enough to recognize.</li>
+<li>Back-button AF can make it easier to stop tracking immediately without changing AF Operation.</li>
+<li>Menu wording and available controls can vary with firmware and shooting context; confirm the displayed R5 options before relying on a saved configuration.</li>
+</ul>
 <h2 id="tips">Tips</h2>
-<p>Start with a familiar AF area and change one tracking parameter at a time.</p>
+<ul>
+<li>Begin with defaults and change one parameter at a time.</li>
+<li>Test against the real background, not only against a clean wall or sky.</li>
+<li>Separate an acquisition failure from a tracking failure: first get focus onto the intended subject, then judge whether Servo AF stays with it.</li>
+<li>Use short, repeatable trials and inspect sequences at useful magnification.</li>
+<li>Save a proven action configuration to an appropriate custom shooting mode only after it is reliable.</li>
+</ul>
 <h2 id="common-mistakes">Common Mistakes</h2>
 <ul>
-<li>Letting the camera switch subjects too easily.</li>
-<li>Using too small an AF area for erratic subjects.</li>
-<li>Assuming eye detection replaces good panning and framing.</li>
+<li>Treating an AF Case as a complete replacement for AF Method and subject selection.</li>
+<li>Increasing every response control for fast action.</li>
+<li>Blaming tracking behavior when shutter speed caused motion blur.</li>
+<li>Expecting Eye Detection to recover a subject that was never acquired.</li>
+<li>Testing multiple changes at once.</li>
+<li>Leaving a specialized configuration active for unrelated subjects.</li>
 </ul>
 <h2 id="cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Birds in Flight, People, Sports, Wildlife.</li>
-<li>Settings: AF operation, AF method, subject detection.</li>
-<li>Related appendices: Custom Controls, Drive Modes.</li>
+<li>Settings: Servo AF, AF Method, Tracking Sensitivity, Accel./Decel. Tracking, Subject Detection, Eye Detection, subject switching.</li>
+<li>Related guides:</li>
+<li><a href="R5%20Quick%20Reference.html?return=AF%20Cases%20%26%20Tracking%20Behavior.html">R5 Quick Reference</a></li>
+<li><a href="Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html?return=AF%20Cases%20%26%20Tracking%20Behavior.html">Custom Controls, Back-Button AF &amp; Dial Strategies</a></li>
 </ul></main>
 </body>
 </html>

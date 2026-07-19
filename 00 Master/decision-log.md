@@ -2,6 +2,22 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Date-Only Version Header
+
+**Status:** Accepted
+**Date:** 2026-07-19
+
+Display the published version and publication date in the shared header without the publication time. Preserve the full timezone-aware publication timestamp in metadata for publishing and cache behavior; only the user-facing header format changes.
+
+## Appendix Consolidation and Deep-Dive Promotion
+
+**Status:** Accepted
+**Date:** 2026-07-19
+
+Use **R5 Quick Reference** as the single concise reference for metering modes, drive modes, shutter types, general stabilization, basic flash choices, and AF tracking terminology. Remove the separate Metering Modes, Drive Modes, Electronic vs EFCS vs Mechanical Shutter, Image Stabilization, and Custom Controls manifest entries after preserving their useful guidance in R5 Quick Reference, Lens Capabilities, or the expanded custom-controls guide.
+
+Promote AF Cases & Tracking Behavior, Flash Photography, and Long Exposure & Night Photography to released Setting Deep Dives. Consolidate general custom-control guidance into **Custom Controls, Back-Button AF & Dial Strategies**. Preserve the incomplete Canon EOS R5 Custom Controls Current Configuration source without deciding its eventual disposition. Keep the Canon EOS R5 Official Icon Reference generated and available offline as an unreleased supporting reference linked directly from R5 Quick Reference, rather than listing it as a primary Field Guide.
+
 ## Independent Card Display Categories
 
 **Status:** Accepted

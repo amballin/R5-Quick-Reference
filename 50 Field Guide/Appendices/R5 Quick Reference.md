@@ -2,7 +2,7 @@
 
 ## Overview
 
-Use this quick reference when a card setting is not obvious, especially AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
+Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
 
 ## Topic Index
 
@@ -18,8 +18,11 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
   - [Subject Detection](#subject-detection)
   - [Eye Detection](#eye-detection)
   - [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
+  - [AF Tracking Behavior](#af-tracking-behavior)
 - [Capture and Timing](#capture-and-timing)
   - [Drive Mode](#drive-mode)
+- [Flash](#flash)
+  - [Flash Modes and Compatibility](#flash-modes-and-compatibility)
 - [Stabilization](#stabilization)
   - [Image Stabilization Mode](#image-stabilization-mode)
   - [IBIS](#ibis)
@@ -99,7 +102,7 @@ Shutter speed controls motion. Action profiles use fast shutter speeds; long exp
 
 #### Shutter Type
 
-Mechanical is the safest general default. EFCS can reduce vibration. Electronic is silent but can create rolling shutter, banding, or flash limitations.
+Mechanical is the safest general default, including for flash and uncertain artificial lighting. EFCS can reduce vibration but may affect bokeh at very fast shutter speeds. Electronic is silent but can create rolling shutter, banding, or flash limitations.
 
 | Setting | What it Does |
 |---|---|
@@ -199,6 +202,22 @@ Face + Tracking works best with subject and eye detection. Expand AF Area often 
 
 **Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch.
 
+#### AF Tracking Behavior
+
+Start with Canon's default Servo AF tracking behavior and change only the response that is causing a problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.
+
+| Control | What it Changes | Field Use |
+|---|---|---|
+| Tracking Sensitivity | How readily focus leaves the tracked subject when an obstacle or another subject enters the AF area | Move toward locked-on when brief obstructions steal focus; move toward responsive when intentional target changes feel slow. |
+| Accel./Decel. Tracking | How strongly Servo AF anticipates abrupt speed changes | Increase for subjects that start, stop, or change speed unpredictably; leave near default for steady motion. |
+| Subject switching | How readily subject detection transfers priority to another recognized subject | Reduce when the camera abandons the intended subject; increase when rapid handoffs are intentional. |
+
+Change one control at a time and test it against the actual background and subject motion. For scenarios and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
+
+**Camera Menu:** AF menu > Servo AF characteristics / Case settings and subject-tracking options.
+
+**Quick Menu:** Menu only.
+
 ### Capture and Timing
 
 #### Drive Mode
@@ -218,11 +237,33 @@ Single Shooting is deliberate. Low or High Speed Continuous helps with expressio
 
 **Quick Menu:** Q screen / M-Fn.
 
+Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.
+
+### Flash
+
+#### Flash Modes and Compatibility
+
+Use E-TTL when subject distance or ambient light changes; use Manual flash when repeatable output matters. Flash Exposure Compensation adjusts automatic flash brightness without changing ambient exposure. High Speed Sync permits shutter speeds above normal sync but reduces effective flash power.
+
+| Setting | What it Does |
+|---|---|
+| E-TTL | Uses a metering preflash to set flash output automatically. |
+| Manual flash | Holds a chosen power level for repeatable lighting. |
+| Flash Exposure Compensation | Makes E-TTL flash brighter or darker while leaving its automatic calculation active. |
+| High Speed Sync | Allows faster shutter speeds and wider apertures in bright light, with reduced range and power. |
+| Rear-curtain sync | Fires near the end of the exposure so motion trails appear behind a moving subject. |
+
+Use Mechanical shutter as the safe flash starting point on the R5 and confirm the supported sync behavior of the attached flash or trigger. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see [Flash Photography](appendix:flash_photography).
+
+**Camera Menu:** Shooting menu > External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.
+
+**Quick Menu:** Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.
+
 ### Stabilization
 
 #### Image Stabilization Mode
 
-Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod.
+Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod. Stabilization reduces camera shake; it does not freeze subject motion, which still requires an appropriate shutter speed.
 
 | Icon | Setting | What it Does |
 |---|---|---|
@@ -325,6 +366,8 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.
 
+For Canon's official setting names and the icons used throughout this reference system, open the [Canon EOS R5 Official Icon Reference](appendix:canon_r5_official_icon_reference). It remains available as a supporting field reference without occupying a separate entry on the main Field Guides index.
+
 ## Tips
 
 - Change one behavior at a time when troubleshooting focus.
@@ -344,7 +387,7 @@ Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningf
 
 - Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
 - Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.
-- Related guides: AF Cases & Tracking Behavior, Image Stabilization, Metering Modes, Electronic vs EFCS vs Mechanical Shutter, Drive Modes, Focus Bracketing & In-Camera Depth Compositing, Long Exposure & Night Photography.
+- Related guides: AF Cases & Tracking Behavior; Custom Controls, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography.
 
 ## Included Appendix
 

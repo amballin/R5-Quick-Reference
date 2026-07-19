@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1784372371";
+const CACHE_NAME = "photography-reference-1784477654";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -18,16 +18,11 @@ const CACHE_URLS = [
   "appendices/AF%20Cases%20%26%20Tracking%20Behavior.html",
   "appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html",
   "appendices/Canon%20EOS%20R5%20Official%20Icon%20Reference.html",
-  "appendices/Custom%20Controls.html",
-  "appendices/Drive%20Modes.html",
-  "appendices/Electronic%20vs%20EFCS%20vs%20Mechanical%20Shutter.html",
   "appendices/Flash%20Photography.html",
   "appendices/Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html",
   "appendices/Fv%20-%20Flexible%20Priority.html",
-  "appendices/Image%20Stabilization.html",
   "appendices/Lens%20Capabilities.html",
   "appendices/Long%20Exposure%20%26%20Night%20Photography.html",
-  "appendices/Metering%20Modes.html",
   "appendices/R5%20Quick%20Reference.html",
   "index.html",
   "manifest.webmanifest",

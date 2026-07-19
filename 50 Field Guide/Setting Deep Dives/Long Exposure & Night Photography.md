@@ -184,7 +184,5 @@ LENR is separate from High ISO Noise Reduction. Do not use LENR as a general hig
 - Settings: `image.long_exposure_noise_reduction.value`, shutter speed, drive mode, ISO, flash mode.
 - Related appendices:
   - [Focus Bracketing & In-Camera Depth Compositing](appendix:focus_bracketing_depth_compositing)
-  - [Image Stabilization](appendix:image_stabilization)
-  - [Electronic vs EFCS vs Mechanical Shutter](appendix:shutter_modes)
-  - [Metering Modes](appendix:metering_modes)
   - [Flash Photography](appendix:flash_photography)
+  - [R5 Quick Reference](appendix:r5_quick_reference)

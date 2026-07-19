@@ -470,7 +470,6 @@ Flash keeps up with every frame?
 - Profiles: Landscape, Macro, Water Drops, Product, Flowers, Insects, Architecture.
 - Settings: focus bracketing, number of shots, focus increment, exposure smoothing, depth compositing, aperture, shutter mode, flash mode.
 - Related appendices:
-  - [Image Stabilization](appendix:image_stabilization)
   - [Long Exposure & Night Photography](appendix:long_exposure_night_photography)
-  - [Electronic vs EFCS vs Mechanical Shutter](appendix:shutter_modes)
   - [Flash Photography](appendix:flash_photography)
+  - [R5 Quick Reference](appendix:r5_quick_reference)

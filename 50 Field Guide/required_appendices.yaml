@@ -1,42 +1,19 @@
 appendices:
-  - id: shutter_modes
-    legacy_appendix: "06"
-    title: "Electronic vs EFCS vs Mechanical Shutter"
-    file: "Appendices/Electronic vs EFCS vs Mechanical Shutter.md"
-    profiles:
-      - Birds in Flight
-      - Fireworks
-      - Sports
-      - Wildlife
-    related_appendices:
-      - flash_photography
-      - drive_modes
-    required_topics:
-      - What each shutter mode is
-      - Advantages
-      - Disadvantages
-      - Rolling shutter
-      - Flash limitations
-      - Banding / flicker considerations
-      - Bokeh implications
-      - Silent shooting implications
-      - Recommended uses
-      - Decision tree
-      - Subject recommendations
-      - Canon-specific notes
-      - Cross references from profiles
   - id: af_cases_tracking
     legacy_appendix: "08"
     title: "AF Cases & Tracking Behavior"
-    file: "Appendices/AF Cases & Tracking Behavior.md"
+    file: "Setting Deep Dives/AF Cases & Tracking Behavior.md"
+    content_type: setting_deep_dive
+    release: true
+    display_order: 40
     profiles:
       - Birds in Flight
       - People
       - Sports
       - Wildlife
     related_appendices:
-      - custom_controls
-      - drive_modes
+      - back_button_af_custom_button_strategies
+      - r5_quick_reference
     required_topics:
       - Servo AF behavior
       - Tracking sensitivity
@@ -49,30 +26,6 @@ appendices:
       - Subject examples
       - Decision tree
       - Cross references
-  - id: metering_modes
-    legacy_appendix: "09"
-    title: "Metering Modes"
-    file: "Appendices/Metering Modes.md"
-    profiles:
-      - Camera Defaults
-      - Fireworks
-      - Landscape
-      - People
-      - Wildlife
-    related_appendices:
-      - flash_photography
-    required_topics:
-      - Evaluative
-      - Partial
-      - Spot
-      - Center-weighted
-      - How it works
-      - Advantages
-      - Disadvantages
-      - Typical uses
-      - Exposure compensation considerations
-      - Examples
-      - Decision tree
   - id: focus_bracketing_depth_compositing
     legacy_appendix: "14"
     title: "Focus Bracketing & In-Camera Depth Compositing"
@@ -84,7 +37,6 @@ appendices:
       - Landscape
       - Macro
     related_appendices:
-      - drive_modes
       - flash_photography
     required_topics:
       - What Focus Bracketing is
@@ -112,39 +64,6 @@ appendices:
       - Common mistakes
       - Decision tree
       - Recommended starting values
-  - id: image_stabilization
-    title: "Image Stabilization"
-    file: "Appendices/Image Stabilization.md"
-    profiles:
-      - Birds in Flight
-      - Camera Defaults
-      - Landscape
-      - Macro
-      - Sports
-      - Travel
-      - Waterdrops
-      - Wildlife
-    related_appendices:
-      - shutter_modes
-      - drive_modes
-      - focus_bracketing_depth_compositing
-    required_topics:
-      - Lens IS
-      - IBIS
-      - Coordinated IS
-      - Mode 1
-      - Mode 2
-      - Mode 3
-      - Off
-      - EF 100-400mm L IS II
-      - EF-EOS R adapter
-      - Tripod recommendations
-      - Long exposure recommendations
-      - Panning recommendations
-      - Wildlife recommendations
-      - Birds in flight recommendations
-      - Macro recommendations
-      - Profile recommendations
   - id: lens_settings
     title: "Lens Capabilities"
     file: "Appendices/Lens Capabilities.md"
@@ -164,10 +83,8 @@ appendices:
       - Waterdrops
       - Wildlife
     related_appendices:
-      - image_stabilization
       - focus_bracketing_depth_compositing
       - r5_quick_reference
-      - shutter_modes
     skip_required_sections:
       - Purpose
       - What it Does
@@ -194,7 +111,10 @@ appendices:
       - Subject and profile recommendations
   - id: long_exposure_night_photography
     title: "Long Exposure & Night Photography"
-    file: "Appendices/Long Exposure & Night Photography.md"
+    file: "Setting Deep Dives/Long Exposure & Night Photography.md"
+    content_type: setting_deep_dive
+    release: true
+    display_order: 60
     profiles:
       - Camera Defaults
       - Fireworks
@@ -202,12 +122,9 @@ appendices:
       - Macro
       - Waterdrops
     related_appendices:
-      - shutter_modes
-      - image_stabilization
-      - drive_modes
       - focus_bracketing_depth_compositing
-      - metering_modes
       - flash_photography
+      - r5_quick_reference
     required_topics:
       - Long Exposure Noise Reduction
       - LENR
@@ -230,15 +147,17 @@ appendices:
   - id: flash_photography
     legacy_appendix: "16"
     title: "Flash Photography"
-    file: "Appendices/Flash Photography.md"
+    file: "Setting Deep Dives/Flash Photography.md"
+    content_type: setting_deep_dive
+    release: true
+    display_order: 50
     profiles:
       - Fireworks
       - Macro
       - People
       - Travel
     related_appendices:
-      - shutter_modes
-      - metering_modes
+      - r5_quick_reference
     required_topics:
       - E-TTL
       - Manual flash
@@ -253,34 +172,8 @@ appendices:
       - Pluto trigger notes
       - Canon Speedlite notes
       - Decision tree
-  - id: custom_controls
-    legacy_appendix: "17"
-    title: "Custom Controls"
-    file: "Appendices/Custom Controls.md"
-    profiles:
-      - Birds in Flight
-      - Landscape
-      - Sports
-      - Travel
-      - Wildlife
-    related_appendices:
-      - af_cases_tracking
-      - drive_modes
-    required_topics:
-      - Button customization
-      - M-Fn button
-      - AF-ON
-      - AE Lock
-      - Control Ring
-      - Joystick
-      - Register/Recall Shooting Function
-      - Recommended layouts
-      - Wildlife recommendations
-      - Landscape recommendations
-      - Sports recommendations
-      - Travel recommendations
   - id: back_button_af_custom_button_strategies
-    title: "Back-Button AF & Custom Button Strategies"
+    title: "Custom Controls, Back-Button AF & Dial Strategies"
     file: "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md"
     content_type: setting_deep_dive
     release: true
@@ -293,7 +186,6 @@ appendices:
       - Sports
       - Wildlife
     related_appendices:
-      - custom_controls
       - af_cases_tracking
       - r5_quick_reference
     required_topics:
@@ -311,32 +203,13 @@ appendices:
       - Exposure Compensation
       - Recommended custom button layout
       - Recommended dial layout
-  - id: drive_modes
-    legacy_appendix: "18"
-    title: "Drive Modes"
-    file: "Appendices/Drive Modes.md"
-    profiles:
-      - Birds in Flight
-      - Camera Defaults
-      - Sports
-      - Wildlife
-    related_appendices:
-      - shutter_modes
-      - af_cases_tracking
-    required_topics:
-      - Single Shot
-      - Low Continuous
-      - High Continuous
-      - High+ Continuous
-      - Silent modes
-      - Self Timer
-      - Electronic drive considerations
-      - Recommended uses
-      - Decision tree
+      - M-Fn button
+      - Joystick
+      - Register/Recall Shooting Function
   - id: canon_r5_official_icon_reference
     title: "Canon EOS R5 Official Icon Reference"
     file: "Appendices/Canon EOS R5 Official Icon Reference.md"
-    release: true
+    release: false
     display_order: 999
     profiles:
       - Birds in Flight
@@ -352,9 +225,6 @@ appendices:
     related_appendices:
       - r5_quick_reference
       - af_cases_tracking
-      - drive_modes
-      - metering_modes
-      - shutter_modes
     skip_required_sections:
       - Purpose
       - What it Does
@@ -395,12 +265,10 @@ appendices:
       - Wildlife
     related_appendices:
       - af_cases_tracking
-      - image_stabilization
-      - metering_modes
       - focus_bracketing_depth_compositing
-      - shutter_modes
-      - drive_modes
       - long_exposure_night_photography
+      - flash_photography
+      - lens_settings
     skip_required_sections:
       - Recommended Uses
     required_topics:
@@ -419,6 +287,10 @@ appendices:
       - Focus Bracketing
       - Long Exposure Noise Reduction
       - Subject Detection and AF Method Combinations
+      - Tracking Sensitivity
+      - Accel/Decel Tracking
+      - Subject switching
+      - Flash modes
   - id: fv_flexible_priority
     title: "Fv (Flexible Priority)"
     file: "Setting Deep Dives/Fv - Flexible Priority.md"
