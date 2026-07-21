@@ -14,19 +14,19 @@ Responsive HTML is the primary and default published phone card. PNG remains an 
 
 Generated or refreshed:
 
-- `../Photography Reference System Local/Build Output/cards/`
-- `../Photography Reference System Local/Build Output/field-guide/`
-- `../Photography Reference System Local/Build Output/merged-build/`
+- `../<repository folder name> Local/Build Output/cards/`
+- `../<repository folder name> Local/Build Output/field-guide/`
+- `../<repository folder name> Local/Build Output/merged-build/`
 - `docs/`
-- `../Photography Reference System Local/Build Output/reports/BUILD_REPORT.md`
+- `../<repository folder name> Local/Build Output/reports/BUILD_REPORT.md`
 
 The default build also removes stale generated PNGs and PDFs:
 
-- `../Photography Reference System Local/Build Output/cards/png/`
-- `../Photography Reference System Local/Build Output/cards/phone-png/`
+- `../<repository folder name> Local/Build Output/cards/png/`
+- `../<repository folder name> Local/Build Output/cards/phone-png/`
 
-- `../Photography Reference System Local/Build Output/cards/pdf/`
-- `../Photography Reference System Local/Build Output/field-guide/pdf/`
+- `../<repository folder name> Local/Build Output/cards/pdf/`
+- `../<repository folder name> Local/Build Output/field-guide/pdf/`
 
 ## Optional PDFs
 
@@ -38,8 +38,8 @@ python3 "80 Build/build.py" --pdf
 
 PDF outputs are written to:
 
-- `../Photography Reference System Local/Build Output/cards/pdf/`
-- `../Photography Reference System Local/Build Output/field-guide/pdf/`
+- `../<repository folder name> Local/Build Output/cards/pdf/`
+- `../<repository folder name> Local/Build Output/field-guide/pdf/`
 
 ## Optional PNG Cards
 
@@ -69,19 +69,19 @@ They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/
 | `data/` | Support data for the reference system. | Yes, carefully |
 | `docs/` | Generated GitHub Pages publish folder. GitHub serves this. | No |
 | `ios/` | Optional native Xcode wrapper project. Not required for Pages/browser/iPhone install. | Yes, if keeping native wrapper |
-| `../Photography Reference System Local/Build Output/` | All disposable card, guide, PWA, website, PDF, and report output. | No |
-| `../Photography Reference System Local/Backups/` | Timestamped pre-change recovery snapshots. | No |
-| `../Photography Reference System Local/Native Wrapper/` | Generated website resources consumed by the optional Xcode wrapper. | No |
+| `../<repository folder name> Local/Build Output/` | All disposable card, guide, PWA, website, PDF, and report output. | No |
+| `../<repository folder name> Local/Backups/` | Timestamped pre-change recovery snapshots. | No |
+| `../<repository folder name> Local/Native Wrapper/` | Generated website resources consumed by the optional Xcode wrapper. | No |
 
 Everything under local `Build Output/` is rebuilt and safe to discard. The sibling local workspace is the default; set `PRS_LOCAL_WORKSPACE` when a different machine-local path is needed.
 
 ## Generated Site Flow
 
 ```text
-../Photography Reference System Local/Build Output/merged-build/
+../<repository folder name> Local/Build Output/merged-build/
         -> docs/        # GitHub Pages publishing copy
-        -> ../Photography Reference System Local/Build Output/website/
-              -> ../Photography Reference System Local/Native Wrapper/Website/
+        -> ../<repository folder name> Local/Build Output/website/
+              -> ../<repository folder name> Local/Native Wrapper/Website/
                     -> ios/Resources/Website symlink for Xcode
 ```
 
@@ -124,23 +124,72 @@ display_order: 20
 - Lower `display_order` values appear first within the category; equal values sort alphabetically; omitted values default to `100`.
 - Category affects index placement only. Keep `card_type: reference` for explicitly authored permanent references, and keep baseline-driven cards as normal profile cards.
 
-## Continue Work on Another Computer
+## Work Safely on Two Macs
 
-Finish the current unit of work before changing computers:
+Each Mac has its own clone, dependencies, Git credentials, and sibling `<repository folder name> Local/` workspace. Git transfers repository files between Macs; disposable `Build Output/`, local backups, and native-wrapper output are rebuilt separately on each computer.
 
-1. Run `python3 "80 Build/validator.py"`.
-2. If this was only a development build, restore generated `docs/` changes with `git restore docs` so they are not mistaken for a release.
-3. Commit all intentional source changes.
-4. Push the current branch.
-5. Confirm `git status --short` produces no output.
+### Authenticate GitHub on Each Mac
 
-Publishing is not required for a computer handoff. Run the publishing command only when you intentionally want to update the live Pages site, version, and timestamp. Local build output is rebuilt on the next computer rather than transferred through Git.
+The configured remote uses HTTPS. Enable the macOS Keychain credential helper once on each Mac:
+
+```bash
+git config --global credential.helper osxkeychain
+```
+
+At the first authenticated fetch or push, enter the GitHub username `amballin`. At the password prompt, enter a GitHub personal access token with access to `R5-Quick-Reference`, not the GitHub account password. Never paste a token into project files, a remote URL, documentation, or chat. A valid existing token may be reused if its repository access and expiration are appropriate.
+
+### Before Starting Work
+
+From the repository root, run:
+
+```bash
+./80\ Build/scripts/preflight-git.sh
+```
+
+The preflight script fetches `origin` with pruning, verifies that the branch is `main` with an upstream, compares local and remote history, and reports working-tree changes. Its outcomes are:
+
+- **Clean and synchronized:** safe to begin.
+- **Local changes:** continue only after confirming they belong to the work already in progress on this Mac.
+- **Ahead:** local commits still need to be pushed before switching Macs.
+- **Behind:** with a clean working tree, run `git pull --ff-only`, then rerun preflight.
+- **Diverged or safety check failed:** stop for manual review; the scripts do not merge automatically.
+
+For a status-only check at any time, run:
+
+```bash
+./80\ Build/scripts/git-status-report.sh
+```
+
+This report refreshes the remote comparison but does not pull, merge, commit, push, switch branches, or alter project files.
+
+### Before Switching Macs
+
+Run the interactive finish workflow:
+
+```bash
+./80\ Build/scripts/finish-day.sh
+```
+
+Depending on repository state, it offers to:
+
+1. Run the documented validator, normal development build, and post-build validator.
+2. Back up regenerated `docs/` and restore them to `HEAD`, with confirmation, so Pages is not changed by the handoff.
+3. Stage every remaining source change shown by `git status`.
+4. Commit the staged source changes with a message you provide.
+5. Push `main` to its configured upstream, provided no outgoing commit changes `docs/`.
+6. Verify that the branch is clean and synchronized.
+
+Read every prompt and review the complete file list before answering yes. The normal development build refreshes tracked `docs/`, but a handoff is not publication. With confirmation, `finish-day.sh` archives the full current `docs/` tree plus Git status and binary patches under the machine-local `Backups/` folder, restores tracked `docs/` to the current commit, removes only archived untracked generated files under `docs/`, and verifies that no Pages changes remain before staging source files. It refuses to push an existing unpushed commit containing `docs/` changes because correcting that safely requires manual commit-history review.
+
+Do not switch Macs until `finish-day.sh` prints `FINISHED FOR TODAY: Safe to switch Macs.` On the other Mac, run `preflight-git.sh`; if it reports that the clean clone is behind, run `git pull --ff-only` and rerun preflight before editing.
+
+Publishing is not required for a computer handoff. Run the publishing command only when intentionally updating the live Pages site, version, and timestamp.
 
 ## Why `docs/` Is Still Top Level
 
 GitHub Pages branch publishing is configured as `main / docs`. That setting looks for a folder named `docs` at the repository root. Moving it under another folder would break the Pages setting unless GitHub Pages is reconfigured to a custom workflow.
 
-The build already creates `docs/` automatically. The only manual part is publishing that folder to GitHub.
+The normal build creates `docs/` automatically for local review, but that does not authorize publication. Because Pages watches `main / docs`, any pushed commit that changes `docs/` may update the live site. Ordinary development and handoff commits must leave `docs/` unchanged.
 
 ## Pages Is The Primary Path
 
@@ -179,6 +228,8 @@ This default publish omits PNG cards. To deliberately publish the optional PNG d
 
 `./80 Build/scripts/publish.sh` is the only supported website publishing command. Do not run the internal `build.py --publish` mode directly. Development and test threads must never run the publishing script.
 
+This is the publication control boundary: run the script only after explicitly deciding to update the live site. It performs the publish-mode build, validates generated output, updates version and timestamp metadata, commits only the approved Pages output and finalized publish metadata through a temporary Git index, and pushes that publication commit. A normal build, `finish-day.sh`, or an ordinary `git push` is not an authorized substitute.
+
 Do not install or use the GitHub CLI (`gh`) for this project. Authorized commits and pushes use the existing local `git` workflow; authorized website publication uses the publishing script above.
 
 3. Open:
@@ -210,7 +261,7 @@ Publish the optional website staging folder:
 The generated folder is:
 
 ```text
-../Photography Reference System Local/Build Output/website/
+../<repository folder name> Local/Build Output/website/
 ```
 
 ## Build Optional Native iOS Wrapper
@@ -223,8 +274,8 @@ python3 "80 Build/build.py" build ios
 
 That command refreshes:
 
-- `../Photography Reference System Local/Build Output/website/`
-- `../Photography Reference System Local/Native Wrapper/Website/`
+- `../<repository folder name> Local/Build Output/website/`
+- `../<repository folder name> Local/Native Wrapper/Website/`
 - the ignored `ios/Resources/Website` symlink used by Xcode
 
 Normal Pages builds do not keep `ios/Resources/Website/` populated, so the top-level project does not carry another duplicate copy of the same site.

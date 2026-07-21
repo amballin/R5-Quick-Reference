@@ -18,7 +18,7 @@ The established design is **Baseline + Overrides**. Shared defaults live once in
 
 Rendering is separated from profile data so presentation can evolve without restructuring shooting data. Educational content is separated into appendices so profiles remain concise and explanations have a single home. Permanent reference cards remain distinct from shooting profiles.
 
-The generated site uses `output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `output/website/` is optional staging and feeds `ios/Resources/Website/` only for the native wrapper workflow. PDF generation is intentionally opt-in.
+The generated site uses the machine-local workspace's `Build Output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `Build Output/website/` is optional machine-local staging and feeds `Native Wrapper/Website/`, exposed through `ios/Resources/Website`, only for the native wrapper workflow. PDF generation is intentionally opt-in.
 
 ## Domain Context and Terminology
 

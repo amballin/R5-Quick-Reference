@@ -4,6 +4,7 @@
 
 - `python3 "80 Build/build.py"` is the normal full development build. It regenerates responsive HTML cards, field-guide HTML, the canonical merged web/PWA bundle, `docs/`, and reports; stale PNG and PDF folders are removed because both fixed formats are off by default. It does not change publish metadata, commit, push, or deploy.
 - `./80 Build/scripts/publish.sh` is the only supported website publishing command. It runs an authorized publish-mode build, increments the minor version once, generates one timestamp, commits only `docs/` and finalized publish metadata through a temporary Git index, and pushes to the current branch.
+- GitHub Pages serves `main / docs`; therefore any push to `main` containing `docs/` changes can update the live site even if `publish.sh` was not used. Development and handoff commits must not contain `docs/` changes. Intentional Pages changes require explicit authorization and the supported publishing command.
 - Development and test threads must never run the publishing script.
 - `python3 "80 Build/build.py" --png` additionally creates fixed PNG cards and includes PNG actions in the generated site. `./80 Build/scripts/publish.sh --png` explicitly publishes them; the normal publish command omits them.
 - `python3 "80 Build/build.py" --pdf` additionally creates current card and appendix PDFs.
@@ -28,6 +29,9 @@
 - Run relevant validation, commit every intentional source change, push the current branch, and verify a clean working tree before handoff.
 - If a development build changed tracked `docs/` but publication is not intended, restore `docs/` to the current commit before the final clean-tree check. Disposable local output does not transfer through Git and is rebuilt on the next computer.
 - Do not run the publishing workflow merely to move work between computers. Publish only when intentionally updating the live site, version, and timestamp.
+- `80 Build/scripts/git-status-report.sh` is the read-only project-state report apart from refreshing remote-tracking references with `git fetch --prune`. It must not pull, merge, commit, push, switch branches, or change project files.
+- `80 Build/scripts/preflight-git.sh` uses that report to allow clean synchronized work or identified local work, and to block a clone that is behind, diverged, or cannot be verified safely. It must not update the working branch automatically.
+- `80 Build/scripts/finish-day.sh` is an interactive handoff helper. It requires confirmation before changing `docs/`, staging, committing, or pushing. When a development build changes `docs/`, it creates a timestamped machine-local recovery archive, restores tracked `docs/` to `HEAD`, removes only archived untracked generated files under `docs/`, verifies that `docs/` is clean, and then stages the remaining source changes. It must refuse to push when an existing unpushed commit contains `docs/` changes, and it must never invoke the publishing workflow.
 
 ## Validation Requirements
 

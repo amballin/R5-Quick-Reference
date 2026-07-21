@@ -21,7 +21,7 @@ def validate(root):
         if not path.is_dir():
             issues.append(error("build_output", path, "Output folder is missing."))
             continue
-        issues.extend(_generated_tree_issues(path))
+        issues.extend(_generated_tree_issues(path, allow_root_ds_store=path == paths.output_dir))
 
     for profile in profiles:
         name = profile.stem
@@ -62,14 +62,18 @@ def _html_issues(path):
     return issues
 
 
-def _generated_tree_issues(path):
+def _generated_tree_issues(path, allow_root_ds_store=False):
     issues = []
     duplicate_paths = _numbered_duplicates(path)
     if duplicate_paths:
         sample = ", ".join(str(item.relative_to(path)) for item in duplicate_paths[:10])
         issues.append(error("build_output", path, f"Generated output contains Finder-style duplicate paths: {sample}"))
 
-    ds_store_paths = sorted(path.rglob(".DS_Store"))
+    ds_store_paths = sorted(
+        item
+        for item in path.rglob(".DS_Store")
+        if not (allow_root_ds_store and item.parent == path)
+    )
     if ds_store_paths:
         sample = ", ".join(str(item.relative_to(path)) for item in ds_store_paths[:10])
         issues.append(error("build_output", path, f"Generated output contains .DS_Store files: {sample}"))

@@ -15,10 +15,22 @@ git clone https://github.com/amballin/R5-Quick-Reference.git
 cd R5-Quick-Reference
 npm install
 python3 "80 Build/validator.py"
-python3 build.py
+python3 "80 Build/build.py"
 ```
 
-The repository contains the editable profiles, reference cards, appendices, templates, build code, assets, and published `docs/` site. Disposable build output, backups, reports, and native-wrapper resources live in the sibling `Photography Reference System Local/` workspace and can be recreated or managed independently.
+The repository contains the editable profiles, reference cards, appendices, templates, build code, assets, and published `docs/` site. Disposable build output, backups, reports, and native-wrapper resources live in the sibling `<repository folder name> Local/` workspace and can be recreated or managed independently.
+
+Each Mac needs its own GitHub authentication. For this HTTPS remote, configure the macOS Keychain helper with `git config --global credential.helper osxkeychain`. When Git first prompts, use the GitHub username `amballin` and a personal access token as the password; never store the token in the repository.
+
+Use the repository's handoff scripts from the project root:
+
+```bash
+./80\ Build/scripts/preflight-git.sh       # before starting work on a Mac
+./80\ Build/scripts/git-status-report.sh  # inspect local and remote state
+./80\ Build/scripts/finish-day.sh         # finish before switching Macs
+```
+
+`preflight-git.sh` refreshes `origin` and blocks work when the clone is behind or diverged. `finish-day.sh` is interactive and can validate, build, separate generated `docs/`, stage source changes, commit, and push only after confirmation. It backs up changed `docs/` in the machine-local workspace and restores them to `HEAD` so the handoff commit cannot publish Pages. It also refuses to push an older unpushed commit containing `docs/` changes. Review its complete change list before approving staging. Do not switch Macs until the final report says the working tree is clean and synchronized. See [`HOW_TO.md`](HOW_TO.md) for the full workflow.
 
 Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
 
@@ -58,6 +70,8 @@ The version/publish footer appears only on the main Camera Settings index in the
 
 `./80 Build/scripts/publish.sh` is the only supported publishing command. The internal `build.py --publish` mode cannot be run directly.
 
+GitHub Pages watches `main / docs`. Consequently, any push to `main` that changes `docs/` can update the live site, regardless of which Git command created the commit. Keep `docs/` out of ordinary development and computer-handoff commits. The supported publish script is the deliberate control point: it performs the publish-mode build, validates the output, updates publish metadata, commits the approved Pages files, and pushes them. Run it only when you explicitly intend to publish.
+
 GitHub Pages must be configured to publish from:
 
 ```text
@@ -92,13 +106,13 @@ Source folders:
 
 Generated folders:
 
-- `../Photography Reference System Local/Build Output/cards/html/`: generated responsive HTML for every profile.
-- `../Photography Reference System Local/Build Output/cards/png/` and `cards/phone-png/`: optional fixed PNG exports from a `--png` build.
-- `../Photography Reference System Local/Build Output/field-guide/`: generated guide HTML, search index, and optional PDFs.
-- `../Photography Reference System Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
-- `../Photography Reference System Local/Build Output/website/`: optional staging copy for non-GitHub hosts and the native iOS wrapper.
-- `../Photography Reference System Local/Build Output/reports/`: generated build and validation reports.
-- `../Photography Reference System Local/Backups/`: timestamped pre-change recovery snapshots.
+- `../<repository folder name> Local/Build Output/cards/html/`: generated responsive HTML for every profile.
+- `../<repository folder name> Local/Build Output/cards/png/` and `cards/phone-png/`: optional fixed PNG exports from a `--png` build.
+- `../<repository folder name> Local/Build Output/field-guide/`: generated guide HTML, search index, and optional PDFs.
+- `../<repository folder name> Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
+- `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub hosts and the native iOS wrapper.
+- `../<repository folder name> Local/Build Output/reports/`: generated build and validation reports.
+- `../<repository folder name> Local/Backups/`: timestamped pre-change recovery snapshots.
 - `docs/`: generated GitHub Pages publish folder. GitHub serves this folder.
 
 `20 Templates/card.html` controls responsive HTML presentation. `80 Build/render_card_outputs.js` independently controls fixed PNG rendering, so responsive layout changes do not change the PNG canvas. Canon icons remain authoritative in `60 Assets/icons/canon_r5_official/`; icon selection prefers SVG and falls back to PNG. The build copies only required published assets into `docs/web-assets/` with relative paths.
@@ -108,10 +122,10 @@ Everything under `Build Output/` is disposable and can be regenerated by a full 
 Generated site flow:
 
 ```text
-../Photography Reference System Local/Build Output/merged-build/
+../<repository folder name> Local/Build Output/merged-build/
         -> docs/        # GitHub Pages publishing copy
-        -> ../Photography Reference System Local/Build Output/website/
-              -> ../Photography Reference System Local/Native Wrapper/Website/
+        -> ../<repository folder name> Local/Build Output/website/
+              -> ../<repository folder name> Local/Native Wrapper/Website/
                     -> ios/Resources/Website symlink for Xcode
 ```
 
