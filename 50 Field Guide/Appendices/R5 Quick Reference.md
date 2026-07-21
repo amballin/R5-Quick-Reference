@@ -161,14 +161,14 @@ Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predict
 
 #### Subject Detection
 
-Use People, Animals, or Vehicles when the camera can recognize the subject. Use None when a smaller AF area or manual focus should control the point.
+Use People, Animals, or Vehicles when one category should receive priority. Use None when no category should receive priority; it does not disable automatic main-subject selection. AF Method, not Subject to Detect, determines whether a smaller manually positioned AF area controls focus.
 
 | Icon | Setting | What it Does |
 |---|---|---|
 | ![People](../../60 Assets/icons/canon_r5_official/subject_to_detect_people.png) | People | Prioritizes human faces, heads, and eyes. |
 | ![Animals](../../60 Assets/icons/canon_r5_official/subject_to_detect_animals.png) | Animals | Prioritizes animals and birds when recognized. |
 | ![Vehicles](../../60 Assets/icons/canon_r5_official/subject_to_detect_vehicles.png) | Vehicles | Prioritizes racing cars and motorcycles when recognized. |
-| ![None](../../60 Assets/icons/canon_r5_official/subject_to_detect_none.png) | None | Prevents subject recognition from pulling focus away from the chosen area. |
+| ![None](../../60 Assets/icons/canon_r5_official/subject_to_detect_none.png) | None | Applies no People, Animals, or Vehicles priority; the camera still determines a main subject automatically from detected subject information. |
 
 **Camera Menu:** AF1 > Subject to detect.
 
@@ -188,14 +188,17 @@ Enable it when Face + Tracking and subject detection are useful. It is not usefu
 
 **Quick Menu:** AF point selection button, then INFO toggle when available.
 
+Assigning **Eye Detection AF** to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the **Eye detection: Enable/Disable** menu setting.
+
 #### Subject Detection and AF Method Combinations
 
-Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.
+Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF on the original EOS R5. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead, so changing Subject to Detect to None is unnecessary when switching to those methods. Eye Detection requires Face + Tracking. Manual Focus makes all AF settings irrelevant.
 
 | Icon | Setting | What it Does |
 |---|---|---|
 | ![Face+Tracking](../../60 Assets/icons/canon_r5_official/face_tracking.svg) | Face + Tracking + subject detection | Best when the camera should identify and follow the subject. |
-| ![Expand AF area](../../60 Assets/icons/canon_r5_official/expand_af_area.svg) | Expand AF Area + Subject Detection None | Useful when action is hard to track and the camera might choose the wrong subject. |
+| ![Expand AF area](../../60 Assets/icons/canon_r5_official/expand_af_area.svg) | Spot, 1-Point, or Expand AF Area | Provides deliberate AF-point placement without requiring a Subject to Detect change. |
+| screen-only | Zone or Large Zone AF + subject detection | Uses subject information within a controlled zone while retaining more automatic selection than Expand AF Area. |
 | ![MF](../../60 Assets/icons/canon_r5_official/lens_mf.svg) | Manual Focus | Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card. |
 
 **Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.
@@ -351,8 +354,8 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 ## Recommended Settings by Profile
 
-- Birds in Flight: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous+. If subject detection repeatedly selects the wrong target, use Expand AF Area with Subject Detection None.
-- Birds Perched: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous. Use Expand AF Area if tracking struggles.
+- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.
+- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.
 - Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.
 - Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
 - Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
@@ -360,7 +363,7 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 - Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.
 - Travel: Baseline settings unless the subject demands a specialized profile.
 - Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.
-- Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive.
+- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.
 
 ## Canon-Specific Notes
 
@@ -371,7 +374,7 @@ For Canon's official setting names and the icons used throughout this reference 
 ## Tips
 
 - Change one behavior at a time when troubleshooting focus.
-- If the camera jumps to the wrong subject, simplify AF Method or turn Subject Detection to None.
+- If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.
 - For handheld landscape, raise ISO before accepting camera shake.
 - For tripod work, remember to review stabilization and Long Exposure Noise Reduction.
 

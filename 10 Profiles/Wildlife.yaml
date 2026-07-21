@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-21
   release: true
 title: Wildlife
 card:
@@ -10,6 +10,7 @@ card:
 inherits: baseline
 overrides:
   autofocus:
+    method: Face + Tracking
     subject_detection: Animals
     eye_detection: Enable
   drive:

@@ -80,7 +80,7 @@ a{color:#165d9c}
 <p>Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.</p>
 <p>Leave tracking behavior near its default until a repeatable failure appears. Tune the failure, not the subject label alone.</p>
 <h2 id="when-not-to-use">When Not to Use</h2>
-<p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. Disable or simplify subject detection when the camera repeatedly chooses the wrong object. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
+<p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. When the camera repeatedly chooses the wrong object, use Spot AF, 1-Point AF, or Expand AF Area for more deliberate acquisition; Subject to Detect: None removes category priority but does not disable automatic main-subject selection. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
 <h2 id="decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Observed problem</th><th>First adjustment</th><th>Also check</th></tr>
@@ -104,8 +104,9 @@ a{color:#165d9c}
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
 <li>AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.</li>
+<li>On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.</li>
 <li>Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.</li>
-<li>Eye Detection is most useful when the eye is large and distinct enough to recognize.</li>
+<li>Eye Detection requires Face + Tracking and works best when the eye is large and distinct enough to recognize.</li>
 <li>Back-button AF can make it easier to stop tracking immediately without changing AF Operation.</li>
 <li>Menu wording and available controls can vary with firmware and shooting context; confirm the displayed R5 options before relying on a saved configuration.</li>
 </ul>

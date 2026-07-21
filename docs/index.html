@@ -245,13 +245,13 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method.</p>
 <p><strong>Quick Menu:</strong> AF point selection button, then M-Fn.</p>
 <h4 id="subject-detection">Subject Detection</h4>
-<p>Use People, Animals, or Vehicles when the camera can recognize the subject. Use None when a smaller AF area or manual focus should control the point.</p>
+<p>Use People, Animals, or Vehicles when one category should receive priority. Use None when no category should receive priority; it does not disable automatic main-subject selection. AF Method, not Subject to Detect, determines whether a smaller manually positioned AF area controls focus.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
 <tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAASCAYAAABM8m7ZAAAAx0lEQVR42mNgGAXYwXog/gnEd+lp6RIg/g/EX6H0H3pZ/BFq4XMgfg1l0wVsh1r2Ckr/p2dwX4Ba+AuItUZcCldHCnJQ/J8F4mVAXEapwSAD72AR3wHEa6GWgfALIH6C5AgQ7qbE4htQQ16jOQbZlyAL/wJxJVQ+FCp3mBoFBsigH0gWXgfiT0D8DJq1QPn5CpKeb9RK8f1IlspDxd5BLXgOdQBIzgQqd4CaWc0FjV+LFuzo+dqdlqnaEIg1oakbhO1Gq7JBDQB0JEo43JymoQAAAABJRU5ErkJggg==" alt="People" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>People</td><td>Prioritizes human faces, heads, and eyes.</td></tr>
 <tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAASCAYAAABM8m7ZAAAAhElEQVR42mNgGAWDENgB8Wd6WugCxPeB+D8U5wFxLBCfpKWlkkgWouMSWlkqCMRvgDgKyv+FZrEMrSxeDrVgFhB3YPFxLK0s5sYTzCA8k5ZxbA7Ed3FY/J4eKfsUDssP0NrifDxBfoqWFkcSiO+JtLLYioDFICxMK8t3ELC4Y7RWGZQAALeaTa0DGhjHAAAAAElFTkSuQmCC" alt="Animals" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>Animals</td><td>Prioritizes animals and birds when recognized.</td></tr>
 <tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAASCAYAAABM8m7ZAAAA6UlEQVR42mNgGAWjYBCBACDuBeJpQFwExGJIcsJArE5tC2cB8VcgPgvE86D8TUD8DohnA/E2IP4PxJepaSnIwL145BdA1fynloVuQPwNiH0JqFsPtfQXEFuRa5kjEN9A8sFTIGYFYhMgjgPiRCCuAOImIJ4IxC+Q1JLtayeoxj9QthU0Tv/jwTOBWA/qGLItPgXEj6BsY6Rg24/DUk+ovD9SiifL4utAnIJkAAinAbECFktvIyU8ZJ+eBGIhUi3mgNLHkQy7ARXrh8YpDOtB8yyyxRaUpmYVIH4PxXoE1K6ApvwVo2XroAQAv2NQ0CJ7pw8AAAAASUVORK5CYII=" alt="Vehicles" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>Vehicles</td><td>Prioritizes racing cars and motorcycles when recognized.</td></tr>
-<tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAASCAYAAAAzI3woAAABJUlEQVR42mNgGAWjgLZAdrA4ZDIQ/0fCU9Dk84H4G5qaNKjcESD+jCanR4ljNkINaYXy26D8TUhquqBiE4HYEYjDkOR+QuUSgdgHiMMpcYwg1LA9aOI7oeL8UH4zlI8NfIdiqoA0qEXeaOIeUPEUKL8JymeltYOmQC1SQhPXhYr3Q/mVUP45IF4PxNuAmBEqdw+I/0JDeTMQ76DEQXOhFsmgiauhJe4KKP89ED8F4nfQ6AaB21C5F1D8jBIHlUMNs0ATt4aKV0D5DVC+GBYzvkITNlWACdSiCWji/VBxA7Q0JENrBzFAgx9kmQKUrwnlv0FS0woVU8GRqP9Su2B8jVawvUOTn46nwPuPp0igCAQAcQ8Q+2OR44YWetiAORBbjda6tAIA0CZdd2fDQzoAAAAASUVORK5CYII=" alt="None" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>None</td><td>Prevents subject recognition from pulling focus away from the chosen area.</td></tr>
+<tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAASCAYAAAAzI3woAAABJUlEQVR42mNgGAWjgLZAdrA4ZDIQ/0fCU9Dk84H4G5qaNKjcESD+jCanR4ljNkINaYXy26D8TUhquqBiE4HYEYjDkOR+QuUSgdgHiMMpcYwg1LA9aOI7oeL8UH4zlI8NfIdiqoA0qEXeaOIeUPEUKL8JymeltYOmQC1SQhPXhYr3Q/mVUP45IF4PxNuAmBEqdw+I/0JDeTMQ76DEQXOhFsmgiauhJe4KKP89ED8F4nfQ6AaB21C5F1D8jBIHlUMNs0ATt4aKV0D5DVC+GBYzvkITNlWACdSiCWji/VBxA7Q0JENrBzFAgx9kmQKUrwnlv0FS0woVU8GRqP9Su2B8jVawvUOTn46nwPuPp0igCAQAcQ8Q+2OR44YWetiAORBbjda6tAIA0CZdd2fDQzoAAAAASUVORK5CYII=" alt="None" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>None</td><td>Applies no People, Animals, or Vehicles priority; the camera still determines a main subject automatically from detected subject information.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; Subject to detect.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
@@ -265,12 +265,14 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; Eye detection.</p>
 <p><strong>Quick Menu:</strong> AF point selection button, then INFO toggle when available.</p>
+<p>Assigning <strong>Eye Detection AF</strong> to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the <strong>Eye detection: Enable/Disable</strong> menu setting.</p>
 <h4 id="subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</h4>
-<p>Face + Tracking works best with subject and eye detection. Expand AF Area often pairs better with Subject Detection None for action where the camera should not chase the wrong subject. Manual Focus makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.</p>
+<p>Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF on the original EOS R5. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead, so changing Subject to Detect to None is unnecessary when switching to those methods. Eye Detection requires Face + Tracking. Manual Focus makes all AF settings irrelevant.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjM0IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMzQgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fZmFjZS10cmFja2luZzwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0zLjQsMS44OUExLjM2LDEuMzYsMCwwLDEsMiwzLjI4LDEuMzYsMS4zNiwwLDAsMSwuNjIsMS44OSwxLjM2LDEuMzYsMCwwLDEsMiwuNSwxLjM2LDEuMzYsMCwwLDEsMy40LDEuODlabTguOCw5LjU0LDEuNDEsMS4zN2E4LDgsMCwwLDEtMi4xNSwxLjU3LDExLjc2LDExLjc2LDAsMCwxLTIuMS44bC0xLjEyLjIzYTUuODgsNS44OCwwLDAsMS0yLjE5LDBsLTEuMTItLjIzYTEyLjEsMTIuMSwwLDAsMS0yLjExLS44QTguMTMsOC4xMywwLDAsMSwuNjgsMTIuODJsMS40MS0xLjQyYTUsNSwwLDAsMCwxLjU2LDEuMTgsOS4yNCw5LjI0LDAsMCwwLDEuNjMuNjIsNi4xMyw2LjEzLDAsMCwwLC44OS4xOSw2LjI4LDYuMjgsMCwwLDAsLjkxLjA2QTYuNTYsNi41NiwwLDAsMCw4LDEzLjRhNi4wOSw2LjA5LDAsMCwwLC45LTAuMTksMTAuODcsMTAuODcsMCwwLDAsMS42Ni0uNkE1LjMsNS4zLDAsMCwwLDEyLjIsMTEuNDNaTTkuNTMsOC43M3YySDUuNDZsMC03LjUxaDJWOC43M2gyWm00LjE0LTYuODRhMS4zOSwxLjM5LDAsMSwxLTIuNzgsMEExLjM5LDEuMzksMCwxLDEsMTMuNjcsMS44OVpNMjMuODMsMC41NVYxLjYzSDE5LjQ4VjZIMTguMzhWMC41NWg1LjQ1Wm0wLDEzLjg0djEuMDhIMTguMzhWMTBoMS4xMXY0LjM1aDQuMzVabTAtMTEuNTNWMy45NWgtMlY2SDIwLjY3VjIuODdoMy4xNlptMCw5LjIxdjEuMDhIMjAuNjdWMTBoMS4xNnYyaDJaTTMzLjM4LDAuNTVWNkgzMi4yN1YxLjYzSDI3LjkyVjAuNTVoNS40NVpNMzEuMDksMi44N1Y2SDI5Ljkzdi0yaC0yVjIuODdoMy4xNlpNMzMuMzgsMTB2NS40M0gyNy45MlYxNC4zOWg0LjM1VjEwaDEuMTFabS0yLjI5LDB2My4xMUgyNy45MlYxMi4wOGgyVjEwaDEuMTZaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjM0IiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="Face+Tracking" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Face + Tracking + subject detection</td><td>Best when the camera should identify and follow the subject.</td></tr>
-<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fYWYtem9vbTE8L3RpdGxlPg0KICA8cGF0aCBkPSJNOS40OSwwLjVoLTN2M2gzdi0zWk04LjYzLDIuNjRINy4zNVYxLjM2SDguNjNWMi42NFpNNi40OSwxNS41aDN2LTNoLTN2M1ptMC44Ni0yLjE0SDguNjN2MS4yOEg3LjM1VjEzLjM2Wk0xMi41LDYuNTF2M2gzdi0zaC0zWm0yLjEzLDIuMTRIMTMuMzZWNy4zN2gxLjI4VjguNjVaTTAuNSw5LjUxaDN2LTNoLTN2M1pNMS4zNSw3LjM3SDIuNjNWOC42NUgxLjM1VjcuMzdaTTUuMiwxMC44aDUuNThWNS4yMkg1LjJWMTAuOFpNNi4wNyw2LjA4SDkuOTJWOS45NEg2LjA3VjYuMDhaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="Expand AF area" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Expand AF Area + Subject Detection None</td><td>Useful when action is hard to track and the camera might choose the wrong subject.</td></tr>
+<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fYWYtem9vbTE8L3RpdGxlPg0KICA8cGF0aCBkPSJNOS40OSwwLjVoLTN2M2gzdi0zWk04LjYzLDIuNjRINy4zNVYxLjM2SDguNjNWMi42NFpNNi40OSwxNS41aDN2LTNoLTN2M1ptMC44Ni0yLjE0SDguNjN2MS4yOEg3LjM1VjEzLjM2Wk0xMi41LDYuNTF2M2gzdi0zaC0zWm0yLjEzLDIuMTRIMTMuMzZWNy4zN2gxLjI4VjguNjVaTTAuNSw5LjUxaDN2LTNoLTN2M1pNMS4zNSw3LjM3SDIuNjNWOC42NUgxLjM1VjcuMzdaTTUuMiwxMC44aDUuNThWNS4yMkg1LjJWMTAuOFpNNi4wNyw2LjA4SDkuOTJWOS45NEg2LjA3VjYuMDhaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="Expand AF area" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Spot, 1-Point, or Expand AF Area</td><td>Provides deliberate AF-point placement without requiring a Subject to Detect change.</td></tr>
+<tr><td>screen-only</td><td>Zone or Large Zone AF + subject detection</td><td>Uses subject information within a controlled zone while retaining more automatic selection than Expand AF Area.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1tZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi44NCwxNS41SDExLjIzbDAtMTNoMGwtMy43MywxM0g1LjlsLTMuNzMtMTNoMHYxM0gwLjUzVjAuNUgzLjE4TDYuNzEsMTMsMTAuMTcsMC41aDIuNjd2MTVabTcuNjMtMTVWMi4zOUgxNi4xMXY0LjRoNC4xN1Y4LjY4SDE2LjExVjE1LjVIMTQuNDhWMC41aDZaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="MF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Manual Focus</td><td>Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method; AF1 &gt; Subject to detect; lens AF/MF switch or AF1 &gt; Focus mode when shown.</p>
@@ -380,8 +382,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <ul>
-<li>Birds in Flight: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous+. If subject detection repeatedly selects the wrong target, use Expand AF Area with Subject Detection None.</li>
-<li>Birds Perched: Servo AF, Animals, Eye Detection, 1-Point AF, High Speed Continuous. Use Expand AF Area if tracking struggles.</li>
+<li>Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.</li>
+<li>Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.</li>
 <li>Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
 <li>Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
 <li>Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
@@ -389,7 +391,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.</li>
 <li>Travel: Baseline settings unless the subject demands a specialized profile.</li>
 <li>Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.</li>
-<li>Wildlife: Servo AF, Animals, Eye Detection when available, continuous drive.</li>
+<li>Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.</li>
 </ul>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.</p>
@@ -397,7 +399,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <h2 id="tips">Tips</h2>
 <ul>
 <li>Change one behavior at a time when troubleshooting focus.</li>
-<li>If the camera jumps to the wrong subject, simplify AF Method or turn Subject Detection to None.</li>
+<li>If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.</li>
 <li>For handheld landscape, raise ISO before accepting camera shake.</li>
 <li>For tripod work, remember to review stabilization and Long Exposure Noise Reduction.</li>
 </ul>
@@ -1056,14 +1058,14 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <h2 id="purpose">Purpose</h2>
 <p>Document a consistent Canon EOS R5 button, dial, back-button autofocus, and exposure-control layout for birds, wildlife, sports, macro, landscape, travel, and general field use. This is a recommended configuration, not a record of settings verified from the current-camera screenshots.</p>
 <h2 id="what-it-does">What it Does</h2>
-<p>Back-button AF separates autofocus activation from the shutter release. The recommended layout keeps normal autofocus on <strong>AF-ON</strong>, places a temporary alternate AF behavior on the <strong>AE Lock button</strong>, and assigns recovery and AF-operation changes to controls that can be reached without opening a menu.</p>
+<p>Back-button AF separates autofocus activation from the shutter release. The recommended layout uses two independent AF-start buttons: <strong>AF-ON</strong> starts autofocus with the active profile settings, while the <strong>AE Lock button</strong> starts autofocus with a detailed 1-Point AF override. Choose one AF button at a time, then use the shutter to take the picture.</p>
 <p>Custom controls can also assign frequently used functions to <strong>M-Fn</strong>, the joystick, the lens or adapter <strong>Control Ring</strong>, and Register/Recall Shooting Function. Keep one consistent base layout and add a specialized assignment only when it solves a repeated field problem.</p>
 <h3 id="recommended-custom-button-layout">Recommended Custom Button Layout</h3>
 <table>
 <tr><th>Control</th><th>Canon assignment</th><th>Purpose</th></tr>
 <tr><td><strong>Shutter button half-press</strong></td><td><strong>Metering start</strong></td><td>Starts metering without starting autofocus.</td></tr>
 <tr><td><strong>AF-ON button</strong></td><td><strong>Metering and AF start</strong></td><td>Starts the normal autofocus configuration.</td></tr>
-<tr><td><strong>AE Lock button</strong></td><td><strong>Switch to registered AF function</strong></td><td>Recalls the configured registered AF function while the button is held.</td></tr>
+<tr><td><strong>AE Lock button</strong></td><td><strong>Metering and AF start</strong> with <strong>AF Method: 1-Point AF</strong> in INFO details</td><td>Starts a precise alternate AF behavior without also holding AF-ON.</td></tr>
 <tr><td><strong>SET button</strong></td><td><strong>Set AF point to center</strong></td><td>Returns the active AF point to the center.</td></tr>
 <tr><td><strong>Depth-of-field preview button</strong></td><td><strong>One-Shot AF ↔ Servo AF</strong></td><td>Changes AF operation between One-Shot AF and Servo AF.</td></tr>
 </table>
@@ -1072,7 +1074,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><th>Control</th><th>Recommended role</th><th>Reason</th></tr>
 <tr><td><strong>M-Fn button</strong></td><td>Retain fast access to a small set of frequently changed shooting controls</td><td>Useful for choices that change often but do not deserve a dedicated prime button</td></tr>
 <tr><td><strong>Joystick / Multi-controller</strong></td><td>Direct AF-point movement</td><td>Precise and predictable subject acquisition</td></tr>
-<tr><td><strong>Register/Recall Shooting Function</strong></td><td>Temporary action or exposure override after it has been configured and tested</td><td>Recalls a known group of settings only while needed</td></tr>
+<tr><td><strong>Switch to registered AF function</strong></td><td>Specialized temporary AF override only after its ergonomics have been tested</td><td>May require a separate AF-start control and is not the recommended default layout</td></tr>
+<tr><td><strong>Register/Recall Shooting Function</strong></td><td>Under evaluation for a broader temporary shooting override</td><td>Original-R5 recalled items and AF-start behavior still require direct camera verification</td></tr>
 <tr><td><strong>Control Ring</strong></td><td>Exposure Compensation by default; ISO or aperture when the exposure workflow makes that more valuable</td><td>Adds a direct dial without disturbing the main shutter/aperture controls</td></tr>
 </table>
 <h3 id="recommended-dial-layout">Recommended Dial Layout</h3>
@@ -1084,15 +1087,17 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td><strong>Control Ring (Lens or Control Ring Adapter)</strong></td><td><strong>Exposure Compensation</strong></td></tr>
 </table>
 <h2 id="how-it-works">How it Works</h2>
-<p>With <strong>Shutter button half-press</strong> assigned to <strong>Metering start</strong>, pressing the shutter button does not refocus the camera. Press or hold <strong>AF-ON</strong> when autofocus is required, then release it when autofocus should stop.</p>
-<p><strong>Switch to registered AF function</strong> provides a temporary alternate AF behavior configured in the camera. Hold the assigned <strong>AE Lock button</strong> when the alternate behavior is needed; release the button to return to the normal AF behavior. The registered choices must be configured and tested on the camera before field use.</p>
-<p><strong>Register/Recall Shooting Function</strong> is broader than <strong>Switch to registered AF function</strong>: it can recall a configured shooting state rather than only an alternate AF behavior. Use it sparingly, document exactly what it changes, and avoid assigning an unverified recall state before a critical shoot.</p>
+<p>With <strong>Shutter button half-press</strong> assigned to <strong>Metering start</strong>, pressing the shutter button does not refocus the camera. Press or hold either configured rear AF button, then press the shutter to take the picture.</p>
+<p>Set <strong>AF-ON</strong> to <strong>Metering and AF start</strong> with its INFO details left at <strong>Maintain current setting</strong>. It then follows the active profile: for example, Face + Tracking with Animals and Eye Detection in a wildlife profile.</p>
+<p>Set the <strong>AE Lock button</strong> to <strong>Metering and AF start</strong> and use INFO details to keep the current AF Operation and Servo characteristics while overriding only AF Method to <strong>1-Point AF</strong>. This button starts the alternate autofocus itself. Do not hold AF-ON and AE Lock together.</p>
+<p><strong>Switch to registered AF function</strong> can temporarily change selected AF behavior, but it is not the recommended default here because it may require the override button, a separate AF-start button, and the shutter at the same time. <strong>Register/Recall Shooting Function</strong> is broader, but its original-R5 item list and AF-start behavior remain under evaluation and should not be recommended until verified directly on the camera.</p>
 <p>The <strong>SET button</strong> provides a consistent recovery action when the active AF point has moved away from the desired starting position. The <strong>Depth-of-field preview button</strong> provides direct access to the selected One-Shot AF/Servo AF change.</p>
 <h2 id="advantages">Advantages</h2>
 <ul>
 <li>Separates focus activation from image capture.</li>
-<li>Stops autofocus immediately when <strong>AF-ON</strong> is released.</li>
-<li>Provides a temporary alternate AF behavior without navigating menus.</li>
+<li>Stops autofocus immediately when the selected rear AF button is released.</li>
+<li>Provides normal tracking and precise 1-Point AF from separate AF-start buttons without navigating menus.</li>
+<li>Requires only one rear AF button at a time.</li>
 <li>Provides a one-press method to return the AF point to center.</li>
 <li>Keeps direct AF-point movement on the joystick and frequently changed secondary controls within reach of M-Fn.</li>
 <li>Keeps shutter speed, aperture, ISO speed, and exposure compensation on separate direct controls.</li>
@@ -1101,14 +1106,14 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <h2 id="disadvantages">Disadvantages</h2>
 <ul>
 <li>Requires deliberate use of <strong>AF-ON</strong>; half-pressing the shutter no longer starts autofocus.</li>
-<li>The registered AF function must be configured and remembered.</li>
+<li>Both AF-start buttons must be configured through their INFO detail screens and remembered.</li>
 <li>The <strong>AE Lock button</strong> is no longer available for its default purpose while reassigned.</li>
 <li>The <strong>Depth-of-field preview button</strong> is no longer available for its default purpose while reassigned.</li>
 <li>A customized camera can be confusing to another photographer unless the layout is documented.</li>
 </ul>
 <h2 id="recommended-uses">Recommended Uses</h2>
 <ul>
-<li>Birds in flight and wildlife when continuous tracking is the normal behavior.</li>
+<li>Birds in flight and wildlife when Face + Tracking is normal but deliberate 1-Point AF is sometimes needed.</li>
 <li>Sports when the subject must be tracked through changing backgrounds.</li>
 <li>Perched birds or partially obscured subjects when a temporary alternate AF behavior is useful.</li>
 <li>Manual exposure with Auto ISO when direct exposure compensation is required.</li>
@@ -1118,15 +1123,16 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ul>
 <li>Do not enable the layout immediately before a critical shoot without practicing it.</li>
 <li>Do not use back-button AF if shutter-button autofocus is preferred or required by another camera user.</li>
-<li>Do not assign <strong>Switch to registered AF function</strong> until the registered behavior has been configured and tested.</li>
+<li>Do not use <strong>Switch to registered AF function</strong> as the default alternate-AF control unless its multi-button ergonomics have been tested with the intended lens.</li>
+<li>Do not recommend <strong>Register/Recall Shooting Function</strong> until its original-R5 behavior and participating settings have been documented.</li>
 <li>Do not rely on exposure compensation in Manual exposure unless Auto ISO is active.</li>
 <li>Do not assign a broad Register/Recall state until every recalled setting has been documented and tested.</li>
 </ul>
 <h2 id="decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Situation</th><th>Control</th><th>Action</th></tr>
-<tr><td>Start normal autofocus or continuous tracking</td><td><strong>AF-ON button</strong></td><td>Press or hold <strong>Metering and AF start</strong>.</td></tr>
-<tr><td>Temporarily use the registered AF behavior</td><td><strong>AE Lock button</strong></td><td>Hold <strong>Switch to registered AF function</strong>; release to return.</td></tr>
+<tr><td>Start autofocus with the profile&#x27;s normal AF behavior</td><td><strong>AF-ON button</strong></td><td>Press or hold <strong>Metering and AF start</strong> with all INFO details set to maintain current settings.</td></tr>
+<tr><td>Start autofocus with precise point placement</td><td><strong>AE Lock button</strong></td><td>Press or hold <strong>Metering and AF start</strong> with AF Method overridden to <strong>1-Point AF</strong>.</td></tr>
 <tr><td>Return the active AF point to center</td><td><strong>SET button</strong></td><td>Press <strong>Set AF point to center</strong>.</td></tr>
 <tr><td>Change between stationary and continuous AF operation</td><td><strong>Depth-of-field preview button</strong></td><td>Use <strong>One-Shot AF ↔ Servo AF</strong>.</td></tr>
 <tr><td>Change shutter speed</td><td><strong>Main Dial (around Shutter Button)</strong></td><td>Rotate the dial.</td></tr>
@@ -1134,15 +1140,15 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Change ISO speed</td><td><strong>Multi-function Dial (Top Rear Dial)</strong></td><td>Rotate the dial.</td></tr>
 <tr><td>Adjust exposure with Manual + Auto ISO</td><td><strong>Control Ring</strong></td><td>Apply <strong>Exposure Compensation</strong>.</td></tr>
 <tr><td>Move the AF point directly</td><td><strong>Joystick / Multi-controller</strong></td><td>Move the selected point or starting area.</td></tr>
-<tr><td>Recall a tested temporary shooting state</td><td>Assigned recall control</td><td>Hold or activate <strong>Register/Recall Shooting Function</strong> as configured.</td></tr>
+<tr><td>Evaluate a broader temporary shooting state</td><td>Unassigned until verified</td><td>Test <strong>Register/Recall Shooting Function</strong> on the original R5 before adopting it.</td></tr>
 </table>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Profile</th><th>Normal use</th><th>Temporary or recovery use</th></tr>
-<tr><td><strong>Birds in Flight</strong></td><td>Hold <strong>AF-ON</strong> for continuous tracking.</td><td>Hold <strong>AE Lock</strong> for the configured registered AF behavior; press <strong>SET</strong> to recenter the AF point.</td></tr>
-<tr><td><strong>Birds Perched</strong></td><td>Use <strong>AF-ON</strong> for deliberate focus activation.</td><td>Use <strong>One-Shot AF ↔ Servo AF</strong> when AF operation needs to change.</td></tr>
-<tr><td><strong>Wildlife</strong></td><td>Hold <strong>AF-ON</strong> while the subject is moving.</td><td>Hold <strong>AE Lock</strong> when the registered AF behavior is better suited to an obstructed or difficult scene.</td></tr>
-<tr><td><strong>Sports</strong></td><td>Hold <strong>AF-ON</strong> for continuous tracking.</td><td>Use the registered AF behavior for a temporary alternate AF response.</td></tr>
+<tr><td><strong>Birds in Flight</strong></td><td>Hold <strong>AF-ON</strong> for Face + Tracking with animal detection.</td><td>Hold <strong>AE Lock</strong> for 1-Point AF when deliberate acquisition is more reliable.</td></tr>
+<tr><td><strong>Birds Perched</strong></td><td>Hold <strong>AF-ON</strong> for Face + Tracking with animal and eye detection.</td><td>Hold <strong>AE Lock</strong> for 1-Point AF through branches; select Spot AF manually when still finer placement is needed.</td></tr>
+<tr><td><strong>Wildlife</strong></td><td>Hold <strong>AF-ON</strong> for Face + Tracking with animal detection.</td><td>Hold <strong>AE Lock</strong> for 1-Point AF through grass or brush.</td></tr>
+<tr><td><strong>Sports</strong></td><td>Hold <strong>AF-ON</strong> for Face + Tracking with people detection.</td><td>Hold <strong>AE Lock</strong> for 1-Point AF when the camera selects the wrong player.</td></tr>
 <tr><td><strong>Macro</strong></td><td>Use <strong>AF-ON</strong> only when autofocus is wanted.</td><td>Use <strong>One-Shot AF ↔ Servo AF</strong> only when the subject or camera movement requires the change.</td></tr>
 <tr><td><strong>Landscape</strong></td><td>Keep a simple base layout; use the joystick for deliberate AF placement.</td><td>Use the Control Ring for Exposure Compensation when working in an automatic exposure mode.</td></tr>
 <tr><td><strong>Travel</strong></td><td>Keep the common base layout and M-Fn access predictable.</td><td>Avoid specialized recall states that are difficult to remember under changing conditions.</td></tr>
@@ -1152,7 +1158,10 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ul>
 <li>Use the Canon EOS R5 <strong>Customize buttons</strong> and <strong>Customize dials</strong> menus for these assignments.</li>
 <li>Canon menu wording can vary slightly by firmware display context. Confirm the function shown on the camera before relying on it.</li>
-<li><strong>Switch to registered AF function</strong> recalls only the options selected in its camera configuration. This appendix does not prescribe unverified registered values.</li>
+<li><strong>Metering and AF start</strong> can be configured through the INFO detail screen on supported controls. For AF-ON, maintain the active profile settings; for AE Lock, override only AF Method to 1-Point AF.</li>
+<li>Eye Detection on the original EOS R5 requires Face + Tracking. It is not active while the 1-Point AF override is in use.</li>
+<li>Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF; it does not need to be changed when the alternate button selects 1-Point AF.</li>
+<li><strong>Switch to registered AF function</strong> and <strong>Register/Recall Shooting Function</strong> remain advanced alternatives rather than parts of this recommended layout.</li>
 <li>The Control Ring may be on an RF lens or an EF-EOS R control ring mount adapter.</li>
 <li>This recommended layout is separate from the evidence-based current configuration documented in <strong>Canon EOS R5 Custom Controls Current Configuration</strong>.</li>
 </ul>
@@ -1160,7 +1169,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ul>
 <li>Practice pressing <strong>AF-ON</strong> before removing autofocus from the shutter button.</li>
 <li>Keep the same base button and dial layout across subject profiles.</li>
-<li>Configure one clearly understood registered AF behavior before adding more complexity.</li>
+<li>Configure and test AF-ON first, then configure AE Lock with only the AF Method override.</li>
+<li>Practice choosing one rear AF button without pressing the other.</li>
 <li>Test exposure compensation with Manual exposure and Auto ISO before field use.</li>
 <li>Recheck assignments after a camera reset or firmware-related settings reset.</li>
 </ul>
@@ -1168,7 +1178,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ul>
 <li>Removing autofocus from the shutter button before assigning and testing <strong>AF-ON</strong>.</li>
 <li>Treating a recommended assignment as confirmation of the camera&#x27;s current state.</li>
-<li>Forgetting which AF behavior was registered.</li>
+<li>Pressing AF-ON and AE Lock together instead of choosing one AF behavior.</li>
+<li>Configuring the AE Lock detail screen to override more settings than intended.</li>
+<li>Expecting Eye Detection to operate while the 1-Point AF override is active.</li>
 <li>Expecting exposure compensation to change a fully manual exposure with fixed ISO.</li>
 <li>Duplicating the full control explanation inside every subject profile.</li>
 </ul>
@@ -1219,7 +1231,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.</p>
 <p>Leave tracking behavior near its default until a repeatable failure appears. Tune the failure, not the subject label alone.</p>
 <h2 id="when-not-to-use">When Not to Use</h2>
-<p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. Disable or simplify subject detection when the camera repeatedly chooses the wrong object. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
+<p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. When the camera repeatedly chooses the wrong object, use Spot AF, 1-Point AF, or Expand AF Area for more deliberate acquisition; Subject to Detect: None removes category priority but does not disable automatic main-subject selection. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
 <h2 id="decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Observed problem</th><th>First adjustment</th><th>Also check</th></tr>
@@ -1243,8 +1255,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
 <li>AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.</li>
+<li>On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.</li>
 <li>Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.</li>
-<li>Eye Detection is most useful when the eye is large and distinct enough to recognize.</li>
+<li>Eye Detection requires Face + Tracking and works best when the eye is large and distinct enough to recognize.</li>
 <li>Back-button AF can make it easier to stop tracking immediately without changing AF Operation.</li>
 <li>Menu wording and available controls can vary with firmware and shooting context; confirm the displayed R5 options before relying on a saved configuration.</li>
 </ul>

@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-16
+  last_updated: 2026-07-21
   release: true
 title: Camera Buttons
 subtitle:
@@ -17,7 +17,7 @@ reference_settings:
   - control: AF-ON button
     assignment: Metering and AF start
   - control: AE Lock button
-    assignment: Switch to registered AF function
+    assignment: Metering and AF start (1-Point AF override)
   - control: SET button
     assignment: Set AF point to center
   - control: Depth-of-field preview button
@@ -32,14 +32,19 @@ reference_settings:
     assignment: Exposure Compensation
 checklist:
   - Practice back-button AF before a critical shoot.
-  - Configure and test the registered AF function.
+  - Set AF-ON details to maintain the profile's current AF settings.
+  - Set AE Lock details to maintain AF Operation and Servo characteristics while overriding AF Method to 1-Point AF.
+  - Test AF-ON and AE Lock separately; do not hold both AF buttons together.
   - Confirm Manual + Auto ISO before using exposure compensation.
   - Recheck assignments after a reset or firmware update.
 watch_for:
-  - Registered AF behavior not configured or tested
+  - AF-ON and AE Lock detailed AF settings not configured or tested
+  - AE Lock is no longer available for its default exposure-lock function
   - Exposure Compensation on Control Ring requires Auto ISO in Manual exposure
 common_mistakes:
   - Expecting shutter half-press to autofocus after enabling back-button AF
+  - Pressing AF-ON and AE Lock together instead of choosing one AF behavior
+  - Expecting Eye Detection to operate with the 1-Point AF override
   - Treating recommended assignments as confirmation of the camera's current settings
 appendix_links:
   - id: back_button_af_custom_button_strategies

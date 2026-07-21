@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-21
   release: true
 
 title: Birds Perched
@@ -16,6 +16,7 @@ card:
 
 overrides:
   autofocus:
+    method: Face + Tracking
     subject_detection: Animals
     eye_detection: Enable
 
@@ -47,5 +48,5 @@ common_mistakes:
   - Too much depth of field
 
 notes:
-  - Use Expand AF if tracking struggles.
+  - Use Spot AF or 1-Point AF when branches interfere; use Expand AF Area when movement is difficult to follow.
   - Image Stabilization Mode 1 is correct for handheld perched birds; turn IS off on a solid tripod.

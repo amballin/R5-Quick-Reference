@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-21
   release: true
 
 title: Birds in Flight
@@ -15,6 +15,7 @@ overrides:
     exposure_compensation: "Adjust for background"
 
   autofocus:
+    method: Face + Tracking
     subject_detection: Animals
     eye_detection: Enable
 
@@ -47,6 +48,6 @@ common_mistakes:
   - Poor panning
 
 notes:
-  - Use Expand AF Area with Subject Detection None when the bird is small or obscured, the background is busy, or subject detection repeatedly selects the wrong target.
+  - Use Expand AF Area when the bird is small or obscured, the background is busy, or Face + Tracking repeatedly selects the wrong target. Subject to Detect does not apply to Expand AF Area on the original EOS R5.
   - Use Image Stabilization Mode 3 for erratic flight and action.
   - Switch to Mode 2 only for deliberate steady panning.

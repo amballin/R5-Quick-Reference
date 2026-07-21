@@ -45,7 +45,7 @@ Leave tracking behavior near its default until a repeatable failure appears. Tun
 
 ## When Not to Use
 
-Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. Disable or simplify subject detection when the camera repeatedly chooses the wrong object. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.
+Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. When the camera repeatedly chooses the wrong object, use Spot AF, 1-Point AF, or Expand AF Area for more deliberate acquisition; Subject to Detect: None removes category priority but does not disable automatic main-subject selection. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.
 
 ## Decision Guide
 
@@ -73,8 +73,9 @@ After each adjustment, test the same kind of pass or movement again. If the resu
 ## Canon-Specific Notes
 
 - AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.
+- On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.
 - Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.
-- Eye Detection is most useful when the eye is large and distinct enough to recognize.
+- Eye Detection requires Face + Tracking and works best when the eye is large and distinct enough to recognize.
 - Back-button AF can make it easier to stop tracking immediately without changing AF Operation.
 - Menu wording and available controls can vary with firmware and shooting context; confirm the displayed R5 options before relying on a saved configuration.
 
