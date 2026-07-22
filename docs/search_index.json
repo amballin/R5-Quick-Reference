@@ -123,7 +123,7 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "purpose",
-    "text": "Focus Bracketing captures a sequence of photographs while the camera automatically moves focus from near to far. It is used when one photograph cannot hold enough depth of field.\nDepth Compositing is the process of combining those bracketed photographs into one image where more of the subject appears sharp. Focus Bracketing creates the source frames. Depth Compositing creates the final stacked image.\nMultiple focused images often produce better results than stopping down to very small apertures. At f/16, f/22, or smaller, diffraction can soften fine detail even though depth of field increases. A stack shot around f/5.6-f/11 often keeps sharper detail and creates deeper apparent focus.\nUse this appendix as a field guide for estimating Focus Bracketing settings with minimal trial and error.\nTable of contents:\n- Camera Requirements\n- Every Camera Setting Explained\n- Number of Shots\n- Focus Increment\n- Exposure Smoothing\n- Depth Compositing\n- How to Choose Settings\n- Starting Point Tables\n- Lens x Magnification x Aperture Quick Reference\n- Lens Considerations\n- Common Problems\n- Troubleshooting Guide\n- Decision Trees\n- Profile Recommendations"
+    "text": "Focus Bracketing captures a sequence of photographs while the camera automatically moves focus from near to far. It is used when one photograph cannot hold enough depth of field.\nDepth Compositing is the process of combining those bracketed photographs into one image where more of the subject appears sharp. Focus Bracketing creates the source frames. Depth Compositing creates the final stacked image.\nMultiple focused images often produce better results than stopping down to very small apertures. At f/16, f/22, or smaller, diffraction can soften fine detail even though depth of field increases. A stack shot around f/5.6-f/11 often keeps sharper detail and creates deeper apparent focus.\nUse this appendix as a field guide for estimating Focus Bracketing settings with minimal trial and error.\nTable of contents:\n- Camera Requirements\n- Every Camera Setting Explained\n- Number of Shots\n- Understanding Focus Increment\n- Exposure Smoothing\n- Depth Compositing\n- How to Choose Settings\n- Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM\n- Working Distance Guidelines\n- Starting Point Tables\n- Lens Considerations\n- Using Extension Tubes (Kenko and Similar)\n- Common Problems\n- Troubleshooting Guide\n- Decision Trees\n- Profile Recommendations"
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -150,7 +150,7 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "how-it-works",
-    "text": "The camera needs a starting focus point, a focus increment, and a number of shots.\nStart focus on the nearest important detail. The sequence moves focus farther away from that point. If you start too deep into the subject, the near edge will never be sharp.\nThe key relationships are:\n- Higher magnification gives shallower depth of field.\n- Closer subject distance gives shallower depth of field.\n- Wider aperture gives shallower depth of field.\n- Smaller focus increments increase overlap between slices.\n- More shots increase total depth coverage."
+    "text": "The camera needs a starting focus point, a focus increment, and a number of shots.\nStart focus on the nearest important detail. The sequence moves focus farther away from that point. If you start too deep into the subject, the near edge will never be sharp.\nThe key relationships are:\n- Higher magnification gives shallower depth of field.\n- Closer subject distance gives shallower depth of field.\n- Wider aperture gives shallower depth of field.\n- Smaller focus increments increase overlap between slices.\n- More shots increase total depth coverage.\n  Focus Distance   Magnification   Depth of Field   Focus Increment   Typical Shot Count  \n  ---   ---   ---   ---   ---  \n  Decreases (camera moves closer)   Increases   Becomes extremely shallow   Smaller   More images  \n  Increases (camera moves farther away)   Decreases   Becomes deeper   Larger   Fewer images  "
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -209,11 +209,11 @@
   {
     "appendix_id": "focus_bracketing_depth_compositing",
     "title": "Focus Bracketing & In-Camera Depth Compositing",
-    "section": "Focus Increment",
+    "section": "Understanding Focus Increment",
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
-    "anchor": "focus-increment",
-    "text": "What it controls: how far the focus plane moves between frames.\nFocus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters. Its real-world effect changes with aperture, magnification, subject distance, and lens behavior.\nRelationship to depth of field:\n- Wider aperture: shallower depth of field, smaller increment needed.\n- Smaller aperture: deeper depth of field, larger increment possible.\n- Higher magnification: shallower depth of field, smaller increment needed.\n- Closer subject: shallower depth of field, smaller increment needed.\n- Greater subject distance: deeper depth of field, larger increment possible.\nSmall increment:\n- More overlap.\n- Better stacking reliability.\n- More images.\n- Slower workflow.\nLarge increment:\n- Fewer images.\n- Faster capture.\n- Less storage.\n- Greater chance of focus gaps.\nPractical starting points:\n  Subject   Suggested Increment  \n  ---   ---  \n  1:1 Macro   1-2  \n  Insects   2-3  \n  Flowers   3-5  \n  Product Photography   3-5  \n  Food   4-6  \n  Landscape   5-8  \n  Architecture   5-10  \nThese are starting points, not fixed rules. If the stack shows bands of softness, reduce the increment. If every frame is nearly identical, increase the increment.\nCommon mistakes:\n- Using a large increment for 1:1 macro.\n- Assuming the increment means the same thing with every lens.\n- Changing aperture without adjusting increment.\n- Starting focus in the middle of the subject instead of the nearest important detail.\nRecommended starting point: increment 1-2 for true macro, 3-5 for close product work, and 5-8 for landscape."
+    "anchor": "understanding-focus-increment",
+    "text": "What it controls: how far the focus plane moves between frames.\nFocus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters, and there is no universally correct value. The useful value depends on subject size, camera-to-subject distance, lens focal length, aperture, the desired overlap between adjacent sharp slices, and the focus-step behavior of the lens.\nRelationship to depth of field:\n- Wider aperture: shallower depth of field, smaller increment needed.\n- Smaller aperture: deeper depth of field, larger increment possible.\n- Higher magnification: shallower depth of field, smaller increment needed.\n- Closer subject: shallower depth of field, smaller increment needed.\n- Greater subject distance: deeper depth of field, larger increment possible.\nSmaller Increment:\n- Greater overlap.\n- Better stacking.\n- More images.\n- Longer capture time.\nLarger Increment:\n- Less overlap.\n- Fewer images.\n- Faster capture.\n- Greater chance of focus gaps.\nUse the subject-based table below as a starting point. If the stack shows bands of softness, reduce the increment. If adjacent frames have much more overlap than needed, increase the increment cautiously.\nCommon mistakes:\n- Using a large increment when working extremely close.\n- Assuming the increment means the same thing with every lens.\n- Changing aperture without adjusting increment.\n- Starting focus in the middle of the subject instead of the nearest important detail.\nRecommended starting point: increment 1-2 when working extremely close, 3-5 for close product work, and 5-8 for landscape."
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -249,7 +249,25 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "how-to-choose-settings",
-    "text": "Use this field process:\n1. Decide how much physical depth must be sharp.\n2. Check how close you are to the subject.\n3. Estimate magnification. The closer the lens is to macro range, the smaller the increment should be.\n4. Choose an aperture that balances sharpness and depth. f/8 is a strong starting point for many macro and product stacks.\n5. Choose Focus Increment.\n6. Choose Number of Shots.\n7. Run a test stack.\n8. Review the first and last frames.\n9. Adjust increment or shot count.\nWorked examples:\n- Water drops at f/8 with a 100 mm macro lens: start at increment 1 and 150 shots. If the rear edge is still soft, increase shots. If many final frames add no detail, reduce shots.\n- Flower at f/8: start at increment 4 and 50 shots. If petal edges show focus gaps, reduce increment to 3 or increase shots.\n- Product watch at f/8: start at increment 3 and 80 shots. Use tripod and controlled light. If bracelet links show gaps, reduce increment.\n- Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.\n- Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included."
+    "text": "Use this field process:\n1. Decide how much physical depth must be sharp.\n2. Check how close you are to the subject.\n3. Judge the subject size and how much of it fills the frame. The closer the working distance, the smaller the increment should be.\n4. Choose an aperture that balances sharpness and depth. f/8 is a strong starting point for many macro and product stacks.\n5. Choose Focus Increment.\n6. Choose Number of Shots.\n7. Run a test stack.\n8. Review the first and last frames.\n9. Adjust increment or shot count.\nWorked examples:\n- Water drops at f/8 with a 100 mm macro lens: start at increment 1 and 150 shots. If the rear edge is still soft, increase shots. If many final frames add no detail, reduce shots.\n- Flower at f/8: start at increment 4 and 50 shots. If petal edges show focus gaps, reduce increment to 3 or increase shots.\n- Product watch at f/8: start at increment 3 and 80 shots. Use tripod and controlled light. If bracelet links show gaps, reduce increment.\n- Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.\n- Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM",
+    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm",
+    "text": "The Canon EF 100mm f/2.8L Macro IS USM does not provide a direct magnification setting. Magnification is determined by focus distance, so photographers normally choose Focus Bracketing settings from subject size, working distance, and the desired depth of field rather than by calculating a reproduction ratio.\nAs focus distance decreases, magnification increases and depth of field becomes extremely shallow. Use a smaller Focus Increment to preserve overlap and expect to need more images. As focus distance increases, magnification decreases and depth of field increases. A larger Focus Increment becomes appropriate, and fewer images are normally required."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Working Distance Guidelines",
+    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "working-distance-guidelines",
+    "text": "- **Almost touching the subject:** Use Increment 1\u20132. At this distance the sharp slice in each frame is extremely thin, so generous overlap protects against focus gaps.\n- **Flowers at a comfortable distance:** Use Increment 3\u20134. The deeper per-frame depth of field allows a moderate step while preserving overlap through layered petals.\n- **Products from farther away:** Use Increment 4\u20136. Greater working distance increases depth of field, so larger steps cover the product efficiently with fewer redundant frames.\n- **Landscapes:** Use Increment 5\u20138. At normal landscape distances each frame covers substantially more depth; use the lower end when the foreground is very close and the higher end when it is not.\nThese guidelines are practical starting points. Review the first stack at useful magnification, then adjust Focus Increment and Number of Shots for the actual subject depth and any focus gaps."
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -276,7 +294,7 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "tips",
-    "text": "- Start with the nearest important detail.\n- Use a tripod for serious stacks.\n- Use f/8 as a practical first aperture for many macro/product stacks.\n- Review the first and last frame to confirm the full depth range was covered.\n- If there are focus gaps, lower the increment or increase shot count.\n- If many frames are redundant, raise the increment or reduce shot count.\n- Use controlled lighting when possible.\n- Protect the subject from wind.\n- Leave extra room around the subject for alignment and cropping."
+    "text": "- Start with the nearest important detail.\n- Start with more images rather than fewer.\n- Increase Increment only after confirming there are no focus gaps.\n- Tiny focus gaps are difficult to repair later.\n- Wind is usually a bigger problem than camera movement.\n- Using a tripod is strongly recommended.\n- Diffraction cannot replace proper focus stacking.\n- Use f/8 as a practical first aperture for many macro/product stacks.\n- Review the first and last frame to confirm the full depth range was covered.\n- If there are focus gaps, lower the increment or increase shot count.\n- If many frames are redundant, raise the increment or reduce shot count.\n- Use controlled lighting when possible.\n- Protect the subject from wind.\n- Leave extra room around the subject for alignment and cropping."
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -290,38 +308,11 @@
   {
     "appendix_id": "focus_bracketing_depth_compositing",
     "title": "Focus Bracketing & In-Camera Depth Compositing",
-    "section": "100 mm Macro Lens",
+    "section": "Starting Point Tables",
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
-    "anchor": "100-mm-macro-lens",
-    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Water Drops   f/8   1   150  \n  Insects   f/8   2   120  \n  Flowers   f/8   4   50  \n  Coins   f/8   3   60  "
-  },
-  {
-    "appendix_id": "focus_bracketing_depth_compositing",
-    "title": "Focus Bracketing & In-Camera Depth Compositing",
-    "section": "Landscape",
-    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
-    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
-    "anchor": "landscape",
-    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Foreground flowers   f/8   5   15  \n  Mountains   f/8   6   8  \n  Scenic overlook   f/8   7   5  "
-  },
-  {
-    "appendix_id": "focus_bracketing_depth_compositing",
-    "title": "Focus Bracketing & In-Camera Depth Compositing",
-    "section": "Product Photography",
-    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
-    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
-    "anchor": "product-photography",
-    "text": "  Subject   Aperture   Increment   Shots  \n  ---   ---   ---   ---  \n  Watches   f/8   3   80  \n  Jewelry   f/8   2   100  \n  Electronics   f/8   4   40  \n  Small collectibles   f/8   4   50  "
-  },
-  {
-    "appendix_id": "focus_bracketing_depth_compositing",
-    "title": "Focus Bracketing & In-Camera Depth Compositing",
-    "section": "Lens x Magnification x Aperture Quick Reference",
-    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
-    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
-    "anchor": "lens-x-magnification-x-aperture-quick-reference",
-    "text": "  Lens   Magnification   Aperture   Increment   Starting Shots  \n  ---   ---   ---   ---   ---  \n  RF 100 Macro   1:1   f/8   1   150  \n  RF 100 Macro   1:2   f/8   2   80  \n  RF 100 Macro   1:4   f/8   4   40  \n  EF 100 Macro   1:1   f/8   1-2   150  \n  EF 100 Macro   1:2   f/8   2-3   80  \n  EF 100-400 @ 400mm   Close focus   f/8   3   30  \n  RF 24-105 @ 24mm   Landscape   f/8   6   8  "
+    "anchor": "starting-point-tables",
+    "text": "  Subject   Typical Working Distance   Aperture   Focus Increment   Starting Shots  \n  ---   ---:   ---:   ---:   ---:  \n  Water Drops   Very close (near minimum focus distance)   f/8   1   150\u2013250  \n  Small Insects   Very close   f/8   1\u20132   120\u2013200  \n  Butterflies / Dragonflies   Close   f/8   2   80\u2013150  \n  Flowers   Moderate   f/8   3\u20134   30\u201380  \n  Coins / Stamps   Close   f/8   2\u20133   60\u2013120  \n  Jewelry   Moderate   f/8   3\u20134   40\u201380  \n  Watches   Moderate   f/8   3\u20135   30\u201360  \n  Small Products   Moderate   f/8   3\u20135   20\u201360  \n  Larger Products   Farther Away   f/8\u2013f/11   5\u20137   10\u201330  \nThese are practical starting points, not fixed settings. Adjust them after reviewing the first stack."
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -330,7 +321,34 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "lens-considerations",
-    "text": "RF 100 mm Macro: excellent for high-magnification stacking. At 1:1 or higher, use very small increments and many shots.\nEF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.\nEF 100-400L: useful for close telephoto detail, flowers, compressed landscape details, and larger products. Use moderate increments because magnification is lower than true macro but depth can still be shallow at close focus.\nWide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.\nWorking distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be."
+    "text": "RF 100 mm Macro: excellent for very close stacking. Near minimum focus distance, use very small increments and many shots.\nEF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.\nEF 100-400L: useful for close telephoto detail, flowers, compressed landscape details, and larger products. Use moderate increments because magnification is lower than true macro but depth can still be shallow at close focus.\nWide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.\nWorking distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Using Extension Tubes (Kenko and Similar)",
+    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "using-extension-tubes-kenko-and-similar",
+    "text": "Extension tubes are hollow spacers with no optical elements. They move the lens farther from the sensor, reduce minimum focus distance, and increase maximum magnification. The tradeoffs are reduced working distance, reduced available light, potentially slower autofocus, and even greater depth-of-field challenges.\nExtension tubes do not change how the Canon Focus Bracketing feature operates, but the closer focus and thinner depth of field significantly change the recommended settings."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Practical Recommendations",
+    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "practical-recommendations",
+    "text": "When extension tubes are installed:\n- Reduce Focus Increment.\n- Increase the Number of Shots.\n- Expect capture time to increase significantly.\n- Review the first stack carefully for focus gaps."
+  },
+  {
+    "appendix_id": "focus_bracketing_depth_compositing",
+    "title": "Focus Bracketing & In-Camera Depth Compositing",
+    "section": "Suggested Starting Values",
+    "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
+    "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
+    "anchor": "suggested-starting-values",
+    "text": "  Setup   Focus Increment   Starting Shots  \n  ---   ---:   ---:  \n  12 mm Tube   2   100\u2013150  \n  20 mm Tube   1\u20132   150\u2013220  \n  36 mm Tube   1   200\u2013300+  \n  Multiple Tubes   1   Determine experimentally; expect 250\u2013400+ images depending on subject depth  \nThese are conservative starting values intended to maximize overlap."
   },
   {
     "appendix_id": "focus_bracketing_depth_compositing",
@@ -375,7 +393,7 @@
     "source": "Setting Deep Dives/Focus Bracketing & In-Camera Depth Compositing.md",
     "html": "appendices/Focus Bracketing & In-Camera Depth Compositing.html",
     "anchor": "cross-references",
-    "text": "- Profiles: Landscape, Macro, Water Drops, Product, Flowers, Insects, Architecture.\n- Settings: focus bracketing, number of shots, focus increment, exposure smoothing, depth compositing, aperture, shutter mode, flash mode.\n- Related appendices:\n- Long Exposure & Night Photography\n- Flash Photography\n- R5 Quick Reference"
+    "text": "- Overview: Focus Bracketing overview.\n- Profiles: Macro Profile, Water Drops Profile, Landscape, Product, Flowers, Insects, Architecture.\n- Settings: Image Stabilization, Electronic vs EFCS vs Mechanical Shutter, and Long Exposure Noise Reduction.\n- Related appendices:\n- Long Exposure & Night Photography\n- Flash Photography\n- R5 Quick Reference"
   },
   {
     "appendix_id": "lens_settings",

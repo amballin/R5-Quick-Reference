@@ -74,7 +74,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <!-- PWA END -->
 </head>
 <body>
-<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.09 • 2026/07/19</p></header>
+<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.10 • 2026/07/22</p></header>
 <main>
 <h2>Subjects</h2>
 <div class="cards">
@@ -104,21 +104,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </div>
 </div>
 <div class="hint">Tap for details</div>
-<h2>Reference Cards</h2>
-<div class="cards">
-<div class="card-row">
-<a class="card-primary" href="Cards/Camera%20Buttons.html">Camera Buttons<span>Open</span></a>
-
-</div>
-<div class="card-row">
-<a class="card-primary" href="Cards/Camera%20Defaults.html">Camera Defaults<span>Open</span></a>
-
-</div>
-<div class="card-row">
-<a class="card-primary" href="Cards/Camera%20Setup%20Essentials.html">Camera Setup Essentials<span>Open</span></a>
-
-</div>
-</div>
 <h2>Field Guides</h2>
 <div class="guides">
 <details>
@@ -582,6 +567,21 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </div>
 </details>
 </div>
+<h2>Camera Setup &amp; Controls</h2>
+<div class="cards">
+<div class="card-row">
+<a class="card-primary" href="Cards/Camera%20Buttons.html">Camera Buttons<span>Open</span></a>
+
+</div>
+<div class="card-row">
+<a class="card-primary" href="Cards/Camera%20Defaults.html">Camera Defaults<span>Open</span></a>
+
+</div>
+<div class="card-row">
+<a class="card-primary" href="Cards/Camera%20Setup%20Essentials.html">Camera Setup Essentials<span>Open</span></a>
+
+</div>
+</div>
 <h2>Deep Dive</h2>
 <div class="guides">
 <details>
@@ -652,13 +652,15 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="#camera-requirements">Camera Requirements</a></li>
 <li><a href="#every-camera-setting-explained">Every Camera Setting Explained</a></li>
 <li><a href="#number-of-shots">Number of Shots</a></li>
-<li><a href="#focus-increment">Focus Increment</a></li>
+<li><a href="#understanding-focus-increment">Understanding Focus Increment</a></li>
 <li><a href="#exposure-smoothing">Exposure Smoothing</a></li>
 <li><a href="#depth-compositing">Depth Compositing</a></li>
 <li><a href="#how-to-choose-settings">How to Choose Settings</a></li>
+<li><a href="#choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</a></li>
+<li><a href="#working-distance-guidelines">Working Distance Guidelines</a></li>
 <li><a href="#starting-point-tables">Starting Point Tables</a></li>
-<li><a href="#lens-x-magnification-x-aperture-quick-reference">Lens x Magnification x Aperture Quick Reference</a></li>
 <li><a href="#lens-considerations">Lens Considerations</a></li>
+<li><a href="#using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</a></li>
 <li><a href="#common-problems">Common Problems</a></li>
 <li><a href="#troubleshooting-guide">Troubleshooting Guide</a></li>
 <li><a href="#decision-trees">Decision Trees</a></li>
@@ -688,6 +690,11 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Smaller focus increments increase overlap between slices.</li>
 <li>More shots increase total depth coverage.</li>
 </ul>
+<table>
+<tr><th>Focus Distance</th><th>Magnification</th><th>Depth of Field</th><th>Focus Increment</th><th>Typical Shot Count</th></tr>
+<tr><td>Decreases (camera moves closer)</td><td>Increases</td><td>Becomes extremely shallow</td><td>Smaller</td><td>More images</td></tr>
+<tr><td>Increases (camera moves farther away)</td><td>Decreases</td><td>Becomes deeper</td><td>Larger</td><td>Fewer images</td></tr>
+</table>
 <h2 id="advantages">Advantages</h2>
 <ul>
 <li>Creates deeper apparent focus without relying on very small apertures.</li>
@@ -748,9 +755,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Using one shot count for every subject.</li>
 </ul>
 <p>Recommended starting point: choose more shots than you think you need for the first test stack, then reduce after reviewing the last useful sharp frame.</p>
-<h3 id="focus-increment">Focus Increment</h3>
+<h3 id="understanding-focus-increment">Understanding Focus Increment</h3>
 <p>What it controls: how far the focus plane moves between frames.</p>
-<p>Focus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters. Its real-world effect changes with aperture, magnification, subject distance, and lens behavior.</p>
+<p>Focus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters, and there is no universally correct value. The useful value depends on subject size, camera-to-subject distance, lens focal length, aperture, the desired overlap between adjacent sharp slices, and the focus-step behavior of the lens.</p>
 <p>Relationship to depth of field:</p>
 <ul>
 <li>Wider aperture: shallower depth of field, smaller increment needed.</li>
@@ -759,40 +766,29 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Closer subject: shallower depth of field, smaller increment needed.</li>
 <li>Greater subject distance: deeper depth of field, larger increment possible.</li>
 </ul>
-<p>Small increment:</p>
+<p>Smaller Increment:</p>
 <ul>
-<li>More overlap.</li>
-<li>Better stacking reliability.</li>
+<li>Greater overlap.</li>
+<li>Better stacking.</li>
 <li>More images.</li>
-<li>Slower workflow.</li>
+<li>Longer capture time.</li>
 </ul>
-<p>Large increment:</p>
+<p>Larger Increment:</p>
 <ul>
+<li>Less overlap.</li>
 <li>Fewer images.</li>
 <li>Faster capture.</li>
-<li>Less storage.</li>
 <li>Greater chance of focus gaps.</li>
 </ul>
-<p>Practical starting points:</p>
-<table>
-<tr><th>Subject</th><th>Suggested Increment</th></tr>
-<tr><td>1:1 Macro</td><td>1-2</td></tr>
-<tr><td>Insects</td><td>2-3</td></tr>
-<tr><td>Flowers</td><td>3-5</td></tr>
-<tr><td>Product Photography</td><td>3-5</td></tr>
-<tr><td>Food</td><td>4-6</td></tr>
-<tr><td>Landscape</td><td>5-8</td></tr>
-<tr><td>Architecture</td><td>5-10</td></tr>
-</table>
-<p>These are starting points, not fixed rules. If the stack shows bands of softness, reduce the increment. If every frame is nearly identical, increase the increment.</p>
+<p>Use the subject-based table below as a starting point. If the stack shows bands of softness, reduce the increment. If adjacent frames have much more overlap than needed, increase the increment cautiously.</p>
 <p>Common mistakes:</p>
 <ul>
-<li>Using a large increment for 1:1 macro.</li>
+<li>Using a large increment when working extremely close.</li>
 <li>Assuming the increment means the same thing with every lens.</li>
 <li>Changing aperture without adjusting increment.</li>
 <li>Starting focus in the middle of the subject instead of the nearest important detail.</li>
 </ul>
-<p>Recommended starting point: increment 1-2 for true macro, 3-5 for close product work, and 5-8 for landscape.</p>
+<p>Recommended starting point: increment 1-2 when working extremely close, 3-5 for close product work, and 5-8 for landscape.</p>
 <h3 id="exposure-smoothing">Exposure Smoothing</h3>
 <p>What it controls: whether the camera attempts to reduce visible exposure jumps across the bracket.</p>
 <p>Effect of enabling it: helps make frames more consistent when natural light shifts during the sequence.</p>
@@ -861,7 +857,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ol>
 <li>Decide how much physical depth must be sharp.</li>
 <li>Check how close you are to the subject.</li>
-<li>Estimate magnification. The closer the lens is to macro range, the smaller the increment should be.</li>
+<li>Judge the subject size and how much of it fills the frame. The closer the working distance, the smaller the increment should be.</li>
 <li>Choose an aperture that balances sharpness and depth. f/8 is a strong starting point for many macro and product stacks.</li>
 <li>Choose Focus Increment.</li>
 <li>Choose Number of Shots.</li>
@@ -877,6 +873,17 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.</li>
 <li>Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included.</li>
 </ul>
+<h2 id="choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</h2>
+<p>The Canon EF 100mm f/2.8L Macro IS USM does not provide a direct magnification setting. Magnification is determined by focus distance, so photographers normally choose Focus Bracketing settings from subject size, working distance, and the desired depth of field rather than by calculating a reproduction ratio.</p>
+<p>As focus distance decreases, magnification increases and depth of field becomes extremely shallow. Use a smaller Focus Increment to preserve overlap and expect to need more images. As focus distance increases, magnification decreases and depth of field increases. A larger Focus Increment becomes appropriate, and fewer images are normally required.</p>
+<h3 id="working-distance-guidelines">Working Distance Guidelines</h3>
+<ul>
+<li><strong>Almost touching the subject:</strong> Use Increment 1–2. At this distance the sharp slice in each frame is extremely thin, so generous overlap protects against focus gaps.</li>
+<li><strong>Flowers at a comfortable distance:</strong> Use Increment 3–4. The deeper per-frame depth of field allows a moderate step while preserving overlap through layered petals.</li>
+<li><strong>Products from farther away:</strong> Use Increment 4–6. Greater working distance increases depth of field, so larger steps cover the product efficiently with fewer redundant frames.</li>
+<li><strong>Landscapes:</strong> Use Increment 5–8. At normal landscape distances each frame covers substantially more depth; use the lower end when the foreground is very close and the higher end when it is not.</li>
+</ul>
+<p>These guidelines are practical starting points. Review the first stack at useful magnification, then adjust Focus Increment and Number of Shots for the actual subject depth and any focus gaps.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Profile / Subject</th><th>Aperture</th><th>Focus Increment</th><th>Number of Shots</th><th>Notes</th></tr>
@@ -895,7 +902,12 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <h2 id="tips">Tips</h2>
 <ul>
 <li>Start with the nearest important detail.</li>
-<li>Use a tripod for serious stacks.</li>
+<li>Start with more images rather than fewer.</li>
+<li>Increase Increment only after confirming there are no focus gaps.</li>
+<li>Tiny focus gaps are difficult to repair later.</li>
+<li>Wind is usually a bigger problem than camera movement.</li>
+<li>Using a tripod is strongly recommended.</li>
+<li>Diffraction cannot replace proper focus stacking.</li>
 <li>Use f/8 as a practical first aperture for many macro/product stacks.</li>
 <li>Review the first and last frame to confirm the full depth range was covered.</li>
 <li>If there are focus gaps, lower the increment or increase shot count.</li>
@@ -916,46 +928,45 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Keeping hundreds of unnecessary frames.</li>
 </ul>
 <h2 id="starting-point-tables">Starting Point Tables</h2>
-<h3 id="100-mm-macro-lens">100 mm Macro Lens</h3>
 <table>
-<tr><th>Subject</th><th>Aperture</th><th>Increment</th><th>Shots</th></tr>
-<tr><td>Water Drops</td><td>f/8</td><td>1</td><td>150</td></tr>
-<tr><td>Insects</td><td>f/8</td><td>2</td><td>120</td></tr>
-<tr><td>Flowers</td><td>f/8</td><td>4</td><td>50</td></tr>
-<tr><td>Coins</td><td>f/8</td><td>3</td><td>60</td></tr>
+<tr><th>Subject</th><th>Typical Working Distance</th><th>Aperture</th><th>Focus Increment</th><th>Starting Shots</th></tr>
+<tr><td>Water Drops</td><td>Very close (near minimum focus distance)</td><td>f/8</td><td>1</td><td>150–250</td></tr>
+<tr><td>Small Insects</td><td>Very close</td><td>f/8</td><td>1–2</td><td>120–200</td></tr>
+<tr><td>Butterflies / Dragonflies</td><td>Close</td><td>f/8</td><td>2</td><td>80–150</td></tr>
+<tr><td>Flowers</td><td>Moderate</td><td>f/8</td><td>3–4</td><td>30–80</td></tr>
+<tr><td>Coins / Stamps</td><td>Close</td><td>f/8</td><td>2–3</td><td>60–120</td></tr>
+<tr><td>Jewelry</td><td>Moderate</td><td>f/8</td><td>3–4</td><td>40–80</td></tr>
+<tr><td>Watches</td><td>Moderate</td><td>f/8</td><td>3–5</td><td>30–60</td></tr>
+<tr><td>Small Products</td><td>Moderate</td><td>f/8</td><td>3–5</td><td>20–60</td></tr>
+<tr><td>Larger Products</td><td>Farther Away</td><td>f/8–f/11</td><td>5–7</td><td>10–30</td></tr>
 </table>
-<h3 id="landscape">Landscape</h3>
-<table>
-<tr><th>Subject</th><th>Aperture</th><th>Increment</th><th>Shots</th></tr>
-<tr><td>Foreground flowers</td><td>f/8</td><td>5</td><td>15</td></tr>
-<tr><td>Mountains</td><td>f/8</td><td>6</td><td>8</td></tr>
-<tr><td>Scenic overlook</td><td>f/8</td><td>7</td><td>5</td></tr>
-</table>
-<h3 id="product-photography">Product Photography</h3>
-<table>
-<tr><th>Subject</th><th>Aperture</th><th>Increment</th><th>Shots</th></tr>
-<tr><td>Watches</td><td>f/8</td><td>3</td><td>80</td></tr>
-<tr><td>Jewelry</td><td>f/8</td><td>2</td><td>100</td></tr>
-<tr><td>Electronics</td><td>f/8</td><td>4</td><td>40</td></tr>
-<tr><td>Small collectibles</td><td>f/8</td><td>4</td><td>50</td></tr>
-</table>
-<h3 id="lens-x-magnification-x-aperture-quick-reference">Lens x Magnification x Aperture Quick Reference</h3>
-<table>
-<tr><th>Lens</th><th>Magnification</th><th>Aperture</th><th>Increment</th><th>Starting Shots</th></tr>
-<tr><td>RF 100 Macro</td><td>1:1</td><td>f/8</td><td>1</td><td>150</td></tr>
-<tr><td>RF 100 Macro</td><td>1:2</td><td>f/8</td><td>2</td><td>80</td></tr>
-<tr><td>RF 100 Macro</td><td>1:4</td><td>f/8</td><td>4</td><td>40</td></tr>
-<tr><td>EF 100 Macro</td><td>1:1</td><td>f/8</td><td>1-2</td><td>150</td></tr>
-<tr><td>EF 100 Macro</td><td>1:2</td><td>f/8</td><td>2-3</td><td>80</td></tr>
-<tr><td>EF 100-400 @ 400mm</td><td>Close focus</td><td>f/8</td><td>3</td><td>30</td></tr>
-<tr><td>RF 24-105 @ 24mm</td><td>Landscape</td><td>f/8</td><td>6</td><td>8</td></tr>
-</table>
+<p>These are practical starting points, not fixed settings. Adjust them after reviewing the first stack.</p>
 <h2 id="lens-considerations">Lens Considerations</h2>
-<p>RF 100 mm Macro: excellent for high-magnification stacking. At 1:1 or higher, use very small increments and many shots.</p>
+<p>RF 100 mm Macro: excellent for very close stacking. Near minimum focus distance, use very small increments and many shots.</p>
 <p>EF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.</p>
 <p>EF 100-400L: useful for close telephoto detail, flowers, compressed landscape details, and larger products. Use moderate increments because magnification is lower than true macro but depth can still be shallow at close focus.</p>
 <p>Wide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.</p>
 <p>Working distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be.</p>
+<h2 id="using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</h2>
+<p>Extension tubes are hollow spacers with no optical elements. They move the lens farther from the sensor, reduce minimum focus distance, and increase maximum magnification. The tradeoffs are reduced working distance, reduced available light, potentially slower autofocus, and even greater depth-of-field challenges.</p>
+<p>Extension tubes do not change how the Canon Focus Bracketing feature operates, but the closer focus and thinner depth of field significantly change the recommended settings.</p>
+<h3 id="practical-recommendations">Practical Recommendations</h3>
+<p>When extension tubes are installed:</p>
+<ul>
+<li>Reduce Focus Increment.</li>
+<li>Increase the Number of Shots.</li>
+<li>Expect capture time to increase significantly.</li>
+<li>Review the first stack carefully for focus gaps.</li>
+</ul>
+<h3 id="suggested-starting-values">Suggested Starting Values</h3>
+<table>
+<tr><th>Setup</th><th>Focus Increment</th><th>Starting Shots</th></tr>
+<tr><td>12 mm Tube</td><td>2</td><td>100–150</td></tr>
+<tr><td>20 mm Tube</td><td>1–2</td><td>150–220</td></tr>
+<tr><td>36 mm Tube</td><td>1</td><td>200–300+</td></tr>
+<tr><td>Multiple Tubes</td><td>1</td><td>Determine experimentally; expect 250–400+ images depending on subject depth</td></tr>
+</table>
+<p>These are conservative starting values intended to maximize overlap.</p>
 <h2 id="common-problems">Common Problems</h2>
 <ul>
 <li>Missing focus slices: usually caused by an increment that is too large.</li>
@@ -1042,8 +1053,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <h2 id="cross-references">Cross References</h2>
 <ul>
-<li>Profiles: Landscape, Macro, Water Drops, Product, Flowers, Insects, Architecture.</li>
-<li>Settings: focus bracketing, number of shots, focus increment, exposure smoothing, depth compositing, aperture, shutter mode, flash mode.</li>
+<li>Overview: <a href="#what-it-does">Focus Bracketing overview</a>.</li>
+<li>Profiles: <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#recommended-settings-by-profile">Macro Profile</a>, <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#recommended-settings-by-profile">Water Drops Profile</a>, Landscape, Product, Flowers, Insects, Architecture.</li>
+<li>Settings: <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#image-stabilization-mode">Image Stabilization</a>, <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#shutter-type">Electronic vs EFCS vs Mechanical Shutter</a>, and <a href="appendices/Long%20Exposure%20%26%20Night%20Photography.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction</a>.</li>
 <li>Related appendices:</li>
 <li><a href="appendices/Long%20Exposure%20%26%20Night%20Photography.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">Long Exposure &amp; Night Photography</a></li>
 <li><a href="appendices/Flash%20Photography.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">Flash Photography</a></li>
