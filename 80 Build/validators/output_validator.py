@@ -35,6 +35,58 @@ def validate(root):
         html_path = paths.html_output_file(name)
         if html_path.exists():
             issues.extend(_html_issues(html_path))
+    appendix_html = paths.field_guide_html_output_dir / "Focus Bracketing & In-Camera Depth Compositing.html"
+    if appendix_html.exists():
+        appendix_text = appendix_html.read_text(encoding="utf-8", errors="replace")
+        issues.extend(_focus_bracketing_output_issues(appendix_html, appendix_text))
+        issues.extend(_appendix_link_issues(appendix_html, appendix_text))
+    appendix_pdf = paths.field_guide_pdf_output_dir / "Focus Bracketing & In-Camera Depth Compositing.pdf"
+    if paths.field_guide_pdf_output_dir.exists():
+        if not appendix_pdf.exists():
+            issues.append(error("build_output", appendix_pdf, "Expected generated appendix PDF is missing."))
+        else:
+            pdf_text = appendix_pdf.read_bytes().decode("latin-1", errors="replace")
+            issues.extend(_focus_bracketing_output_issues(appendix_pdf, pdf_text))
+    return issues
+
+
+def _focus_bracketing_output_issues(path, text):
+    issues = []
+    text = text.replace(r"\(", "(").replace(r"\)", ")")
+    required = [
+        "Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM",
+        "Understanding Focus Increment",
+        "Working Distance Guidelines",
+        "Using Extension Tubes (Kenko and Similar)",
+        "Typical Working Distance",
+    ]
+    for phrase in required:
+        if phrase not in text:
+            issues.append(error("build_output", path, f"Generated focus-bracketing output is missing: {phrase}"))
+    return issues
+
+
+def _appendix_link_issues(path, text):
+    issues = []
+    ids = set(re.findall(r'\bid=["\']([^"\']+)["\']', text, flags=re.IGNORECASE))
+    for reference in re.findall(r'href=["\']([^"\']+)["\']', text, flags=re.IGNORECASE):
+        parsed = urlparse(reference)
+        if parsed.scheme in {"data", "http", "https", "mailto", "tel"}:
+            continue
+        if reference.startswith("#"):
+            if parsed.fragment not in ids:
+                issues.append(error("html_asset", path, f"Referenced local anchor is missing: {reference}"))
+            continue
+        if parsed.path == "../index.html":
+            continue
+        target = (path.parent / unquote(parsed.path)).resolve()
+        if not target.exists():
+            issues.append(error("html_asset", path, f"Referenced local file is missing: {reference}"))
+        elif parsed.fragment and target.suffix.lower() == ".html":
+            target_text = target.read_text(encoding="utf-8", errors="replace")
+            target_ids = set(re.findall(r'\bid=["\']([^"\']+)["\']', target_text, flags=re.IGNORECASE))
+            if parsed.fragment not in target_ids:
+                issues.append(error("html_asset", path, f"Referenced local anchor is missing: {reference}"))
     return issues
 
 

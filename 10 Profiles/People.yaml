@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-22
   release: true
 title: People
 card:
@@ -23,6 +23,7 @@ overrides:
 checklist:
   - Eye detected
   - Catchlight in eyes
+  - Review depth of field
 watch_for:
   - Distracting backgrounds
 common_mistakes:

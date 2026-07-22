@@ -34,6 +34,17 @@ local_workspace_dir() {
     esac
 }
 
+clean_generated_metadata() {
+    local workspace root
+    workspace="$(local_workspace_dir)"
+
+    for root in "$PROJECT_ROOT/docs" "$workspace/Build Output"; do
+        if [[ -d "$root" ]]; then
+            find "$root" -type f -name ".DS_Store" -delete || return 1
+        fi
+    done
+}
+
 prepare_development_docs_for_handoff() {
     if [[ -z "$(git status --porcelain -- docs)" ]]; then
         return 0
@@ -104,6 +115,11 @@ block_outgoing_pages_changes() {
 echo "Photography Reference System — Finished-for-Today Check"
 echo
 
+clean_generated_metadata || {
+    echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
+    exit 1
+}
+
 run_status
 RESULT=$?
 
@@ -136,6 +152,10 @@ if [[ -n "$(git status --porcelain)" ]]; then
     echo
     if ask_yes_no "Run the documented validator and normal development build now?"; then
         echo
+        clean_generated_metadata || {
+            echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
+            exit 1
+        }
         python3 "80 Build/validator.py" || {
             echo
             echo "Validation failed. Nothing was committed or pushed."

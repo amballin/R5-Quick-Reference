@@ -15,13 +15,15 @@ Table of contents:
 - [Camera Requirements](#camera-requirements)
 - [Every Camera Setting Explained](#every-camera-setting-explained)
 - [Number of Shots](#number-of-shots)
-- [Focus Increment](#focus-increment)
+- [Understanding Focus Increment](#understanding-focus-increment)
 - [Exposure Smoothing](#exposure-smoothing)
 - [Depth Compositing](#depth-compositing)
 - [How to Choose Settings](#how-to-choose-settings)
+- [Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM](#choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm)
+- [Working Distance Guidelines](#working-distance-guidelines)
 - [Starting Point Tables](#starting-point-tables)
-- [Lens x Magnification x Aperture Quick Reference](#lens-x-magnification-x-aperture-quick-reference)
 - [Lens Considerations](#lens-considerations)
+- [Using Extension Tubes (Kenko and Similar)](#using-extension-tubes-kenko-and-similar)
 - [Common Problems](#common-problems)
 - [Troubleshooting Guide](#troubleshooting-guide)
 - [Decision Trees](#decision-trees)
@@ -56,6 +58,11 @@ The key relationships are:
 - Wider aperture gives shallower depth of field.
 - Smaller focus increments increase overlap between slices.
 - More shots increase total depth coverage.
+
+| Focus Distance | Magnification | Depth of Field | Focus Increment | Typical Shot Count |
+| --- | --- | --- | --- | --- |
+| Decreases (camera moves closer) | Increases | Becomes extremely shallow | Smaller | More images |
+| Increases (camera moves farther away) | Decreases | Becomes deeper | Larger | Fewer images |
 
 ## Advantages
 
@@ -131,11 +138,11 @@ Common mistakes:
 
 Recommended starting point: choose more shots than you think you need for the first test stack, then reduce after reviewing the last useful sharp frame.
 
-### Focus Increment
+### Understanding Focus Increment
 
 What it controls: how far the focus plane moves between frames.
 
-Focus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters. Its real-world effect changes with aperture, magnification, subject distance, and lens behavior.
+Focus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters, and there is no universally correct value. The useful value depends on subject size, camera-to-subject distance, lens focal length, aperture, the desired overlap between adjacent sharp slices, and the focus-step behavior of the lens.
 
 Relationship to depth of field:
 
@@ -145,42 +152,30 @@ Relationship to depth of field:
 - Closer subject: shallower depth of field, smaller increment needed.
 - Greater subject distance: deeper depth of field, larger increment possible.
 
-Small increment:
+Smaller Increment:
 
-- More overlap.
-- Better stacking reliability.
+- Greater overlap.
+- Better stacking.
 - More images.
-- Slower workflow.
+- Longer capture time.
 
-Large increment:
+Larger Increment:
 
+- Less overlap.
 - Fewer images.
 - Faster capture.
-- Less storage.
 - Greater chance of focus gaps.
 
-Practical starting points:
-
-| Subject | Suggested Increment |
-| --- | --- |
-| 1:1 Macro | 1-2 |
-| Insects | 2-3 |
-| Flowers | 3-5 |
-| Product Photography | 3-5 |
-| Food | 4-6 |
-| Landscape | 5-8 |
-| Architecture | 5-10 |
-
-These are starting points, not fixed rules. If the stack shows bands of softness, reduce the increment. If every frame is nearly identical, increase the increment.
+Use the subject-based table below as a starting point. If the stack shows bands of softness, reduce the increment. If adjacent frames have much more overlap than needed, increase the increment cautiously.
 
 Common mistakes:
 
-- Using a large increment for 1:1 macro.
+- Using a large increment when working extremely close.
 - Assuming the increment means the same thing with every lens.
 - Changing aperture without adjusting increment.
 - Starting focus in the middle of the subject instead of the nearest important detail.
 
-Recommended starting point: increment 1-2 for true macro, 3-5 for close product work, and 5-8 for landscape.
+Recommended starting point: increment 1-2 when working extremely close, 3-5 for close product work, and 5-8 for landscape.
 
 ### Exposure Smoothing
 
@@ -265,7 +260,7 @@ Use this field process:
 
 1. Decide how much physical depth must be sharp.
 2. Check how close you are to the subject.
-3. Estimate magnification. The closer the lens is to macro range, the smaller the increment should be.
+3. Judge the subject size and how much of it fills the frame. The closer the working distance, the smaller the increment should be.
 4. Choose an aperture that balances sharpness and depth. f/8 is a strong starting point for many macro and product stacks.
 5. Choose Focus Increment.
 6. Choose Number of Shots.
@@ -280,6 +275,21 @@ Worked examples:
 - Product watch at f/8: start at increment 3 and 80 shots. Use tripod and controlled light. If bracelet links show gaps, reduce increment.
 - Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.
 - Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included.
+
+## Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM
+
+The Canon EF 100mm f/2.8L Macro IS USM does not provide a direct magnification setting. Magnification is determined by focus distance, so photographers normally choose Focus Bracketing settings from subject size, working distance, and the desired depth of field rather than by calculating a reproduction ratio.
+
+As focus distance decreases, magnification increases and depth of field becomes extremely shallow. Use a smaller Focus Increment to preserve overlap and expect to need more images. As focus distance increases, magnification decreases and depth of field increases. A larger Focus Increment becomes appropriate, and fewer images are normally required.
+
+### Working Distance Guidelines
+
+- **Almost touching the subject:** Use Increment 1–2. At this distance the sharp slice in each frame is extremely thin, so generous overlap protects against focus gaps.
+- **Flowers at a comfortable distance:** Use Increment 3–4. The deeper per-frame depth of field allows a moderate step while preserving overlap through layered petals.
+- **Products from farther away:** Use Increment 4–6. Greater working distance increases depth of field, so larger steps cover the product efficiently with fewer redundant frames.
+- **Landscapes:** Use Increment 5–8. At normal landscape distances each frame covers substantially more depth; use the lower end when the foreground is very close and the higher end when it is not.
+
+These guidelines are practical starting points. Review the first stack at useful magnification, then adjust Focus Increment and Number of Shots for the actual subject depth and any focus gaps.
 
 ## Recommended Settings by Profile
 
@@ -304,7 +314,12 @@ Some Canon lenses change framing noticeably as focus shifts. This focus breathin
 ## Tips
 
 - Start with the nearest important detail.
-- Use a tripod for serious stacks.
+- Start with more images rather than fewer.
+- Increase Increment only after confirming there are no focus gaps.
+- Tiny focus gaps are difficult to repair later.
+- Wind is usually a bigger problem than camera movement.
+- Using a tripod is strongly recommended.
+- Diffraction cannot replace proper focus stacking.
 - Use f/8 as a practical first aperture for many macro/product stacks.
 - Review the first and last frame to confirm the full depth range was covered.
 - If there are focus gaps, lower the increment or increase shot count.
@@ -326,47 +341,23 @@ Some Canon lenses change framing noticeably as focus shifts. This focus breathin
 
 ## Starting Point Tables
 
-### 100 mm Macro Lens
+| Subject | Typical Working Distance | Aperture | Focus Increment | Starting Shots |
+| --- | ---: | ---: | ---: | ---: |
+| Water Drops | Very close (near minimum focus distance) | f/8 | 1 | 150–250 |
+| Small Insects | Very close | f/8 | 1–2 | 120–200 |
+| Butterflies / Dragonflies | Close | f/8 | 2 | 80–150 |
+| Flowers | Moderate | f/8 | 3–4 | 30–80 |
+| Coins / Stamps | Close | f/8 | 2–3 | 60–120 |
+| Jewelry | Moderate | f/8 | 3–4 | 40–80 |
+| Watches | Moderate | f/8 | 3–5 | 30–60 |
+| Small Products | Moderate | f/8 | 3–5 | 20–60 |
+| Larger Products | Farther Away | f/8–f/11 | 5–7 | 10–30 |
 
-| Subject | Aperture | Increment | Shots |
-| --- | --- | --- | --- |
-| Water Drops | f/8 | 1 | 150 |
-| Insects | f/8 | 2 | 120 |
-| Flowers | f/8 | 4 | 50 |
-| Coins | f/8 | 3 | 60 |
-
-### Landscape
-
-| Subject | Aperture | Increment | Shots |
-| --- | --- | --- | --- |
-| Foreground flowers | f/8 | 5 | 15 |
-| Mountains | f/8 | 6 | 8 |
-| Scenic overlook | f/8 | 7 | 5 |
-
-### Product Photography
-
-| Subject | Aperture | Increment | Shots |
-| --- | --- | --- | --- |
-| Watches | f/8 | 3 | 80 |
-| Jewelry | f/8 | 2 | 100 |
-| Electronics | f/8 | 4 | 40 |
-| Small collectibles | f/8 | 4 | 50 |
-
-### Lens x Magnification x Aperture Quick Reference
-
-| Lens | Magnification | Aperture | Increment | Starting Shots |
-| --- | --- | --- | --- | --- |
-| RF 100 Macro | 1:1 | f/8 | 1 | 150 |
-| RF 100 Macro | 1:2 | f/8 | 2 | 80 |
-| RF 100 Macro | 1:4 | f/8 | 4 | 40 |
-| EF 100 Macro | 1:1 | f/8 | 1-2 | 150 |
-| EF 100 Macro | 1:2 | f/8 | 2-3 | 80 |
-| EF 100-400 @ 400mm | Close focus | f/8 | 3 | 30 |
-| RF 24-105 @ 24mm | Landscape | f/8 | 6 | 8 |
+These are practical starting points, not fixed settings. Adjust them after reviewing the first stack.
 
 ## Lens Considerations
 
-RF 100 mm Macro: excellent for high-magnification stacking. At 1:1 or higher, use very small increments and many shots.
+RF 100 mm Macro: excellent for very close stacking. Near minimum focus distance, use very small increments and many shots.
 
 EF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.
 
@@ -375,6 +366,32 @@ EF 100-400L: useful for close telephoto detail, flowers, compressed landscape de
 Wide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.
 
 Working distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be.
+
+## Using Extension Tubes (Kenko and Similar)
+
+Extension tubes are hollow spacers with no optical elements. They move the lens farther from the sensor, reduce minimum focus distance, and increase maximum magnification. The tradeoffs are reduced working distance, reduced available light, potentially slower autofocus, and even greater depth-of-field challenges.
+
+Extension tubes do not change how the Canon Focus Bracketing feature operates, but the closer focus and thinner depth of field significantly change the recommended settings.
+
+### Practical Recommendations
+
+When extension tubes are installed:
+
+- Reduce Focus Increment.
+- Increase the Number of Shots.
+- Expect capture time to increase significantly.
+- Review the first stack carefully for focus gaps.
+
+### Suggested Starting Values
+
+| Setup | Focus Increment | Starting Shots |
+| --- | ---: | ---: |
+| 12 mm Tube | 2 | 100–150 |
+| 20 mm Tube | 1–2 | 150–220 |
+| 36 mm Tube | 1 | 200–300+ |
+| Multiple Tubes | 1 | Determine experimentally; expect 250–400+ images depending on subject depth |
+
+These are conservative starting values intended to maximize overlap.
 
 ## Common Problems
 
@@ -467,8 +484,9 @@ Flash keeps up with every frame?
 
 ## Cross References
 
-- Profiles: Landscape, Macro, Water Drops, Product, Flowers, Insects, Architecture.
-- Settings: focus bracketing, number of shots, focus increment, exposure smoothing, depth compositing, aperture, shutter mode, flash mode.
+- Overview: [Focus Bracketing overview](#what-it-does).
+- Profiles: [Macro Profile](../Appendices/R5 Quick Reference.md#recommended-settings-by-profile), [Water Drops Profile](../Appendices/R5 Quick Reference.md#recommended-settings-by-profile), Landscape, Product, Flowers, Insects, Architecture.
+- Settings: [Image Stabilization](../Appendices/R5 Quick Reference.md#image-stabilization-mode), [Electronic vs EFCS vs Mechanical Shutter](../Appendices/R5 Quick Reference.md#shutter-type), and [Long Exposure Noise Reduction](Long Exposure & Night Photography.md#long-exposure-noise-reduction-lenr).
 - Related appendices:
   - [Long Exposure & Night Photography](appendix:long_exposure_night_photography)
   - [Flash Photography](appendix:flash_photography)

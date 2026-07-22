@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Frequency-Oriented Index Sections
+
+**Status:** Accepted
+**Date:** 2026-07-22
+
+Order the published index sections by expected frequency of use: **Subjects**, **Field Guides**, **Camera Setup & Controls**, then **Deep Dive**. Rename the user-facing **Reference Cards** section to **Camera Setup & Controls** so its label describes Camera Buttons, Camera Defaults, and Camera Setup Essentials while remaining distinct from the R5 Quick Reference Field Guide.
+
+This decision supersedes the published section label and ordering portions of **Independent Card Display Categories**, the user-facing section label in **Permanent Reference-Card Type**, and the prior published section ordering implied by **Setting Deep Dives**. The `display_category: reference` value and reference-card data/rendering behavior remain unchanged.
+
 ## Date-Only Version Header
 
 **Status:** Accepted

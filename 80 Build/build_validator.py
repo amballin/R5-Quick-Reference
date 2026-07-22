@@ -266,6 +266,24 @@ def validate_required_appendices(paths):
             for topic in entry.get("required_topics", []) or []:
                 if _normalize(str(topic)) not in normalized_text:
                     results.append(("error", "required_appendix_missing_topic", f"{path}: {topic}"))
+        if appendix_id == "focus_bracketing_depth_compositing":
+            required_revision_content = [
+                "Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM",
+                "Understanding Focus Increment",
+                "Working Distance Guidelines",
+                "Using Extension Tubes (Kenko and Similar)",
+                "Typical Working Distance",
+                "12 mm Tube",
+                "Multiple Tubes",
+            ]
+            normalized_text = _normalize(text)
+            for phrase in required_revision_content:
+                if _normalize(phrase) not in normalized_text:
+                    results.append(("error", "focus_bracketing_revision_missing", f"{path}: {phrase}"))
+            for table in re.findall(r"(?:^\|.*\|\n)+", text, flags=re.MULTILINE):
+                header = table.splitlines()[0].lower()
+                if "magnification" in header and re.search(r"(?:\b1:[124]\b|\b0\.(?:25|5)[x×])", table, flags=re.IGNORECASE):
+                    results.append(("error", "focus_bracketing_magnification_table", str(path)))
         for profile in entry.get("profiles", []) or []:
             if profile not in profile_titles:
                 results.append(("error", "required_appendix_missing_profile_ref", f"{appendix_id}: {profile}"))

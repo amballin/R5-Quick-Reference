@@ -174,7 +174,7 @@ def _write_index(path, card_files, guides, publish_metadata, paths):
         if card["display_category"] == "reference"
     )
     reference_section = (
-        '<h2>Reference Cards</h2>\n<div class="cards">\n'
+        '<h2>Camera Setup &amp; Controls</h2>\n<div class="cards">\n'
         f'{reference_cards}\n</div>'
         if reference_cards else ""
     )
@@ -254,11 +254,11 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 {cards}
 </div>
 <div class="hint">Tap for details</div>
-{reference_section}
 <h2>Field Guides</h2>
 <div class="guides">
 {guide_markup}
 </div>
+{reference_section}
 {deep_dive_section}
 </main>
 </body>

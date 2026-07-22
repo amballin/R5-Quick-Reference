@@ -17,6 +17,7 @@
 - Disposable generated artifacts belong in the machine-local workspace's `Build Output/` folder. The default workspace is the sibling folder `<repository name> Local/`; `PRS_LOCAL_WORKSPACE` may set a different absolute or user-relative location.
 - `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html`, optional secondary PNGs under `Cards/*.png` only for a `--png` build, and copied card assets under `web-assets/`.
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
+- The published index orders its sections by expected frequency of use: **Subjects**, **Field Guides**, **Camera Setup & Controls**, then **Deep Dive**.
 - `Build Output/website/` is optional staging. The iOS target copies it into `Native Wrapper/Website/` in the local workspace and exposes that folder to Xcode through the ignored `ios/Resources/Website` symlink.
 - Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
 - Card and field-guide PDFs are opt-in.

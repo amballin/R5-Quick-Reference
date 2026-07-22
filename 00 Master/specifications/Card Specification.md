@@ -52,7 +52,7 @@ If a required merged value is unset, render the row with `—` rather than omitt
 
 Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action. A PNG secondary action appears only when the build or publish is explicitly run with `--png`. Other generated development outputs may still exist.
 
-Released cards with `display_category: subject` appear under **Subjects**. Cards with `display_category: reference` appear under **Reference Cards**, regardless of whether their rendering behavior is profile-based or permanent-reference-based.
+Released cards with `display_category: subject` appear under **Subjects**. Cards with `display_category: reference` appear under **Camera Setup & Controls**, regardless of whether their rendering behavior is profile-based or permanent-reference-based.
 
 ## Enforcement and Evidence
 

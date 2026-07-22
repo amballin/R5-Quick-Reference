@@ -120,7 +120,7 @@ display_order: 20
 ```
 
 - `display_category: subject` places the card under **Subjects**.
-- `display_category: reference` places the card under **Reference Cards**.
+- `display_category: reference` places the card under **Camera Setup & Controls**.
 - Lower `display_order` values appear first within the category; equal values sort alphabetically; omitted values default to `100`.
 - Category affects index placement only. Keep `card_type: reference` for explicitly authored permanent references, and keep baseline-driven cards as normal profile cards.
 

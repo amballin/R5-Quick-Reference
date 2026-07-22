@@ -88,6 +88,8 @@ def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_
         for topic in entry.get("required_topics", []) or []:
             if _normalize(str(topic)) not in normalized_text:
                 issues.append(error("appendices", path, f"Missing required topic: {topic}"))
+    if entry.get("id") == "focus_bracketing_depth_compositing":
+        issues.extend(_validate_focus_bracketing_revision(path, text, headings))
 
     for profile in entry.get("profiles", []) or []:
         if profile not in profile_titles:
@@ -122,3 +124,38 @@ def _profile_titles(root):
 
 def _normalize(value):
     return " ".join(value.lower().replace("-", " ").split())
+
+
+def _validate_focus_bracketing_revision(path, text, headings):
+    issues = []
+    required_headings = {
+        "Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM",
+        "Understanding Focus Increment",
+        "Working Distance Guidelines",
+        "Using Extension Tubes (Kenko and Similar)",
+    }
+    for heading in sorted(required_headings - set(headings)):
+        issues.append(error("appendices", path, f"Missing focus-bracketing revision section: {heading}"))
+
+    required_phrases = {
+        "Typical Working Distance",
+        "Water Drops | Very close (near minimum focus distance)",
+        "Subject size",
+        "Camera-to-subject distance",
+        "Lens focal length",
+        "Desired overlap",
+        "Smaller Increment",
+        "Larger Increment",
+        "12 mm Tube",
+        "Multiple Tubes",
+    }
+    normalized_text = _normalize(text)
+    for phrase in sorted(required_phrases):
+        if _normalize(phrase) not in normalized_text:
+            issues.append(error("appendices", path, f"Missing focus-bracketing revision content: {phrase}"))
+
+    for table in re.findall(r"(?:^\|.*\|\n)+", text, flags=re.MULTILINE):
+        header = table.splitlines()[0].lower()
+        if "magnification" in header and re.search(r"(?:\b1:[124]\b|\b0\.(?:25|5)[x×])", table, flags=re.IGNORECASE):
+            issues.append(error("appendices", path, "Magnification-based recommendation table must be removed."))
+    return issues
