@@ -1,10 +1,10 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-21
+  last_updated: 2026-07-23
   release: true
 title: Camera Buttons
-subtitle:
+subtitle: Owner-Confirmed Layout
 display_category: reference
 display_order: 10
 card_type: reference
@@ -18,34 +18,41 @@ reference_settings:
     assignment: Metering and AF start
   - control: AE Lock button
     assignment: Metering and AF start (1-Point AF override)
+  - control: AF Point Selection button
+    assignment: AF point selection; Main Dial changes selection
+  - control: Lens AF button
+    assignment: AF Off
   - control: SET button
     assignment: Set AF point to center
-  - control: Depth-of-field preview button
+  - control: DOF button
     assignment: One-Shot AF ↔ Servo AF
+  - control: Joystick
+    assignment: Direct AF point selection
   - control: Main Dial
     assignment: Shutter Speed
-  - control: Quick Control Dial (Rear Wheel)
+  - control: Rear Wheel
     assignment: Aperture
-  - control: Multi-function Dial (Top Rear Dial)
+  - control: Top Rear Dial
     assignment: ISO Speed
   - control: Control Ring
     assignment: Exposure Compensation
+  - control: M-Fn button
+    assignment: Unresolved — review later
 checklist:
   - Practice back-button AF before a critical shoot.
-  - Set AF-ON details to maintain the profile's current AF settings.
-  - Set AE Lock details to maintain AF Operation and Servo characteristics while overriding AF Method to 1-Point AF.
+  - Use the linked deep dive for the AF-ON and AE Lock INFO details.
   - Test AF-ON and AE Lock separately; do not hold both AF buttons together.
   - Confirm Manual + Auto ISO before using exposure compensation.
   - Recheck assignments after a reset or firmware update.
 watch_for:
-  - AF-ON and AE Lock detailed AF settings not configured or tested
   - AE Lock is no longer available for its default exposure-lock function
   - Exposure Compensation on Control Ring requires Auto ISO in Manual exposure
+  - M-Fn remains unresolved pending a separate review
 common_mistakes:
   - Expecting shutter half-press to autofocus after enabling back-button AF
   - Pressing AF-ON and AE Lock together instead of choosing one AF behavior
   - Expecting Eye Detection to operate with the 1-Point AF override
-  - Treating recommended assignments as confirmation of the camera's current settings
+  - Changing a confirmed control while experimenting with the unresolved M-Fn assignment
 appendix_links:
   - id: back_button_af_custom_button_strategies
-    label: Back-Button AF & Custom Button Strategies appendix
+    label: Button setup and AF-ON / AE Lock INFO details

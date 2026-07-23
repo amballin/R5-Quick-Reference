@@ -1,306 +1,101 @@
 camera: Canon EOS R5
-scope: Permanent configuration visible in supplied screenshots
-source_screenshots:
-  - IMG_6335
-  - IMG_6336
-  - IMG_6337
-  - IMG_6338
-  - IMG_6339
-  - IMG_6340
-reading_rules:
-  - Read displayed Canon text exactly; do not decode icon-only assignments.
-  - UNKNOWN means the value is not confidently readable or is not shown.
-  - The left column under the still-camera icon is still-photo custom controls; the right column under the movie-camera icon is movie custom controls.
+status: owner_confirmed_current
+last_confirmed: 2026-07-23
+authority: Direct confirmation from the project owner
 
-features:
-  - name: Shutter button — still photo
-    canon_name: Shutter butt. half-press
-    assigned_function: Metering start
-    source_screenshot: IMG_6335
-    notes: Confirmed by selected gray header. Only half-press is shown.
-  - name: Shutter button — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6335
-    notes: Corresponding row is icon-only and was not selected.
-  - name: MODE button — still photo
-    canon_name: MODE
-    assigned_function: MODE
-    source_screenshot: IMG_6335
-    notes: Visible row text; full Canon header terminology was not shown.
-  - name: MODE button — movie
-    canon_name: MODE
-    assigned_function: MODE
-    source_screenshot: IMG_6335
-    notes: Visible row text; full Canon header terminology was not shown.
-  - name: AF-ON — still photo
-    canon_name: AF-ON
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6336
-    notes: Assignment includes an icon and AF; the exact function name was not shown in the header.
-  - name: AF-ON — movie
-    canon_name: AF-ON
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6336
-    notes: Assignment includes an icon and AF; the exact function name was not shown in the header.
-  - name: AE Lock (*) — still photo
-    canon_name: AE Lock button
-    assigned_function: Eye Detection AF
-    source_screenshot: IMG_6336
-    notes: Confirmed by selected gray header.
-  - name: AE Lock (*) — movie
-    canon_name: "*"
-    assigned_function: "*"
-    source_screenshot: IMG_6336
-    notes: Visible row symbol only; full Canon header terminology was not shown.
-  - name: AF Point Selection button — still photo
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6336
-    notes: Bottom row on Custom Controls page 1 is icon-only and was not selected.
-  - name: AF Point Selection button — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6336
-    notes: Bottom row on Custom Controls page 1 is icon-only and was not selected.
-  - name: Quick Control button — still photo
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6337
-    notes: Top row on Custom Controls page 2 is icon-only and was not selected.
-  - name: Quick Control button — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6337
-    notes: Top row on Custom Controls page 2 is icon-only and was not selected.
-  - name: Depth of Field Preview button — still photo
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6337
-    notes: Second row on Custom Controls page 2 is icon-only and was not selected.
-  - name: Depth of Field Preview button — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6337
-    notes: Second row on Custom Controls page 2 is icon-only and was not selected.
-  - name: Lens AF stop button — still photo
-    canon_name: Lens AF stop button
-    assigned_function: AF stop
-    source_screenshot: IMG_6337
-    notes: Confirmed by selected gray header; row displays LENS and AF-OFF.
-  - name: Lens AF stop button — movie
-    canon_name: LENS
-    assigned_function: AF-OFF
-    source_screenshot: IMG_6337
-    notes: Visible row text only; full Canon header terminology was not shown.
-  - name: M-Fn button — still photo
-    canon_name: M-Fn
-    assigned_function: DIAL FUNC
-    source_screenshot: IMG_6339
-    notes: Visible row text only; full Canon header terminology was not shown.
-  - name: M-Fn button — movie
-    canon_name: M-Fn
-    assigned_function: DIAL FUNC
-    source_screenshot: IMG_6339
-    notes: Visible row text only; full Canon header terminology was not shown.
-  - name: INFO button — still photo
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6339
-    notes: Second row on Custom Controls page 3 is icon-only and was not selected.
-  - name: INFO button — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6339
-    notes: Second row on Custom Controls page 3 is icon-only and was not selected.
-  - name: SET button — still photo
-    canon_name: Set button
-    assigned_function: Set AF point to center
-    source_screenshot: IMG_6339
-    notes: Confirmed by selected gray header; IMG_6339 is clearer than duplicate IMG_6338.
-  - name: SET button — movie
-    canon_name: SET
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6339
-    notes: Assignment is icon-only; exact function name was not shown in the header.
-  - name: Multi-controller / Joystick — still photo
-    canon_name: Multi-controllers
-    assigned_function: Direct AF point selection
-    source_screenshot: IMG_6340
-    notes: Confirmed by selected gray header.
-  - name: Multi-controller / Joystick — movie
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6340
-    notes: Corresponding movie row is icon-only and was not selected.
-  - name: Movie Record button
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Lens Control Ring
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Lens AF/MF switch
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown; attached lens and switch state are not documented.
-  - name: Lens IS switch
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown; attached lens and switch state are not documented.
-  - name: Main Dial
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Quick Control Dial
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Quick Control Dial 2
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Smart Controller
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: No Smart Controller configuration is shown.
-  - name: Touch & Drag AF
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Multi-function Lock
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Playback controls
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Custom dials
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Dial customization pages are not shown.
-  - name: Other programmable controls
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: IMG_6335, IMG_6336, IMG_6337, IMG_6339, IMG_6340
-    notes: Only the visible Custom Controls pages are represented; icon-only rows remain UNKNOWN and additional pages may exist.
-  - name: My Menu pages and contents
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: No My Menu page is shown.
-  - name: Custom Shooting Mode C1
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Custom Shooting Mode C2
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Custom Shooting Mode C3
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Registered shooting mode descriptions
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Customized Quick Control Screen
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
-  - name: Custom display configuration
-    canon_name: UNKNOWN
-    assigned_function: UNKNOWN
-    source_screenshot: UNKNOWN
-    notes: Not shown.
+evidence_rules:
+  - Canon capability statements describe what the camera supports; they do not establish the chosen setup.
+  - Owner-confirmed assignments are the authoritative record of the current chosen setup.
+  - Recommendations must be labeled as recommendations and must not be presented as current settings.
+  - Unresolved items remain unresolved until the owner decides them.
+  - IMG_6335 through IMG_6340 are retired historical evidence and are not reliable evidence of the current setup.
 
-coverage_summary:
-  - area: Shutter button
-    status: "⚠ Partially Documented"
-  - area: AF-ON
-    status: "⚠ Partially Documented"
-  - area: AE Lock (*)
-    status: "⚠ Partially Documented"
-  - area: AF Point Selection button
-    status: "✗ Missing"
-  - area: SET button
-    status: "⚠ Partially Documented"
-  - area: M-Fn button
-    status: "⚠ Partially Documented"
-  - area: Movie Record button
-    status: "✗ Missing"
-  - area: Depth of Field Preview button
-    status: "✗ Missing"
-  - area: Lens AF stop button
-    status: "⚠ Partially Documented"
-  - area: Lens Control Ring
-    status: "✗ Missing"
-  - area: Lens AF/MF switch
-    status: "✗ Missing"
-  - area: Lens IS switch
-    status: "✗ Missing"
-  - area: Main Dial
-    status: "✗ Missing"
-  - area: Quick Control Dial
-    status: "✗ Missing"
-  - area: Quick Control Dial 2
-    status: "✗ Missing"
-  - area: Multi-controller / Joystick
-    status: "⚠ Partially Documented"
-  - area: Smart Controller
-    status: "✗ Missing"
-  - area: Touch & Drag AF
-    status: "✗ Missing"
-  - area: Multi-function Lock
-    status: "✗ Missing"
-  - area: Playback controls
-    status: "✗ Missing"
-  - area: Custom dials
-    status: "✗ Missing"
-  - area: Other programmable controls
-    status: "⚠ Partially Documented"
-  - area: My Menu pages and contents
-    status: "✗ Missing"
-  - area: Custom Shooting Modes (C1/C2/C3)
-    status: "✗ Missing"
-  - area: Registered shooting mode descriptions
-    status: "✗ Missing"
-  - area: Customized Quick Control Screen
-    status: "✗ Missing"
-  - area: Custom display configuration
-    status: "✗ Missing"
+controls:
+  - control: Shutter half-press
+    assignment: Metering start
+    status: owner_confirmed
+  - control: AF-ON
+    assignment: Metering and AF start
+    status: owner_confirmed
+    info_details:
+      AF Operation: Maintain current setting
+      AF Method: Maintain current setting
+      Servo AF characteristics: Maintain current setting
+  - control: AE Lock
+    assignment: Metering and AF start
+    status: owner_confirmed
+    info_details:
+      AF Operation: Maintain current setting
+      AF Method: 1-Point AF
+      Servo AF characteristics: Maintain current setting
+  - control: AF Point Selection
+    assignment: AF point selection
+    operation: Use Main Dial to change selection
+    status: owner_confirmed
+  - control: Lens AF button
+    assignment: AF Off
+    status: owner_confirmed
+  - control: Depth-of-field preview
+    assignment: One-Shot AF / Servo AF
+    status: owner_confirmed
+  - control: SET
+    assignment: Set AF point to center
+    status: owner_confirmed
+  - control: Joystick
+    assignment: Direct AF point selection
+    status: owner_confirmed
+  - control: Movie Record
+    assignment: Leave default
+    status: owner_confirmed
+  - control: MODE
+    assignment: Leave default
+    status: owner_confirmed
+  - control: LCD panel illumination
+    assignment: Leave default
+    status: owner_confirmed
+  - control: M-Fn
+    assignment: UNRESOLVED
+    status: unresolved
+    notes: Review later; do not infer an assignment from historical screenshots.
 
-missing_screenshots_needed:
-  - Every Custom Controls row photographed while selected, for both still-photo and movie columns, so the gray header displays the full Canon control and function names; include every page and the bottom of each page.
-  - Customize dials page(s), with each dial selected: Main Dial, Quick Control Dial, and Quick Control Dial 2.
-  - Lens Control Ring assignment page, with the row selected and any detail/options screen used by the assignment.
-  - Movie Record button assignment page, in each available shooting context.
-  - Touch & Drag AF menu page and all subordinate setting pages.
-  - Multi-function Lock menu page showing every lock checkbox/state.
-  - Playback custom-control/custom-function pages, with every programmable playback control selected.
-  - Physical photographs of the attached lens showing the Lens AF/MF switch and Lens IS switch positions; repeat for each lens whose permanent switch configuration is to be documented.
-  - Every My Menu tab/page, scrolled as needed to show every registered item and page name.
-  - Custom shooting mode registration/settings screens for C1, C2, and C3, plus each mode recalled on the shooting screen and any displayed registered-mode description.
-  - Customized Quick Control Screen configuration page(s) and the resulting Quick Control Screen.
-  - Custom display configuration pages, including shooting-info display customization and each enabled display layout.
-  - Any remaining programmable-control page not included above, including controls added or changed by the installed firmware or attached accessories.
+dials:
+  - control: Main Dial
+    assignment: Shutter Speed
+    status: owner_confirmed
+  - control: Rear Wheel
+    assignment: Aperture
+    status: owner_confirmed
+  - control: Top Rear Dial
+    assignment: ISO Speed
+    status: owner_confirmed
+  - control: Control Ring
+    assignment: Exposure Compensation
+    status: owner_confirmed
+
+custom_shooting_modes:
+  architecture: Complete shooting configurations within the baseline-plus-overrides system
+  C1:
+    assignment: UNRESOLVED
+    status: unresolved
+  C2:
+    assignment: UNRESOLVED
+    status: unresolved
+  C3:
+    assignment: UNRESOLVED
+    status: unresolved
+  notes:
+    - Do not treat C1, C2, or C3 as independent AF-setting controls.
+    - Define each mode only after the owner approves its complete shooting configuration.
+
+retired_evidence:
+  status: historical_not_current
+  source_screenshots:
+    - IMG_6335
+    - IMG_6336
+    - IMG_6337
+    - IMG_6338
+    - IMG_6339
+    - IMG_6340
+  notes:
+    - The camera settings changed after these images were captured.
+    - Do not use these images to reconstruct or contradict the owner-confirmed setup above.

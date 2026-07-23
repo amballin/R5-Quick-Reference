@@ -1,79 +1,56 @@
-# Canon EOS R5 Custom Controls Current Configuration
+# Canon EOS R5 Custom Controls — Owner-Confirmed Configuration
 
-Source screenshots:
+## Purpose
 
-- `/Users/andy/Downloads/r5/IMG_6335.jpeg`
-- `/Users/andy/Downloads/r5/IMG_6336.jpeg`
-- `/Users/andy/Downloads/r5/IMG_6337.jpeg`
-- `/Users/andy/Downloads/r5/IMG_6338.jpeg`
-- `/Users/andy/Downloads/r5/IMG_6339.jpeg`
-- `/Users/andy/Downloads/r5/IMG_6340.jpeg`
+This appendix is the authoritative current record of the camera's physical control assignments. It records owner-confirmed settings separately from Canon capabilities and recommendations.
 
-Reading rules:
+The previous custom-control screenshots (`IMG_6335`–`IMG_6340`) are retired historical material. The camera settings changed after capture, so those images are not reliable current-state evidence.
 
-- Canon menu text from the gray header area is treated as confirmed.
-- Visible row text is recorded only when readable as text.
-- Icon-only functions are not interpreted.
-- Anything not readable from the screenshots is marked `UNKNOWN`.
+## Owner-Confirmed Buttons and Controls
 
-## Confirmed Controls
+| Physical control | Assignment | INFO details or operation |
+|---|---|---|
+| Shutter half-press | Metering start | — |
+| AF-ON | Metering and AF start | AF Operation: Maintain current setting; AF Method: Maintain current setting; Servo AF characteristics: Maintain current setting |
+| AE Lock | Metering and AF start | AF Operation: Maintain current setting; AF Method: 1-Point AF; Servo AF characteristics: Maintain current setting |
+| AF Point Selection | AF point selection | Use Main Dial to change selection |
+| Lens AF button | AF Off | — |
+| Depth-of-field preview | One-Shot AF / Servo AF | Toggles AF operation |
+| SET | Set AF point to center | — |
+| Joystick | Direct AF point selection | Move the AF point directly |
+| Movie Record | Leave default | — |
+| MODE | Leave default | — |
+| LCD panel illumination | Leave default | — |
+| M-Fn | **UNRESOLVED** | Review later |
 
-| Control | Assigned function | Context | Source screenshot | Evidence |
-|---|---|---|---|---|
-| Shutter butt. half-press | Metering start | Still-photo custom controls | IMG_6335 | Gray header text |
-| AE Lock button | Eye Detection AF | Still-photo custom controls | IMG_6336 | Gray header text |
-| Lens AF stop button | AF stop | Still-photo custom controls | IMG_6337 | Gray header text |
-| Set button | Set AF point to center | Still-photo custom controls | IMG_6338, IMG_6339 | Gray header text |
-| Multi-controllers | Direct AF point selection | Still-photo custom controls | IMG_6340 | Gray header text |
+## Owner-Confirmed Dials and Control Ring
 
-## Visible But Not Fully Confirmed
+| Physical control | Assignment |
+|---|---|
+| Main Dial | Shutter Speed |
+| Rear Wheel | Aperture |
+| Top Rear Dial | ISO Speed |
+| Control Ring | Exposure Compensation |
 
-These rows were visible in the screenshots, but their Canon header text was not shown while selected. They should be treated as unconfirmed until a screenshot is captured with each row selected.
+The project uses these plain-language control names. Numbered quick-dial terminology is intentionally avoided.
 
-| Control as shown | Assigned function as shown | Context | Source screenshot | Status |
-|---|---|---|---|---|
-| MODE | MODE | Still-photo custom controls | IMG_6335, IMG_6336 | Visible row text only |
-| MODE | MODE | Movie custom controls | IMG_6335, IMG_6336 | Visible row text only |
-| AF-ON | UNKNOWN | Still-photo custom controls | IMG_6335, IMG_6336 | Function is icon/text mix; exact Canon header text not shown |
-| AF-ON | UNKNOWN | Movie custom controls | IMG_6335, IMG_6336 | Function is icon/text mix; exact Canon header text not shown |
-| * | UNKNOWN | Movie custom controls | IMG_6336 | Function shown as `*`; exact Canon header text not shown |
-| LENS | AF-OFF | Still-photo custom controls | IMG_6337 | Visible row text only; gray header confirms `Lens AF stop button` / `AF stop` |
-| LENS | AF-OFF | Movie custom controls | IMG_6337 | Visible row text only |
-| M-Fn | DIAL FUNC | Still-photo custom controls | IMG_6337, IMG_6338, IMG_6339, IMG_6340 | Visible row text only |
-| M-Fn | DIAL FUNC | Movie custom controls | IMG_6337, IMG_6338, IMG_6339, IMG_6340 | Visible row text only |
-| SET | UNKNOWN | Movie custom controls | IMG_6338, IMG_6339, IMG_6340 | Function is icon-only; exact Canon header text not shown |
+## AF-ON and AE Lock Behavior
 
-## Unreadable Or Unknown Rows
+AF-ON is the normal AF-start button. Its INFO details maintain the active profile's AF Operation, AF Method, and Servo AF characteristics.
 
-The following programmable controls or rows are present in the screenshots but cannot be read exactly from the provided images:
+AE Lock is the precision AF-start button. It maintains the active profile's AF Operation and Servo AF characteristics but temporarily uses 1-Point AF.
 
-| Location | Context | Control | Assigned function | Source screenshot | Reason |
-|---|---|---|---|---|---|
-| Custom Controls page 1, row 2 | Still-photo custom controls | UNKNOWN | UNKNOWN | IMG_6335 | Control and function are icon-only/unreadable |
-| Custom Controls page 1, row 2 | Movie custom controls | UNKNOWN | UNKNOWN | IMG_6335 | Control and function are icon-only/unreadable |
-| Custom Controls page 1, bottom row | Still-photo custom controls | UNKNOWN | UNKNOWN | IMG_6336 | Control and function are icon-only/unreadable |
-| Custom Controls page 1, bottom row | Movie custom controls | UNKNOWN | UNKNOWN | IMG_6336 | Control and function are icon-only/unreadable |
-| Custom Controls page 2, top row | Still-photo custom controls | UNKNOWN | UNKNOWN | IMG_6337 | Control and function are icon-only/unreadable |
-| Custom Controls page 2, top row | Movie custom controls | UNKNOWN | UNKNOWN | IMG_6337 | Control and function are icon-only/unreadable |
-| Custom Controls page 2, second row | Still-photo custom controls | UNKNOWN | UNKNOWN | IMG_6337 | Control and function are icon-only/unreadable |
-| Custom Controls page 2, second row | Movie custom controls | UNKNOWN | UNKNOWN | IMG_6337 | Control and function are icon-only/unreadable |
-| Custom Controls page 3, second row | Still-photo custom controls | UNKNOWN | UNKNOWN | IMG_6338, IMG_6339, IMG_6340 | Control and function are icon-only/unreadable |
-| Custom Controls page 3, second row | Movie custom controls | UNKNOWN | UNKNOWN | IMG_6338, IMG_6339, IMG_6340 | Control and function are icon-only/unreadable |
+This arrangement preserves the baseline-plus-overrides architecture: the physical controls stay consistent, while the active profile continues to determine the underlying subject-specific settings.
 
-## Additional Screenshots Needed
+## C1–C3
 
-Additional screenshots are needed for every row listed as `UNKNOWN` or `Visible row text only`. For exact documentation, select each row in the Canon Custom Controls menu so the gray header shows the Canon control name and assigned function.
+C1, C2, and C3 are reserved for complete shooting configurations within the baseline-plus-overrides system. Their exact configurations are **UNRESOLVED**. They must not be treated as independent AF-setting controls or documented as settled before owner approval.
 
-Specific remaining captures needed:
+## Evidence and Recommendation Rules
 
-- The still-photo and movie rows that currently show only icons on Custom Controls page 1.
-- `MODE` selected in both still-photo and movie custom controls.
-- `AF-ON` selected in both still-photo and movie custom controls.
-- The movie-side `*` row selected.
-- The bottom icon-only row on Custom Controls page 1 selected in both still-photo and movie custom controls.
-- The top two rows on Custom Controls page 2 selected in both still-photo and movie custom controls.
-- `LENS` selected on the movie side.
-- `M-Fn` selected in both still-photo and movie custom controls.
-- The icon-only second row on Custom Controls page 3 selected in both still-photo and movie custom controls.
-- `SET` selected on the movie side.
-- Any additional Custom Controls pages not shown in these screenshots, including dial, control ring, touch bar, or other programmable controls if present.
+- A verified Canon capability states what the camera can do; it does not prove which assignment is currently selected.
+- An owner-confirmed setting records the chosen current setup.
+- A recommendation must be labeled as advice and does not become a current setting without owner confirmation.
+- An unresolved item remains unresolved; do not guess from historical screenshots.
+
+See [Back-Button AF & Custom Button Strategies](../Setting%20Deep%20Dives/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html) for the readable control table, exact AF-ON and AE Lock setup details, rationale, and profile behavior.

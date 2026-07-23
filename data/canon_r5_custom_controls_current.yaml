@@ -1,235 +1,91 @@
 camera: Canon EOS R5
-source: Canon EOS R5 Custom Controls screenshots
-source_screenshots:
-  - id: IMG_6335
-    file: /Users/andy/Downloads/r5/IMG_6335.jpeg
-    selected_control: Shutter butt. half-press
-    selected_assigned_function: Metering start
-  - id: IMG_6336
-    file: /Users/andy/Downloads/r5/IMG_6336.jpeg
-    selected_control: AE Lock button
-    selected_assigned_function: Eye Detection AF
-  - id: IMG_6337
-    file: /Users/andy/Downloads/r5/IMG_6337.jpeg
-    selected_control: Lens AF stop button
-    selected_assigned_function: AF stop
-  - id: IMG_6338
-    file: /Users/andy/Downloads/r5/IMG_6338.jpeg
-    selected_control: Set button
-    selected_assigned_function: Set AF point to center
-  - id: IMG_6339
-    file: /Users/andy/Downloads/r5/IMG_6339.jpeg
-    selected_control: Set button
-    selected_assigned_function: Set AF point to center
-  - id: IMG_6340
-    file: /Users/andy/Downloads/r5/IMG_6340.jpeg
-    selected_control: Multi-controllers
-    selected_assigned_function: Direct AF point selection
-reading_rules:
-  - Canon menu text from the gray header area is treated as confirmed.
-  - Visible row text is recorded only when readable as text.
-  - Icon-only functions are not interpreted.
-  - Anything not readable from the screenshots is marked UNKNOWN.
-controls:
-  confirmed:
-    - control: Shutter butt. half-press
-      assigned_function: Metering start
-      context: still_photo_custom_controls
-      status: confirmed
-      evidence: gray_header_text
-      source_screenshots:
-        - IMG_6335
-    - control: AE Lock button
-      assigned_function: Eye Detection AF
-      context: still_photo_custom_controls
-      status: confirmed
-      evidence: gray_header_text
-      source_screenshots:
-        - IMG_6336
-    - control: Lens AF stop button
-      assigned_function: AF stop
-      context: still_photo_custom_controls
-      status: confirmed
-      evidence: gray_header_text
-      source_screenshots:
-        - IMG_6337
-    - control: Set button
-      assigned_function: Set AF point to center
-      context: still_photo_custom_controls
-      status: confirmed
-      evidence: gray_header_text
-      source_screenshots:
-        - IMG_6338
-        - IMG_6339
-    - control: Multi-controllers
-      assigned_function: Direct AF point selection
-      context: still_photo_custom_controls
-      status: confirmed
-      evidence: gray_header_text
-      source_screenshots:
-        - IMG_6340
-  visible_text_only:
-    - control: MODE
-      assigned_function: MODE
-      context: still_photo_custom_controls
-      status: visible_text_only
-      source_screenshots:
-        - IMG_6335
-        - IMG_6336
-    - control: MODE
-      assigned_function: MODE
-      context: movie_custom_controls
-      status: visible_text_only
-      source_screenshots:
-        - IMG_6335
-        - IMG_6336
-    - control: AF-ON
-      assigned_function: UNKNOWN
-      context: still_photo_custom_controls
-      status: visible_text_only
-      notes: Function is icon/text mix; exact Canon header text not shown.
-      source_screenshots:
-        - IMG_6335
-        - IMG_6336
-    - control: AF-ON
-      assigned_function: UNKNOWN
-      context: movie_custom_controls
-      status: visible_text_only
-      notes: Function is icon/text mix; exact Canon header text not shown.
-      source_screenshots:
-        - IMG_6335
-        - IMG_6336
-    - control: "*"
-      assigned_function: UNKNOWN
-      context: movie_custom_controls
-      status: visible_text_only
-      notes: Function shown as "*"; exact Canon header text not shown.
-      source_screenshots:
-        - IMG_6336
-    - control: LENS
-      assigned_function: AF-OFF
-      context: still_photo_custom_controls
-      status: visible_text_only
-      notes: Gray header confirms "Lens AF stop button" / "AF stop".
-      source_screenshots:
-        - IMG_6337
-    - control: LENS
-      assigned_function: AF-OFF
-      context: movie_custom_controls
-      status: visible_text_only
-      source_screenshots:
-        - IMG_6337
-    - control: M-Fn
-      assigned_function: DIAL FUNC
-      context: still_photo_custom_controls
-      status: visible_text_only
-      source_screenshots:
-        - IMG_6337
-        - IMG_6338
-        - IMG_6339
-        - IMG_6340
-    - control: M-Fn
-      assigned_function: DIAL FUNC
-      context: movie_custom_controls
-      status: visible_text_only
-      source_screenshots:
-        - IMG_6337
-        - IMG_6338
-        - IMG_6339
-        - IMG_6340
-    - control: SET
-      assigned_function: UNKNOWN
-      context: movie_custom_controls
-      status: visible_text_only
-      notes: Function is icon-only; exact Canon header text not shown.
-      source_screenshots:
-        - IMG_6338
-        - IMG_6339
-        - IMG_6340
-  unreadable_or_unknown:
-    - location: Custom Controls page 1, row 2
-      context: still_photo_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6335
-    - location: Custom Controls page 1, row 2
-      context: movie_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6335
-    - location: Custom Controls page 1, bottom row
-      context: still_photo_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6336
-    - location: Custom Controls page 1, bottom row
-      context: movie_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6336
-    - location: Custom Controls page 2, top row
-      context: still_photo_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6337
-    - location: Custom Controls page 2, top row
-      context: movie_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6337
-    - location: Custom Controls page 2, second row
-      context: still_photo_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6337
-    - location: Custom Controls page 2, second row
-      context: movie_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6337
-    - location: Custom Controls page 3, second row
-      context: still_photo_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6338
-        - IMG_6339
-        - IMG_6340
-    - location: Custom Controls page 3, second row
-      context: movie_custom_controls
-      control: UNKNOWN
-      assigned_function: UNKNOWN
-      reason: Control and function are icon-only/unreadable.
-      source_screenshots:
-        - IMG_6338
-        - IMG_6339
-        - IMG_6340
-additional_screenshots_needed:
-  - The still-photo and movie rows that currently show only icons on Custom Controls page 1.
-  - MODE selected in both still-photo and movie custom controls.
-  - AF-ON selected in both still-photo and movie custom controls.
-  - The movie-side "*" row selected.
-  - The bottom icon-only row on Custom Controls page 1 selected in both still-photo and movie custom controls.
-  - The top two rows on Custom Controls page 2 selected in both still-photo and movie custom controls.
-  - LENS selected on the movie side.
-  - M-Fn selected in both still-photo and movie custom controls.
-  - The icon-only second row on Custom Controls page 3 selected in both still-photo and movie custom controls.
-  - SET selected on the movie side.
-  - Any additional Custom Controls pages not shown in these screenshots, including dial, control ring, touch bar, or other programmable controls if present.
+record_type: owner_confirmed_current_controls
+last_confirmed: 2026-07-23
+authority: project_owner
+
+evidence:
+  owner_confirmation:
+    status: authoritative_current_state
+  historical_screenshots:
+    ids:
+      - IMG_6335
+      - IMG_6336
+      - IMG_6337
+      - IMG_6338
+      - IMG_6339
+      - IMG_6340
+    status: retired_not_current_state_evidence
+    reason: Camera settings changed after capture.
+  rules:
+    - Keep Canon capabilities separate from chosen assignments.
+    - Keep recommendations separate from owner-confirmed settings.
+    - Do not infer unresolved assignments.
+
+buttons:
+  - control: Shutter half-press
+    assignment: Metering start
+    status: owner_confirmed
+  - control: AF-ON
+    assignment: Metering and AF start
+    status: owner_confirmed
+    info_details:
+      af_operation: Maintain current setting
+      af_method: Maintain current setting
+      servo_af_characteristics: Maintain current setting
+  - control: AE Lock
+    assignment: Metering and AF start
+    status: owner_confirmed
+    info_details:
+      af_operation: Maintain current setting
+      af_method: 1-Point AF
+      servo_af_characteristics: Maintain current setting
+  - control: AF Point Selection
+    assignment: AF point selection
+    operation: Use Main Dial to change selection
+    status: owner_confirmed
+  - control: Lens AF button
+    assignment: AF Off
+    status: owner_confirmed
+  - control: Depth-of-field preview
+    assignment: One-Shot AF / Servo AF
+    status: owner_confirmed
+  - control: SET
+    assignment: Set AF point to center
+    status: owner_confirmed
+  - control: Joystick
+    assignment: Direct AF point selection
+    status: owner_confirmed
+  - control: Movie Record
+    assignment: Leave default
+    status: owner_confirmed
+  - control: MODE
+    assignment: Leave default
+    status: owner_confirmed
+  - control: LCD panel illumination
+    assignment: Leave default
+    status: owner_confirmed
+  - control: M-Fn
+    assignment: UNRESOLVED
+    status: unresolved
+
+dials:
+  - control: Main Dial
+    assignment: Shutter Speed
+    status: owner_confirmed
+  - control: Rear Wheel
+    assignment: Aperture
+    status: owner_confirmed
+  - control: Top Rear Dial
+    assignment: ISO Speed
+    status: owner_confirmed
+  - control: Control Ring
+    assignment: Exposure Compensation
+    status: owner_confirmed
+
+custom_shooting_modes:
+  intended_role: Complete shooting configurations within baseline-plus-overrides
+  C1: UNRESOLVED
+  C2: UNRESOLVED
+  C3: UNRESOLVED
+  status: unresolved
+  restriction: Do not document these modes as independent AF-setting controls.

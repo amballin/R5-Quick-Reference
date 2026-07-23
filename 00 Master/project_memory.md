@@ -18,6 +18,8 @@ The established design is **Baseline + Overrides**. Shared defaults live once in
 
 Rendering is separated from profile data so presentation can evolve without restructuring shooting data. Educational content is separated into appendices so profiles remain concise and explanations have a single home. Permanent reference cards remain distinct from shooting profiles.
 
+The EOS R5 uses one owner-confirmed physical button and dial layout across subject profiles. AF-ON follows the camera settings established from the resolved baseline-plus-profile card; AE Lock supplies the consistent 1-Point AF alternative. Detailed control setup belongs in the custom-controls deep dive, while the Camera Buttons card remains concise. Historical control screenshots are not treated as current-state evidence.
+
 The generated site uses the machine-local workspace's `Build Output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `Build Output/website/` is optional machine-local staging and feeds `Native Wrapper/Website/`, exposed through `ios/Resources/Website`, only for the native wrapper workflow. PDF generation is intentionally opt-in.
 
 ## Domain Context and Terminology
@@ -29,6 +31,7 @@ The generated site uses the machine-local workspace's `Build Output/merged-build
 - “Card” means a generated quick-reference view of fully merged settings.
 - “Appendix” means explanatory field-guide source content declared by the appendix manifest.
 - “Release” means inclusion in the offline iPhone/PWA bundle, controlled independently for profiles and appendices.
+- “Owner-confirmed” means the project owner directly verified or set the camera control after the earlier screenshot evidence became unreliable.
 
 ## Stable Workflow Context
 

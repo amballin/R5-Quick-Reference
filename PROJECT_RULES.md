@@ -18,8 +18,10 @@ Proposed, Rejected, and Superseded decisions are non-binding. Conversation histo
 
 ## Non-Negotiable Working Rules
 
-- Preserve the existing repository structure and improve it incrementally; do not redesign architecture, YAML structure, naming, or workflow without explicit approval.
+- Preserve the existing repository structure and improve it incrementally; do not redesign or change established architecture, YAML structure, naming, or workflow without first explaining the rationale and receiving explicit project-owner approval.
 - Use the baseline + overrides architecture. Profiles inherit from the baseline, contain only differences from it, and never duplicate baseline settings.
+- Clearly separate verified Canon capabilities, owner-confirmed current configuration, project recommendations, and unresolved items. Never present a recommendation or historical screenshot as verified current state.
+- Present proposed reference or architectural changes, affected files, and intended changes for project-owner review before creating backups or modifying project files.
 - Keep rendering decisions in the build system, not profile YAML. Keep educational material in appendices rather than profiles.
 - Preserve backward compatibility whenever practical. Identify conflicts instead of silently replacing established constraints.
 - Keep generated files only in documented repository or machine-local output locations and source assets only in asset locations. Reuse existing assets whenever practical.

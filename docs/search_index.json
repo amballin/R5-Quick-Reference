@@ -879,7 +879,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "purpose",
-    "text": "Document a consistent Canon EOS R5 button, dial, back-button autofocus, and exposure-control layout for birds, wildlife, sports, macro, landscape, travel, and general field use. This is a recommended configuration, not a record of settings verified from the current-camera screenshots."
+    "text": "Document the owner-confirmed Canon EOS R5 button and dial layout used across the baseline and all subject profiles. Keep Canon capabilities, the current configuration, operating recommendations, and unresolved controls visibly separate."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -888,34 +888,43 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "what-it-does",
-    "text": "Back-button AF separates autofocus activation from the shutter release. The recommended layout uses two independent AF-start buttons: **AF-ON** starts autofocus with the active profile settings, while the **AE Lock button** starts autofocus with a detailed 1-Point AF override. Choose one AF button at a time, then use the shutter to take the picture.\nCustom controls can also assign frequently used functions to **M-Fn**, the joystick, the lens or adapter **Control Ring**, and Register/Recall Shooting Function. Keep one consistent base layout and add a specialized assignment only when it solves a repeated field problem."
+    "text": "Back-button AF separates autofocus activation from the shutter release. **AF-ON** starts autofocus with the camera's current AF settings. **AE Lock** starts autofocus with a precise 1-Point AF override. Choose one AF-start button at a time, then press the shutter to take the picture.\nThe physical controls stay consistent across subjects. The baseline and profile overrides continue to own AF Method, Subject Detection, Eye Detection, exposure, drive, and other subject-specific settings."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
     "title": "Custom Controls, Back-Button AF & Dial Strategies",
-    "section": "Recommended Custom Button Layout",
+    "section": "Owner-Confirmed Current Layout",
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
-    "anchor": "recommended-custom-button-layout",
-    "text": "  Control   Canon assignment   Purpose  \n --- --- --- \n  **Shutter button half-press**   **Metering start**   Starts metering without starting autofocus.  \n  **AF-ON button**   **Metering and AF start**   Starts the normal autofocus configuration.  \n  **AE Lock button**   **Metering and AF start** with **AF Method: 1-Point AF** in INFO details   Starts a precise alternate AF behavior without also holding AF-ON.  \n  **SET button**   **Set AF point to center**   Returns the active AF point to the center.  \n  **Depth-of-field preview button**   **One-Shot AF \u2194 Servo AF**   Changes AF operation between One-Shot AF and Servo AF.  \nAdditional control guidance:\n  Control   Recommended role   Reason  \n --- --- --- \n  **M-Fn button**   Retain fast access to a small set of frequently changed shooting controls   Useful for choices that change often but do not deserve a dedicated prime button  \n  **Joystick / Multi-controller**   Direct AF-point movement   Precise and predictable subject acquisition  \n  **Switch to registered AF function**   Specialized temporary AF override only after its ergonomics have been tested   May require a separate AF-start control and is not the recommended default layout  \n  **Register/Recall Shooting Function**   Under evaluation for a broader temporary shooting override   Original-R5 recalled items and AF-start behavior still require direct camera verification  \n  **Control Ring**   Exposure Compensation by default; ISO or aperture when the exposure workflow makes that more valuable   Adds a direct dial without disturbing the main shutter/aperture controls  "
+    "anchor": "owner-confirmed-current-layout",
+    "text": "These settings were directly confirmed by the project owner on 2026-07-23. They are current configuration, not deductions from the retired screenshots.\n  Physical control   Assignment   INFO details or operation  \n --- --- --- \n  **Shutter half-press**   **Metering start**   Does not start autofocus.  \n  **AF-ON**   **Metering and AF start**   AF Operation: **Maintain current setting**; AF Method: **Maintain current setting**; Servo AF characteristics: **Maintain current setting**.  \n  **AE Lock**   **Metering and AF start**   AF Operation: **Maintain current setting**; AF Method: **1-Point AF**; Servo AF characteristics: **Maintain current setting**.  \n  **AF Point Selection**   **AF point selection**   Use the **Main Dial** to change the selection.  \n  **Lens AF button**   **AF Off**   Stops AF while the lens button is used.  \n  **DOF button**   **One-Shot AF \u2194 Servo AF**   Changes AF Operation.  \n  **SET**   **Set AF point to center**   Recenters the selected AF point.  \n  **Joystick**   **Direct AF point selection**   Moves the selected AF point or starting position.  \n  **Main Dial**   **Shutter Speed**   Direct exposure control.  \n  **Rear Wheel**   **Aperture**   Direct exposure control.  \n  **Top Rear Dial**   **ISO Speed**   Direct exposure control.  \n  **Control Ring**   **Exposure Compensation**   In Manual exposure, compensation requires Auto ISO.  \n  **Movie Record button**   **Leave default**   No custom assignment in this architecture.  \n  **MODE button**   **Leave default**   No custom assignment in this architecture.  \n  **LCD panel illumination button**   **Leave default**   No custom assignment in this architecture.  \n  **M-Fn**   **Unresolved \u2014 review later**   Do not change it as part of this architecture.  \nC1, C2, and C3 are also unresolved. If adopted later, each should represent a complete shooting configuration resolved from the baseline plus one profile, not an independent AF-only preset."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
     "title": "Custom Controls, Back-Button AF & Dial Strategies",
-    "section": "Recommended Dial Layout",
+    "section": "AF-ON: normal autofocus",
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
-    "anchor": "recommended-dial-layout",
-    "text": "  Control   Assigned function  \n --- --- \n  **Main Dial (around Shutter Button)**   **Shutter Speed (Tv)**  \n  **Quick Control Dial (Rear Wheel)**   **Aperture (Av)**  \n  **Multi-function Dial (Top Rear Dial)**   **ISO Speed**  \n  **Control Ring (Lens or Control Ring Adapter)**   **Exposure Compensation**  "
+    "anchor": "af-on-normal-autofocus",
+    "text": "Assign **Metering and AF start**, press **INFO**, and set all three details to **Maintain current setting**:\n  AF-ON INFO item   Setting  \n --- --- \n  AF Operation   Maintain current setting  \n  AF Method   Maintain current setting  \n  Servo AF characteristics   Maintain current setting  \nAF-ON therefore uses the AF configuration currently set on the camera from the applicable merged card. It does not read or activate a YAML profile automatically."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
     "title": "Custom Controls, Back-Button AF & Dial Strategies",
-    "section": "How it Works",
+    "section": "AE Lock: precise alternate autofocus",
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
-    "anchor": "how-it-works",
-    "text": "With **Shutter button half-press** assigned to **Metering start**, pressing the shutter button does not refocus the camera. Press or hold either configured rear AF button, then press the shutter to take the picture.\nSet **AF-ON** to **Metering and AF start** with its INFO details left at **Maintain current setting**. It then follows the active profile: for example, Face + Tracking with Animals and Eye Detection in a wildlife profile.\nSet the **AE Lock button** to **Metering and AF start** and use INFO details to keep the current AF Operation and Servo characteristics while overriding only AF Method to **1-Point AF**. This button starts the alternate autofocus itself. Do not hold AF-ON and AE Lock together.\n**Switch to registered AF function** can temporarily change selected AF behavior, but it is not the recommended default here because it may require the override button, a separate AF-start button, and the shutter at the same time. **Register/Recall Shooting Function** is broader, but its original-R5 item list and AF-start behavior remain under evaluation and should not be recommended until verified directly on the camera.\nThe **SET button** provides a consistent recovery action when the active AF point has moved away from the desired starting position. The **Depth-of-field preview button** provides direct access to the selected One-Shot AF/Servo AF change."
+    "anchor": "ae-lock-precise-alternate-autofocus",
+    "text": "Assign **Metering and AF start**, press **INFO**, and override only AF Method:\n  AE Lock INFO item   Setting  \n --- --- \n  AF Operation   Maintain current setting  \n  AF Method   1-Point AF  \n  Servo AF characteristics   Maintain current setting  \nAE Lock starts autofocus itself. It retains the current One-Shot/Servo choice and Servo response while using 1-Point AF. Do not hold AF-ON and AE Lock together.\nSubject Detection and Eye Detection menu values do not need to be changed for the AE Lock override. They remain configured on the camera, but 1-Point AF provides deliberate point placement instead of Face + Tracking behavior."
+  },
+  {
+    "appendix_id": "back_button_af_custom_button_strategies",
+    "title": "Custom Controls, Back-Button AF & Dial Strategies",
+    "section": "Other AF methods",
+    "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
+    "html": "appendices/Back-Button AF & Custom Button Strategies.html",
+    "anchor": "other-af-methods",
+    "text": "The AE Lock shortcut remains 1-Point AF for consistency. When a profile calls for Spot AF or Expand AF Area, use **AF Point Selection** and the **Main Dial** to select it manually."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -924,7 +933,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "advantages",
-    "text": "- Separates focus activation from image capture.\n- Stops autofocus immediately when the selected rear AF button is released.\n- Provides normal tracking and precise 1-Point AF from separate AF-start buttons without navigating menus.\n- Requires only one rear AF button at a time.\n- Provides a one-press method to return the AF point to center.\n- Keeps direct AF-point movement on the joystick and frequently changed secondary controls within reach of M-Fn.\n- Keeps shutter speed, aperture, ISO speed, and exposure compensation on separate direct controls.\n- Makes exposure compensation directly available when using Manual exposure with Auto ISO."
+    "text": "- Separates autofocus activation from image capture.\n- Keeps the normal subject configuration and a precise alternate immediately available.\n- Requires only one rear AF-start button at a time.\n- Preserves current One-Shot/Servo and Servo-response choices on both AF-start buttons.\n- Provides direct AF-point movement, recentering, and AF-operation switching.\n- Keeps shutter speed, aperture, ISO speed, and exposure compensation on separate physical controls.\n- Uses the same physical layout across every subject profile."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -933,7 +942,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "disadvantages",
-    "text": "- Requires deliberate use of **AF-ON**; half-pressing the shutter no longer starts autofocus.\n- Both AF-start buttons must be configured through their INFO detail screens and remembered.\n- The **AE Lock button** is no longer available for its default purpose while reassigned.\n- The **Depth-of-field preview button** is no longer available for its default purpose while reassigned.\n- A customized camera can be confusing to another photographer unless the layout is documented."
+    "text": "- Half-pressing the shutter no longer starts autofocus.\n- The photographer must deliberately choose AF-ON or AE Lock.\n- AE Lock is no longer available for its original exposure-lock role.\n- The DOF button is no longer available for depth-of-field preview.\n- A customized camera can be confusing to another photographer unless the layout is documented."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -942,7 +951,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "recommended-uses",
-    "text": "- Birds in flight and wildlife when Face + Tracking is normal but deliberate 1-Point AF is sometimes needed.\n- Sports when the subject must be tracked through changing backgrounds.\n- Perched birds or partially obscured subjects when a temporary alternate AF behavior is useful.\n- Manual exposure with Auto ISO when direct exposure compensation is required.\n- Any profile that benefits from one consistent physical-control layout."
+    "text": "The following are operating recommendations, not additional camera assignments:\n- Use **AF-ON** for the normal AF configuration selected from the subject card.\n- Use **AE Lock** when deliberate 1-Point placement is more reliable than tracking.\n- Use **AF Point Selection + Main Dial** when Spot AF or Expand AF Area is more appropriate.\n- Use **SET** to recover quickly when the AF point has moved away from the desired starting position.\n- Use the **Joystick** for direct AF-point placement."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -951,7 +960,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "when-not-to-use",
-    "text": "- Do not enable the layout immediately before a critical shoot without practicing it.\n- Do not use back-button AF if shutter-button autofocus is preferred or required by another camera user.\n- Do not use **Switch to registered AF function** as the default alternate-AF control unless its multi-button ergonomics have been tested with the intended lens.\n- Do not recommend **Register/Recall Shooting Function** until its original-R5 behavior and participating settings have been documented.\n- Do not rely on exposure compensation in Manual exposure unless Auto ISO is active.\n- Do not assign a broad Register/Recall state until every recalled setting has been documented and tested."
+    "text": "- Do not press AF-ON and AE Lock together.\n- Do not expect shutter half-press to refocus.\n- Do not use back-button AF without practicing before an important shoot.\n- Do not change M-Fn while its role remains unresolved.\n- Do not rely on Control Ring exposure compensation in Manual exposure with fixed ISO.\n- Do not treat C1-C3 as AF-only controls."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -960,7 +969,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "decision-guide",
-    "text": "  Situation   Control   Action  \n --- --- --- \n  Start autofocus with the profile's normal AF behavior   **AF-ON button**   Press or hold **Metering and AF start** with all INFO details set to maintain current settings.  \n  Start autofocus with precise point placement   **AE Lock button**   Press or hold **Metering and AF start** with AF Method overridden to **1-Point AF**.  \n  Return the active AF point to center   **SET button**   Press **Set AF point to center**.  \n  Change between stationary and continuous AF operation   **Depth-of-field preview button**   Use **One-Shot AF \u2194 Servo AF**.  \n  Change shutter speed   **Main Dial (around Shutter Button)**   Rotate the dial.  \n  Change aperture   **Quick Control Dial (Rear Wheel)**   Rotate the dial.  \n  Change ISO speed   **Multi-function Dial (Top Rear Dial)**   Rotate the dial.  \n  Adjust exposure with Manual + Auto ISO   **Control Ring**   Apply **Exposure Compensation**.  \n  Move the AF point directly   **Joystick / Multi-controller**   Move the selected point or starting area.  \n  Evaluate a broader temporary shooting state   Unassigned until verified   Test **Register/Recall Shooting Function** on the original R5 before adopting it.  "
+    "text": "  Situation   Control   Action  \n --- --- --- \n  Start AF with the current subject configuration   **AF-ON**   Press or hold; all INFO details maintain current settings.  \n  Start AF with precise point placement   **AE Lock**   Press or hold; only AF Method changes to 1-Point AF.  \n  Select Spot, Expand, or another AF method manually   **AF Point Selection**   Press it and use the Main Dial.  \n  Move the active AF point   **Joystick**   Move the point or starting position directly.  \n  Return the AF point to center   **SET**   Press once.  \n  Change between One-Shot and Servo   **DOF button**   Use One-Shot AF \u2194 Servo AF.  \n  Temporarily stop lens AF   **Lens AF button**   Use AF Off.  \n  Change shutter speed   **Main Dial**   Rotate the dial.  \n  Change aperture   **Rear Wheel**   Rotate the wheel.  \n  Change ISO speed   **Top Rear Dial**   Rotate the dial.  \n  Apply exposure compensation   **Control Ring**   Rotate the ring; use Auto ISO when working in Manual exposure.  "
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -969,7 +978,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "recommended-settings-by-profile",
-    "text": "  Profile   Normal use   Temporary or recovery use  \n --- --- --- \n  **Birds in Flight**   Hold **AF-ON** for Face + Tracking with animal detection.   Hold **AE Lock** for 1-Point AF when deliberate acquisition is more reliable.  \n  **Birds Perched**   Hold **AF-ON** for Face + Tracking with animal and eye detection.   Hold **AE Lock** for 1-Point AF through branches; select Spot AF manually when still finer placement is needed.  \n  **Wildlife**   Hold **AF-ON** for Face + Tracking with animal detection.   Hold **AE Lock** for 1-Point AF through grass or brush.  \n  **Sports**   Hold **AF-ON** for Face + Tracking with people detection.   Hold **AE Lock** for 1-Point AF when the camera selects the wrong player.  \n  **Macro**   Use **AF-ON** only when autofocus is wanted.   Use **One-Shot AF \u2194 Servo AF** only when the subject or camera movement requires the change.  \n  **Landscape**   Keep a simple base layout; use the joystick for deliberate AF placement.   Use the Control Ring for Exposure Compensation when working in an automatic exposure mode.  \n  **Travel**   Keep the common base layout and M-Fn access predictable.   Avoid specialized recall states that are difficult to remember under changing conditions.  \nThese recommendations define control behavior only. AF method, subject detection, eye detection, and other shooting settings remain owned by the baseline and subject-profile overrides."
+    "text": "  Profile   AF-ON behavior from current camera settings   AE Lock or manual alternative  \n --- --- --- \n  **Birds in Flight**   Face + Tracking, Animals, Servo AF   AE Lock for 1-Point AF; select Expand AF Area manually when movement is difficult to hold under one point.  \n  **Birds Perched**   Face + Tracking, Animals, Eye Detection   AE Lock for 1-Point AF through branches; select Spot AF manually for finer placement.  \n  **Wildlife**   Face + Tracking, Animals, Eye Detection   AE Lock for 1-Point AF through grass or brush; select Expand AF Area manually for movement.  \n  **Sports**   Face + Tracking, People, Servo AF   AE Lock for 1-Point AF when the wrong player is selected; choose Expand AF Area manually when appropriate.  \n  **People**   Face + Tracking, People, Eye Detection   AE Lock for deliberate 1-Point placement when the wrong face is selected.  \n  **Macro**   One-Shot AF and Spot AF when autofocus is useful   AE Lock changes the method to 1-Point; use AF-ON when the profile's Spot AF is preferred.  \n  **Landscape**   One-Shot AF with deliberate point placement   AF-ON follows the current settings; AE Lock may be redundant when the current method is already 1-Point.  \n  **Travel**   Baseline AF unless a subject-specific configuration is selected   Use AF-ON normally; AE Lock supplies consistent 1-Point AF.  \n  **Fireworks / Waterdrops**   Manual Focus   Rear AF-start buttons do not replace the manual-focus workflow.  \nThese recommendations describe operation only. Subject settings remain owned by the baseline and profile overrides."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -978,7 +987,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "canon-specific-notes",
-    "text": "- Use the Canon EOS R5 **Customize buttons** and **Customize dials** menus for these assignments.\n- Canon menu wording can vary slightly by firmware display context. Confirm the function shown on the camera before relying on it.\n- **Metering and AF start** can be configured through the INFO detail screen on supported controls. For AF-ON, maintain the active profile settings; for AE Lock, override only AF Method to 1-Point AF.\n- Eye Detection on the original EOS R5 requires Face + Tracking. It is not active while the 1-Point AF override is in use.\n- Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF; it does not need to be changed when the alternate button selects 1-Point AF.\n- **Switch to registered AF function** and **Register/Recall Shooting Function** remain advanced alternatives rather than parts of this recommended layout.\n- The Control Ring may be on an RF lens or an EF-EOS R control ring mount adapter.\n- This recommended layout is separate from the evidence-based current configuration documented in **Canon EOS R5 Custom Controls Current Configuration**."
+    "text": "Verified Canon capabilities:\n- The original EOS R5 supports separate custom-button assignments for still-photo and movie use.\n- Supported rear buttons can be assigned **Metering and AF start** and can expose advanced AF details through **INFO**.\n- The camera provides 1-Point AF, Spot AF, Expand AF Area, Face + Tracking, and the other documented AF methods.\n- The Control Ring may be on an RF lens or an EF-EOS R control ring adapter.\nProject configuration:\n- The table in **Owner-Confirmed Current Layout** is the project owner's confirmed physical setup.\n- Historical screenshots are not current-state evidence.\n- Plain physical names are used so the layout is readable in the field."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -987,7 +996,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "tips",
-    "text": "- Practice pressing **AF-ON** before removing autofocus from the shutter button.\n- Keep the same base button and dial layout across subject profiles.\n- Configure and test AF-ON first, then configure AE Lock with only the AF Method override.\n- Practice choosing one rear AF button without pressing the other.\n- Test exposure compensation with Manual exposure and Auto ISO before field use.\n- Recheck assignments after a camera reset or firmware-related settings reset."
+    "text": "- Practice AF-ON first, then practice moving to AE Lock without pressing both.\n- Test the 1-Point override on a high-contrast stationary subject.\n- Confirm AF-ON still follows Face + Tracking after selecting a bird, wildlife, sports, or people configuration.\n- Confirm AF-ON follows One-Shot or Spot AF after selecting Landscape or Macro settings.\n- Photograph the finished control pages after the architecture is stable.\n- Recheck assignments after a reset or firmware-related settings reset."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -996,7 +1005,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "common-mistakes",
-    "text": "- Removing autofocus from the shutter button before assigning and testing **AF-ON**.\n- Treating a recommended assignment as confirmation of the camera's current state.\n- Pressing AF-ON and AE Lock together instead of choosing one AF behavior.\n- Configuring the AE Lock detail screen to override more settings than intended.\n- Expecting Eye Detection to operate while the 1-Point AF override is active.\n- Expecting exposure compensation to change a fully manual exposure with fixed ISO.\n- Duplicating the full control explanation inside every subject profile."
+    "text": "- Expecting shutter half-press to autofocus.\n- Pressing AF-ON and AE Lock together.\n- Overriding AF Operation or Servo AF characteristics accidentally in the AE Lock INFO details.\n- Expecting Eye Detection behavior while the 1-Point override is active.\n- Assuming AF-ON activates a project profile automatically.\n- Changing M-Fn before its separate review.\n- Expecting exposure compensation to change Manual exposure with fixed ISO."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -1005,7 +1014,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "cross-references",
-    "text": "- Cards and profiles: Camera Buttons, Birds in Flight, Birds Perched, Wildlife, Sports, Macro.\n- Related guides:\n- AF Cases & Tracking Behavior\n- R5 Quick Reference\n- Supporting draft: Canon EOS R5 Custom Controls Current Configuration (not currently published or manifest-controlled)."
+    "text": "- Card: Camera Buttons.\n- Profiles: Birds in Flight, Birds Perched, Wildlife, Sports, People, Macro, Landscape, Travel, Fireworks, Waterdrops.\n- Related guides:\n- AF Cases & Tracking Behavior\n- R5 Quick Reference"
   },
   {
     "appendix_id": "canon_r5_official_icon_reference",

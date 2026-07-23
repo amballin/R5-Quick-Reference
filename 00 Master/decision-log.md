@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Owner-Confirmed EOS R5 Button and Dial Architecture
+
+**Status:** Accepted
+**Date:** 2026-07-23
+
+Use one owner-confirmed physical button and dial layout across the baseline and all subject profiles. AF-ON starts metering and AF with AF Operation, AF Method, and Servo AF characteristics set to Maintain current setting. AE Lock starts metering and AF while overriding only AF Method to 1-Point AF. This gives one normal AF-start button and one precise AF-start button.
+
+Keep the concise Camera Buttons card limited to assignments and a link to the detailed guide. Put AF-ON and AE Lock INFO details, operating explanation, and subject-profile examples in **Custom Controls, Back-Button AF & Dial Strategies**, not R5 Quick Reference. Use the plain physical labels **Main Dial**, **Rear Wheel**, **Top Rear Dial**, and **Control Ring**. Leave Movie Record, MODE, and LCD panel illumination at their defaults. M-Fn and the contents of C1-C3 remain unresolved for later review.
+
+This decision supersedes prior screenshot-derived claims about the current control configuration. Historical screenshots are not current-state evidence.
+
 ## Frequency-Oriented Index Sections
 
 **Status:** Accepted

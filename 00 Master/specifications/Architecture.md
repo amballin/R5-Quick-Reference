@@ -7,12 +7,17 @@ This specification defines the system boundaries and ownership of data, content,
 ## Requirements
 
 - Preserve the established baseline + overrides architecture and existing YAML structure.
+- Distinguish four evidence classes in camera-control documentation: verified Canon capability, owner-confirmed current configuration, project recommendation, and unresolved item.
+- Do not treat historical screenshots, inferred icon meanings, or recommendations as proof of the current camera configuration.
+- Explain the rationale and obtain explicit project-owner approval before changing an established architecture.
+- Present proposed changes and affected files for review before modifying the reference.
 - Shared behavior and shared camera settings belong in `00 Master/baseline.yaml`.
 - Subject profiles inherit the baseline and contain only necessary overrides.
 - The build resolves baseline and profile data before rendering.
 - Presentation and rendering decisions belong in build code and templates, not profile YAML.
 - Explanatory and educational content belongs in field-guide appendices; profiles reference it rather than duplicate it.
 - Permanent reference cards remain separate from shooting profiles.
+- The physical button and dial layout is shared across subject profiles. Subject-specific AF, exposure, drive, and stabilization settings remain owned by the baseline and profile overrides.
 - Preserve the established build workflow, output locations, release behavior, rendering behavior, and backward compatibility unless an explicitly Accepted decision changes them.
 
 ## System Flow

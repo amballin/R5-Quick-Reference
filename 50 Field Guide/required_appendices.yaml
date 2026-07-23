@@ -196,20 +196,19 @@ appendices:
       - Back-button AF
       - Metering start
       - Metering and AF start
-      - Switch to registered AF function
       - Set AF point to center
       - One-Shot AF
       - Servo AF
       - Main Dial
-      - Quick Control Dial
-      - Multi-function Dial
+      - Rear Wheel
+      - Top Rear Dial
       - Control Ring
       - Exposure Compensation
-      - Recommended custom button layout
-      - Recommended dial layout
-      - M-Fn button
+      - Owner-confirmed custom button layout
+      - Owner-confirmed dial layout
+      - Leave default
+      - M-Fn unresolved
       - Joystick
-      - Register/Recall Shooting Function
   - id: canon_r5_official_icon_reference
     title: "Canon EOS R5 Official Icon Reference"
     file: "Appendices/Canon EOS R5 Official Icon Reference.md"
