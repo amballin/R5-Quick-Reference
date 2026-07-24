@@ -14,6 +14,7 @@ h1{margin:0 0 8px;font-size:28px;line-height:1.15;letter-spacing:0}
 main{padding:24px 24px 40px}
 .category{margin:0 0 28px}
 h2{margin:0 0 12px;font-size:18px;letter-spacing:0}
+:where(h1,h2,h3,h4,h5,h6)[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:10px}
 .icon-card{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;min-height:84px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .icon-frame{width:52px;height:52px;display:grid;place-items:center;background:var(--panel);border:1px solid #e7eaee;border-radius:6px;overflow:hidden}

@@ -11,10 +11,17 @@ main{max-width:860px;margin:0 auto;padding:24px 24px 40px}
 h1{font-size:34px}
 h2{border-bottom:1px solid #d7dee8;padding-bottom:4px;margin-top:32px}
 h3{margin-top:24px}
+:where(h1,h2,h3,h4,h5,h6)[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}
 table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;width:100%;margin:16px 0;-webkit-overflow-scrolling:touch}
 th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
 code{background:#eef2f7;padding:2px 4px;border-radius:4px}
 a{color:#165d9c}
+.appendix-index-return{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}
+.appendix-index-return__short{display:none}
+.appendix-index-return:focus-visible{outline:2px solid #165d9c;outline-offset:2px}
+.output-mode .appendix-index-return{display:none!important}
+@media print{.appendix-index-return{display:none!important}}
+@media (max-width:480px){.appendix-index-return__full{display:none}.appendix-index-return__short{display:inline}}
 
 .site-nav{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:minmax(52px,1fr) minmax(0,auto) minmax(52px,1fr);align-items:center;gap:8px;width:100%;padding:calc(env(safe-area-inset-top,0px) + 12px) max(12px,env(safe-area-inset-right,0px)) 11px max(12px,env(safe-area-inset-left,0px));background:var(--site-nav-bg,#132742);color:var(--site-nav-text,#f7fbff);border-bottom:1px solid var(--site-nav-rule,rgba(155,210,255,.22));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .site-nav__back,.site-nav__home{color:inherit;text-decoration:none;min-height:44px;display:flex;align-items:center}
@@ -145,7 +152,7 @@ a{color:#165d9c}
 <p><strong>Camera Menu:</strong> Lens AF/MF switch; AF1 &gt; Focus mode when shown.</p>
 <p><strong>Quick Menu:</strong> Lens switch; usually not a Q item.</p>
 <h4 id="af-operation">AF Operation</h4>
-<p>Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.</p>
+<p>Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1hZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik01LjYyLDAuNWgxLjhsNS4wOCwxNUgxMC42M0w5LjQxLDExLjczSDMuNTJMMi4zLDE1LjVIMC40OFptMC44NCwyTDQuMDYsMTBIOC44NVptNy42OCwxM2gxLjcxVjguNjdoNC40N1Y2Ljc5SDE1Ljg1VjIuMzloNC42NlYwLjVIMTQuMTR2MTVaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="AF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Servo AF</td><td>Continuously updates focus for moving subjects.</td></tr>
@@ -212,10 +219,10 @@ a{color:#165d9c}
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h3 id="capture-and-timing">Capture and Timing</h3>
 <h4 id="drive-mode">Drive Mode</h4>
-<p>Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
+<p>Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
-<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjIgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3Rpbmctc2luZ2xlPC90aXRsZT4NCiAgPHBhdGggZD0iTTAuODUsMC41SDIxLjE1djE1SDAuODVWMC41Wk0zLjUsMy4xNXY5LjcxaDE1VjMuMTVIMy41WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="Single shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Single Shooting</td><td>Takes one frame per shutter press for deliberate work.</td></tr>
+<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjIgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3Rpbmctc2luZ2xlPC90aXRsZT4NCiAgPHBhdGggZD0iTTAuODUsMC41SDIxLjE1djE1SDAuODVWMC41Wk0zLjUsMy4xNXY5LjcxaDE1VjMuMTVIMy41WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="Single shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Single Shot</td><td>Takes one frame per shutter press for deliberate work.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjAgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fY29udGludW91cy1zaG9vdGluZzwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xNC40OSwxMC43MUgwLjY5VjAuNWgxMy44VjEwLjcxWk0xMi43LDguOTFWMi4zSDIuNDdWOC45MUgxMi43Wm00LjIsNC4ySDMuNjl2LTEuMmgxMlYzLjVoMS4ydjkuNjFabTIuNCwyLjM5SDYuN1YxNC4zSDE4LjExVjYuNTFoMS4ydjlaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIwIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="Low-speed continuous shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Low Speed Continuous</td><td>Captures short bursts without creating too many files.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI5IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjkgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3RpbmctaGlnaDwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi42NSwxLjE3djkuMTJIMC45MlYxLjE3SDEyLjY1Wk0xMSw4LjYxVjIuODRIMi42VjguNjFIMTFabTQuMjgsNC4yOUgzLjU0VjExLjM4aDEwLjJWMy43OGgxLjUyVjEyLjlabTIuNiwyLjZINi4xNFYxNGgxMC4yVjYuMzloMS41MlYxNS41Wm0xMC4yMi01LjQ1SDI2LjI4VjYuMTFIMjAuODR2My45NEgxOVYwLjVoMS43OVY0LjQ0aDUuNDVWMC41aDEuNzl2OS41NVoiLz4NCiAgPHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iMjkiIGhlaWdodD0iMTYiLz4NCjwvc3ZnPg0K" alt="High-speed continuous shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>High Speed Continuous</td><td>Increases capture rate for movement and changing expressions.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0i44Os44Kk44Ok44O8XzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCINCgkgeT0iMHB4IiB3aWR0aD0iMjMuODFweCIgaGVpZ2h0PSIxOC40M3B4IiB2aWV3Qm94PSIwIDAgMjMuODEgMTguNDMiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIzLjgxIDE4LjQzIg0KCSB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMS4yNCwyLjA4djkuMjJIMC43NlYyLjA4SDExLjI0eiBNMi40LDkuNjdoNy4yMlYzLjcxSDIuNFY5LjY3eiBNMTMuNCw0Ljc4djguNjdIMy40OHYtMS4wN2g4Ljg1di03LjZIMTMuNHogTTE1LjU2LDcuNQ0KCXY4LjEzSDYuMTl2LTEuMDZoOC4zVjcuNUgxNS41NnoiLz4NCjxwb2x5Z29uIHBvaW50cz0iMjIuODEsMS4xNyAyMi44MSw5LjI2IDIxLjE4LDkuMjYgMjEuMTgsNS43MiAxNy45Niw1LjcyIDE3Ljk2LDkuMjYgMTYuMzMsOS4yNiAxNi4zMywxLjE3IDE3Ljk2LDEuMTcgMTcuOTYsNC40NyANCgkyMS4xOCw0LjQ3IDIxLjE4LDEuMTcgIi8+DQo8cG9seWdvbiBwb2ludHM9IjIzLjA1LDEzLjA5IDIwLjMsMTMuMDkgMjAuMywxMC4zNCAxOC44OCwxMC4zNCAxOC44OCwxMy4wOSAxNi4xMywxMy4wOSAxNi4xMywxNC41MSAxOC44OCwxNC41MSAxOC44OCwxNy4yNiANCgkyMC4zLDE3LjI2IDIwLjMsMTQuNTEgMjMuMDUsMTQuNTEgIi8+DQo8L3N2Zz4NCg==" alt="High-speed continuous shooting plus" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>High Speed Continuous+</td><td>Maximizes capture rate for fast action, with more files to sort later.</td></tr>
@@ -307,12 +314,12 @@ a{color:#165d9c}
 <li>Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.</li>
 <li>Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.</li>
 <li>Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
-<li>Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
-<li>Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
+<li>Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
+<li>Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
 <li>People: Servo AF, People, Eye Detection, Face + Tracking.</li>
-<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.</li>
+<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable.</li>
 <li>Travel: Baseline settings unless the subject demands a specialized profile.</li>
-<li>Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.</li>
+<li>Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
 <li>Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.</li>
 </ul>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
@@ -360,5 +367,6 @@ a{color:#165d9c}
 </ul>
 <h3 id="when-not-to-use">When Not to Use</h3>
 <p>Do not use this quick reference to decide basic exposure values. For aperture, ISO, and Auto ISO Max, use the card value and normal photographic judgment.</p></main>
+<a class="appendix-index-return" href="#topic-index" aria-label="Return to topic index"><span aria-hidden="true">↑&nbsp;</span><span class="appendix-index-return__full">Return to topic index</span><span class="appendix-index-return__short">Index</span></a>
 </body>
 </html>

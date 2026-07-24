@@ -40,10 +40,16 @@ h2{font-size:18px;color:var(--accent);margin:18px 4px 10px}
 .hint{color:var(--muted);font-size:13px;margin:8px 4px 0}
 .card-links{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:10px auto 0}
 .card-links a{color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:8px 11px;text-decoration:none}
-.guide-panel{background:#f8fafc;color:#172033;border-radius:10px;padding:16px;overflow:auto}
+.guide-panel{position:relative;background:#f8fafc;color:#172033;border-radius:10px;padding:16px}
+.guide-content{overflow-x:auto}
+.guide-index-return-wrap{position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px);z-index:4;display:flex;justify-content:flex-end;height:0;overflow:visible}
+.guide-index-return{display:inline-flex;align-items:center;min-height:42px;margin-top:8px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);color:#165d9c;font-size:14px;font-weight:700;text-decoration:none}
+.guide-index-return__short{display:none}
+.guide-index-return:focus-visible{outline:2px solid #165d9c;outline-offset:2px}
 .guide-panel h1{font-size:26px;color:#172033}
 .guide-panel h2{color:#172033;border-bottom:1px solid #d7dee8}
 .guide-panel h3{color:#172033}
+.guide-panel :where(h1,h2,h3,h4,h5,h6)[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 100px)}
 .guide-panel table{border-collapse:collapse;width:100%;font-size:13px}
 .guide-panel th,.guide-panel td{border:1px solid #d7dee8;padding:6px;text-align:left;vertical-align:top}
 .guide-panel .subtitle{color:#5c6670;font-size:14px}
@@ -57,6 +63,8 @@ h2{font-size:18px;color:var(--accent);margin:18px 4px 10px}
 .guide-panel .label{color:#9a1025;font-size:12px;font-weight:700;margin-top:3px}
 .guide-panel .meta{color:#5c6670;font-size:11px;line-height:1.25;margin-top:6px}
 .guide-panel .no-asset{font-size:11px;color:#5c6670;text-align:center;line-height:1.15;padding:4px}
+@media print{.guide-index-return-wrap{display:none!important}}
+@media (max-width:480px){.guide-index-return__full{display:none}.guide-index-return__short{display:inline}}
 </style>
 <!-- PWA START -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -74,7 +82,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <!-- PWA END -->
 </head>
 <body>
-<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.10 • 2026/07/22</p></header>
+<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.11 • 2026/07/24</p></header>
 <main>
 <h2>Subjects</h2>
 <div class="cards">
@@ -109,42 +117,44 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <details>
 <summary class="guide">R5 Quick Reference<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="r5-quick-reference">R5 Quick Reference</h1>
-<h2 id="overview">Overview</h2>
+<div class="guide-index-return-wrap"><a class="guide-index-return" href="#r5_quick_reference--topic-index" aria-label="Return to index in R5 Quick Reference"><span aria-hidden="true">↑&nbsp;</span><span class="guide-index-return__full">Return to index</span><span class="guide-index-return__short">Index</span></a></div>
+<div class="guide-content">
+<h1 id="r5_quick_reference--r5-quick-reference">R5 Quick Reference</h1>
+<h2 id="r5_quick_reference--overview">Overview</h2>
 <p>Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.</p>
-<h2 id="topic-index">Topic Index</h2>
+<h2 id="r5_quick_reference--topic-index">Topic Index</h2>
 <ul>
-<li><a href="#exposure-and-shutter">Exposure and Shutter</a></li>
-<li><a href="#shooting-modes">Shooting Modes</a></li>
-<li><a href="#metering-mode">Metering Mode</a></li>
-<li><a href="#shutter-speed">Shutter Speed</a></li>
-<li><a href="#shutter-type">Shutter Type</a></li>
-<li><a href="#autofocus-and-manual-focus">Autofocus and Manual Focus</a></li>
-<li><a href="#focus-mode">Focus Mode</a></li>
-<li><a href="#af-operation">AF Operation</a></li>
-<li><a href="#af-method">AF Method</a></li>
-<li><a href="#subject-detection">Subject Detection</a></li>
-<li><a href="#eye-detection">Eye Detection</a></li>
-<li><a href="#subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</a></li>
-<li><a href="#af-tracking-behavior">AF Tracking Behavior</a></li>
-<li><a href="#capture-and-timing">Capture and Timing</a></li>
-<li><a href="#drive-mode">Drive Mode</a></li>
-<li><a href="#flash">Flash</a></li>
-<li><a href="#flash-modes-and-compatibility">Flash Modes and Compatibility</a></li>
-<li><a href="#stabilization">Stabilization</a></li>
-<li><a href="#image-stabilization-mode">Image Stabilization Mode</a></li>
-<li><a href="#ibis">IBIS</a></li>
-<li><a href="#lens-is">Lens IS</a></li>
-<li><a href="#specialized-focus-and-long-exposure-tools">Specialized Focus and Long-Exposure Tools</a></li>
-<li><a href="#focus-features">Focus Features</a></li>
-<li><a href="#focus-bracketing">Focus Bracketing</a></li>
-<li><a href="#long-exposure-noise-reduction">Long Exposure Noise Reduction</a></li>
+<li><a href="#r5_quick_reference--exposure-and-shutter">Exposure and Shutter</a></li>
+<li><a href="#r5_quick_reference--shooting-modes">Shooting Modes</a></li>
+<li><a href="#r5_quick_reference--metering-mode">Metering Mode</a></li>
+<li><a href="#r5_quick_reference--shutter-speed">Shutter Speed</a></li>
+<li><a href="#r5_quick_reference--shutter-type">Shutter Type</a></li>
+<li><a href="#r5_quick_reference--autofocus-and-manual-focus">Autofocus and Manual Focus</a></li>
+<li><a href="#r5_quick_reference--focus-mode">Focus Mode</a></li>
+<li><a href="#r5_quick_reference--af-operation">AF Operation</a></li>
+<li><a href="#r5_quick_reference--af-method">AF Method</a></li>
+<li><a href="#r5_quick_reference--subject-detection">Subject Detection</a></li>
+<li><a href="#r5_quick_reference--eye-detection">Eye Detection</a></li>
+<li><a href="#r5_quick_reference--subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</a></li>
+<li><a href="#r5_quick_reference--af-tracking-behavior">AF Tracking Behavior</a></li>
+<li><a href="#r5_quick_reference--capture-and-timing">Capture and Timing</a></li>
+<li><a href="#r5_quick_reference--drive-mode">Drive Mode</a></li>
+<li><a href="#r5_quick_reference--flash">Flash</a></li>
+<li><a href="#r5_quick_reference--flash-modes-and-compatibility">Flash Modes and Compatibility</a></li>
+<li><a href="#r5_quick_reference--stabilization">Stabilization</a></li>
+<li><a href="#r5_quick_reference--image-stabilization-mode">Image Stabilization Mode</a></li>
+<li><a href="#r5_quick_reference--ibis">IBIS</a></li>
+<li><a href="#r5_quick_reference--lens-is">Lens IS</a></li>
+<li><a href="#r5_quick_reference--specialized-focus-and-long-exposure-tools">Specialized Focus and Long-Exposure Tools</a></li>
+<li><a href="#r5_quick_reference--focus-features">Focus Features</a></li>
+<li><a href="#r5_quick_reference--focus-bracketing">Focus Bracketing</a></li>
+<li><a href="#r5_quick_reference--long-exposure-noise-reduction">Long Exposure Noise Reduction</a></li>
 </ul>
-<h2 id="decision-guide">Decision Guide</h2>
-<h3 id="exposure-and-shutter">Exposure and Shutter</h3>
-<h4 id="shooting-modes">Shooting Modes</h4>
+<h2 id="r5_quick_reference--decision-guide">Decision Guide</h2>
+<h3 id="r5_quick_reference--exposure-and-shutter">Exposure and Shutter</h3>
+<h4 id="r5_quick_reference--shooting-modes">Shooting Modes</h4>
 <p>Canon EOS R5 shooting modes define how exposure decisions are divided between the photographer and the camera.</p>
-<h5 id="choosing-shooting-mode-p-vs-fv-vs-av-tv-m">Choosing Shooting Mode: P vs Fv vs Av/Tv/M</h5>
+<h5 id="r5_quick_reference--choosing-shooting-mode-p-vs-fv-vs-av-tv-m">Choosing Shooting Mode: P vs Fv vs Av/Tv/M</h5>
 <p>Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.</p>
 <p>Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast. For full setup guidance, see <a href="appendices/Fv%20-%20Flexible%20Priority.html?return=R5%20Quick%20Reference.html">Fv (Flexible Priority)</a>.</p>
 <p>Use Av when aperture and depth of field are the main decision, such as landscapes, portraits, perched birds, natural-light macro, and tripod/still scenes.</p>
@@ -166,7 +176,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> MODE button, then Main dial. Custom modes are registered under Set-up &gt; Custom shooting mode (C1-C3).</p>
 <p><strong>Quick Menu:</strong> Exposure mode is normally changed with the MODE button, not the Q screen.</p>
-<h4 id="metering-mode">Metering Mode</h4>
+<h4 id="r5_quick_reference--metering-mode">Metering Mode</h4>
 <p>Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -177,7 +187,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Metering mode.</p>
 <p><strong>Quick Menu:</strong> Q screen / M-Fn.</p>
-<h4 id="shutter-speed">Shutter Speed</h4>
+<h4 id="r5_quick_reference--shutter-speed">Shutter Speed</h4>
 <p>Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
@@ -187,7 +197,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.</p>
 <p><strong>Quick Menu:</strong> Top dial / Q screen depending on exposure mode.</p>
-<h4 id="shutter-type">Shutter Type</h4>
+<h4 id="r5_quick_reference--shutter-type">Shutter Type</h4>
 <p>Mechanical is the safest general default, including for flash and uncertain artificial lighting. EFCS can reduce vibration but may affect bokeh at very fast shutter speeds. Electronic is silent but can create rolling shutter, banding, or flash limitations.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
@@ -197,8 +207,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting 6 &gt; Shutter mode.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h3 id="autofocus-and-manual-focus">Autofocus and Manual Focus</h3>
-<h4 id="focus-mode">Focus Mode</h4>
+<h3 id="r5_quick_reference--autofocus-and-manual-focus">Autofocus and Manual Focus</h3>
+<h4 id="r5_quick_reference--focus-mode">Focus Mode</h4>
 <p>AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -207,8 +217,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Lens AF/MF switch; AF1 &gt; Focus mode when shown.</p>
 <p><strong>Quick Menu:</strong> Lens switch; usually not a Q item.</p>
-<h4 id="af-operation">AF Operation</h4>
-<p>Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.</p>
+<h4 id="r5_quick_reference--af-operation">AF Operation</h4>
+<p>Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1hZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik01LjYyLDAuNWgxLjhsNS4wOCwxNUgxMC42M0w5LjQxLDExLjczSDMuNTJMMi4zLDE1LjVIMC40OFptMC44NCwyTDQuMDYsMTBIOC44NVptNy42OCwxM2gxLjcxVjguNjdoNC40N1Y2Ljc5SDE1Ljg1VjIuMzloNC42NlYwLjVIMTQuMTR2MTVaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="AF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Servo AF</td><td>Continuously updates focus for moving subjects.</td></tr>
@@ -217,7 +227,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF operation; for Manual Focus use the lens AF/MF switch or AF1 &gt; Focus mode when shown.</p>
 <p><strong>Quick Menu:</strong> Q screen / M-Fn for AF Operation. Manual Focus is usually the lens switch, not Q.</p>
-<h4 id="af-method">AF Method</h4>
+<h4 id="r5_quick_reference--af-method">AF Method</h4>
 <p>Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -229,7 +239,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method.</p>
 <p><strong>Quick Menu:</strong> AF point selection button, then M-Fn.</p>
-<h4 id="subject-detection">Subject Detection</h4>
+<h4 id="r5_quick_reference--subject-detection">Subject Detection</h4>
 <p>Use People, Animals, or Vehicles when one category should receive priority. Use None when no category should receive priority; it does not disable automatic main-subject selection. AF Method, not Subject to Detect, determines whether a smaller manually positioned AF area controls focus.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -240,7 +250,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; Subject to detect.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h4 id="eye-detection">Eye Detection</h4>
+<h4 id="r5_quick_reference--eye-detection">Eye Detection</h4>
 <p>Enable it when Face + Tracking and subject detection are useful. It is not useful when AF is manual or when the selected AF method cannot use eye tracking.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -251,7 +261,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Camera Menu:</strong> AF1 &gt; Eye detection.</p>
 <p><strong>Quick Menu:</strong> AF point selection button, then INFO toggle when available.</p>
 <p>Assigning <strong>Eye Detection AF</strong> to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the <strong>Eye detection: Enable/Disable</strong> menu setting.</p>
-<h4 id="subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</h4>
+<h4 id="r5_quick_reference--subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</h4>
 <p>Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF on the original EOS R5. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead, so changing Subject to Detect to None is unnecessary when switching to those methods. Eye Detection requires Face + Tracking. Manual Focus makes all AF settings irrelevant.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -262,7 +272,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method; AF1 &gt; Subject to detect; lens AF/MF switch or AF1 &gt; Focus mode when shown.</p>
 <p><strong>Quick Menu:</strong> AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch.</p>
-<h4 id="af-tracking-behavior">AF Tracking Behavior</h4>
+<h4 id="r5_quick_reference--af-tracking-behavior">AF Tracking Behavior</h4>
 <p>Start with Canon&#x27;s default Servo AF tracking behavior and change only the response that is causing a problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.</p>
 <table>
 <tr><th>Control</th><th>What it Changes</th><th>Field Use</th></tr>
@@ -273,12 +283,12 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Change one control at a time and test it against the actual background and subject motion. For scenarios and troubleshooting, see <a href="appendices/AF%20Cases%20%26%20Tracking%20Behavior.html?return=R5%20Quick%20Reference.html">AF Cases &amp; Tracking Behavior</a>.</p>
 <p><strong>Camera Menu:</strong> AF menu &gt; Servo AF characteristics / Case settings and subject-tracking options.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h3 id="capture-and-timing">Capture and Timing</h3>
-<h4 id="drive-mode">Drive Mode</h4>
-<p>Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
+<h3 id="r5_quick_reference--capture-and-timing">Capture and Timing</h3>
+<h4 id="r5_quick_reference--drive-mode">Drive Mode</h4>
+<p>Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
-<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjIgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3Rpbmctc2luZ2xlPC90aXRsZT4NCiAgPHBhdGggZD0iTTAuODUsMC41SDIxLjE1djE1SDAuODVWMC41Wk0zLjUsMy4xNXY5LjcxaDE1VjMuMTVIMy41WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="Single shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Single Shooting</td><td>Takes one frame per shutter press for deliberate work.</td></tr>
+<tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjIgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3Rpbmctc2luZ2xlPC90aXRsZT4NCiAgPHBhdGggZD0iTTAuODUsMC41SDIxLjE1djE1SDAuODVWMC41Wk0zLjUsMy4xNXY5LjcxaDE1VjMuMTVIMy41WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="Single shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Single Shot</td><td>Takes one frame per shutter press for deliberate work.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIwIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjAgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fY29udGludW91cy1zaG9vdGluZzwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xNC40OSwxMC43MUgwLjY5VjAuNWgxMy44VjEwLjcxWk0xMi43LDguOTFWMi4zSDIuNDdWOC45MUgxMi43Wm00LjIsNC4ySDMuNjl2LTEuMmgxMlYzLjVoMS4ydjkuNjFabTIuNCwyLjM5SDYuN1YxNC4zSDE4LjExVjYuNTFoMS4ydjlaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIwIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="Low-speed continuous shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Low Speed Continuous</td><td>Captures short bursts without creating too many files.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI5IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjkgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fc2hvb3RpbmctaGlnaDwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi42NSwxLjE3djkuMTJIMC45MlYxLjE3SDEyLjY1Wk0xMSw4LjYxVjIuODRIMi42VjguNjFIMTFabTQuMjgsNC4yOUgzLjU0VjExLjM4aDEwLjJWMy43OGgxLjUyVjEyLjlabTIuNiwyLjZINi4xNFYxNGgxMC4yVjYuMzloMS41MlYxNS41Wm0xMC4yMi01LjQ1SDI2LjI4VjYuMTFIMjAuODR2My45NEgxOVYwLjVoMS43OVY0LjQ0aDUuNDVWMC41aDEuNzl2OS41NVoiLz4NCiAgPHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iMjkiIGhlaWdodD0iMTYiLz4NCjwvc3ZnPg0K" alt="High-speed continuous shooting" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>High Speed Continuous</td><td>Increases capture rate for movement and changing expressions.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0i44Os44Kk44Ok44O8XzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCINCgkgeT0iMHB4IiB3aWR0aD0iMjMuODFweCIgaGVpZ2h0PSIxOC40M3B4IiB2aWV3Qm94PSIwIDAgMjMuODEgMTguNDMiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIzLjgxIDE4LjQzIg0KCSB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGQ9Ik0xMS4yNCwyLjA4djkuMjJIMC43NlYyLjA4SDExLjI0eiBNMi40LDkuNjdoNy4yMlYzLjcxSDIuNFY5LjY3eiBNMTMuNCw0Ljc4djguNjdIMy40OHYtMS4wN2g4Ljg1di03LjZIMTMuNHogTTE1LjU2LDcuNQ0KCXY4LjEzSDYuMTl2LTEuMDZoOC4zVjcuNUgxNS41NnoiLz4NCjxwb2x5Z29uIHBvaW50cz0iMjIuODEsMS4xNyAyMi44MSw5LjI2IDIxLjE4LDkuMjYgMjEuMTgsNS43MiAxNy45Niw1LjcyIDE3Ljk2LDkuMjYgMTYuMzMsOS4yNiAxNi4zMywxLjE3IDE3Ljk2LDEuMTcgMTcuOTYsNC40NyANCgkyMS4xOCw0LjQ3IDIxLjE4LDEuMTcgIi8+DQo8cG9seWdvbiBwb2ludHM9IjIzLjA1LDEzLjA5IDIwLjMsMTMuMDkgMjAuMywxMC4zNCAxOC44OCwxMC4zNCAxOC44OCwxMy4wOSAxNi4xMywxMy4wOSAxNi4xMywxNC41MSAxOC44OCwxNC41MSAxOC44OCwxNy4yNiANCgkyMC4zLDE3LjI2IDIwLjMsMTQuNTEgMjMuMDUsMTQuNTEgIi8+DQo8L3N2Zz4NCg==" alt="High-speed continuous shooting plus" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>High Speed Continuous+</td><td>Maximizes capture rate for fast action, with more files to sort later.</td></tr>
@@ -288,8 +298,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Camera Menu:</strong> M-Fn drive mode item.</p>
 <p><strong>Quick Menu:</strong> Q screen / M-Fn.</p>
 <p>Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.</p>
-<h3 id="flash">Flash</h3>
-<h4 id="flash-modes-and-compatibility">Flash Modes and Compatibility</h4>
+<h3 id="r5_quick_reference--flash">Flash</h3>
+<h4 id="r5_quick_reference--flash-modes-and-compatibility">Flash Modes and Compatibility</h4>
 <p>Use E-TTL when subject distance or ambient light changes; use Manual flash when repeatable output matters. Flash Exposure Compensation adjusts automatic flash brightness without changing ambient exposure. High Speed Sync permits shutter speeds above normal sync but reduces effective flash power.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
@@ -302,8 +312,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Use Mechanical shutter as the safe flash starting point on the R5 and confirm the supported sync behavior of the attached flash or trigger. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="appendices/Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.</p>
 <p><strong>Quick Menu:</strong> Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.</p>
-<h3 id="stabilization">Stabilization</h3>
-<h4 id="image-stabilization-mode">Image Stabilization Mode</h4>
+<h3 id="r5_quick_reference--stabilization">Stabilization</h3>
+<h4 id="r5_quick_reference--image-stabilization-mode">Image Stabilization Mode</h4>
 <p>Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod. Stabilization reduces camera shake; it does not freeze subject motion, which still requires an appropriate shutter speed.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -314,7 +324,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting 7 &gt; IS (Image Stabilizer) mode, or lens IS controls. Mode 2/3 may be lens-switch settings when available.</p>
 <p><strong>Quick Menu:</strong> Menu/lens control; not usually Q.</p>
-<h4 id="ibis">IBIS</h4>
+<h4 id="r5_quick_reference--ibis">IBIS</h4>
 <p>In-body image stabilization moves the camera sensor to reduce shake. It helps handheld work and should usually be off for solid tripod long exposures.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -323,7 +333,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting 7 &gt; IS (Image Stabilizer) mode.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h4 id="lens-is">Lens IS</h4>
+<h4 id="r5_quick_reference--lens-is">Lens IS</h4>
 <p>Lens stabilization moves lens elements to reduce shake. With compatible lenses, Lens IS and IBIS may work together. Turn it off on a solid tripod when the profile calls for locked-down work.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>What it Does</th></tr>
@@ -332,8 +342,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Lens IS switch; Shooting 7 &gt; IS mode where available.</p>
 <p><strong>Quick Menu:</strong> Lens switch; not Q.</p>
-<h3 id="specialized-focus-and-long-exposure-tools">Specialized Focus and Long-Exposure Tools</h3>
-<h4 id="focus-features">Focus Features</h4>
+<h3 id="r5_quick_reference--specialized-focus-and-long-exposure-tools">Specialized Focus and Long-Exposure Tools</h3>
+<h4 id="r5_quick_reference--focus-features">Focus Features</h4>
 <p>These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.</p>
 <table>
 <tr><th>Icon</th><th>Setting</th><th>Canon Name</th><th>What it Does</th></tr>
@@ -343,7 +353,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Focus bracketing; AF menu &gt; Focus guide; AF menu &gt; MF peaking settings.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h4 id="focus-bracketing">Focus Bracketing</h4>
+<h4 id="r5_quick_reference--focus-bracketing">Focus Bracketing</h4>
 <p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="appendices/Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=R5%20Quick%20Reference.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
@@ -355,7 +365,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Recommended: create a new folder for each subject or stack so bracket sequences stay organized.</p>
 <p><strong>Camera Menu:</strong> Shooting 5 &gt; Focus bracketing.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h4 id="long-exposure-noise-reduction">Long Exposure Noise Reduction</h4>
+<h4 id="r5_quick_reference--long-exposure-noise-reduction">Long Exposure Noise Reduction</h4>
 <p>LENR takes a dark frame after a long exposure. It can clean hot pixels but doubles wait time and is usually poor for repeated captures, stacking, or fireworks sequences.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
@@ -365,30 +375,30 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting 4 &gt; Long exp. noise reduction.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="r5_quick_reference--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <ul>
 <li>Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.</li>
 <li>Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.</li>
 <li>Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
-<li>Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
-<li>Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
+<li>Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
+<li>Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
 <li>People: Servo AF, People, Eye Detection, Face + Tracking.</li>
-<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.</li>
+<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable.</li>
 <li>Travel: Baseline settings unless the subject demands a specialized profile.</li>
-<li>Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.</li>
+<li>Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
 <li>Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.</li>
 </ul>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="r5_quick_reference--canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.</p>
 <p>For Canon&#x27;s official setting names and the icons used throughout this reference system, open the <a href="appendices/Canon%20EOS%20R5%20Official%20Icon%20Reference.html?return=R5%20Quick%20Reference.html">Canon EOS R5 Official Icon Reference</a>. It remains available as a supporting field reference without occupying a separate entry on the main Field Guides index.</p>
-<h2 id="tips">Tips</h2>
+<h2 id="r5_quick_reference--tips">Tips</h2>
 <ul>
 <li>Change one behavior at a time when troubleshooting focus.</li>
 <li>If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.</li>
 <li>For handheld landscape, raise ISO before accepting camera shake.</li>
 <li>For tripod work, remember to review stabilization and Long Exposure Noise Reduction.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="r5_quick_reference--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Leaving action drive mode on for deliberate static work.</li>
 <li>Expecting Eye Detection to work when AF Method or Manual Focus prevents it.</li>
@@ -396,54 +406,57 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Leaving stabilization on for solid tripod long exposures.</li>
 <li>Using LENR during sequences where the delay causes missed shots.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="r5_quick_reference--cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.</li>
 <li>Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.</li>
 <li>Related guides: AF Cases &amp; Tracking Behavior; Custom Controls, Back-Button AF &amp; Dial Strategies; Flash Photography; Focus Bracketing &amp; In-Camera Depth Compositing; Lens Capabilities; Long Exposure &amp; Night Photography.</li>
 </ul>
-<h2 id="included-appendix">Included Appendix</h2>
-<h3 id="purpose">Purpose</h3>
+<h2 id="r5_quick_reference--included-appendix">Included Appendix</h2>
+<h3 id="r5_quick_reference--purpose">Purpose</h3>
 <p>Explain the card settings whose choices are easy to misread in the field.</p>
-<h3 id="what-it-does">What it Does</h3>
+<h3 id="r5_quick_reference--what-it-does">What it Does</h3>
 <p>This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, stabilization, drive behavior, shutter behavior, and long exposure workflow.</p>
-<h3 id="how-it-works">How it Works</h3>
+<h3 id="r5_quick_reference--how-it-works">How it Works</h3>
 <p>The cards show merged baseline and profile settings. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space.</p>
-<h3 id="advantages">Advantages</h3>
+<h3 id="r5_quick_reference--advantages">Advantages</h3>
 <ul>
 <li>Helps explain why a card chooses one focusing or stabilization behavior.</li>
 <li>Keeps quick-reference cards compact without hiding the meaning of important choices.</li>
 <li>Clarifies when the camera ignores a setting, such as AF Method during Manual Focus.</li>
 </ul>
-<h3 id="disadvantages">Disadvantages</h3>
+<h3 id="r5_quick_reference--disadvantages">Disadvantages</h3>
 <ul>
 <li>It is a quick reference, not a full camera manual.</li>
 <li>Some subjects still require judgment when conditions change.</li>
 <li>Menu names can vary slightly by firmware or shooting context.</li>
 </ul>
-<h3 id="when-not-to-use">When Not to Use</h3>
+<h3 id="r5_quick_reference--when-not-to-use">When Not to Use</h3>
 <p>Do not use this quick reference to decide basic exposure values. For aperture, ISO, and Auto ISO Max, use the card value and normal photographic judgment.</p>
+</div>
 </div>
 </details>
 <details>
 <summary class="guide">Lens Capabilities<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="lens-capabilities">Lens Capabilities</h1>
+<div class="guide-index-return-wrap"><a class="guide-index-return" href="#lens_settings--index" aria-label="Return to index in Lens Capabilities"><span aria-hidden="true">↑&nbsp;</span><span class="guide-index-return__full">Return to index</span><span class="guide-index-return__short">Index</span></a></div>
+<div class="guide-content">
+<h1 id="lens_settings--lens-capabilities">Lens Capabilities</h1>
 <p>Use this guide as a quick lens-by-lens setup check before choosing a profile card. Lens switches can override or shape camera behavior, especially stabilization, manual focus, extenders, and adapted EF lenses.</p>
 <p>Image stabilization reduces blur caused by camera movement; it does not freeze a moving subject. Shutter speed still controls subject-motion blur. Lens IS moves optical elements, IBIS moves the R5 sensor, and compatible combinations may coordinate them automatically. In the field, choose the available lens/body mode for the subject and turn stabilization off for a solid, locked tripod when the profile calls for it.</p>
-<h2 id="index">Index</h2>
+<h2 id="lens_settings--index">Index</h2>
 <ol>
-<li><a href="#match-by-subject">Match by Subject</a></li>
-<li><a href="#canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm">Canon EF 100-400mm f/4.5-5.6L IS II USM</a></li>
-<li><a href="#canon-ef-100mm-f-2-8l-macro-is-usm">Canon EF 100mm f/2.8L Macro IS USM</a></li>
-<li><a href="#canon-ef-50mm-f-1-4-usm">Canon EF 50mm f/1.4 USM</a></li>
-<li><a href="#canon-extender-ef-1-4x">Canon Extender EF 1.4x</a></li>
-<li><a href="#ef-eos-r-control-ring-adapter">EF-EOS R Control Ring Adapter</a></li>
-<li><a href="#canon-rf-24-240mm-f4-6-3-is-usm">Canon RF 24-240mm F4-6.3 IS USM</a></li>
-<li><a href="#common-mistakes">Common Mistakes</a></li>
-<li><a href="#cross-references">Cross References</a></li>
+<li><a href="#lens_settings--match-by-subject">Match by Subject</a></li>
+<li><a href="#lens_settings--canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm">Canon EF 100-400mm f/4.5-5.6L IS II USM</a></li>
+<li><a href="#lens_settings--canon-ef-100mm-f-2-8l-macro-is-usm">Canon EF 100mm f/2.8L Macro IS USM</a></li>
+<li><a href="#lens_settings--canon-ef-50mm-f-1-4-usm">Canon EF 50mm f/1.4 USM</a></li>
+<li><a href="#lens_settings--canon-extender-ef-1-4x">Canon Extender EF 1.4x</a></li>
+<li><a href="#lens_settings--ef-eos-r-control-ring-adapter">EF-EOS R Control Ring Adapter</a></li>
+<li><a href="#lens_settings--canon-rf-24-240mm-f4-6-3-is-usm">Canon RF 24-240mm F4-6.3 IS USM</a></li>
+<li><a href="#lens_settings--common-mistakes">Common Mistakes</a></li>
+<li><a href="#lens_settings--cross-references">Cross References</a></li>
 </ol>
-<h2 id="match-by-subject">Match by Subject</h2>
+<h2 id="lens_settings--match-by-subject">Match by Subject</h2>
 <table>
 <tr><th>Card / Subject</th><th>Best lens starting point</th><th>Support</th><th>Setup hint</th></tr>
 <tr><td>Birds in Flight</td><td>EF 100-400L, optionally 1.4x when light is strong</td><td>Handheld or gimbal</td><td>IS Mode 3 for erratic flight; Mode 2 only for smooth panning</td></tr>
@@ -457,9 +470,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Waterdrops</td><td>EF 100L Macro</td><td>Tripod required</td><td>Manual focus, controlled light, stabilization off on a locked setup</td></tr>
 <tr><td>Fireworks</td><td>RF 24-240, EF 50mm f/1.4, or wider lens if available</td><td>Tripod required</td><td>Manual focus, stabilization off, remote or timer release</td></tr>
 </table>
-<h2 id="canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm">Canon EF 100-400mm f/4.5-5.6L IS II USM</h2>
+<h2 id="lens_settings--canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm">Canon EF 100-400mm f/4.5-5.6L IS II USM</h2>
 <p>Best for birds, wildlife, sports, distant details, compressed landscapes, zoo subjects, airshows, and outdoor action.</p>
-<h3 id="switches-and-settings">Switches and Settings</h3>
+<h3 id="lens_settings--switches-and-settings">Switches and Settings</h3>
 <table>
 <tr><th>Control</th><th>What it does</th><th>Field setting</th></tr>
 <tr><td>AF/MF</td><td>Chooses autofocus or manual focus</td><td>AF for wildlife/action; MF for static tripod scenes if focus must not move</td></tr>
@@ -471,40 +484,40 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Zoom touch adjustment ring</td><td>Changes zoom-ring resistance</td><td>Looser for fast reframing; tighter for carrying or slower deliberate zooming</td></tr>
 </table>
 <p>This guidance is for the IS II version you listed. Treat Mode 1 as the static-subject default, Mode 2 as the panning mode, and Mode 3 as the fast-action mode.</p>
-<h3 id="support">Support</h3>
+<h3 id="lens_settings--support">Support</h3>
 <p>Handheld works well in good light. Use a monopod or gimbal for long sessions, long waits, or smoother subject tracking. Use a tripod for static wildlife, landscapes, moon shots, and careful compositions. On a locked tripod, turn stabilization off unless you are actively tracking.</p>
-<h3 id="extender-and-adapter-notes">Extender and Adapter Notes</h3>
+<h3 id="lens_settings--extender-and-adapter-notes">Extender and Adapter Notes</h3>
 <p>The EF 100-400L IS II is the main lens in this kit where the 1.4x extender makes sense. Put the EF 1.4x extender between the EF lens and the EF-EOS R adapter, then mount the adapter to the R5.</p>
 <p>With a 1.4x extender, this lens becomes 140-560mm f/6.3-8. Expect more reach, less light, slightly slower AF, and more need for steady support. It is best for perched birds, distant wildlife, moon/detail shots, and bright outdoor subjects. Avoid it for low light, fast erratic action, or heat shimmer unless reach matters more than speed.</p>
 <p>The EF-EOS R control ring adapter does not change focal length or aperture. Use the control ring for a high-value field setting such as exposure compensation, ISO, or aperture, depending on how you like to shoot.</p>
-<h2 id="canon-ef-100mm-f-2-8l-macro-is-usm">Canon EF 100mm f/2.8L Macro IS USM</h2>
+<h2 id="lens_settings--canon-ef-100mm-f-2-8l-macro-is-usm">Canon EF 100mm f/2.8L Macro IS USM</h2>
 <p>Best for macro, waterdrops, flowers, small objects, product details, portraits with compression, and close detail work.</p>
-<h3 id="switches-and-settings">Switches and Settings</h3>
+<h3 id="lens_settings--switches-and-settings--2">Switches and Settings</h3>
 <table>
 <tr><th>Control</th><th>What it does</th><th>Field setting</th></tr>
 <tr><td>AF/MF</td><td>Chooses autofocus or manual focus</td><td>AF for general close work; MF for controlled macro, waterdrops, and stacking</td></tr>
 <tr><td>Stabilizer ON/OFF</td><td>Turns Hybrid IS on or off</td><td>On handheld; Off on a locked tripod</td></tr>
 <tr><td>Focus distance limiter</td><td>Restricts AF range</td><td>Use the closest range for macro, longer range for portraits/general work, full range when unsure</td></tr>
 </table>
-<h3 id="support">Support</h3>
+<h3 id="lens_settings--support--2">Support</h3>
 <p>Use a tripod for waterdrops, focus bracketing, product work, and any subject where framing must stay fixed. Handheld is fine for casual flowers, details, and portraits, but depth of field becomes very thin at close distances.</p>
-<h3 id="extender-and-adapter-notes">Extender and Adapter Notes</h3>
+<h3 id="lens_settings--extender-and-adapter-notes--2">Extender and Adapter Notes</h3>
 <p>Use the EF-EOS R control ring adapter with this EF lens. The adapter does not change focus behavior, focal length, or aperture.</p>
 <p>Do not plan on using the EF 1.4x extender with the EF 100L Macro as a normal field setup. Canon EF extenders are intended for compatible telephoto lenses and are not the practical choice for this macro lens.</p>
-<h2 id="canon-ef-50mm-f-1-4-usm">Canon EF 50mm f/1.4 USM</h2>
+<h2 id="lens_settings--canon-ef-50mm-f-1-4-usm">Canon EF 50mm f/1.4 USM</h2>
 <p>Best for people, low-light details, travel-light, casual portraits, indoor family work, and natural-light scenes.</p>
-<h3 id="switches-and-settings">Switches and Settings</h3>
+<h3 id="lens_settings--switches-and-settings--3">Switches and Settings</h3>
 <table>
 <tr><th>Control</th><th>What it does</th><th>Field setting</th></tr>
 <tr><td>AF/MF</td><td>Chooses autofocus or manual focus</td><td>AF for normal shooting; MF for deliberate static scenes or prefocused compositions</td></tr>
 <tr><td>Focus ring</td><td>Allows manual focus adjustment</td><td>Use gently; avoid bumping it while carrying because this older micro-USM design is less rugged than modern ring-USM/L lenses</td></tr>
 <tr><td>Image stabilization</td><td>Not available on this lens</td><td>Use faster shutter speed, higher ISO, or tripod when light is low</td></tr>
 </table>
-<h3 id="support">Support</h3>
+<h3 id="lens_settings--support--3">Support</h3>
 <p>Handheld is the normal use. Use a tripod for deliberate low-light static scenes, product-style detail shots, or video/locked composition work. A gimbal is not needed.</p>
-<h3 id="extender-and-adapter-notes">Extender and Adapter Notes</h3>
+<h3 id="lens_settings--extender-and-adapter-notes--3">Extender and Adapter Notes</h3>
 <p>Use the EF-EOS R control ring adapter with this lens. Do not use the EF 1.4x extender with it; the extender is for compatible telephoto lenses, not this normal prime.</p>
-<h2 id="canon-extender-ef-1-4x">Canon Extender EF 1.4x</h2>
+<h2 id="lens_settings--canon-extender-ef-1-4x">Canon Extender EF 1.4x</h2>
 <p>Use the 1.4x extender only when the extra reach is worth the tradeoffs.</p>
 <table>
 <tr><th>Benefit</th><th>Tradeoff</th></tr>
@@ -513,7 +526,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Useful for perched or distant subjects</td><td>More camera shake and heat shimmer are visible</td></tr>
 <tr><td>Can help moon/detail shots</td><td>Not ideal for low light or fast close action</td></tr>
 </table>
-<h3 id="compatibility-in-this-kit">Compatibility in This Kit</h3>
+<h3 id="lens_settings--compatibility-in-this-kit">Compatibility in This Kit</h3>
 <table>
 <tr><th>Owned lens</th><th>1.4x use</th></tr>
 <tr><td>EF 100-400mm f/4.5-5.6L IS II USM</td><td>Yes; best pairing in this kit, becomes 140-560mm f/6.3-8</td></tr>
@@ -522,7 +535,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>RF 24-240mm F4-6.3 IS USM</td><td>No; RF lens, not used with EF extender</td></tr>
 </table>
 <p>Avoid using it as an always-on accessory. Add it when the subject is distant, light is strong, and you can keep shutter speed high enough.</p>
-<h2 id="ef-eos-r-control-ring-adapter">EF-EOS R Control Ring Adapter</h2>
+<h2 id="lens_settings--ef-eos-r-control-ring-adapter">EF-EOS R Control Ring Adapter</h2>
 <p>Use this adapter for EF lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, and EF 50mm f/1.4 USM. It is not used with the RF 24-240mm F4-6.3 IS USM.</p>
 <p>It preserves normal EF lens use and adds a programmable control ring.</p>
 <p>Recommended control ring choices:</p>
@@ -533,20 +546,20 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Aperture</td><td>Useful for Av or Manual when you want lens-like aperture control</td></tr>
 </table>
 <p>For this system, exposure compensation is the strongest default recommendation because many profiles already rely on exposure compensation decisions in changing light.</p>
-<h2 id="canon-rf-24-240mm-f4-6-3-is-usm">Canon RF 24-240mm F4-6.3 IS USM</h2>
+<h2 id="lens_settings--canon-rf-24-240mm-f4-6-3-is-usm">Canon RF 24-240mm F4-6.3 IS USM</h2>
 <p>Best for travel, family, people, casual landscapes, events, and one-lens walking around.</p>
-<h3 id="controls-and-settings">Controls and Settings</h3>
+<h3 id="lens_settings--controls-and-settings">Controls and Settings</h3>
 <table>
 <tr><th>Control</th><th>What it does</th><th>Field setting</th></tr>
 <tr><td>AF/MF / focus mode</td><td>Chooses autofocus or manual focus through camera/lens focus settings</td><td>AF for almost everything; MF only for deliberate static scenes</td></tr>
 <tr><td>Stabilizer ON/OFF</td><td>Turns lens IS on or off</td><td>On handheld; Off on solid tripod long exposures</td></tr>
 <tr><td>Focus/control ring</td><td>Acts as manual focus ring or configurable control ring depending on lens/camera settings</td><td>Use control-ring behavior for exposure compensation/ISO when you want quick field control; use focus behavior for manual focus</td></tr>
 </table>
-<h3 id="support">Support</h3>
+<h3 id="lens_settings--support--4">Support</h3>
 <p>Handheld is the normal use. Use a tripod for landscapes, night scenes, fireworks, or careful static compositions. A gimbal is not needed for this lens.</p>
-<h3 id="extender-and-adapter-notes">Extender and Adapter Notes</h3>
+<h3 id="lens_settings--extender-and-adapter-notes--4">Extender and Adapter Notes</h3>
 <p>Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does not use the EF-EOS R adapter.</p>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="lens_settings--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Leaving IS on for locked tripod long exposures.</li>
 <li>Leaving Mode 2 on after a panning session.</li>
@@ -556,7 +569,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Using the macro lens handheld when the subject really needs a tripod.</li>
 <li>Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="lens_settings--cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.</li>
 <li>Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.</li>
@@ -564,6 +577,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="appendices/Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=Lens%20Capabilities.html">Focus Bracketing &amp; In-Camera Depth Compositing</a></li>
 <li><a href="appendices/R5%20Quick%20Reference.html?return=Lens%20Capabilities.html">R5 Quick Reference</a></li>
 </ul>
+</div>
 </div>
 </details>
 </div>
@@ -587,11 +601,13 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <details>
 <summary class="guide">Fv (Flexible Priority)<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="fv-flexible-priority">Fv (Flexible Priority)</h1>
-<h2 id="what-is-fv">What is Fv?</h2>
+
+<div class="guide-content">
+<h1 id="fv_flexible_priority--fv-flexible-priority">Fv (Flexible Priority)</h1>
+<h2 id="fv_flexible_priority--what-is-fv">What is Fv?</h2>
 <p>Fv (Flexible Priority) is Canon&#x27;s Flexible Priority shooting mode. Unlike traditional exposure modes, Fv allows each exposure parameter to be independently set to either <strong>Manual</strong> or <strong>AUTO</strong>.</p>
 <p>This lets you move between fully automatic exposure, selective control, and manual exposure without switching among P, Av, Tv, and M.</p>
-<h2 id="parameters">Parameters</h2>
+<h2 id="fv_flexible_priority--parameters">Parameters</h2>
 <table>
 <tr><th>Setting</th><th>AUTO</th><th>Manual</th></tr>
 <tr><td>Shutter Speed</td><td>✓</td><td>✓</td></tr>
@@ -600,14 +616,14 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Exposure Compensation</td><td>✓</td><td>✓</td></tr>
 </table>
 <p>Every parameter may be controlled individually. Setting one parameter manually does not require the others to be manual.</p>
-<h2 id="how-to-change-settings">How to Change Settings</h2>
+<h2 id="fv_flexible_priority--how-to-change-settings">How to Change Settings</h2>
 <ol>
 <li>Press <img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMzIgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25faW5mbzwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0yLjEzLDE1LjI1SDAuNTZWMC43NUgyLjEzVjE1LjI1Wm0xMCwwaC0ybC01LTExLjkyaDBWMTUuMjVIMy42NFYwLjc1SDUuNzZsNC44MywxMS43aDBWMC43NWgxLjU3VjE1LjI1Wk0xOS43LDIuNTZIMTUuNDdWNi44NGg0VjguNjZoLTR2Ni41OUgxMy45VjAuNzVoNS44VjIuNTZaTTMxLjQ0LDhhMTIuMTksMTIuMTksMCwwLDEtLjM1LDMsNy42MSw3LjYxLDAsMCwxLTEsMi4zN0E0LjgxLDQuODEsMCwwLDEsMjguNDIsMTUsNC44Miw0LjgyLDAsMCwxLDI0LDE1YTQuODgsNC44OCwwLDAsMS0xLjY2LTEuNTQsNy40Nyw3LjQ3LDAsMCwxLTEtMi4zNywxMi4xOSwxMi4xOSwwLDAsMS0uMzUtMywxMS42OCwxMS42OCwwLDAsMSwuMzYtMyw3Ljg1LDcuODUsMCwwLDEsMS0yLjM4QTUsNSwwLDAsMSwyNCwxLjA3YTQuNTksNC41OSwwLDAsMSw0LjQ0LDAsNS4xLDUuMSwwLDAsMSwxLjY2LDEuNTgsNy41OCw3LjU4LDAsMCwxLDEsMi4zOEExMiwxMiwwLDAsMSwzMS40NCw4Wk0yOS43OCw4YTkuNzMsOS43MywwLDAsMC0uMjMtMi4xMyw2LjQzLDYuNDMsMCwwLDAtLjY4LTEuODEsMy44OCwzLjg4LDAsMCwwLTEuMTItMS4yNiwyLjY0LDIuNjQsMCwwLDAtMS41Ny0uNDgsMi42OCwyLjY4LDAsMCwwLTEuNTguNDgsMy44NCwzLjg0LDAsMCwwLTEuMTMsMS4yNiw2LjI2LDYuMjYsMCwwLDAtLjY3LDEuODFBMTAuMDksMTAuMDksMCwwLDAsMjIuNTksOGExMC40NSwxMC40NSwwLDAsMCwuMjEsMi4xMiw2LjU2LDYuNTYsMCwwLDAsLjY0LDEuODEsMy43MywzLjczLDAsMCwwLDEuMTEsMS4yOCwzLDMsMCwwLDAsMy4yNCwwLDMuODIsMy44MiwwLDAsMCwxLjEyLTEuMjgsNi4zNCw2LjM0LDAsMCwwLC42NS0xLjgxQTEwLjQsMTAuNCwwLDAsMCwyOS43OCw4WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIzMiIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="INFO" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"> <strong>INFO</strong> until the exposure parameter line is active.</li>
 <li>Select <strong>Shutter</strong>, <strong>Aperture</strong>, <strong>ISO</strong>, or <strong>Exposure Compensation</strong>.</li>
 <li>Rotate the <strong>Main Dial</strong> to change the selected value.</li>
 <li>Press <strong>SET</strong> to return that parameter to <strong>AUTO</strong>.</li>
 </ol>
-<h2 id="display-example">Display Example</h2>
+<h2 id="fv_flexible_priority--display-example">Display Example</h2>
 <table>
 <tr><th>Parameter</th><th>Displayed Value</th></tr>
 <tr><td>Tv</td><td>1/1000</td></tr>
@@ -616,7 +632,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>EC</td><td>+0.3</td></tr>
 </table>
 <p>&gt; <strong>Note:</strong> Any parameter displaying <strong>AUTO</strong> is currently being controlled by the camera.</p>
-<h2 id="common-configurations">Common Configurations</h2>
+<h2 id="fv_flexible_priority--common-configurations">Common Configurations</h2>
 <table>
 <tr><th>Configuration</th><th>Tv</th><th>Av</th><th>ISO</th><th>Result</th></tr>
 <tr><td>P Mode Equivalent</td><td>AUTO</td><td>AUTO</td><td>AUTO</td><td>Camera controls everything.</td></tr>
@@ -625,7 +641,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Landscape</td><td>AUTO</td><td>F11</td><td>100</td><td>Locks aperture and ISO. The camera adjusts shutter speed.</td></tr>
 <tr><td>Manual + Auto ISO</td><td>1/1000</td><td>F5.6</td><td>AUTO</td><td>The photographer controls motion blur and depth of field while Auto ISO maintains exposure. Useful for wildlife, birds, sports, and action.</td></tr>
 </table>
-<h2 id="fv-compared-to-traditional-modes">Fv Compared to Traditional Modes</h2>
+<h2 id="fv_flexible_priority--fv-compared-to-traditional-modes">Fv Compared to Traditional Modes</h2>
 <table>
 <tr><th>Traditional Mode</th><th>Equivalent in Fv</th></tr>
 <tr><td>P</td><td>Tv=AUTO, Av=AUTO, ISO=AUTO</td></tr>
@@ -634,42 +650,45 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>M + Auto ISO</td><td>Tv=Manual, Av=Manual, ISO=AUTO</td></tr>
 <tr><td>Manual</td><td>Tv=Manual, Av=Manual, ISO=Manual</td></tr>
 </table>
-<h2 id="why-use-fv">Why Use Fv?</h2>
+<h2 id="fv_flexible_priority--why-use-fv">Why Use Fv?</h2>
 <p>Fv allows photographers to stay in a single shooting mode while deciding which exposure parameters are automatic and which are manually controlled. It effectively replaces frequent switching among P, Av, Tv, and much of M mode while preserving direct control whenever it is needed.</p>
+</div>
 </div>
 </details>
 <details>
 <summary class="guide">Focus Bracketing &amp; In-Camera Depth Compositing<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="focus-bracketing-in-camera-depth-compositing">Focus Bracketing &amp; In-Camera Depth Compositing</h1>
-<h2 id="purpose">Purpose</h2>
+<div class="guide-index-return-wrap"><a class="guide-index-return" href="#focus_bracketing_depth_compositing--table-of-contents" aria-label="Return to index in Focus Bracketing &amp; In-Camera Depth Compositing"><span aria-hidden="true">↑&nbsp;</span><span class="guide-index-return__full">Return to index</span><span class="guide-index-return__short">Index</span></a></div>
+<div class="guide-content">
+<h1 id="focus_bracketing_depth_compositing--focus-bracketing-in-camera-depth-compositing">Focus Bracketing &amp; In-Camera Depth Compositing</h1>
+<h2 id="focus_bracketing_depth_compositing--purpose">Purpose</h2>
 <p>Focus Bracketing captures a sequence of photographs while the camera automatically moves focus from near to far. It is used when one photograph cannot hold enough depth of field.</p>
 <p>Depth Compositing is the process of combining those bracketed photographs into one image where more of the subject appears sharp. Focus Bracketing creates the source frames. Depth Compositing creates the final stacked image.</p>
 <p>Multiple focused images often produce better results than stopping down to very small apertures. At f/16, f/22, or smaller, diffraction can soften fine detail even though depth of field increases. A stack shot around f/5.6-f/11 often keeps sharper detail and creates deeper apparent focus.</p>
 <p>Use this appendix as a field guide for estimating Focus Bracketing settings with minimal trial and error.</p>
-<p>Table of contents:</p>
+<h2 id="focus_bracketing_depth_compositing--table-of-contents">Table of Contents</h2>
 <ul>
-<li><a href="#camera-requirements">Camera Requirements</a></li>
-<li><a href="#every-camera-setting-explained">Every Camera Setting Explained</a></li>
-<li><a href="#number-of-shots">Number of Shots</a></li>
-<li><a href="#understanding-focus-increment">Understanding Focus Increment</a></li>
-<li><a href="#exposure-smoothing">Exposure Smoothing</a></li>
-<li><a href="#depth-compositing">Depth Compositing</a></li>
-<li><a href="#how-to-choose-settings">How to Choose Settings</a></li>
-<li><a href="#choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</a></li>
-<li><a href="#working-distance-guidelines">Working Distance Guidelines</a></li>
-<li><a href="#starting-point-tables">Starting Point Tables</a></li>
-<li><a href="#lens-considerations">Lens Considerations</a></li>
-<li><a href="#using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</a></li>
-<li><a href="#common-problems">Common Problems</a></li>
-<li><a href="#troubleshooting-guide">Troubleshooting Guide</a></li>
-<li><a href="#decision-trees">Decision Trees</a></li>
-<li><a href="#profile-recommendations">Profile Recommendations</a></li>
+<li><a href="#focus_bracketing_depth_compositing--camera-requirements">Camera Requirements</a></li>
+<li><a href="#focus_bracketing_depth_compositing--every-camera-setting-explained">Every Camera Setting Explained</a></li>
+<li><a href="#focus_bracketing_depth_compositing--number-of-shots">Number of Shots</a></li>
+<li><a href="#focus_bracketing_depth_compositing--understanding-focus-increment">Understanding Focus Increment</a></li>
+<li><a href="#focus_bracketing_depth_compositing--exposure-smoothing">Exposure Smoothing</a></li>
+<li><a href="#focus_bracketing_depth_compositing--depth-compositing">Depth Compositing</a></li>
+<li><a href="#focus_bracketing_depth_compositing--how-to-choose-settings">How to Choose Settings</a></li>
+<li><a href="#focus_bracketing_depth_compositing--choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</a></li>
+<li><a href="#focus_bracketing_depth_compositing--working-distance-guidelines">Working Distance Guidelines</a></li>
+<li><a href="#focus_bracketing_depth_compositing--starting-point-tables">Starting Point Tables</a></li>
+<li><a href="#focus_bracketing_depth_compositing--lens-considerations">Lens Considerations</a></li>
+<li><a href="#focus_bracketing_depth_compositing--using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</a></li>
+<li><a href="#focus_bracketing_depth_compositing--common-problems">Common Problems</a></li>
+<li><a href="#focus_bracketing_depth_compositing--troubleshooting-guide">Troubleshooting Guide</a></li>
+<li><a href="#focus_bracketing_depth_compositing--decision-trees">Decision Trees</a></li>
+<li><a href="#focus_bracketing_depth_compositing--profile-recommendations">Profile Recommendations</a></li>
 </ul>
-<h2 id="what-it-does">What it Does</h2>
+<h2 id="focus_bracketing_depth_compositing--what-it-does">What it Does</h2>
 <p>Focus Bracketing takes multiple frames focused at different distances. The camera begins at the focus point you choose, then steps focus farther away for each frame.</p>
 <p>Depth Compositing uses the sharp regions from those frames to create a deeper-focus image. The composite can be made in camera when supported, or later in software such as Canon Digital Photo Professional, Photoshop, Helicon Focus, or Zerene Stacker.</p>
-<h3 id="camera-requirements">Camera Requirements</h3>
+<h3 id="focus_bracketing_depth_compositing--camera-requirements">Camera Requirements</h3>
 <ul>
 <li>Compatible lenses: Use Canon AF lenses that support electronic focus control. RF lenses generally work best. Many adapted EF lenses work well, but focus step behavior varies by lens.</li>
 <li>RAW/JPEG behavior: Keep the source images for maximum quality. In-camera depth compositing may create a processed composite file, while external software can use the original RAW frames.</li>
@@ -679,7 +698,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Electronic shutter considerations: Electronic shutter can reduce vibration, but watch for banding under artificial light. Mechanical shutter may be safer when flash is required.</li>
 <li>Image Stabilization considerations: Use IS for handheld stacks. Turn IS off on a solid tripod for static subjects unless the lens/body combination handles tripod detection cleanly.</li>
 </ul>
-<h2 id="how-it-works">How it Works</h2>
+<h2 id="focus_bracketing_depth_compositing--how-it-works">How it Works</h2>
 <p>The camera needs a starting focus point, a focus increment, and a number of shots.</p>
 <p>Start focus on the nearest important detail. The sequence moves focus farther away from that point. If you start too deep into the subject, the near edge will never be sharp.</p>
 <p>The key relationships are:</p>
@@ -695,7 +714,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Decreases (camera moves closer)</td><td>Increases</td><td>Becomes extremely shallow</td><td>Smaller</td><td>More images</td></tr>
 <tr><td>Increases (camera moves farther away)</td><td>Decreases</td><td>Becomes deeper</td><td>Larger</td><td>Fewer images</td></tr>
 </table>
-<h2 id="advantages">Advantages</h2>
+<h2 id="focus_bracketing_depth_compositing--advantages">Advantages</h2>
 <ul>
 <li>Creates deeper apparent focus without relying on very small apertures.</li>
 <li>Preserves fine detail by avoiding diffraction-heavy settings.</li>
@@ -703,7 +722,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Lets the photographer choose sharpness and depth separately.</li>
 <li>External stacking software can produce high-quality results from RAW source frames.</li>
 </ul>
-<h2 id="disadvantages">Disadvantages</h2>
+<h2 id="focus_bracketing_depth_compositing--disadvantages">Disadvantages</h2>
 <ul>
 <li>Requires static subjects or very little movement.</li>
 <li>Wind can ruin flowers, insects, and foreground landscape elements.</li>
@@ -712,7 +731,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Too few images leave gaps; too many images waste storage and time.</li>
 <li>In-camera compositing is convenient but less controllable than external software.</li>
 </ul>
-<h2 id="recommended-uses">Recommended Uses</h2>
+<h2 id="focus_bracketing_depth_compositing--recommended-uses">Recommended Uses</h2>
 <p>Use Focus Bracketing when the subject is static and depth of field is not enough in one frame.</p>
 <p>Recommended:</p>
 <ul>
@@ -728,13 +747,13 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Architecture details.</li>
 <li>Landscapes with close foreground elements.</li>
 </ul>
-<h2 id="when-not-to-use">When Not to Use</h2>
+<h2 id="focus_bracketing_depth_compositing--when-not-to-use">When Not to Use</h2>
 <p>Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, wind is moving important details, or the flash cannot recycle fast enough.</p>
 <p>Avoid it for portraits unless there is a specific static setup. Eye and face movement usually make stacking unnecessary or unreliable.</p>
 <p>Avoid using very small apertures and stacking at the same time unless there is a deliberate reason. Diffraction can soften every frame in the stack.</p>
-<h2 id="every-camera-setting-explained">Every Camera Setting Explained</h2>
+<h2 id="focus_bracketing_depth_compositing--every-camera-setting-explained">Every Camera Setting Explained</h2>
 <p>Canon Focus Bracketing settings control how far the camera travels through the subject and how reliable the overlap is between frames.</p>
-<h3 id="number-of-shots">Number of Shots</h3>
+<h3 id="focus_bracketing_depth_compositing--number-of-shots">Number of Shots</h3>
 <p>What it controls: the maximum number of frames the camera will capture in the bracket.</p>
 <p>Effect of increasing the value: more depth coverage and less chance that the sequence stops before the far edge is sharp.</p>
 <p>Effect of decreasing the value: less time, less storage, and faster processing.</p>
@@ -755,7 +774,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Using one shot count for every subject.</li>
 </ul>
 <p>Recommended starting point: choose more shots than you think you need for the first test stack, then reduce after reviewing the last useful sharp frame.</p>
-<h3 id="understanding-focus-increment">Understanding Focus Increment</h3>
+<h3 id="focus_bracketing_depth_compositing--understanding-focus-increment">Understanding Focus Increment</h3>
 <p>What it controls: how far the focus plane moves between frames.</p>
 <p>Focus Increment is the most important setting. It does not represent a fixed distance in inches or millimeters, and there is no universally correct value. The useful value depends on subject size, camera-to-subject distance, lens focal length, aperture, the desired overlap between adjacent sharp slices, and the focus-step behavior of the lens.</p>
 <p>Relationship to depth of field:</p>
@@ -789,7 +808,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Starting focus in the middle of the subject instead of the nearest important detail.</li>
 </ul>
 <p>Recommended starting point: increment 1-2 when working extremely close, 3-5 for close product work, and 5-8 for landscape.</p>
-<h3 id="exposure-smoothing">Exposure Smoothing</h3>
+<h3 id="focus_bracketing_depth_compositing--exposure-smoothing">Exposure Smoothing</h3>
 <p>What it controls: whether the camera attempts to reduce visible exposure jumps across the bracket.</p>
 <p>Effect of enabling it: helps make frames more consistent when natural light shifts during the sequence.</p>
 <p>Effect of disabling it: keeps controlled studio lighting untouched and avoids unnecessary camera intervention.</p>
@@ -804,7 +823,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Turning it On in a controlled flash setup and expecting it to fix inconsistent flash recycle.</li>
 </ul>
 <p>Recommended starting point: On outdoors, Off in studio.</p>
-<h3 id="depth-compositing">Depth Compositing</h3>
+<h3 id="focus_bracketing_depth_compositing--depth-compositing">Depth Compositing</h3>
 <p>What it controls: whether the camera creates a stacked composite from the bracketed images.</p>
 <p>How it works: the camera analyzes sharp areas from each frame, aligns the stack where possible, and blends the sharp regions into one composite.</p>
 <p>Advantages:</p>
@@ -826,7 +845,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Expecting it to fix movement, wind, or poor overlap.</li>
 </ul>
 <p>Recommended starting point: use in-camera compositing for quick checks; keep source frames for final stacking.</p>
-<h2 id="decision-guide">Decision Guide</h2>
+<h2 id="focus_bracketing_depth_compositing--decision-guide">Decision Guide</h2>
 <p>How much depth needs to be covered?</p>
 <ul>
 <li>Small depth: use fewer shots.</li>
@@ -852,7 +871,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Estimate Number of Shots.</p>
 <p>Review the first stack.</p>
 <p>Adjust.</p>
-<h2 id="how-to-choose-settings">How to Choose Settings</h2>
+<h2 id="focus_bracketing_depth_compositing--how-to-choose-settings">How to Choose Settings</h2>
 <p>Use this field process:</p>
 <ol>
 <li>Decide how much physical depth must be sharp.</li>
@@ -873,10 +892,10 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Landscape with close foreground flowers at f/8: start at increment 5 and 15 shots. If the background is already sharp by frame 8, reduce shots next time.</li>
 <li>Architecture detail at f/8: start at increment 7 and 8 shots. Use more shots only if close foreground detail is included.</li>
 </ul>
-<h2 id="choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</h2>
+<h2 id="focus_bracketing_depth_compositing--choosing-settings-for-the-canon-ef-100mm-f-2-8l-macro-is-usm">Choosing Settings for the Canon EF 100mm f/2.8L Macro IS USM</h2>
 <p>The Canon EF 100mm f/2.8L Macro IS USM does not provide a direct magnification setting. Magnification is determined by focus distance, so photographers normally choose Focus Bracketing settings from subject size, working distance, and the desired depth of field rather than by calculating a reproduction ratio.</p>
 <p>As focus distance decreases, magnification increases and depth of field becomes extremely shallow. Use a smaller Focus Increment to preserve overlap and expect to need more images. As focus distance increases, magnification decreases and depth of field increases. A larger Focus Increment becomes appropriate, and fewer images are normally required.</p>
-<h3 id="working-distance-guidelines">Working Distance Guidelines</h3>
+<h3 id="focus_bracketing_depth_compositing--working-distance-guidelines">Working Distance Guidelines</h3>
 <ul>
 <li><strong>Almost touching the subject:</strong> Use Increment 1–2. At this distance the sharp slice in each frame is extremely thin, so generous overlap protects against focus gaps.</li>
 <li><strong>Flowers at a comfortable distance:</strong> Use Increment 3–4. The deeper per-frame depth of field allows a moderate step while preserving overlap through layered petals.</li>
@@ -884,7 +903,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><strong>Landscapes:</strong> Use Increment 5–8. At normal landscape distances each frame covers substantially more depth; use the lower end when the foreground is very close and the higher end when it is not.</li>
 </ul>
 <p>These guidelines are practical starting points. Review the first stack at useful magnification, then adjust Focus Increment and Number of Shots for the actual subject depth and any focus gaps.</p>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="focus_bracketing_depth_compositing--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Profile / Subject</th><th>Aperture</th><th>Focus Increment</th><th>Number of Shots</th><th>Notes</th></tr>
 <tr><td>Macro</td><td>f/8</td><td>1-3</td><td>80-200</td><td>Use tripod when possible</td></tr>
@@ -895,11 +914,11 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Insects</td><td>f/8</td><td>2-3</td><td>100-200</td><td>Subject movement is the main risk</td></tr>
 <tr><td>Architecture</td><td>f/8</td><td>5-10</td><td>5-15</td><td>Usually fewer frames than macro</td></tr>
 </table>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="focus_bracketing_depth_compositing--canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Focus Bracketing starts from the current focus position and moves focus farther away. Focus carefully on the nearest important detail before starting the sequence.</p>
 <p>If using in-camera Depth Compositing, keep expectations practical. It is useful for fast review and simple stacks, but external software usually provides better alignment, retouching, and artifact control.</p>
 <p>Some Canon lenses change framing noticeably as focus shifts. This focus breathing can make stacks harder to align, especially with product and macro subjects.</p>
-<h2 id="tips">Tips</h2>
+<h2 id="focus_bracketing_depth_compositing--tips">Tips</h2>
 <ul>
 <li>Start with the nearest important detail.</li>
 <li>Start with more images rather than fewer.</li>
@@ -916,7 +935,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Protect the subject from wind.</li>
 <li>Leave extra room around the subject for alignment and cropping.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="focus_bracketing_depth_compositing--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Starting focus too far into the subject.</li>
 <li>Using too few shots.</li>
@@ -927,7 +946,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Forgetting focus breathing.</li>
 <li>Keeping hundreds of unnecessary frames.</li>
 </ul>
-<h2 id="starting-point-tables">Starting Point Tables</h2>
+<h2 id="focus_bracketing_depth_compositing--starting-point-tables">Starting Point Tables</h2>
 <table>
 <tr><th>Subject</th><th>Typical Working Distance</th><th>Aperture</th><th>Focus Increment</th><th>Starting Shots</th></tr>
 <tr><td>Water Drops</td><td>Very close (near minimum focus distance)</td><td>f/8</td><td>1</td><td>150–250</td></tr>
@@ -941,16 +960,16 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Larger Products</td><td>Farther Away</td><td>f/8–f/11</td><td>5–7</td><td>10–30</td></tr>
 </table>
 <p>These are practical starting points, not fixed settings. Adjust them after reviewing the first stack.</p>
-<h2 id="lens-considerations">Lens Considerations</h2>
+<h2 id="focus_bracketing_depth_compositing--lens-considerations">Lens Considerations</h2>
 <p>RF 100 mm Macro: excellent for very close stacking. Near minimum focus distance, use very small increments and many shots.</p>
 <p>EF 100 mm Macro: similar field logic to the RF macro, though focus behavior and breathing may differ when adapted.</p>
 <p>EF 100-400L: useful for close telephoto detail, flowers, compressed landscape details, and larger products. Use moderate increments because magnification is lower than true macro but depth can still be shallow at close focus.</p>
 <p>Wide-angle lenses: landscapes often need fewer frames. Use Focus Bracketing when the foreground is close and important, not for every scenic view.</p>
 <p>Working distance and magnification matter more than lens name. The closer and larger the subject appears, the smaller the increment should be.</p>
-<h2 id="using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</h2>
+<h2 id="focus_bracketing_depth_compositing--using-extension-tubes-kenko-and-similar">Using Extension Tubes (Kenko and Similar)</h2>
 <p>Extension tubes are hollow spacers with no optical elements. They move the lens farther from the sensor, reduce minimum focus distance, and increase maximum magnification. The tradeoffs are reduced working distance, reduced available light, potentially slower autofocus, and even greater depth-of-field challenges.</p>
 <p>Extension tubes do not change how the Canon Focus Bracketing feature operates, but the closer focus and thinner depth of field significantly change the recommended settings.</p>
-<h3 id="practical-recommendations">Practical Recommendations</h3>
+<h3 id="focus_bracketing_depth_compositing--practical-recommendations">Practical Recommendations</h3>
 <p>When extension tubes are installed:</p>
 <ul>
 <li>Reduce Focus Increment.</li>
@@ -958,7 +977,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Expect capture time to increase significantly.</li>
 <li>Review the first stack carefully for focus gaps.</li>
 </ul>
-<h3 id="suggested-starting-values">Suggested Starting Values</h3>
+<h3 id="focus_bracketing_depth_compositing--suggested-starting-values">Suggested Starting Values</h3>
 <table>
 <tr><th>Setup</th><th>Focus Increment</th><th>Starting Shots</th></tr>
 <tr><td>12 mm Tube</td><td>2</td><td>100–150</td></tr>
@@ -967,7 +986,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Multiple Tubes</td><td>1</td><td>Determine experimentally; expect 250–400+ images depending on subject depth</td></tr>
 </table>
 <p>These are conservative starting values intended to maximize overlap.</p>
-<h2 id="common-problems">Common Problems</h2>
+<h2 id="focus_bracketing_depth_compositing--common-problems">Common Problems</h2>
 <ul>
 <li>Missing focus slices: usually caused by an increment that is too large.</li>
 <li>Halo artifacts: usually caused by movement, focus breathing, or difficult high-contrast edges.</li>
@@ -979,7 +998,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Too few images: leaves gaps or stops before the far edge is sharp.</li>
 <li>Diffraction: very small apertures soften every frame before stacking starts.</li>
 </ul>
-<h2 id="troubleshooting-guide">Troubleshooting Guide</h2>
+<h2 id="focus_bracketing_depth_compositing--troubleshooting-guide">Troubleshooting Guide</h2>
 <table>
 <tr><th>Problem</th><th>Likely Cause</th><th>Recommended Solution</th></tr>
 <tr><td>Missing focus slices</td><td>Increment too large</td><td>Lower increment and reshoot</td></tr>
@@ -992,7 +1011,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Too many images</td><td>Shot count too high</td><td>Reduce shots after test stack</td></tr>
 <tr><td>Diffraction softness</td><td>Aperture too small</td><td>Use wider aperture and stack more frames</td></tr>
 </table>
-<h2 id="decision-trees">Decision Trees</h2>
+<h2 id="focus_bracketing_depth_compositing--decision-trees">Decision Trees</h2>
 <p>Tripod?</p>
 <ul>
 <li>No: use only for casual stacks; keep shots low and expect alignment issues.</li>
@@ -1040,7 +1059,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Yes: continue.</li>
 <li>No: lower flash power, raise ISO, slow the sequence, or reduce the number of frames.</li>
 </ul>
-<h2 id="profile-recommendations">Profile Recommendations</h2>
+<h2 id="focus_bracketing_depth_compositing--profile-recommendations">Profile Recommendations</h2>
 <table>
 <tr><th>Profile</th><th>Recommended Starting Point</th></tr>
 <tr><td>Macro</td><td>f/8, increment 1-3, 80-200 shots</td></tr>
@@ -1051,9 +1070,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Insects</td><td>f/8, increment 2-3, 100-200 shots</td></tr>
 <tr><td>Architecture</td><td>f/8, increment 5-10, 5-15 shots</td></tr>
 </table>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="focus_bracketing_depth_compositing--cross-references">Cross References</h2>
 <ul>
-<li>Overview: <a href="#what-it-does">Focus Bracketing overview</a>.</li>
+<li>Overview: <a href="#focus_bracketing_depth_compositing--what-it-does">Focus Bracketing overview</a>.</li>
 <li>Profiles: <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#recommended-settings-by-profile">Macro Profile</a>, <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#recommended-settings-by-profile">Water Drops Profile</a>, Landscape, Product, Flowers, Insects, Architecture.</li>
 <li>Settings: <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#image-stabilization-mode">Image Stabilization</a>, <a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#shutter-type">Electronic vs EFCS vs Mechanical Shutter</a>, and <a href="appendices/Long%20Exposure%20%26%20Night%20Photography.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html#long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction</a>.</li>
 <li>Related appendices:</li>
@@ -1062,22 +1081,65 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="appendices/R5%20Quick%20Reference.html?return=Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html">R5 Quick Reference</a></li>
 </ul>
 </div>
+</div>
 </details>
 <details>
 <summary class="guide">Custom Controls, Back-Button AF &amp; Dial Strategies<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="custom-controls-back-button-af-dial-strategies">Custom Controls, Back-Button AF &amp; Dial Strategies</h1>
-<h2 id="purpose">Purpose</h2>
-<p>Document the owner-confirmed Canon EOS R5 button and dial layout used across the baseline and all subject profiles. Keep Canon capabilities, the current configuration, operating recommendations, and unresolved controls visibly separate.</p>
-<h2 id="what-it-does">What it Does</h2>
-<p>Back-button AF separates autofocus activation from the shutter release. <strong>AF-ON</strong> starts autofocus with the camera&#x27;s current AF settings. <strong>AE Lock</strong> starts autofocus with a precise 1-Point AF override. Choose one AF-start button at a time, then press the shutter to take the picture.</p>
-<p>The physical controls stay consistent across subjects. The baseline and profile overrides continue to own AF Method, Subject Detection, Eye Detection, exposure, drive, and other subject-specific settings.</p>
-<h2 id="owner-confirmed-current-layout">Owner-Confirmed Current Layout</h2>
-<p>These settings were directly confirmed by the project owner on 2026-07-23. They are current configuration, not deductions from the retired screenshots.</p>
+<div class="guide-index-return-wrap"><a class="guide-index-return" href="#back_button_af_custom_button_strategies--index" aria-label="Return to index in Custom Controls, Back-Button AF &amp; Dial Strategies"><span aria-hidden="true">↑&nbsp;</span><span class="guide-index-return__full">Return to index</span><span class="guide-index-return__short">Index</span></a></div>
+<div class="guide-content">
+<h1 id="back_button_af_custom_button_strategies--custom-controls-back-button-af-dial-strategies">Custom Controls, Back-Button AF &amp; Dial Strategies</h1>
+<h2 id="back_button_af_custom_button_strategies--purpose">Purpose</h2>
+<p>Explain why the Canon EOS R5 is configured around complete subject profiles, constant physical controls, and two distinct focusing choices. The architecture is intended to reduce cognitive load in the field: choose the shooting environment, then use the same buttons for tracking or precision.</p>
+<h2 id="back_button_af_custom_button_strategies--index">Index</h2>
+<ul>
+<li><a href="#back_button_af_custom_button_strategies--design-philosophy">Design Philosophy</a></li>
+<li><a href="#back_button_af_custom_button_strategies--approved-layout">Approved Layout</a></li>
+<li><a href="#back_button_af_custom_button_strategies--how-it-works">How It Works</a></li>
+<li><a href="#back_button_af_custom_button_strategies--back-button-philosophy">Back-Button Philosophy</a></li>
+<li><a href="#back_button_af_custom_button_strategies--af-on-intelligent-acquisition">AF-ON: intelligent acquisition</a></li>
+<li><a href="#back_button_af_custom_button_strategies--ae-lock-precision-focus">AE Lock: precision focus</a></li>
+<li><a href="#back_button_af_custom_button_strategies--why-af-operation-remains-current">Why AF Operation remains current</a></li>
+<li><a href="#back_button_af_custom_button_strategies--subject-detection-workflow">Subject Detection Workflow</a></li>
+<li><a href="#back_button_af_custom_button_strategies--c1-c3-fast-implementations-of-subject-cards">C1-C3: Fast Implementations of Subject Cards</a></li>
+<li><a href="#back_button_af_custom_button_strategies--c1-general-wildlife">C1 — General Wildlife</a></li>
+<li><a href="#back_button_af_custom_button_strategies--c2-birds-in-flight-action">C2 — Birds in Flight / Action</a></li>
+<li><a href="#back_button_af_custom_button_strategies--c3-landscape">C3 — Landscape</a></li>
+<li><a href="#back_button_af_custom_button_strategies--other-af-methods">Other AF Methods</a></li>
+<li><a href="#back_button_af_custom_button_strategies--advantages">Advantages and Disadvantages</a></li>
+<li><a href="#back_button_af_custom_button_strategies--recommended-uses">Recommended Uses and When Not to Use</a></li>
+<li><a href="#back_button_af_custom_button_strategies--decision-guide">Decision Guide</a></li>
+<li><a href="#back_button_af_custom_button_strategies--recommended-settings-by-profile">Recommended Settings by Profile</a></li>
+<li><a href="#back_button_af_custom_button_strategies--canon-specific-notes">Canon-Specific Notes</a></li>
+<li><a href="#back_button_af_custom_button_strategies--tips">Tips and Common Mistakes</a></li>
+<li><a href="#back_button_af_custom_button_strategies--operating-principle">Operating Principle</a></li>
+<li><a href="#back_button_af_custom_button_strategies--cross-references">Cross References</a></li>
+</ul>
+<h2 id="back_button_af_custom_button_strategies--design-philosophy">Design Philosophy</h2>
+<ol>
+<li><strong>Keep button behavior constant.</strong> Muscle memory should not change when the subject changes.</li>
+<li><strong>Profiles define the shooting environment.</strong> A profile establishes exposure, drive, stabilization, initial AF Operation, Subject Detection, Eye Detection, and other subject-specific settings.</li>
+<li><strong>Subject Detection belongs to the profile—not the buttons.</strong> Wildlife prioritizes Animals; a people setup prioritizes People; a motorsports setup may prioritize Vehicles.</li>
+<li><strong>Use overrides only when they provide a measurable operational advantage.</strong> The tracking and precision buttons cover the two common focusing decisions. Spot AF or Expand AF Area remains available when a specific situation justifies another method.</li>
+<li><strong>Preserve muscle memory whenever possible.</strong> C1-C3 change the environment; AF-ON and AE Lock keep the same jobs.</li>
+</ol>
+<p>The practical model is:</p>
+<table>
+<tr><th>Question</th><th>Control</th></tr>
+<tr><td>What am I photographing?</td><td>Select the applicable profile or C1-C3 mode.</td></tr>
+<tr><td>Should the camera find and follow the subject?</td><td>Use AF-ON.</td></tr>
+<tr><td>Do I need to place focus exactly here?</td><td>Use AE Lock.</td></tr>
+<tr><td>Is the subject still or moving?</td><td>Start with the profile&#x27;s AF Operation; use the DOF button if it needs to change.</td></tr>
+</table>
+<h2 id="back_button_af_custom_button_strategies--what-it-does">What it Does</h2>
+<p>Back-button AF separates autofocus activation from the shutter release. <strong>AF-ON</strong> starts subject-aware autofocus with Face + Tracking. <strong>AE Lock</strong> starts autofocus with a precise 1-Point AF override. Choose one AF-start button at a time, then press the shutter to take the picture.</p>
+<p>Both AF-start buttons maintain the current AF Operation. A profile may start in Servo AF or One-Shot AF, and the DOF button may switch that state. AF-ON and AE Lock respect the resulting choice instead of secretly forcing Servo AF.</p>
+<h2 id="back_button_af_custom_button_strategies--approved-layout">Approved Layout</h2>
+<p>The physical layout is shared across the baseline and all subject profiles. Settings already confirmed on the camera remain current; the new AF-ON detail and C1-C3 registrations are approved targets pending physical verification.</p>
 <table>
 <tr><th>Physical control</th><th>Assignment</th><th>INFO details or operation</th></tr>
 <tr><td><strong>Shutter half-press</strong></td><td><strong>Metering start</strong></td><td>Does not start autofocus.</td></tr>
-<tr><td><strong>AF-ON</strong></td><td><strong>Metering and AF start</strong></td><td>AF Operation: <strong>Maintain current setting</strong>; AF Method: <strong>Maintain current setting</strong>; Servo AF characteristics: <strong>Maintain current setting</strong>.</td></tr>
+<tr><td><strong>AF-ON</strong></td><td><strong>Metering and AF start</strong></td><td>AF Operation: <strong>Maintain current setting</strong>; AF Method: <strong>Face + Tracking</strong>; Servo AF characteristics: <strong>Maintain current setting</strong>. Approved target pending camera verification.</td></tr>
 <tr><td><strong>AE Lock</strong></td><td><strong>Metering and AF start</strong></td><td>AF Operation: <strong>Maintain current setting</strong>; AF Method: <strong>1-Point AF</strong>; Servo AF characteristics: <strong>Maintain current setting</strong>.</td></tr>
 <tr><td><strong>AF Point Selection</strong></td><td><strong>AF point selection</strong></td><td>Use the <strong>Main Dial</strong> to change the selection.</td></tr>
 <tr><td><strong>Lens AF button</strong></td><td><strong>AF Off</strong></td><td>Stops AF while the lens button is used.</td></tr>
@@ -1093,147 +1155,224 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td><strong>LCD panel illumination button</strong></td><td><strong>Leave default</strong></td><td>No custom assignment in this architecture.</td></tr>
 <tr><td><strong>M-Fn</strong></td><td><strong>Unresolved — review later</strong></td><td>Do not change it as part of this architecture.</td></tr>
 </table>
-<p>C1, C2, and C3 are also unresolved. If adopted later, each should represent a complete shooting configuration resolved from the baseline plus one profile, not an independent AF-only preset.</p>
-<h2 id="how-it-works">How it Works</h2>
-<h3 id="af-on-normal-autofocus">AF-ON: normal autofocus</h3>
-<p>Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and set all three details to <strong>Maintain current setting</strong>:</p>
+<h2 id="back_button_af_custom_button_strategies--how-it-works">How it Works</h2>
+<p>The selected profile or C mode loads the shooting environment. AF-ON and AE Lock then temporarily choose tracking or precision without replacing the active One-Shot/Servo state. The DOF button changes only that AF Operation state.</p>
+<h2 id="back_button_af_custom_button_strategies--back-button-philosophy">Back-Button Philosophy</h2>
+<h3 id="back_button_af_custom_button_strategies--af-on-intelligent-acquisition">AF-ON: intelligent acquisition</h3>
+<p>AF-ON is for speed. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
 <table>
 <tr><th>AF-ON INFO item</th><th>Setting</th></tr>
 <tr><td>AF Operation</td><td>Maintain current setting</td></tr>
-<tr><td>AF Method</td><td>Maintain current setting</td></tr>
+<tr><td>AF Method</td><td>Face + Tracking</td></tr>
 <tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
 </table>
-<p>AF-ON therefore uses the AF configuration currently set on the camera from the applicable merged card. It does not read or activate a YAML profile automatically.</p>
-<h3 id="ae-lock-precise-alternate-autofocus">AE Lock: precise alternate autofocus</h3>
-<p>Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and override only AF Method:</p>
+<p>AF-ON always selects the subject-aware tracking method and uses the profile&#x27;s Subject Detection and Eye Detection choices. With Servo AF active, focus continues updating as the subject moves. With One-Shot AF active, Face + Tracking can identify and acquire the subject, but it does not provide continuous Servo tracking.</p>
+<h3 id="back_button_af_custom_button_strategies--ae-lock-precision-focus">AE Lock: precision focus</h3>
+<p>AE Lock is for precision. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
 <table>
 <tr><th>AE Lock INFO item</th><th>Setting</th></tr>
 <tr><td>AF Operation</td><td>Maintain current setting</td></tr>
 <tr><td>AF Method</td><td>1-Point AF</td></tr>
 <tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
 </table>
-<p>AE Lock starts autofocus itself. It retains the current One-Shot/Servo choice and Servo response while using 1-Point AF. Do not hold AF-ON and AE Lock together.</p>
-<p>Subject Detection and Eye Detection menu values do not need to be changed for the AE Lock override. They remain configured on the camera, but 1-Point AF provides deliberate point placement instead of Face + Tracking behavior.</p>
-<h3 id="other-af-methods">Other AF methods</h3>
-<p>The AE Lock shortcut remains 1-Point AF for consistency. When a profile calls for Spot AF or Expand AF Area, use <strong>AF Point Selection</strong> and the <strong>Main Dial</strong> to select it manually.</p>
-<h2 id="advantages">Advantages</h2>
+<p>AE Lock gives exact point placement and avoids automatic subject switching. Subject Detection and Eye Detection remain stored in the active profile, but they are not used by the 1-Point AF precision method. Do not describe the button as changing those profile menu values to OFF.</p>
+<h3 id="back_button_af_custom_button_strategies--why-af-operation-remains-current">Why AF Operation remains current</h3>
+<p>AF Method and AF Operation answer different questions:</p>
 <ul>
-<li>Separates autofocus activation from image capture.</li>
-<li>Keeps the normal subject configuration and a precise alternate immediately available.</li>
-<li>Requires only one rear AF-start button at a time.</li>
-<li>Preserves current One-Shot/Servo and Servo-response choices on both AF-start buttons.</li>
-<li>Provides direct AF-point movement, recentering, and AF-operation switching.</li>
-<li>Keeps shutter speed, aperture, ISO speed, and exposure compensation on separate physical controls.</li>
-<li>Uses the same physical layout across every subject profile.</li>
+<li><strong>AF Method:</strong> should the camera find the subject, or should the photographer place one point?</li>
+<li><strong>AF Operation:</strong> should focus lock once, or continue updating?</li>
 </ul>
-<h2 id="disadvantages">Disadvantages</h2>
+<p>The profile supplies the normal One-Shot/Servo starting point. The DOF button changes that state when the subject behaves differently than expected. Because both AF-start buttons maintain AF Operation, either button respects the profile and the DOF-button change.</p>
+<h2 id="back_button_af_custom_button_strategies--subject-detection-workflow">Subject Detection Workflow</h2>
+<p>Subject Detection is part of the shooting profile. It is not part of the tracking-versus-precision button choice.</p>
+<table>
+<tr><th>Subject environment</th><th>Subject Detection</th></tr>
+<tr><td>Wildlife</td><td>Animals</td></tr>
+<tr><td>Family / people</td><td>People</td></tr>
+<tr><td>Motorsports</td><td>Vehicles</td></tr>
+<tr><td>Landscape</td><td>None</td></tr>
+</table>
+<p>Changing Subject Detection changes what AF-ON prioritizes while its physical behavior remains constant. AE Lock continues to provide deliberate 1-Point placement regardless of the selected subject category.</p>
+<p>Changing from the complete Wildlife card to the complete People card involves more than Subject Detection: the current project cards also differ in drive, shutter target, and aperture strategy. Changing only Subject Detection is appropriate when the existing exposure and drive environment is already suitable.</p>
+<h2 id="back_button_af_custom_button_strategies--c1-c3-fast-implementations-of-subject-cards">C1-C3: Fast Implementations of Subject Cards</h2>
+<p>C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card.</p>
+<h3 id="back_button_af_custom_button_strategies--c1-general-wildlife">C1 — General Wildlife</h3>
+<p>C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup.</p>
+<p>Examples include perched birds, deer, herons, eagles on a perch, and ducks on the water. Its priorities are deliberate composition, useful image quality, Animal Detection, Eye Detection, and a continuous drive appropriate for wildlife behavior.</p>
+<p>The operating idea is: <strong>the animal is already there</strong>.</p>
+<ul>
+<li>Use AF-ON for fast animal/eye acquisition.</li>
+<li>Use AE Lock for precise focus through grass, branches, or other obstructions.</li>
+<li>Select Spot AF or Expand AF Area manually only when it provides a measurable advantage over the two standard buttons.</li>
+</ul>
+<h3 id="back_button_af_custom_button_strategies--c2-birds-in-flight-action">C2 — Birds in Flight / Action</h3>
+<p>C2 implements the Birds in Flight card for fast-moving wildlife: birds in flight, osprey diving, ducks taking off, swallows, or running animals.</p>
+<p>It retains the same button layout, Animal Detection, Eye Detection, metering philosophy, and tracking-versus-precision choice as C1. Its primary differences are the shooting environment: much faster shutter targets, High Speed Continuous+, action-oriented exposure, and action stabilization.</p>
+<p>The operating idea is: <strong>the animal is moving fast</strong>.</p>
+<ul>
+<li>Use AF-ON as the primary tracking control.</li>
+<li>Use AE Lock when automatic selection repeatedly chooses the wrong subject.</li>
+<li>Use Expand AF Area manually when subject size, obstruction, or background makes it measurably more reliable.</li>
+</ul>
+<h3 id="back_button_af_custom_button_strategies--what-c1-and-c2-should-normally-keep-the-same">What C1 and C2 should normally keep the same</h3>
+<ul>
+<li>Button assignments</li>
+<li>Tracking-versus-precision AF philosophy</li>
+<li>Subject Detection: Animals</li>
+<li>Eye Detection</li>
+<li>Metering philosophy</li>
+<li>Physical control layout</li>
+</ul>
+<p>Exposure targets, drive behavior, and stabilization are what primarily distinguish C1 from C2.</p>
+<h3 id="back_button_af_custom_button_strategies--c3-landscape">C3 — Landscape</h3>
+<p>C3 implements the Landscape card. Landscape deserves the third instant-recall position because it changes the complete operating state rather than only the detected subject:</p>
+<ul>
+<li>Av exposure</li>
+<li>Fixed ISO 100</li>
+<li>One-Shot AF</li>
+<li>Single Shot</li>
+<li>f/8-f/11 aperture strategy</li>
+<li>Tripod, stabilization, and near-to-far sharpness considerations</li>
+</ul>
+<p>Use AE Lock for normal deliberate 1-Point placement. AF-ON remains available when subject-aware acquisition is useful, and it still maintains C3&#x27;s One-Shot AF unless the DOF button changes the operation.</p>
+<p>People does not use a C-mode slot. For a normal people or family shoot, start with <strong>C1</strong>, because it already provides Fv, Auto ISO, Servo AF, Eye Detection, and general handheld stabilization. Then make these changes:</p>
+<table>
+<tr><th>Setting</th><th>Change for people</th></tr>
+<tr><td>Subject Detection</td><td>Change Animals to People</td></tr>
+<tr><td>Drive</td><td>Change High Speed Continuous to Low Speed Continuous</td></tr>
+<tr><td>Shutter target</td><td>Use 1/200-1/320 for portraits or 1/500+ for active people</td></tr>
+<tr><td>Aperture target</td><td>Use f/1.8-f/4 for one person or f/4-f/8 for a group</td></tr>
+</table>
+<p>Keep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people; C3 loads the Landscape settings—ISO 100, One-Shot AF, Single Shot, and f/8-f/11.</p>
+<h2 id="back_button_af_custom_button_strategies--other-af-methods">Other AF Methods</h2>
+<p>The two rear buttons cover the normal tracking and precision decisions. When Spot AF or Expand AF Area is demonstrably better, use <strong>AF Point Selection</strong> and the <strong>Main Dial</strong> to select it manually.</p>
+<p>This is an exception workflow, not a reason to change the constant button assignments.</p>
+<h2 id="back_button_af_custom_button_strategies--advantages">Advantages</h2>
+<ul>
+<li>Reduces field decisions to subject profile, tracking versus precision, and still versus moving.</li>
+<li>Keeps the physical controls consistent across every subject.</li>
+<li>Preserves the profile&#x27;s One-Shot/Servo choice and any DOF-button change.</li>
+<li>Keeps Subject Detection with the profile that defines the subject environment.</li>
+<li>Provides intelligent acquisition and deliberate point placement without menu diving.</li>
+<li>Makes C1-C3 useful as complete shooting setups rather than AF-only presets.</li>
+</ul>
+<h2 id="back_button_af_custom_button_strategies--disadvantages">Disadvantages</h2>
 <ul>
 <li>Half-pressing the shutter no longer starts autofocus.</li>
-<li>The photographer must deliberately choose AF-ON or AE Lock.</li>
 <li>AE Lock is no longer available for its original exposure-lock role.</li>
-<li>The DOF button is no longer available for depth-of-field preview.</li>
+<li>AF-ON temporarily overrides a profile&#x27;s displayed AF Method with Face + Tracking.</li>
+<li>AE Lock provides 1-Point AF, not the smaller Spot AF used in some macro work.</li>
+<li>The photographer must deliberately choose AF-ON or AE Lock and avoid pressing both together.</li>
 <li>A customized camera can be confusing to another photographer unless the layout is documented.</li>
 </ul>
-<h2 id="recommended-uses">Recommended Uses</h2>
-<p>The following are operating recommendations, not additional camera assignments:</p>
+<h2 id="back_button_af_custom_button_strategies--recommended-uses">Recommended Uses</h2>
 <ul>
-<li>Use <strong>AF-ON</strong> for the normal AF configuration selected from the subject card.</li>
-<li>Use <strong>AE Lock</strong> when deliberate 1-Point placement is more reliable than tracking.</li>
-<li>Use <strong>AF Point Selection + Main Dial</strong> when Spot AF or Expand AF Area is more appropriate.</li>
-<li>Use <strong>SET</strong> to recover quickly when the AF point has moved away from the desired starting position.</li>
-<li>Use the <strong>Joystick</strong> for direct AF-point placement.</li>
+<li>Select C1 for general wildlife, C2 for birds in flight or fast animal action, and C3 for landscape.</li>
+<li>Use AF-ON when the camera should identify and follow the subject.</li>
+<li>Use AE Lock when exact placement is more important than automatic recognition.</li>
+<li>Use the DOF button only when the profile&#x27;s starting One-Shot/Servo state no longer matches subject movement.</li>
+<li>Use AF Point Selection + Main Dial for a justified Spot AF or Expand AF Area exception.</li>
+<li>Use SET to recover quickly when the AF point has moved away from the desired starting position.</li>
 </ul>
-<h2 id="when-not-to-use">When Not to Use</h2>
+<h2 id="back_button_af_custom_button_strategies--when-not-to-use">When Not to Use</h2>
 <ul>
 <li>Do not press AF-ON and AE Lock together.</li>
 <li>Do not expect shutter half-press to refocus.</li>
-<li>Do not use back-button AF without practicing before an important shoot.</li>
+<li>Do not describe AF-ON as continuous tracking when One-Shot AF is active.</li>
+<li>Do not describe AE Lock as turning profile Subject Detection or Eye Detection settings OFF.</li>
+<li>Do not force Servo AF from either AF-start button; doing so would defeat the DOF-button workflow.</li>
 <li>Do not change M-Fn while its role remains unresolved.</li>
-<li>Do not rely on Control Ring exposure compensation in Manual exposure with fixed ISO.</li>
 <li>Do not treat C1-C3 as AF-only controls.</li>
 </ul>
-<h2 id="decision-guide">Decision Guide</h2>
+<h2 id="back_button_af_custom_button_strategies--decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Situation</th><th>Control</th><th>Action</th></tr>
-<tr><td>Start AF with the current subject configuration</td><td><strong>AF-ON</strong></td><td>Press or hold; all INFO details maintain current settings.</td></tr>
-<tr><td>Start AF with precise point placement</td><td><strong>AE Lock</strong></td><td>Press or hold; only AF Method changes to 1-Point AF.</td></tr>
+<tr><td>Load general wildlife environment</td><td><strong>C1</strong></td><td>Recall the Wildlife card.</td></tr>
+<tr><td>Load birds-in-flight/action environment</td><td><strong>C2</strong></td><td>Recall the Birds in Flight card.</td></tr>
+<tr><td>Load landscape environment</td><td><strong>C3</strong></td><td>Recall the Landscape card.</td></tr>
+<tr><td>Let the camera find the subject</td><td><strong>AF-ON</strong></td><td>Use Face + Tracking with the current AF Operation.</td></tr>
+<tr><td>Focus exactly at one point</td><td><strong>AE Lock</strong></td><td>Use 1-Point AF with the current AF Operation.</td></tr>
+<tr><td>Change between still and moving focus behavior</td><td><strong>DOF button</strong></td><td>Switch One-Shot AF ↔ Servo AF.</td></tr>
 <tr><td>Select Spot, Expand, or another AF method manually</td><td><strong>AF Point Selection</strong></td><td>Press it and use the Main Dial.</td></tr>
 <tr><td>Move the active AF point</td><td><strong>Joystick</strong></td><td>Move the point or starting position directly.</td></tr>
 <tr><td>Return the AF point to center</td><td><strong>SET</strong></td><td>Press once.</td></tr>
-<tr><td>Change between One-Shot and Servo</td><td><strong>DOF button</strong></td><td>Use One-Shot AF ↔ Servo AF.</td></tr>
 <tr><td>Temporarily stop lens AF</td><td><strong>Lens AF button</strong></td><td>Use AF Off.</td></tr>
-<tr><td>Change shutter speed</td><td><strong>Main Dial</strong></td><td>Rotate the dial.</td></tr>
-<tr><td>Change aperture</td><td><strong>Rear Wheel</strong></td><td>Rotate the wheel.</td></tr>
-<tr><td>Change ISO speed</td><td><strong>Top Rear Dial</strong></td><td>Rotate the dial.</td></tr>
-<tr><td>Apply exposure compensation</td><td><strong>Control Ring</strong></td><td>Rotate the ring; use Auto ISO when working in Manual exposure.</td></tr>
 </table>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="back_button_af_custom_button_strategies--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
-<tr><th>Profile</th><th>AF-ON behavior from current camera settings</th><th>AE Lock or manual alternative</th></tr>
-<tr><td><strong>Birds in Flight</strong></td><td>Face + Tracking, Animals, Servo AF</td><td>AE Lock for 1-Point AF; select Expand AF Area manually when movement is difficult to hold under one point.</td></tr>
-<tr><td><strong>Birds Perched</strong></td><td>Face + Tracking, Animals, Eye Detection</td><td>AE Lock for 1-Point AF through branches; select Spot AF manually for finer placement.</td></tr>
-<tr><td><strong>Wildlife</strong></td><td>Face + Tracking, Animals, Eye Detection</td><td>AE Lock for 1-Point AF through grass or brush; select Expand AF Area manually for movement.</td></tr>
-<tr><td><strong>Sports</strong></td><td>Face + Tracking, People, Servo AF</td><td>AE Lock for 1-Point AF when the wrong player is selected; choose Expand AF Area manually when appropriate.</td></tr>
-<tr><td><strong>People</strong></td><td>Face + Tracking, People, Eye Detection</td><td>AE Lock for deliberate 1-Point placement when the wrong face is selected.</td></tr>
-<tr><td><strong>Macro</strong></td><td>One-Shot AF and Spot AF when autofocus is useful</td><td>AE Lock changes the method to 1-Point; use AF-ON when the profile&#x27;s Spot AF is preferred.</td></tr>
-<tr><td><strong>Landscape</strong></td><td>One-Shot AF with deliberate point placement</td><td>AF-ON follows the current settings; AE Lock may be redundant when the current method is already 1-Point.</td></tr>
-<tr><td><strong>Travel</strong></td><td>Baseline AF unless a subject-specific configuration is selected</td><td>Use AF-ON normally; AE Lock supplies consistent 1-Point AF.</td></tr>
-<tr><td><strong>Fireworks / Waterdrops</strong></td><td>Manual Focus</td><td>Rear AF-start buttons do not replace the manual-focus workflow.</td></tr>
+<tr><th>Profile</th><th>Initial environment</th><th>AF-ON</th><th>AE Lock</th></tr>
+<tr><td><strong>Wildlife / C1</strong></td><td>Servo AF, Animals, Eye Detection, continuous drive</td><td>Face + Tracking</td><td>1-Point AF through vegetation or clutter</td></tr>
+<tr><td><strong>Birds in Flight / C2</strong></td><td>Servo AF, Animals, Eye Detection, fast shutter, High Speed Continuous+</td><td>Face + Tracking</td><td>1-Point AF when automatic selection fails</td></tr>
+<tr><td><strong>Landscape / C3</strong></td><td>One-Shot AF, None, ISO 100, Single Shot</td><td>Face + Tracking while maintaining One-Shot</td><td>Normal deliberate 1-Point placement</td></tr>
+<tr><td><strong>Birds Perched</strong></td><td>Servo AF, Animals, Eye Detection</td><td>Face + Tracking</td><td>1-Point AF through branches</td></tr>
+<tr><td><strong>People</strong></td><td>Servo AF, People, Eye Detection, Low Speed Continuous</td><td>Face + Tracking</td><td>1-Point AF when the wrong face is selected</td></tr>
+<tr><td><strong>Sports</strong></td><td>Servo AF, People, fast drive; change to Vehicles situationally for vehicle-based sports</td><td>Face + Tracking</td><td>1-Point AF when automatic selection fails</td></tr>
+<tr><td><strong>Macro</strong></td><td>One-Shot AF and Spot AF when autofocus is useful</td><td>Face + Tracking override</td><td>1-Point AF; select Spot AF manually when needed</td></tr>
+<tr><td><strong>Travel</strong></td><td>General starting environment</td><td>Face + Tracking</td><td>1-Point AF</td></tr>
+<tr><td><strong>Fireworks / Waterdrops</strong></td><td>Manual Focus</td><td>Rear AF-start buttons do not replace the manual-focus workflow</td><td>Rear AF-start buttons do not replace the manual-focus workflow</td></tr>
 </table>
-<p>These recommendations describe operation only. Subject settings remain owned by the baseline and profile overrides.</p>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="back_button_af_custom_button_strategies--canon-specific-notes">Canon-Specific Notes</h2>
 <p>Verified Canon capabilities:</p>
 <ul>
 <li>The original EOS R5 supports separate custom-button assignments for still-photo and movie use.</li>
-<li>Supported rear buttons can be assigned <strong>Metering and AF start</strong> and can expose advanced AF details through <strong>INFO</strong>.</li>
-<li>The camera provides 1-Point AF, Spot AF, Expand AF Area, Face + Tracking, and the other documented AF methods.</li>
+<li>Supported rear buttons can be assigned <strong>Metering and AF start</strong> and expose AF details through <strong>INFO</strong>.</li>
+<li>The camera provides Face + Tracking, 1-Point AF, Spot AF, Expand AF Area, and other documented AF methods.</li>
+<li>Subject to Detect applies to compatible subject-aware methods. It does not need to be changed when a deliberate-point method is used.</li>
 <li>The Control Ring may be on an RF lens or an EF-EOS R control ring adapter.</li>
 </ul>
 <p>Project configuration:</p>
 <ul>
-<li>The table in <strong>Owner-Confirmed Current Layout</strong> is the project owner&#x27;s confirmed physical setup.</li>
+<li>The physical control layout is the project owner&#x27;s confirmed layout.</li>
+<li>Face + Tracking on AF-ON and the C1-C3 registrations are approved target settings pending physical camera verification.</li>
 <li>Historical screenshots are not current-state evidence.</li>
 <li>Plain physical names are used so the layout is readable in the field.</li>
 </ul>
-<h2 id="tips">Tips</h2>
+<h2 id="back_button_af_custom_button_strategies--tips">Tips</h2>
 <ul>
-<li>Practice AF-ON first, then practice moving to AE Lock without pressing both.</li>
-<li>Test the 1-Point override on a high-contrast stationary subject.</li>
-<li>Confirm AF-ON still follows Face + Tracking after selecting a bird, wildlife, sports, or people configuration.</li>
-<li>Confirm AF-ON follows One-Shot or Spot AF after selecting Landscape or Macro settings.</li>
-<li>Photograph the finished control pages after the architecture is stable.</li>
+<li>Practice the three-step model: select profile, choose AF-ON or AE Lock, then use DOF only if motion behavior changes.</li>
+<li>Test AF-ON and AE Lock in both Servo AF and One-Shot AF to confirm that neither button forces AF Operation.</li>
+<li>Verify C1, C2, and C3 after registration by checking exposure, drive, AF Operation, Subject Detection, and stabilization.</li>
+<li>Test the 1-Point override on a high-contrast stationary subject and through foreground clutter.</li>
+<li>Photograph the finished control and custom-mode pages after physical verification.</li>
 <li>Recheck assignments after a reset or firmware-related settings reset.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="back_button_af_custom_button_strategies--common-mistakes">Common Mistakes</h2>
 <ul>
-<li>Expecting shutter half-press to autofocus.</li>
-<li>Pressing AF-ON and AE Lock together.</li>
-<li>Overriding AF Operation or Servo AF characteristics accidentally in the AE Lock INFO details.</li>
+<li>Treating C1-C3 as AF-only presets instead of complete subject cards.</li>
+<li>Expecting AF-ON to force Servo AF.</li>
+<li>Expecting continuous tracking while One-Shot AF is active.</li>
 <li>Expecting Eye Detection behavior while the 1-Point override is active.</li>
-<li>Assuming AF-ON activates a project profile automatically.</li>
+<li>Assuming AE Lock changes Subject Detection or Eye Detection menu values.</li>
+<li>Pressing AF-ON and AE Lock together.</li>
+<li>Confusing an approved target assignment with a setting already verified on the camera.</li>
 <li>Changing M-Fn before its separate review.</li>
-<li>Expecting exposure compensation to change Manual exposure with fixed ISO.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="back_button_af_custom_button_strategies--operating-principle">Operating Principle</h2>
+<p>The objective of this architecture is to keep muscle memory constant. C1-C3 recall the shooting environment. AF-ON consistently provides intelligent subject acquisition, AE Lock consistently provides precise point placement, and both respect the profile or DOF-selected AF Operation.</p>
+<h2 id="back_button_af_custom_button_strategies--cross-references">Cross References</h2>
 <ul>
 <li>Card: Camera Buttons.</li>
-<li>Profiles: Birds in Flight, Birds Perched, Wildlife, Sports, People, Macro, Landscape, Travel, Fireworks, Waterdrops.</li>
+<li>Custom modes: C1 Wildlife (General Wildlife field label), C2 Birds in Flight (Birds in Flight / Action field label), C3 Landscape.</li>
+<li>Profiles: Wildlife, Birds in Flight, Landscape, Birds Perched, People, Sports, Macro, Travel, Fireworks, Waterdrops.</li>
 <li>Related guides:</li>
 <li><a href="appendices/AF%20Cases%20%26%20Tracking%20Behavior.html?return=Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">AF Cases &amp; Tracking Behavior</a></li>
 <li><a href="appendices/R5%20Quick%20Reference.html?return=Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html">R5 Quick Reference</a></li>
 </ul>
 </div>
+</div>
 </details>
 <details>
 <summary class="guide">AF Cases &amp; Tracking Behavior<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="af-cases-tracking-behavior">AF Cases &amp; Tracking Behavior</h1>
-<h2 id="purpose">Purpose</h2>
+
+<div class="guide-content">
+<h1 id="af_cases_tracking--af-cases-tracking-behavior">AF Cases &amp; Tracking Behavior</h1>
+<h2 id="af_cases_tracking--purpose">Purpose</h2>
 <p>Explain how Canon EOS R5 Servo AF tracking controls change camera response, and provide a repeatable way to correct tracking problems without changing several interacting settings at once.</p>
-<h2 id="what-it-does">What it Does</h2>
+<h2 id="af_cases_tracking--what-it-does">What it Does</h2>
 <p>Servo AF continuously updates focus while autofocus is active. AF Cases and their parameters tune how the camera responds when subject distance, speed, direction, visibility, or priority changes.</p>
 <p>These controls work alongside AF Method, Subject Detection, Eye Detection, and the selected AF area. They do not replace initial subject acquisition or accurate framing.</p>
-<h2 id="how-it-works">How it Works</h2>
+<h2 id="af_cases_tracking--how-it-works">How it Works</h2>
 <table>
 <tr><th>Control</th><th>Lower / locked-on behavior</th><th>Higher / responsive behavior</th></tr>
 <tr><td>Tracking Sensitivity</td><td>Stays with the current subject through brief obstacles</td><td>Transfers focus more quickly when a new target enters the active area</td></tr>
@@ -1242,14 +1381,14 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p>Canon AF Cases combine starting values for tracking behavior. Treat a Case as a starting point, then diagnose the observed failure before adjusting an individual parameter.</p>
 <p>Subject Detection identifies People, Animals, or Vehicles. Eye Detection can refine priority to an eye when the subject and AF method support it. The AF area still controls where the camera can begin or continue looking.</p>
-<h2 id="advantages">Advantages</h2>
+<h2 id="af_cases_tracking--advantages">Advantages</h2>
 <ul>
 <li>A locked-on response can hold focus through branches, players, or momentary obstructions.</li>
 <li>A responsive setting can make intentional target changes faster.</li>
 <li>Increased Accel./Decel. Tracking can help with erratic or rapidly changing motion.</li>
 <li>Subject and Eye Detection can reduce the need to keep a small AF point precisely on a face or eye.</li>
 </ul>
-<h2 id="disadvantages">Disadvantages</h2>
+<h2 id="af_cases_tracking--disadvantages">Disadvantages</h2>
 <ul>
 <li>Over-responsive settings can jump to backgrounds, foreground obstacles, or another subject.</li>
 <li>Overly locked-on settings can cling to the wrong subject after an intentional change.</li>
@@ -1257,12 +1396,12 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Detection can fail when subjects are small, blocked, low contrast, or outside the useful AF area.</li>
 <li>Changing several controls together makes it difficult to identify which change helped.</li>
 </ul>
-<h2 id="recommended-uses">Recommended Uses</h2>
+<h2 id="af_cases_tracking--recommended-uses">Recommended Uses</h2>
 <p>Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.</p>
 <p>Leave tracking behavior near its default until a repeatable failure appears. Tune the failure, not the subject label alone.</p>
-<h2 id="when-not-to-use">When Not to Use</h2>
+<h2 id="af_cases_tracking--when-not-to-use">When Not to Use</h2>
 <p>Use One-Shot AF or Manual Focus for static subjects when focus should not continue updating. When the camera repeatedly chooses the wrong object, use Spot AF, 1-Point AF, or Expand AF Area for more deliberate acquisition; Subject to Detect: None removes category priority but does not disable automatic main-subject selection. Do not use a highly responsive configuration merely because the subject is fast; speed changes and target switching are separate problems.</p>
-<h2 id="decision-guide">Decision Guide</h2>
+<h2 id="af_cases_tracking--decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Observed problem</th><th>First adjustment</th><th>Also check</th></tr>
 <tr><td>Focus jumps to a branch, player, or foreground obstacle</td><td>Move Tracking Sensitivity toward locked-on</td><td>AF area may be too broad</td></tr>
@@ -1274,7 +1413,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Background is selected before the subject</td><td>Start with 1-Point or Expand AF Area</td><td>Reacquire on visible subject detail</td></tr>
 </table>
 <p>After each adjustment, test the same kind of pass or movement again. If the result does not improve, return that control to its prior value before changing another.</p>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="af_cases_tracking--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Profile</th><th>Starting behavior</th><th>Adjustment trigger</th></tr>
 <tr><td>Birds in Flight</td><td>Servo AF, Animals, Eye Detection when reliable; default tracking response</td><td>Lock on more through branches; raise Accel./Decel. for abrupt flight changes</td></tr>
@@ -1282,7 +1421,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Sports</td><td>Servo AF, appropriate people/vehicle detection; default response</td><td>Lock on through players crossing; raise Accel./Decel. for stop-start action</td></tr>
 <tr><td>Wildlife</td><td>Servo AF, Animals and Eye Detection when reliable; default response</td><td>Lock on through vegetation; use a smaller area when detection chooses the background</td></tr>
 </table>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="af_cases_tracking--canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
 <li>AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.</li>
 <li>On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.</li>
@@ -1291,7 +1430,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Back-button AF can make it easier to stop tracking immediately without changing AF Operation.</li>
 <li>Menu wording and available controls can vary with firmware and shooting context; confirm the displayed R5 options before relying on a saved configuration.</li>
 </ul>
-<h2 id="tips">Tips</h2>
+<h2 id="af_cases_tracking--tips">Tips</h2>
 <ul>
 <li>Begin with defaults and change one parameter at a time.</li>
 <li>Test against the real background, not only against a clean wall or sky.</li>
@@ -1299,7 +1438,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Use short, repeatable trials and inspect sequences at useful magnification.</li>
 <li>Save a proven action configuration to an appropriate custom shooting mode only after it is reliable.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="af_cases_tracking--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Treating an AF Case as a complete replacement for AF Method and subject selection.</li>
 <li>Increasing every response control for fast action.</li>
@@ -1308,7 +1447,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Testing multiple changes at once.</li>
 <li>Leaving a specialized configuration active for unrelated subjects.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="af_cases_tracking--cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Birds in Flight, People, Sports, Wildlife.</li>
 <li>Settings: Servo AF, AF Method, Tracking Sensitivity, Accel./Decel. Tracking, Subject Detection, Eye Detection, subject switching.</li>
@@ -1317,16 +1456,19 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="appendices/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.html?return=AF%20Cases%20%26%20Tracking%20Behavior.html">Custom Controls, Back-Button AF &amp; Dial Strategies</a></li>
 </ul>
 </div>
+</div>
 </details>
 <details>
 <summary class="guide">Flash Photography<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="flash-photography">Flash Photography</h1>
-<h2 id="purpose">Purpose</h2>
+
+<div class="guide-content">
+<h1 id="flash_photography--flash-photography">Flash Photography</h1>
+<h2 id="flash_photography--purpose">Purpose</h2>
 <p>Explain practical Canon EOS R5 flash choices for automatic and manual lighting, shutter compatibility, sync behavior, modifiers, wireless setups, macro work, and external triggers.</p>
-<h2 id="what-it-does">What it Does</h2>
+<h2 id="flash_photography--what-it-does">What it Does</h2>
 <p>Flash adds a short, controlled burst of light. It can be the primary light, lift shadows as fill, freeze nearby motion, or create a deliberate balance between subject and ambient exposure.</p>
-<h2 id="how-it-works">How it Works</h2>
+<h2 id="flash_photography--how-it-works">How it Works</h2>
 <p>E-TTL fires a metering preflash and automatically estimates flash output. Manual flash holds a selected power until the photographer changes it. In either mode, aperture, ISO, flash power, modifier efficiency, and flash-to-subject distance affect flash exposure; shutter speed primarily changes ambient exposure up to normal sync limits.</p>
 <table>
 <tr><th>Choice</th><th>Best starting use</th><th>Main tradeoff</th></tr>
@@ -1336,7 +1478,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>High Speed Sync</td><td>Wide aperture or fill flash above normal sync speed</td><td>Substantially reduces power and range</td></tr>
 <tr><td>Rear-curtain sync</td><td>Ambient motion trails that should follow the subject</td><td>Timing is less intuitive and moving subjects must remain predictable</td></tr>
 </table>
-<h2 id="advantages">Advantages</h2>
+<h2 id="flash_photography--advantages">Advantages</h2>
 <ul>
 <li>Adds light where ambient illumination is weak or poorly directed.</li>
 <li>Can freeze nearby motion when flash duration dominates the exposure.</li>
@@ -1345,7 +1487,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Bounce and modifiers can make a small source appear softer.</li>
 <li>Wireless or multiple-flash setups separate direction, intensity, and background control.</li>
 </ul>
-<h2 id="disadvantages">Disadvantages</h2>
+<h2 id="flash_photography--disadvantages">Disadvantages</h2>
 <ul>
 <li>Direct on-camera flash can look flat or harsh.</li>
 <li>E-TTL can vary with framing, bright clothing, mirrors, or reflective surfaces.</li>
@@ -1354,7 +1496,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Multiple flashes, radio systems, and external triggers add setup and failure points.</li>
 <li>Flash cannot illuminate subjects beyond its practical range, including distant fireworks.</li>
 </ul>
-<h2 id="recommended-uses">Recommended Uses</h2>
+<h2 id="flash_photography--recommended-uses">Recommended Uses</h2>
 <ul>
 <li>People: subtle E-TTL fill outdoors or bounced flash indoors.</li>
 <li>Travel: small, restrained fill when flash is allowed and will not disrupt the scene.</li>
@@ -1362,9 +1504,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Waterdrops: low manual power and a compatible trigger to use short flash duration for motion freezing.</li>
 <li>Controlled portraits: manual key/fill/background lights when positions remain fixed.</li>
 </ul>
-<h2 id="when-not-to-use">When Not to Use</h2>
+<h2 id="flash_photography--when-not-to-use">When Not to Use</h2>
 <p>Do not use flash where prohibited, unsafe, distracting, or harmful to the subject. Do not expect a camera-mounted flash to illuminate distant fireworks, stadium action, wildlife beyond its range, or a broad landscape. Avoid a flash/shutter combination that the camera or trigger does not support.</p>
-<h2 id="decision-guide">Decision Guide</h2>
+<h2 id="flash_photography--decision-guide">Decision Guide</h2>
 <table>
 <tr><th>Situation</th><th>Starting choice</th></tr>
 <tr><td>Subject distance changes quickly</td><td>E-TTL; adjust with Flash Exposure Compensation</td></tr>
@@ -1376,7 +1518,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Waterdrop or event must trigger at a precise instant</td><td>Tested external trigger, often with manual flash</td></tr>
 </table>
 <p>For a natural-looking fill, begin with negative Flash Exposure Compensation and increase only if shadows remain too deep. For a controlled manual setup, begin at low-to-moderate power, set aperture and ISO, then adjust power or distance.</p>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="flash_photography--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Profile</th><th>Starting approach</th><th>Important caution</th></tr>
 <tr><td>People</td><td>E-TTL fill or bounce; modest negative Flash Exposure Compensation</td><td>Watch reflective backgrounds and skin highlights</td></tr>
@@ -1385,7 +1527,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Waterdrops</td><td>Manual flash at low power with a tested trigger</td><td>Confirm trigger delay and flash duration before the sequence</td></tr>
 <tr><td>Fireworks</td><td>No flash for distant bursts</td><td>Flash only affects a nearby foreground subject within range</td></tr>
 </table>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="flash_photography--canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
 <li>Mechanical shutter is the safe flash starting point on the EOS R5. Confirm compatibility before using another shutter mode.</li>
 <li>Normal maximum sync speed depends on the camera, shutter configuration, flash, and trigger. Stay at or below the supported sync speed unless High Speed Sync is intentionally enabled.</li>
@@ -1393,7 +1535,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>A third-party trigger may not pass every Canon feature. Test E-TTL, HSS, rear-curtain behavior, wake-up, channel/group control, and timing independently.</li>
 <li>Pluto and similar sensor/timing triggers initiate the capture or flash event; they do not remove shutter, recycle, latency, or electrical-compatibility limits. Use only documented compatible connections and test delay timing before the subject event.</li>
 </ul>
-<h2 id="tips">Tips</h2>
+<h2 id="flash_photography--tips">Tips</h2>
 <ul>
 <li>Bounce from a neutral surface when practical; colored walls can tint the light.</li>
 <li>Move the flash closer or use a more efficient modifier before demanding maximum power.</li>
@@ -1402,7 +1544,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Check one test frame for ambient exposure, then another for flash contribution.</li>
 <li>Carry spare batteries and allow overheated flashes time to cool.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="flash_photography--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Expecting flash to light distant subjects.</li>
 <li>Leaving Flash Exposure Compensation from a previous scene.</li>
@@ -1412,7 +1554,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Assuming every trigger supports every Canon flash function.</li>
 <li>Using Electronic shutter without confirming flash support.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="flash_photography--cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Fireworks, Macro, People, Travel, Waterdrops.</li>
 <li>Settings: flash mode, Flash Exposure Compensation, shutter type, shutter speed, aperture, ISO, drive mode.</li>
@@ -1422,26 +1564,29 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="appendices/Long%20Exposure%20%26%20Night%20Photography.html?return=Flash%20Photography.html">Long Exposure &amp; Night Photography</a></li>
 </ul>
 </div>
+</div>
 </details>
 <details>
 <summary class="guide">Long Exposure &amp; Night Photography<span>Show</span></summary>
 <div class="guide-panel">
-<h1 id="long-exposure-night-photography">Long Exposure &amp; Night Photography</h1>
-<h2 id="purpose">Purpose</h2>
+<div class="guide-index-return-wrap"><a class="guide-index-return" href="#long_exposure_night_photography--table-of-contents" aria-label="Return to index in Long Exposure &amp; Night Photography"><span aria-hidden="true">↑&nbsp;</span><span class="guide-index-return__full">Return to index</span><span class="guide-index-return__short">Index</span></a></div>
+<div class="guide-content">
+<h1 id="long_exposure_night_photography--long-exposure-night-photography">Long Exposure &amp; Night Photography</h1>
+<h2 id="long_exposure_night_photography--purpose">Purpose</h2>
 <p>Explain the Canon R5 choices that matter for long exposures, night photography, fireworks, waterfalls, light painting, Milky Way images, and other tripod-based low-light work.</p>
 <p>This appendix is the single source of truth for Long Exposure Noise Reduction (LENR). Profiles should reference this appendix rather than duplicating LENR explanations.</p>
-<p>Table of contents:</p>
+<h2 id="long_exposure_night_photography--table-of-contents">Table of Contents</h2>
 <ul>
-<li><a href="#long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</a></li>
-<li><a href="#processing-time">Processing Time</a></li>
-<li><a href="#auto-setting">AUTO Setting</a></li>
-<li><a href="#decision-guide">Decision Guide</a></li>
-<li><a href="#recommended-settings-by-profile">Recommended Settings by Profile</a></li>
-<li><a href="#cross-references">Cross References</a></li>
+<li><a href="#long_exposure_night_photography--long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</a></li>
+<li><a href="#long_exposure_night_photography--processing-time">Processing Time</a></li>
+<li><a href="#long_exposure_night_photography--auto-setting">AUTO Setting</a></li>
+<li><a href="#long_exposure_night_photography--decision-guide">Decision Guide</a></li>
+<li><a href="#long_exposure_night_photography--recommended-settings-by-profile">Recommended Settings by Profile</a></li>
+<li><a href="#long_exposure_night_photography--cross-references">Cross References</a></li>
 </ul>
-<h2 id="what-it-does">What it Does</h2>
+<h2 id="long_exposure_night_photography--what-it-does">What it Does</h2>
 <p>Long exposure settings control how the R5 handles multi-second captures, sensor heat, tripod stability, shutter behavior, stabilization, and processing delays.</p>
-<h3 id="long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</h3>
+<h3 id="long_exposure_night_photography--long-exposure-noise-reduction-lenr">Long Exposure Noise Reduction (LENR)</h3>
 <p>Long Exposure Noise Reduction performs a second exposure, called a dark frame, immediately after the original exposure with the shutter closed.</p>
 <p>The camera compares the dark frame with the original exposure and removes or reduces:</p>
 <ul>
@@ -1451,10 +1596,10 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Fixed-pattern sensor noise.</li>
 </ul>
 <p>LENR is different from High ISO Noise Reduction. High ISO Noise Reduction targets high-sensitivity noise; LENR targets artifacts created or revealed by longer exposure times.</p>
-<h2 id="how-it-works">How it Works</h2>
+<h2 id="long_exposure_night_photography--how-it-works">How it Works</h2>
 <p>The camera uses dark frame subtraction. If the original exposure is 30 seconds, the R5 records the main image, then spends roughly another 30 seconds recording a dark frame. The dark frame contains sensor noise patterns but no scene detail, allowing the camera to subtract those artifacts.</p>
 <p>During the dark-frame exposure, the camera cannot take another photograph.</p>
-<h3 id="processing-time">Processing Time</h3>
+<h3 id="long_exposure_night_photography--processing-time">Processing Time</h3>
 <p>LENR effectively doubles capture time.</p>
 <table>
 <tr><th>Exposure</th><th>Camera Busy Time</th></tr>
@@ -1465,7 +1610,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>5 minutes</td><td>10 minutes</td></tr>
 </table>
 <p>The camera may display <code>BUSY</code> while the dark frame is being captured or processed.</p>
-<h2 id="advantages">Advantages</h2>
+<h2 id="long_exposure_night_photography--advantages">Advantages</h2>
 <ul>
 <li>Reduces hot pixels.</li>
 <li>Reduces thermal noise.</li>
@@ -1475,7 +1620,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Is especially useful on warm nights.</li>
 <li>Produces cleaner night photographs directly from the camera.</li>
 </ul>
-<h2 id="disadvantages">Disadvantages</h2>
+<h2 id="long_exposure_night_photography--disadvantages">Disadvantages</h2>
 <ul>
 <li>Doubles shooting time.</li>
 <li>Makes the camera unavailable during processing.</li>
@@ -1484,7 +1629,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Is not efficient for image stacking workflows.</li>
 <li>Can interrupt fireworks, lightning, time-lapse, and changing-light sequences.</li>
 </ul>
-<h2 id="recommended-uses">Recommended Uses</h2>
+<h2 id="long_exposure_night_photography--recommended-uses">Recommended Uses</h2>
 <p>Turn LENR On for important one-off long exposures where maximum single-frame image quality is more important than speed.</p>
 <p>Recommended On:</p>
 <ul>
@@ -1497,7 +1642,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Any important one-off long exposure where maximum image quality is desired.</li>
 </ul>
 <p>For exposures under a few seconds, the benefit is usually minimal. LENR becomes more valuable as exposure duration and sensor heat increase.</p>
-<h2 id="when-not-to-use">When Not to Use</h2>
+<h2 id="long_exposure_night_photography--when-not-to-use">When Not to Use</h2>
 <p>Turn LENR Off for workflows where many images will be captured or combined later.</p>
 <p>Recommended Off:</p>
 <ul>
@@ -1512,10 +1657,10 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Any workflow where many images will be combined later.</li>
 </ul>
 <p>Post-processing software generally provides better results for stacked images than applying LENR to every frame in camera. If shooting many long exposures, disable LENR and remove hot pixels during post-processing or with a planned dark-frame workflow.</p>
-<h3 id="auto-setting">AUTO Setting</h3>
+<h3 id="long_exposure_night_photography--auto-setting">AUTO Setting</h3>
 <p>AUTO lets the camera decide when to apply Long Exposure Noise Reduction.</p>
 <p>AUTO is suitable for general photography and travel, but the user may experience unexpected processing delays. If timing matters, choose On or Off deliberately instead of leaving the decision to the camera.</p>
-<h2 id="decision-guide">Decision Guide</h2>
+<h2 id="long_exposure_night_photography--decision-guide">Decision Guide</h2>
 <p>Long exposure?</p>
 <ul>
 <li>No: Off or Auto.</li>
@@ -1532,7 +1677,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>No: Auto.</li>
 </ul>
 <p>If timing matters more than maximum single-frame cleanup, choose Off.</p>
-<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<h2 id="long_exposure_night_photography--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
 <tr><th>Photography Type</th><th>Recommended Setting</th></tr>
 <tr><td>Normal</td><td>Auto</td></tr>
@@ -1553,11 +1698,11 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Sports</td><td>Off</td></tr>
 <tr><td>Waterdrops</td><td>Off</td></tr>
 </table>
-<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<h2 id="long_exposure_night_photography--canon-specific-notes">Canon-Specific Notes</h2>
 <p>On the Canon EOS R5, Long Exposure Noise Reduction can affect RAW and JPEG workflows because the correction is applied by the camera, not merely stored as a post-processing suggestion.</p>
 <p>The project baseline should avoid forcing LENR On. Use Auto for general/travel workflows when convenience matters, On for single critical long exposures, and Off for stacked or repeated-capture workflows.</p>
 <p>LENR is separate from High ISO Noise Reduction. Do not use LENR as a general high-ISO cleanup tool.</p>
-<h2 id="tips">Tips</h2>
+<h2 id="long_exposure_night_photography--tips">Tips</h2>
 <ul>
 <li>For exposures under a few seconds, the benefit is usually minimal.</li>
 <li>LENR is most valuable for long exposures where sensor heating becomes significant.</li>
@@ -1566,7 +1711,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Decide before the sequence starts; changing mid-shoot can make files inconsistent.</li>
 <li>Watch battery life during long exposure sessions.</li>
 </ul>
-<h2 id="common-mistakes">Common Mistakes</h2>
+<h2 id="long_exposure_night_photography--common-mistakes">Common Mistakes</h2>
 <ul>
 <li>Leaving LENR On after a night shoot.</li>
 <li>Using LENR for waterdrop flash work.</li>
@@ -1575,7 +1720,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Applying LENR to every frame in a stacking workflow.</li>
 <li>Forgetting that processing delay scales with exposure length.</li>
 </ul>
-<h2 id="cross-references">Cross References</h2>
+<h2 id="long_exposure_night_photography--cross-references">Cross References</h2>
 <ul>
 <li>Profiles: Camera Defaults, Fireworks, Landscape, Macro, Travel, Waterdrops.</li>
 <li>Settings: <code>image.long_exposure_noise_reduction.value</code>, shutter speed, drive mode, ISO, flash mode.</li>
@@ -1584,6 +1729,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li><a href="appendices/Flash%20Photography.html?return=Long%20Exposure%20%26%20Night%20Photography.html">Flash Photography</a></li>
 <li><a href="appendices/R5%20Quick%20Reference.html?return=Long%20Exposure%20%26%20Night%20Photography.html">R5 Quick Reference</a></li>
 </ul>
+</div>
 </div>
 </details>
 </div>
