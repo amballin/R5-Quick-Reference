@@ -49,7 +49,7 @@ defaults:
     eye_detection: Disable
     method: 1-Point AF
   drive:
-    mode: "Single Shooting"
+    mode: "Single Shot"
   shutter:
     type: "Mechanical"
     target:

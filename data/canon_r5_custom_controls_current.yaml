@@ -1,11 +1,12 @@
 camera: Canon EOS R5
-record_type: owner_confirmed_current_controls
+record_type: owner_confirmed_controls_with_approved_targets
 last_confirmed: 2026-07-23
+approved_architecture_date: 2026-07-24
 authority: project_owner
 
 evidence:
   owner_confirmation:
-    status: authoritative_current_state
+    status: applies_only_to_entries_marked_owner_confirmed
   historical_screenshots:
     ids:
       - IMG_6335
@@ -19,6 +20,7 @@ evidence:
   rules:
     - Keep Canon capabilities separate from chosen assignments.
     - Keep recommendations separate from owner-confirmed settings.
+    - Keep approved targets separate from settings physically verified on the camera.
     - Do not infer unresolved assignments.
 
 buttons:
@@ -27,10 +29,10 @@ buttons:
     status: owner_confirmed
   - control: AF-ON
     assignment: Metering and AF start
-    status: owner_confirmed
+    status: approved_target_pending_camera_verification
     info_details:
       af_operation: Maintain current setting
-      af_method: Maintain current setting
+      af_method: Face + Tracking
       servo_af_characteristics: Maintain current setting
   - control: AE Lock
     assignment: Metering and AF start
@@ -84,8 +86,16 @@ dials:
 
 custom_shooting_modes:
   intended_role: Complete shooting configurations within baseline-plus-overrides
-  C1: UNRESOLVED
-  C2: UNRESOLVED
-  C3: UNRESOLVED
-  status: unresolved
+  C1:
+    profile_title: Wildlife
+    field_label: General Wildlife
+    status: approved_target_pending_camera_verification
+  C2:
+    profile_title: Birds in Flight
+    field_label: Birds in Flight / Action
+    status: approved_target_pending_camera_verification
+  C3:
+    profile_title: Landscape
+    field_label: Landscape
+    status: approved_target_pending_camera_verification
   restriction: Do not document these modes as independent AF-setting controls.

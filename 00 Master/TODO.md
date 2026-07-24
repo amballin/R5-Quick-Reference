@@ -1,0 +1,27 @@
+# Project To-Do
+
+This file records approved follow-up work and analysis candidates that should not be lost. It is repository planning material, not published Field Guide content and not a source of binding architecture. Promote a decision through the normal approval process before implementing any architectural item.
+
+## Control Architecture Follow-Up
+
+- Physically configure and verify AF-ON with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to Face + Tracking.
+- Physically configure and verify AE Lock with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF.
+- Register and verify C1 as General Wildlife, C2 as Birds in Flight / Action, and C3 as Landscape.
+- Verify that the DOF button changes One-Shot AF ↔ Servo AF and that both AF-start buttons respect the resulting state.
+- Create a short on-camera verification checklist for AF-ON, AE Lock, DOF, and C1-C3.
+- Decide whether Spot AF needs another immediate control for serious macro work.
+
+## Architecture and Validation Improvements
+
+- Generate duplicate control tables from one authoritative machine-readable control source.
+- Add validation that rejects the deprecated registered-AF workflow terminology.
+
+## Macro Refinement
+
+- Refine the Macro profile and guidance as a separately approved content change.
+- Review Spot AF, 1-Point AF, manual focus, magnification, peaking, and the role of AF-ON versus AE Lock at macro distances.
+- Review stabilization at macro distances for handheld, tripod, and controlled-support workflows.
+- Refine focus-bracketing starting points by magnification, subject depth, aperture, increment, and shot count.
+- Expand flash-versus-ambient guidance, working-distance considerations, diffraction tradeoffs, and support recommendations.
+- Review whether the Canon EF 100mm f/2.8L Macro IS USM needs more explicit lens-specific operating guidance without duplicating the Lens Capabilities appendix.
+- Keep advanced high-magnification, MP-E 65mm, automated rail, StackShot, vibration-control, and stacking workflow work as a later phase.

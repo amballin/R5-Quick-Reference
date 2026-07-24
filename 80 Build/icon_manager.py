@@ -62,7 +62,6 @@ FOCUS_FEATURE_IDS = {
 
 OFFICIAL_VALUE_ICONS = {
     ("autofocus.operation", "Manual Focus"): "60 Assets/icons/canon_r5_official/lens_mf.svg",
-    ("autofocus.operation", "One Shot AF"): "60 Assets/icons/canon_r5_official/lens_af.svg",
     ("autofocus.operation", "One-Shot AF"): "60 Assets/icons/canon_r5_official/lens_af.svg",
     ("autofocus.operation", "Servo AF"): "60 Assets/icons/canon_r5_official/lens_af.svg",
     ("autofocus.eye_detection", "Disable"): "60 Assets/icons/canon_r5_official/eye_detection.svg",
@@ -75,7 +74,6 @@ OFFICIAL_VALUE_ICONS = {
     ("drive.mode", "High Speed Continuous"): "60 Assets/icons/canon_r5_official/high_speed_continuous_shooting.svg",
     ("drive.mode", "High Speed Continuous+"): "60 Assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg",
     ("drive.mode", "Low Speed Continuous"): "60 Assets/icons/canon_r5_official/low_speed_continuous_shooting.svg",
-    ("drive.mode", "Single Shooting"): "60 Assets/icons/canon_r5_official/single_shooting.svg",
     ("drive.mode", "Single Shot"): "60 Assets/icons/canon_r5_official/single_shooting.svg",
     ("drive.mode", "Self-timer: 10 sec."): "60 Assets/icons/canon_r5_official/self_timer_10_sec_remote_control.svg",
     ("drive.mode", "Self-timer: 2 sec."): "60 Assets/icons/canon_r5_official/self_timer_2_sec_remote_control.svg",

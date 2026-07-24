@@ -1,11 +1,13 @@
 camera: Canon EOS R5
-status: owner_confirmed_current
+status: owner_confirmed_layout_with_approved_targets
 last_confirmed: 2026-07-23
-authority: Direct confirmation from the project owner
+approved_architecture_date: 2026-07-24
+authority: Direct confirmation and approval from the project owner
 
 evidence_rules:
   - Canon capability statements describe what the camera supports; they do not establish the chosen setup.
-  - Owner-confirmed assignments are the authoritative record of the current chosen setup.
+  - Owner-confirmed status applies only to entries physically verified on the camera.
+  - Approved target assignments remain pending until physically verified on the camera.
   - Recommendations must be labeled as recommendations and must not be presented as current settings.
   - Unresolved items remain unresolved until the owner decides them.
   - IMG_6335 through IMG_6340 are retired historical evidence and are not reliable evidence of the current setup.
@@ -16,10 +18,10 @@ controls:
     status: owner_confirmed
   - control: AF-ON
     assignment: Metering and AF start
-    status: owner_confirmed
+    status: approved_target_pending_camera_verification
     info_details:
       AF Operation: Maintain current setting
-      AF Method: Maintain current setting
+      AF Method: Face + Tracking
       Servo AF characteristics: Maintain current setting
   - control: AE Lock
     assignment: Metering and AF start
@@ -75,17 +77,21 @@ dials:
 custom_shooting_modes:
   architecture: Complete shooting configurations within the baseline-plus-overrides system
   C1:
-    assignment: UNRESOLVED
-    status: unresolved
+    profile_title: Wildlife
+    field_label: General Wildlife
+    status: approved_target_pending_camera_verification
   C2:
-    assignment: UNRESOLVED
-    status: unresolved
+    profile_title: Birds in Flight
+    field_label: Birds in Flight / Action
+    status: approved_target_pending_camera_verification
   C3:
-    assignment: UNRESOLVED
-    status: unresolved
+    profile_title: Landscape
+    field_label: Landscape
+    status: approved_target_pending_camera_verification
   notes:
     - Do not treat C1, C2, or C3 as independent AF-setting controls.
-    - Define each mode only after the owner approves its complete shooting configuration.
+    - Each mode implements the corresponding complete subject card.
+    - Confirm the registrations on the physical camera before describing them as current.
 
 retired_evidence:
   status: historical_not_current

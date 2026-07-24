@@ -43,6 +43,9 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 - Entries without `release: true` remain generated and linkable from released documentation, but are not listed in either published index section.
 - Preserve existing appendix sources, manifest compatibility, rendering, and output locations unless explicitly approved.
 - Standalone published appendices and Setting Deep Dives use the same Camera Settings header and inherited baseline `card.icons.header` as profile cards. The centered title always links to the main index. Back returns to the originating profile card when a valid generated card return target is supplied; otherwise it returns to the main index. Navigation must remain inside the generated reference system and must not depend on browser history.
+- An appendix with a front `Index`, `Topic Index`, or `Table of Contents` heading provides a persistent internal **Return to index** control both on its standalone page and inside its expanded panel on the main index. Print/output rendering omits this control.
+- Embedded appendix heading IDs and internal fragment links are namespaced per appendix so duplicate source heading IDs cannot send a link into a different expanded guide.
+- Internal heading targets use sufficient scroll offset to remain visible below the sticky Camera Settings header.
 
 ## Enforcement and Evidence
 

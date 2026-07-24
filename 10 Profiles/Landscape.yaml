@@ -10,7 +10,7 @@ card:
 inherits: baseline
 overrides:
   autofocus:
-    operation: One Shot AF
+    operation: One-Shot AF
   exposure:
     mode: Av
     iso:

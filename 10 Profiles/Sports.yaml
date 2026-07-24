@@ -37,6 +37,8 @@ watch_for:
 common_mistakes:
   - Shutter too slow
 notes:
-  - Use People detection and Face + Tracking for people sports; switch to Expand AF Area if detection is unreliable.
+  - Use People detection and Face + Tracking for people sports.
+  - For motorsports or other vehicle-based sports, change Subject Detection situationally from People to Vehicles; this is a field change within Sports, not a separate profile.
+  - Switch to Expand AF Area if detection is unreliable.
   - Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
   - Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.

@@ -21,8 +21,6 @@ overrides:
         option: f/4-f/5.6 if using very short Bulb/timed exposures around 1-2 sec'
   autofocus:
     operation: Manual Focus
-  drive:
-    mode: Single Shot
   stabilization:
     ibis: 'Off'
     lens_is: 'Off'

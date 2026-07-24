@@ -227,10 +227,16 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .hint{{color:var(--muted);font-size:13px;margin:8px 4px 0}}
 .card-links{{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:10px auto 0}}
 .card-links a{{color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:8px 11px;text-decoration:none}}
-.guide-panel{{background:#f8fafc;color:#172033;border-radius:10px;padding:16px;overflow:auto}}
+.guide-panel{{position:relative;background:#f8fafc;color:#172033;border-radius:10px;padding:16px}}
+.guide-content{{overflow-x:auto}}
+.guide-index-return-wrap{{position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px);z-index:4;display:flex;justify-content:flex-end;height:0;overflow:visible}}
+.guide-index-return{{display:inline-flex;align-items:center;min-height:42px;margin-top:8px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);color:#165d9c;font-size:14px;font-weight:700;text-decoration:none}}
+.guide-index-return__short{{display:none}}
+.guide-index-return:focus-visible{{outline:2px solid #165d9c;outline-offset:2px}}
 .guide-panel h1{{font-size:26px;color:#172033}}
 .guide-panel h2{{color:#172033;border-bottom:1px solid #d7dee8}}
 .guide-panel h3{{color:#172033}}
+.guide-panel :where(h1,h2,h3,h4,h5,h6)[id]{{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 100px)}}
 .guide-panel table{{border-collapse:collapse;width:100%;font-size:13px}}
 .guide-panel th,.guide-panel td{{border:1px solid #d7dee8;padding:6px;text-align:left;vertical-align:top}}
 .guide-panel .subtitle{{color:#5c6670;font-size:14px}}
@@ -244,6 +250,8 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .guide-panel .label{{color:#9a1025;font-size:12px;font-weight:700;margin-top:3px}}
 .guide-panel .meta{{color:#5c6670;font-size:11px;line-height:1.25;margin-top:6px}}
 .guide-panel .no-asset{{font-size:11px;color:#5c6670;text-align:center;line-height:1.15;padding:4px}}
+@media print{{.guide-index-return-wrap{{display:none!important}}}}
+@media (max-width:480px){{.guide-index-return__full{{display:none}}.guide-index-return__short{{display:inline}}}}
 </style>
 </head>
 <body>
@@ -286,12 +294,61 @@ def _card_details(card, guide_targets):
 def _guide_details(guide):
     label = escape(guide["title"])
     body = _html_body(guide["html"])
+    index_anchor = _front_index_anchor(body)
+    body, anchor_prefix = _namespace_guide_anchors(body, guide.get("id") or guide["title"])
+    index_return = ""
+    if index_anchor:
+        target = f"{anchor_prefix}--{index_anchor}"
+        index_return = (
+            '<div class="guide-index-return-wrap">'
+            f'<a class="guide-index-return" href="#{target}" aria-label="Return to index in {label}">'
+            '<span aria-hidden="true">↑&nbsp;</span>'
+            '<span class="guide-index-return__full">Return to index</span>'
+            '<span class="guide-index-return__short">Index</span>'
+            '</a></div>'
+        )
     return f"""<details>
 <summary class="guide">{label}<span>Show</span></summary>
 <div class="guide-panel">
+{index_return}
+<div class="guide-content">
 {body}
 </div>
+</div>
 </details>"""
+
+
+def _front_index_anchor(body):
+    for anchor in ("topic-index", "index", "table-of-contents"):
+        if re.search(rf'\bid="{re.escape(anchor)}"', body, flags=re.IGNORECASE):
+            return anchor
+    return None
+
+
+def _namespace_guide_anchors(body, guide_id):
+    prefix = re.sub(r"[^a-z0-9_-]+", "-", str(guide_id).lower()).strip("-") or "guide"
+    anchors = {}
+
+    def namespace_id(match):
+        source_id = match.group(1)
+        occurrence = anchors.get(source_id, 0) + 1
+        anchors[source_id] = occurrence
+        suffix = "" if occurrence == 1 else f"--{occurrence}"
+        return f'id="{prefix}--{source_id}{suffix}"'
+
+    body = re.sub(
+        r'\bid="([^"]+)"',
+        namespace_id,
+        body,
+        flags=re.IGNORECASE,
+    )
+    body = re.sub(
+        r'href="#([^"]+)"',
+        lambda match: f'href="#{prefix}--{match.group(1)}"',
+        body,
+        flags=re.IGNORECASE,
+    )
+    return body, prefix
 
 
 def _write_appendices(target_dir, guides):

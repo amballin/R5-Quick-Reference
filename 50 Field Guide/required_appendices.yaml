@@ -186,7 +186,9 @@ appendices:
       - Birds in Flight
       - Birds Perched
       - Camera Buttons
+      - Landscape
       - Macro
+      - People
       - Sports
       - Wildlife
     related_appendices:
@@ -194,6 +196,13 @@ appendices:
       - r5_quick_reference
     required_topics:
       - Back-button AF
+      - Design Philosophy
+      - Subject Detection workflow
+      - Profile-owned AF Operation
+      - One-Shot and Servo override workflow
+      - C1 General Wildlife
+      - C2 Birds in Flight
+      - C3 Landscape
       - Metering start
       - Metering and AF start
       - Set AF point to center

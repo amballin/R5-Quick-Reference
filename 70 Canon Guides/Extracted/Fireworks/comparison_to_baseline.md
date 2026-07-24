@@ -5,6 +5,7 @@
 - `display.histogram`: `RGB`
 - `display.highlight_alert`: `Enabled`
 - `image.picture_style`: `Neutral`
+- `drive.mode`: `Single Shot`
 
 ## Added As Overrides
 
@@ -16,7 +17,6 @@
 - `exposure.iso.mode`: `Auto` -> `Fixed`
 - `exposure.iso.value`: `None` -> `100`
 - `autofocus.operation`: `Servo AF` -> `Manual Focus`
-- `drive.mode`: `Single Shooting` -> `Single Shot`
 - `stabilization.ibis`: `On` -> `Off`
 - `stabilization.lens_is`: `On` -> `Off`
 - `image.white_balance`: `AWB` -> `Daylight`
@@ -31,3 +31,4 @@
 - `display.histogram`
 - `display.highlight_alert`
 - `image.picture_style`
+- `drive.mode`

@@ -83,6 +83,7 @@ def _site_home_url(output_path, site_root):
 def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True, paths=None):
     navigation = _appendix_navigation(site_home_url, navigation_enabled, paths)
     content = _markdown_to_html(markdown)
+    index_return = _index_return_control(markdown)
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,16 +97,24 @@ main{{max-width:860px;margin:0 auto;padding:24px 24px 40px}}
 h1{{font-size:34px}}
 h2{{border-bottom:1px solid #d7dee8;padding-bottom:4px;margin-top:32px}}
 h3{{margin-top:24px}}
+:where(h1,h2,h3,h4,h5,h6)[id]{{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}}
 table{{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;width:100%;margin:16px 0;-webkit-overflow-scrolling:touch}}
 th,td{{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}}
 code{{background:#eef2f7;padding:2px 4px;border-radius:4px}}
 a{{color:#165d9c}}
+.appendix-index-return{{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}}
+.appendix-index-return__short{{display:none}}
+.appendix-index-return:focus-visible{{outline:2px solid #165d9c;outline-offset:2px}}
+.output-mode .appendix-index-return{{display:none!important}}
+@media print{{.appendix-index-return{{display:none!important}}}}
+@media (max-width:480px){{.appendix-index-return__full{{display:none}}.appendix-index-return__short{{display:inline}}}}
 {SITE_NAV_CSS}
 </style>
 </head>
 <body>
 {navigation}
 <main>{content}</main>
+{index_return}
 </body>
 </html>
 """
@@ -210,6 +219,7 @@ h1{{margin:0 0 8px;font-size:28px;line-height:1.15;letter-spacing:0}}
 main{{padding:24px 24px 40px}}
 .category{{margin:0 0 28px}}
 h2{{margin:0 0 12px;font-size:18px;letter-spacing:0}}
+:where(h1,h2,h3,h4,h5,h6)[id]{{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:10px}}
 .icon-card{{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;min-height:84px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff}}
 .icon-frame{{width:52px;height:52px;display:grid;place-items:center;background:var(--panel);border:1px solid #e7eaee;border-radius:6px;overflow:hidden}}
@@ -350,6 +360,19 @@ def _markdown_to_html(markdown):
     close_list()
     flush_table()
     return "\n".join(out)
+
+
+def _index_return_control(markdown):
+    for heading in ("Topic Index", "Index", "Table of Contents"):
+        if re.search(rf"(?mi)^##\s+{re.escape(heading)}\s*$", markdown):
+            anchor = _anchor(heading)
+            label = "Return to index" if heading == "Index" else f"Return to {heading.lower()}"
+            return (
+                f'<a class="appendix-index-return" href="#{anchor}" aria-label="{html.escape(label)}">'
+                f'<span aria-hidden="true">↑&nbsp;</span><span class="appendix-index-return__full">{html.escape(label)}</span>'
+                '<span class="appendix-index-return__short">Index</span></a>'
+            )
+    return ""
 
 
 def _inline(text):

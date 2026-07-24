@@ -25,7 +25,7 @@ overrides:
       target: f/8
 
   autofocus:
-    operation: One Shot AF
+    operation: One-Shot AF
     method: Spot AF
 checklist:
   - Stable support

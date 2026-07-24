@@ -26,4 +26,4 @@ Profiles use the existing keys documented by `00 Master/schema.yaml`, including 
 - `80 Build/validators/yaml_validator.py` rejects malformed or duplicate-key YAML.
 - Build and PWA code under `80 Build/` implements merging and release filtering; generated-output and PWA validators provide integration evidence.
 
-The current validator checks that overrides are valid but does not reject an override merely because its value equals the baseline. The no-duplication rule therefore also requires review until a dedicated check exists.
+The profile validator rejects an override when its value equals the baseline, enforcing the baseline-plus-overrides no-duplication rule.

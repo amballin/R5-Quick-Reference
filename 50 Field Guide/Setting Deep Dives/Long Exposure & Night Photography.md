@@ -6,7 +6,7 @@ Explain the Canon R5 choices that matter for long exposures, night photography, 
 
 This appendix is the single source of truth for Long Exposure Noise Reduction (LENR). Profiles should reference this appendix rather than duplicating LENR explanations.
 
-Table of contents:
+## Table of Contents
 
 - [Long Exposure Noise Reduction (LENR)](#long-exposure-noise-reduction-lenr)
 - [Processing Time](#processing-time)

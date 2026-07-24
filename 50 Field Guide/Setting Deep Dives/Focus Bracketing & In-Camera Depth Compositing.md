@@ -10,7 +10,7 @@ Multiple focused images often produce better results than stopping down to very 
 
 Use this appendix as a field guide for estimating Focus Bracketing settings with minimal trial and error.
 
-Table of contents:
+## Table of Contents
 
 - [Camera Requirements](#camera-requirements)
 - [Every Camera Setting Explained](#every-camera-setting-explained)

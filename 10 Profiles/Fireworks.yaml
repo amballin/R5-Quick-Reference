@@ -33,9 +33,6 @@ overrides:
     operation: Manual Focus
     method: Not Used
 
-  drive:
-    mode: Single Shot
-
   stabilization:
     image_stabilization:
       mode: "Off"

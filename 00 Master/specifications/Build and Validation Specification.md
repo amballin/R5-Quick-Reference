@@ -43,6 +43,7 @@ Run `python3 "80 Build/validator.py"` after relevant changes. It orchestrates va
 - baseline shape (`baseline_validator.py`);
 - card-layout structure and required-setting alignment (`card_layout_validator.py`);
 - governing-document presence, local links, stale retired references, and decision statuses (`governance_validator.py`);
+- agreement between the two custom-control records, valid five-class control statuses, canonical C1–C3 profile mappings, and canonical setting terminology (`control_validator.py`);
 - appendix manifest/content relationships (`appendix_validator.py`);
 - profile inheritance and overrides (`profile_validator.py`);
 - assets/icons (`icon_validator.py`);
@@ -62,6 +63,7 @@ Run the dedicated `validators/validate_canon_r5_icons.py` when Canon icon refere
 | `00 Master/baseline.yaml` | Shared defaults and camera/workflow context | `baseline_validator.py`, `profile_validator.py`, `yaml_validator.py` |
 | `00 Master/schema.yaml` | Intended profile/YAML field structure | `yaml_validator.py`; parts are enforced directly by `profile_validator.py` |
 | `00 Master/card_layout.yaml` | Card-row display order plus always-shown rows and labels | `card_layout_validator.py`, `yaml_validator.py`; consumed by rendering/build code, with output review |
+| `controls.yaml` and `data/canon_r5_custom_controls_current.yaml` | Verified current controls, approved targets, and canonical C1–C3 profile mappings | `control_validator.py`, `yaml_validator.py` |
 | `50 Field Guide/required_appendices.yaml` | Required appendices, sections, relationships, topics, exceptions, release flags | `appendix_validator.py`, rendering/build and PWA validation |
 
 `80 Build/validator.py` is the validation entry point. A passing validator means its implemented checks passed; it does not replace visual card review, documentation-reference review, or review of requirements not yet encoded as checks.

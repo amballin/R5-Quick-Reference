@@ -2,10 +2,50 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Five-Class Evidence Model and Canonical Camera Terminology
+
+**Status:** Accepted
+**Date:** 2026-07-24
+
+Use five explicit evidence classes in camera-control records: **verified Canon capability**, **owner-confirmed current configuration**, **approved target pending physical verification**, **project recommendation**, and **unresolved item**. An approved target is an owner-approved setup instruction but must not be described as physically current until it is verified on the camera. Any record-level current-state label applies only to entries explicitly marked owner-confirmed, not to approved targets in the same file.
+
+Use **One-Shot AF** and **Single Shot** as the canonical project values. C1, C2, and C3 machine-readable mappings identify their source cards by exact canonical profile title: `Wildlife`, `Birds in Flight`, and `Landscape`. Optional field labels may remain **General Wildlife**, **Birds in Flight / Action**, and **Landscape**. Validate the duplicated control records against each other and verify that every mapped profile exists.
+
+The Sports profile starts with People detection. Vehicles is a situational change for vehicle-based sports, not a separate profile.
+
+## Appendix Index Return Navigation
+
+**Status:** Accepted
+**Date:** 2026-07-24
+
+Appendices with a front **Index**, **Topic Index**, or **Table of Contents** provide a persistent **Return to index** control both on standalone generated pages and inside their expanded panel on the main index. Keep the control out of print/output rendering. Embedded appendix heading IDs and internal fragment links are namespaced per appendix so links cannot land in a different expanded guide with the same heading ID. Anchor destinations must include enough scroll offset for the sticky Camera Settings header so the destination heading remains visible rather than being covered by the header.
+
+## Subject-Profile Custom Modes and Tracking/Precision AF Buttons
+
+**Status:** Accepted
+**Date:** 2026-07-24
+
+Use C1, C2, and C3 as fast camera-side implementations of complete subject cards:
+
+- **C1 — Wildlife** (field label: General Wildlife)
+- **C2 — Birds in Flight** (field label: Birds in Flight / Action)
+- **C3 — Landscape**
+
+The selected profile or custom mode establishes the shooting environment, including its initial AF Operation, Subject Detection, Eye Detection, exposure, drive, and other subject-specific settings. Subject Detection belongs to the profile, not to a physical focusing button.
+
+Keep the two rear AF-start buttons constant across profiles. **AF-ON** starts metering and AF while maintaining the current AF Operation and Servo AF characteristics and temporarily selecting **Face + Tracking** for intelligent subject acquisition. **AE Lock** starts metering and AF while maintaining the current AF Operation and Servo AF characteristics and temporarily selecting **1-Point AF** for precise point placement. The **DOF button** remains the One-Shot AF ↔ Servo AF control; because both AF-start buttons maintain AF Operation, they respect the profile state and any DOF-button change.
+
+AF-ON always selects the subject-aware tracking method, but continuous focus updating occurs only when the current AF Operation is Servo AF. Subject Detection and Eye Detection menu values remain profile settings; they are not used by the 1-Point AF precision override. Spot AF and Expand AF Area remain deliberate situational alternatives selected manually when they provide a measurable advantage.
+
+The Deep Dive is the primary explanation of this operating philosophy. The Camera Buttons card remains concise. Owner-confirmed-current records must distinguish settings physically verified on the camera from this approved target configuration until the new AF-ON detail and C1-C3 registrations are confirmed on the camera.
+
+This decision supersedes the AF-ON AF Method and unresolved C1-C3 portions of **Owner-Confirmed EOS R5 Button and Dial Architecture** (2026-07-23). Its remaining physical layout, dial assignments, evidence boundaries, default-button choices, M-Fn status, and documentation placement remain in force.
+
 ## Owner-Confirmed EOS R5 Button and Dial Architecture
 
 **Status:** Accepted
 **Date:** 2026-07-23
+**Superseded in part by:** Subject-Profile Custom Modes and Tracking/Precision AF Buttons (2026-07-24), for AF-ON AF Method and C1-C3 only
 
 Use one owner-confirmed physical button and dial layout across the baseline and all subject profiles. AF-ON starts metering and AF with AF Operation, AF Method, and Servo AF characteristics set to Maintain current setting. AE Lock starts metering and AF while overriding only AF Method to 1-Point AF. This gives one normal AF-start button and one precise AF-start button.
 

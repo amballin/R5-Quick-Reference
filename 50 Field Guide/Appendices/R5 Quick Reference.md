@@ -131,7 +131,7 @@ AF lets the camera drive focus. MF leaves focus under manual control from the le
 
 #### AF Operation
 
-Use Servo AF for movement, One Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.
+Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.
 
 | Icon | Setting | What it Does |
 |---|---|---|
@@ -225,11 +225,11 @@ Change one control at a time and test it against the actual background and subje
 
 #### Drive Mode
 
-Single Shooting is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.
+Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.
 
 | Icon | Setting | What it Does |
 |---|---|---|
-| ![Single shooting](../../60 Assets/icons/canon_r5_official/single_shooting.svg) | Single Shooting | Takes one frame per shutter press for deliberate work. |
+| ![Single shooting](../../60 Assets/icons/canon_r5_official/single_shooting.svg) | Single Shot | Takes one frame per shutter press for deliberate work. |
 | ![Low-speed continuous shooting](../../60 Assets/icons/canon_r5_official/low_speed_continuous_shooting.svg) | Low Speed Continuous | Captures short bursts without creating too many files. |
 | ![High-speed continuous shooting](../../60 Assets/icons/canon_r5_official/high_speed_continuous_shooting.svg) | High Speed Continuous | Increases capture rate for movement and changing expressions. |
 | ![High-speed continuous shooting plus](../../60 Assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg) | High Speed Continuous+ | Maximizes capture rate for fast action, with more files to sort later. |
@@ -357,12 +357,12 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 - Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.
 - Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.
 - Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.
-- Landscape: One Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
-- Macro: One Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
+- Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
+- Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
 - People: Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. Use Expand AF Area if detection is unreliable.
+- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable.
 - Travel: Baseline settings unless the subject demands a specialized profile.
-- Waterdrops: Manual Focus, Single Shooting, fixed ISO, flash/trigger workflow.
+- Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
 - Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.
 
 ## Canon-Specific Notes
