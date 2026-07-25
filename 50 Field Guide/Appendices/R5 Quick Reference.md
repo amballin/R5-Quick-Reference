@@ -85,14 +85,16 @@ Use Bulb only for long manual exposures where you directly control how long the 
 
 #### Metering Mode
 
-Evaluative is the safest general default because it reads the whole scene and works well with modern Canon exposure logic. Spot or Partial metering is useful when a small subject or bright background should control exposure.
+Use Evaluative as the general default, including for backlit subjects. For bright sky, snow, dark backgrounds, and other difficult scenes, normally keep Evaluative and adjust exposure compensation while checking the RGB histogram and highlight alert.
+
+Partial and Spot meter only the center of the EOS R5 screen; Spot does not follow the active AF point. Use them only when you deliberately place the tone to measure under the center metering area. Partial is the more forgiving choice when a centered subject is surrounded by much brighter light. Spot is for precise measurement of a specific tone and may require compensation when that tone is lighter or darker than a middle tone. Center-weighted is most useful when the important subject stays near the center and you want the rest of the frame to retain some influence.
 
 | Icon | Setting | What it Does |
 |---|---|---|
-| ![Evaluative metering](../../60 Assets/icons/canon_r5_official/evaluative_metering.svg) | Evaluative | Reads the whole scene and is the safest general default. |
-| ![Partial metering](../../60 Assets/icons/canon_r5_official/partial_metering.svg) | Partial | Meters a central area when the background should matter less. |
-| ![Spot metering](../../60 Assets/icons/canon_r5_official/spot_metering.svg) | Spot | Meters a very small area when one subject tone must control exposure. |
-| ![Center-weighted average metering](../../60 Assets/icons/canon_r5_official/center_weighted_average_metering.svg) | Center-weighted | Emphasizes the center while still considering the whole frame. |
+| ![Evaluative metering](../../60 Assets/icons/canon_r5_official/evaluative_metering.svg) | Evaluative | Reads the whole scene; best general default across the documented profiles. |
+| ![Partial metering](../../60 Assets/icons/canon_r5_official/partial_metering.svg) | Partial | Meters approximately 6.1% at the screen center when a much brighter background should have less influence. |
+| ![Spot metering](../../60 Assets/icons/canon_r5_official/spot_metering.svg) | Spot | Meters approximately 3.1% at the screen center for deliberate measurement of a specific tone. |
+| ![Center-weighted average metering](../../60 Assets/icons/canon_r5_official/center_weighted_average_metering.svg) | Center-weighted | Averages the whole screen while weighting its center more heavily. |
 
 **Camera Menu:** Shooting menu > Metering mode.
 

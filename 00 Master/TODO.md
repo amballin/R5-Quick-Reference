@@ -15,7 +15,6 @@ This file records approved follow-up work and analysis candidates that should no
 ## Exposure and Shutter Follow-Up
 
 - Evaluate EFCS against Mechanical shutter in the relevant profiles, including shutter-shock reduction, fast-shutter bokeh, motion, artificial-light banding, flash compatibility, and burst behavior; retain Mechanical as the documented default until the tradeoffs are tested and approved.
-- Evaluate Evaluative, Partial, Spot, and Center-weighted average metering across the documented subjects and representative lighting conditions to determine the optimal default and whether any subject profiles need a metering override.
 
 ## Architecture and Validation Improvements
 

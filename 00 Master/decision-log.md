@@ -2,6 +2,21 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Evaluative Metering Baseline and Situational Alternatives
+
+**Status:** Accepted
+**Date:** 2026-07-25
+
+Keep **Evaluative metering** as the shared baseline. No documented subject profile requires a metering override.
+
+Evaluative is the most reliable starting point across general photography, people, wildlife, birds, sports, travel, landscape, and ambient-light macro because subjects may be off-center and backgrounds or lighting may change. For bright sky, snow, dark backgrounds, backlighting, and other difficult scenes, retain Evaluative and use exposure compensation, the RGB histogram, the highlight alert, or bracketing as appropriate.
+
+Keep **Partial** and **Spot** as deliberate situational tools. On the EOS R5 they meter approximately 6.1% and 3.1% of the screen center, respectively; Spot metering does not follow the active AF point. Partial can reduce the influence of a much brighter background when the important subject is deliberately placed under the center metering area. Spot is for intentional measurement of a specific tone and normally requires compensation when that tone is not a middle tone. **Center-weighted average** remains available for a consistently centered composition but offers no repeatable profile-wide advantage over Evaluative for the documented subjects.
+
+In Fireworks and Waterdrops, the inherited metering selection does not determine capture exposure because those profiles use Manual exposure with fixed ISO; use the documented histogram, highlight, flash-power, and test-frame guidance instead.
+
+This is a project recommendation based on Canon-documented EOS R5 behavior and review of the documented profiles and representative lighting conditions. It is not an owner-confirmed physical camera test.
+
 ## Five-Class Evidence Model and Canonical Camera Terminology
 
 **Status:** Accepted
