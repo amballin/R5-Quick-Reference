@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1784923438";
+const CACHE_NAME = "photography-reference-1784998363";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -42,12 +42,25 @@ const CACHE_URLS = [
   "web-assets/icons/canon_r5_official/face_tracking.svg",
   "web-assets/icons/canon_r5_official/high_speed_continuous_shooting.svg",
   "web-assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg",
+  "web-assets/icons/canon_r5_official/icon_btn-ae-lock.svg",
+  "web-assets/icons/canon_r5_official/icon_btn-af-on.svg",
+  "web-assets/icons/canon_r5_official/icon_btn-lens.svg",
+  "web-assets/icons/canon_r5_official/icon_btn-m-fn.svg",
+  "web-assets/icons/canon_r5_official/icon_btn-set.svg",
+  "web-assets/icons/canon_r5_official/icon_controlring.svg",
+  "web-assets/icons/canon_r5_official/icon_exp-sim-during.svg",
+  "web-assets/icons/canon_r5_official/icon_main-dial.svg",
+  "web-assets/icons/canon_r5_official/icon_multi-controller.svg",
+  "web-assets/icons/canon_r5_official/icon_shutterbtn-halfpress.svg",
+  "web-assets/icons/canon_r5_official/icon_sub-dial.svg",
+  "web-assets/icons/canon_r5_official/icon_sub-dial2.svg",
   "web-assets/icons/canon_r5_official/lens_af.svg",
   "web-assets/icons/canon_r5_official/lens_mf.svg",
   "web-assets/icons/canon_r5_official/low_speed_continuous_shooting.svg",
   "web-assets/icons/canon_r5_official/mode-select.svg",
   "web-assets/icons/canon_r5_official/one_point_af.svg",
   "web-assets/icons/canon_r5_official/single_shooting.svg",
+  "web-assets/icons/card_icons/SVG/af_point_button.svg",
   "web-assets/icons/card_icons/SVG/aperture.svg",
   "web-assets/icons/card_icons/SVG/exposure_compensation.svg",
   "web-assets/icons/card_icons/SVG/highlight_alert.svg",
