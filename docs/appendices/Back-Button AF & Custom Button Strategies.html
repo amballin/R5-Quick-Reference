@@ -58,40 +58,45 @@ a{color:#165d9c}
 <p>Explain why the Canon EOS R5 is configured around complete subject profiles, constant physical controls, and two distinct focusing choices. The architecture is intended to reduce cognitive load in the field: choose the shooting environment, then use the same buttons for tracking or precision.</p>
 <h2 id="index">Index</h2>
 <ul>
-<li><a href="#design-philosophy">Design Philosophy</a></li>
-<li><a href="#approved-layout">Approved Layout</a></li>
+<li><a href="#what-it-does">What it Does</a></li>
 <li><a href="#how-it-works">How It Works</a></li>
-<li><a href="#back-button-philosophy">Back-Button Philosophy</a></li>
+<li><a href="#m-fn-custom-mode-switching">M-Fn: custom-mode switching</a></li>
 <li><a href="#af-on-intelligent-acquisition">AF-ON: intelligent acquisition</a></li>
-<li><a href="#set-eye-priority-toggle">SET: eye-priority toggle</a></li>
 <li><a href="#ae-lock-precision-focus">AE Lock: precision focus</a></li>
+<li><a href="#set-eye-priority-toggle">SET: eye-priority toggle</a></li>
 <li><a href="#why-af-operation-remains-current">Why AF Operation remains current</a></li>
+<li><a href="#dof-one-shot-and-servo-switching">DOF: One-Shot and Servo switching</a></li>
+<li><a href="#joystick-position-and-recenter">Joystick: position and recenter</a></li>
+<li><a href="#physical-test-joystick-straight-press">Physical test: joystick straight press</a></li>
+<li><a href="#multi-function-lock-when-controls-stop-responding">Multi-function Lock: when controls stop responding</a></li>
+<li><a href="#af-point-selection-exception-methods">AF Point Selection: exception methods</a></li>
+<li><a href="#approved-control-layout">Approved Control Layout</a></li>
+<li><a href="#design-philosophy">Design Philosophy</a></li>
 <li><a href="#subject-detection-workflow">Subject Detection Workflow</a></li>
-<li><a href="#c1-c3-fast-implementations-of-subject-cards">C1-C3: Fast Implementations of Subject Cards</a></li>
-<li><a href="#protect-the-registered-modes-disable-auto-update">Protect the registered modes: disable Auto update</a></li>
-<li><a href="#save-alternate-complete-configurations-to-a-card">Save alternate complete configurations to a card</a></li>
+<li><a href="#c1-c3-registration-reference">C1-C3 Registration Reference</a></li>
+<li><a href="#registration-sequence">Registration sequence</a></li>
 <li><a href="#c1-general-wildlife">C1 — General Wildlife</a></li>
 <li><a href="#c2-birds-in-flight-action">C2 — Birds in Flight / Action</a></li>
+<li><a href="#what-c1-and-c2-should-normally-keep-the-same">What C1 and C2 should normally keep the same</a></li>
 <li><a href="#c3-landscape">C3 — Landscape</a></li>
+<li><a href="#protect-the-registered-modes-disable-auto-update">Protect the registered modes: disable Auto update</a></li>
+<li><a href="#save-alternate-complete-configurations-to-a-card">Save alternate complete configurations to a card</a></li>
 <li><a href="#other-af-methods">Other AF Methods</a></li>
-<li><a href="#advantages">Advantages and Disadvantages</a></li>
-<li><a href="#recommended-uses">Recommended Uses and When Not to Use</a></li>
+<li><a href="#advantages">Advantages</a></li>
+<li><a href="#disadvantages">Disadvantages</a></li>
+<li><a href="#recommended-uses">Recommended Uses</a></li>
+<li><a href="#when-not-to-use">When Not to Use</a></li>
 <li><a href="#decision-guide">Decision Guide</a></li>
 <li><a href="#recommended-settings-by-profile">Recommended Settings by Profile</a></li>
 <li><a href="#canon-specific-notes">Canon-Specific Notes</a></li>
-<li><a href="#tips">Tips and Common Mistakes</a></li>
-<li><a href="#operating-principle">Operating Principle</a></li>
+<li><a href="#tips">Tips</a></li>
+<li><a href="#common-mistakes">Common Mistakes</a></li>
 <li><a href="#cross-references">Cross References</a></li>
 </ul>
-<h2 id="design-philosophy">Design Philosophy</h2>
-<ol>
-<li><strong>Keep button behavior constant.</strong> Muscle memory should not change when the subject changes.</li>
-<li><strong>Profiles define the shooting environment.</strong> A profile establishes exposure, drive, stabilization, initial AF Operation, Subject Detection, Eye Detection, and other subject-specific settings.</li>
-<li><strong>Subject Detection belongs to the profile—not the buttons.</strong> Wildlife prioritizes Animals; a people setup prioritizes People; a motorsports setup may prioritize Vehicles.</li>
-<li><strong>Use overrides only when they provide a measurable operational advantage.</strong> The tracking and precision buttons cover the two common focusing decisions. Spot AF or Expand AF Area remains available when a specific situation justifies another method.</li>
-<li><strong>Preserve muscle memory whenever possible.</strong> C1-C3 change the environment; AF-ON and AE Lock keep the same jobs.</li>
-</ol>
-<p>The practical model is:</p>
+<h2 id="what-it-does">What it Does</h2>
+<p>Back-button AF separates autofocus activation from the shutter release. <strong>AF-ON</strong> starts subject-aware autofocus with Face + Tracking. <strong>AE Lock</strong> starts autofocus with a precise 1-Point AF override. Choose one AF-start button at a time, then press the shutter to take the picture.</p>
+<p>Both AF-start buttons maintain the current AF Operation. A profile may start in Servo AF or One-Shot AF, and the DOF button may switch that state. AF-ON and AE Lock respect the resulting choice instead of secretly forcing Servo AF.</p>
+<p>The practical operating model is:</p>
 <table>
 <tr><th>Question</th><th>Control</th></tr>
 <tr><td>What am I photographing?</td><td>Select the applicable profile or C1-C3 mode.</td></tr>
@@ -100,10 +105,67 @@ a{color:#165d9c}
 <tr><td>Do I need to place focus exactly here?</td><td>Use AE Lock.</td></tr>
 <tr><td>Is the subject still or moving?</td><td>Start with the profile&#x27;s AF Operation; use the DOF button if it needs to change.</td></tr>
 </table>
-<h2 id="what-it-does">What it Does</h2>
-<p>Back-button AF separates autofocus activation from the shutter release. <strong>AF-ON</strong> starts subject-aware autofocus with Face + Tracking. <strong>AE Lock</strong> starts autofocus with a precise 1-Point AF override. Choose one AF-start button at a time, then press the shutter to take the picture.</p>
-<p>Both AF-start buttons maintain the current AF Operation. A profile may start in Servo AF or One-Shot AF, and the DOF button may switch that state. AF-ON and AE Lock respect the resulting choice instead of secretly forcing Servo AF.</p>
-<h2 id="approved-layout">Approved Layout</h2>
+<p>The objective is constant muscle memory: M-Fn selects the registered shooting environment, SET chooses eye priority when supported, AF-ON provides intelligent acquisition, AE Lock provides precise placement, and the joystick positions or recenters the deliberate AF point. Both AF-start buttons respect the profile-selected or DOF-selected AF Operation.</p>
+<h2 id="how-it-works">How it Works</h2>
+<p>The selected profile or C mode loads the shooting environment. SET can change the stored Eye Detection state when the active AF method supports it. AF-ON and AE Lock then temporarily choose tracking or precision without replacing the active One-Shot/Servo state. The DOF button changes only that AF Operation state.</p>
+<h3 id="m-fn-custom-mode-switching">M-Fn: custom-mode switching</h3>
+<p>M-Fn is the direct entry point to the registered subject configurations. Press it repeatedly to switch among C1, C2, and C3 without changing the button assignments described above. The switching behavior is physically verified; C1 contains registered settings but still requires verification against the complete Wildlife profile, while C2 and C3 are not yet registered.</p>
+<h3 id="af-on-intelligent-acquisition">AF-ON: intelligent acquisition</h3>
+<p>AF-ON is for speed. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
+<table>
+<tr><th>AF-ON INFO item</th><th>Setting</th></tr>
+<tr><td>AF Operation</td><td>Maintain current setting</td></tr>
+<tr><td>AF Method</td><td>Face + Tracking</td></tr>
+<tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
+</table>
+<p>AF-ON always selects the subject-aware tracking method and uses the profile&#x27;s Subject Detection choice and the stored Eye Detection state. The profile establishes the initial Eye Detection state, and SET may change it situationally. With Servo AF active, focus continues updating as the subject moves. With One-Shot AF active, Face + Tracking can identify and acquire the subject, but it does not provide continuous Servo tracking.</p>
+<h3 id="ae-lock-precision-focus">AE Lock: precision focus</h3>
+<p>AE Lock is for precision. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
+<table>
+<tr><th>AE Lock INFO item</th><th>Setting</th></tr>
+<tr><td>AF Operation</td><td>Maintain current setting</td></tr>
+<tr><td>AF Method</td><td>1-Point AF</td></tr>
+<tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
+</table>
+<p>AE Lock gives exact point placement and avoids automatic subject switching. Subject Detection and Eye Detection remain stored, but they are not used by the 1-Point AF precision method. AE Lock uses the last 1-Point position rather than automatically recentering it. Use the joystick to move the point and press the joystick straight in to recenter. Do not describe AE Lock as changing the Subject Detection or Eye Detection menu values to OFF.</p>
+<h3 id="set-eye-priority-toggle">SET: eye-priority toggle</h3>
+<p>SET is the direct eye-priority control. Assign <strong>Eye detection</strong> to SET. When Face + Tracking is active, pressing SET toggles the stored Eye Detection state between Enable and Disable. The state persists when switching between Face + Tracking and 1-Point AF, and AF-ON honors it when AF-ON invokes Face + Tracking.</p>
+<p>SET has no effect while 1-Point AF or Spot AF is active because those methods cannot use Eye Detection. This is a persistent menu-state toggle, not the separate momentary <strong>Eye Detection AF</strong> custom-button function. As a slower alternative, press <strong>AF Point Selection</strong> and then <strong>INFO</strong> to toggle Eye detection when Face + Tracking is active.</p>
+<h3 id="why-af-operation-remains-current">Why AF Operation remains current</h3>
+<p>AF Method and AF Operation answer different questions:</p>
+<ul>
+<li><strong>AF Method:</strong> should the camera find the subject, or should the photographer place one point?</li>
+<li><strong>AF Operation:</strong> should focus lock once, or continue updating?</li>
+</ul>
+<p>The profile supplies the normal One-Shot/Servo starting point. The DOF button changes that state when the subject behaves differently than expected. Because both AF-start buttons maintain AF Operation, either button respects the profile and the DOF-button change.</p>
+<h3 id="dof-one-shot-and-servo-switching">DOF: One-Shot and Servo switching</h3>
+<p>The DOF button changes AF Operation between <strong>One-Shot AF</strong> and <strong>Servo AF</strong> without changing AF Method, Subject Detection, or Eye Detection. Use it when the subject&#x27;s movement differs from the profile&#x27;s expected starting behavior. Both AF-ON and AE Lock honor the resulting AF Operation.</p>
+<h3 id="joystick-position-and-recenter">Joystick: position and recenter</h3>
+<p>The joystick directly moves the selected AF point or Face + Tracking starting position. During Face + Tracking subject adjustment, move the joystick to choose among detected faces or eyes. A manually chosen face or animal can become the subject the camera locks onto and tracks. This selection does not change Subject Detection or Eye Detection; SET remains assigned to toggle the stored Eye Detection state.</p>
+<p>&gt; <strong>CAUTION — PROVISIONAL, NOT DEFINITIVE: USE WITH CAUTION; PHYSICAL TESTING IS REQUIRED.</strong> Canon documents pressing the joystick straight in as centering the AF point or initial Face + Tracking Servo position. The owner has also observed a Face Select change from a straight press under the current control configuration, but the meanings of the single border, double border, and <strong>Face Select: Off</strong> display have not been physically established. Do not rely on straight press as a Face Select or tracking-release toggle until the test below proves the behavior.</p>
+<p>AE Lock remembers the last 1-Point position, so the confirmed centering behavior remains important when the previous precision-point position is no longer useful.</p>
+<h4 id="physical-test-joystick-straight-press">Physical test: joystick straight press</h4>
+<p><strong>Status:</strong> Pending owner verification on the camera.</p>
+<p>Use still-photo mode with <strong>Servo AF</strong>, <strong>Face + Tracking</strong>, <strong>Subject Detection: People</strong>, <strong>Eye Detection: Enable</strong>, the joystick assigned to <strong>Direct AF point selection</strong>, and SET assigned to <strong>Eye detection</strong>. Frame two clearly separated faces in good light.</p>
+<table>
+<tr><th>Step</th><th>Action</th><th>Record</th></tr>
+<tr><td>1</td><td>Without pressing AF-ON, observe both detected faces.</td><td>Which face or eye is initially active and what frame/icon identifies it?</td></tr>
+<tr><td>2</td><td>Move the joystick left and right without first pressing it straight in.</td><td>Does selection move directly among faces or eyes, or is another selection state required?</td></tr>
+<tr><td>3</td><td>Press the joystick straight in once.</td><td>Does it center an initial AF position, display or enable Face Select, release a selected subject, or perform more than one action?</td></tr>
+<tr><td>4</td><td>Move the joystick left and right again.</td><td>Does it now cycle among detected faces or eyes differently from step 2?</td></tr>
+<tr><td>5</td><td>Select one face, hold AF-ON, and recompose while both faces remain visible.</td><td>Does the camera stay locked to the manually selected subject?</td></tr>
+<tr><td>6</td><td>Release AF-ON, then press it again without changing composition.</td><td>Does the manual subject selection persist between AF starts?</td></tr>
+<tr><td>7</td><td>Press the joystick straight in a second time.</td><td>Does it exit Face Select, release tracking, center the starting position, or leave the selected subject unchanged?</td></tr>
+<tr><td>8</td><td>Press SET once.</td><td>Confirm that Eye Detection toggles. Also record whether the selected-subject lock changes; do not assume SET retains Canon&#x27;s default tracking-release behavior after customization.</td></tr>
+<tr><td>9</td><td>If the subject remains locked, test the on-screen <strong>Subject tracking release</strong> control and the AF Point Selection button separately.</td><td>Identify the reliable release method that does not change the SET Eye Detection assignment.</td></tr>
+</table>
+<p>Repeat steps 1–9 with <strong>Subject Detection: Animals</strong> and two detectable animal faces if practical. Record the observed screen labels or photograph the displays so the final documentation can distinguish owner-confirmed behavior from Canon&#x27;s general instructions.</p>
+<h3 id="multi-function-lock-when-controls-stop-responding">Multi-function Lock: when controls stop responding</h3>
+<p>The Multi-function Lock button toggles whichever physical controls are checked under <strong>Set-up &gt; Multi function lock</strong>. It does not lock individual settings or preserve everything except the last-adjusted value. Depending on the configured checkmarks, it can disable direct use of the Main Dial, Rear Wheel, Top Rear Dial, joystick, control ring, and/or touchscreen.</p>
+<p>If <strong>LOCK</strong> appears or the joystick or exposure dials stop responding, press the Multi-function Lock button once and try again. This applies across camera functions and shooting modes, not only Fv. Lock the controls again after setup when protection from accidental movement is more important than immediate adjustment.</p>
+<h3 id="af-point-selection-exception-methods">AF Point Selection: exception methods</h3>
+<p>Press <strong>AF Point Selection</strong>, then use the <strong>Main Dial</strong> when Spot AF, Expand AF Area, or another method is demonstrably better than the standard AF-ON or AE Lock choices. With Face + Tracking active, INFO provides the slower alternative for changing Eye Detection.</p>
+<h2 id="approved-control-layout">Approved Control Layout</h2>
 <p>The physical layout is shared across the baseline and all subject profiles. The button and dial assignments below are owner-confirmed on the camera. M-Fn switching among C1-C3 has been physically tested. C1 contains registered settings, but its match to the Wildlife profile remains pending verification; C2 and C3 are not yet registered.</p>
 <table>
 <tr><th>Physical control</th><th>Assignment</th><th>INFO details or operation</th></tr>
@@ -114,7 +176,7 @@ a{color:#165d9c}
 <tr><td><strong>Lens AF button</strong></td><td><strong>AF Off</strong></td><td>Stops AF while the lens button is used.</td></tr>
 <tr><td><strong>DOF button</strong></td><td><strong>One-Shot AF ↔ Servo AF</strong></td><td>Changes AF Operation.</td></tr>
 <tr><td><strong>SET</strong></td><td><strong>Eye detection</strong></td><td>Toggles the stored state when the active AF method supports Eye detection; no effect with 1-Point AF or Spot AF.</td></tr>
-<tr><td><strong>Joystick</strong></td><td><strong>Direct AF point selection</strong></td><td>Moves the selected AF point or starting position; press straight in to recenter.</td></tr>
+<tr><td><strong>Joystick</strong></td><td><strong>Direct AF point selection</strong></td><td>Moves the AF point or starting position; during Face + Tracking adjustment, selects among detected faces or eyes. Straight press centers in Canon&#x27;s documented AF-point workflow; additional observed Face Select behavior is pending the physical test.</td></tr>
 <tr><td><strong>Main Dial</strong></td><td><strong>Shutter Speed</strong></td><td>Direct exposure control.</td></tr>
 <tr><td><strong>Rear Wheel</strong></td><td><strong>Aperture</strong></td><td>Direct exposure control.</td></tr>
 <tr><td><strong>Top Rear Dial</strong></td><td><strong>ISO Speed</strong></td><td>Direct exposure control.</td></tr>
@@ -124,37 +186,14 @@ a{color:#165d9c}
 <tr><td><strong>LCD panel illumination button</strong></td><td><strong>Leave default</strong></td><td>No custom assignment in this architecture.</td></tr>
 <tr><td><strong>M-Fn</strong></td><td><strong>Switch to Custom shooting mode</strong></td><td>Press repeatedly to switch among C1, C2, and C3.</td></tr>
 </table>
-<h2 id="how-it-works">How it Works</h2>
-<p>The selected profile or C mode loads the shooting environment. SET can change the stored Eye Detection state when the active AF method supports it. AF-ON and AE Lock then temporarily choose tracking or precision without replacing the active One-Shot/Servo state. The DOF button changes only that AF Operation state.</p>
-<h2 id="back-button-philosophy">Back-Button Philosophy</h2>
-<h3 id="af-on-intelligent-acquisition">AF-ON: intelligent acquisition</h3>
-<p>AF-ON is for speed. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
-<table>
-<tr><th>AF-ON INFO item</th><th>Setting</th></tr>
-<tr><td>AF Operation</td><td>Maintain current setting</td></tr>
-<tr><td>AF Method</td><td>Face + Tracking</td></tr>
-<tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
-</table>
-<p>AF-ON always selects the subject-aware tracking method and uses the profile&#x27;s Subject Detection choice and the stored Eye Detection state. The profile establishes the initial Eye Detection state, and SET may change it situationally. With Servo AF active, focus continues updating as the subject moves. With One-Shot AF active, Face + Tracking can identify and acquire the subject, but it does not provide continuous Servo tracking.</p>
-<h3 id="set-eye-priority-toggle">SET: eye-priority toggle</h3>
-<p>SET is the direct eye-priority control. Assign <strong>Eye detection</strong> to SET. When Face + Tracking is active, pressing SET toggles the stored Eye Detection state between Enable and Disable. The state persists when switching between Face + Tracking and 1-Point AF, and AF-ON honors it when AF-ON invokes Face + Tracking.</p>
-<p>SET has no effect while 1-Point AF or Spot AF is active because those methods cannot use Eye Detection. This is a persistent menu-state toggle, not the separate momentary <strong>Eye Detection AF</strong> custom-button function. As a slower alternative, press <strong>AF Point Selection</strong> and then <strong>INFO</strong> to toggle Eye detection when Face + Tracking is active.</p>
-<h3 id="ae-lock-precision-focus">AE Lock: precision focus</h3>
-<p>AE Lock is for precision. Assign <strong>Metering and AF start</strong>, press <strong>INFO</strong>, and use:</p>
-<table>
-<tr><th>AE Lock INFO item</th><th>Setting</th></tr>
-<tr><td>AF Operation</td><td>Maintain current setting</td></tr>
-<tr><td>AF Method</td><td>1-Point AF</td></tr>
-<tr><td>Servo AF characteristics</td><td>Maintain current setting</td></tr>
-</table>
-<p>AE Lock gives exact point placement and avoids automatic subject switching. Subject Detection and Eye Detection remain stored, but they are not used by the 1-Point AF precision method. AE Lock uses the last 1-Point position rather than automatically recentering it. Use the joystick to move the point and press the joystick straight in to recenter. Do not describe AE Lock as changing the Subject Detection or Eye Detection menu values to OFF.</p>
-<h3 id="why-af-operation-remains-current">Why AF Operation remains current</h3>
-<p>AF Method and AF Operation answer different questions:</p>
-<ul>
-<li><strong>AF Method:</strong> should the camera find the subject, or should the photographer place one point?</li>
-<li><strong>AF Operation:</strong> should focus lock once, or continue updating?</li>
-</ul>
-<p>The profile supplies the normal One-Shot/Servo starting point. The DOF button changes that state when the subject behaves differently than expected. Because both AF-start buttons maintain AF Operation, either button respects the profile and the DOF-button change.</p>
+<h2 id="design-philosophy">Design Philosophy</h2>
+<ol>
+<li><strong>Keep button behavior constant.</strong> Muscle memory should not change when the subject changes.</li>
+<li><strong>Profiles define the shooting environment.</strong> A profile establishes exposure, drive, stabilization, initial AF Operation, Subject Detection, Eye Detection, and other subject-specific settings.</li>
+<li><strong>Subject Detection belongs to the profile—not the buttons.</strong> Wildlife prioritizes Animals; a people setup prioritizes People; a motorsports setup may prioritize Vehicles.</li>
+<li><strong>Use overrides only when they provide a measurable operational advantage.</strong> The tracking and precision buttons cover the two common focusing decisions. Spot AF or Expand AF Area remains available when a specific situation justifies another method.</li>
+<li><strong>Preserve muscle memory whenever possible.</strong> C1-C3 change the environment; AF-ON and AE Lock keep the same jobs.</li>
+</ol>
 <h2 id="subject-detection-workflow">Subject Detection Workflow</h2>
 <p>Subject Detection is part of the shooting profile. It is not part of the tracking-versus-precision button choice.</p>
 <table>
@@ -167,23 +206,41 @@ a{color:#165d9c}
 <p>Changing Subject Detection changes what AF-ON prioritizes while its physical behavior remains constant. AE Lock continues to provide deliberate 1-Point placement regardless of the selected subject category.</p>
 <p>The profile also supplies the initial Eye Detection state. SET can change that stored state situationally when the active AF method supports Eye Detection, and AF-ON honors the resulting state when it invokes Face + Tracking.</p>
 <p>Changing from the complete Wildlife card to the complete People card involves more than Subject Detection: the current project cards also differ in drive, shutter target, and aperture strategy. Changing only Subject Detection is appropriate when the existing exposure and drive environment is already suitable.</p>
-<h2 id="c1-c3-fast-implementations-of-subject-cards">C1-C3: Fast Implementations of Subject Cards</h2>
-<p>C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card.</p>
-<h3 id="protect-the-registered-modes-disable-auto-update">Protect the registered modes: disable Auto update</h3>
-<p><strong>Strong recommendation: set <code>Custom shooting mode (C1-C3) &gt; Auto update set.</code> to <code>Disable</code> and leave it disabled.</strong></p>
-<p>With Auto update enabled, a temporary field change made while using C1, C2, or C3 can be written back into that registered mode. The custom mode may then stop matching its documented subject card without an obvious warning. That defeats the purpose of using C1-C3 as reliable, repeatable starting environments.</p>
-<p>With Auto update disabled, temporary changes remain temporary. Make an intentional change to a registered mode by configuring the camera as desired and using <strong>Register settings</strong> again—not by allowing field adjustments to accumulate automatically.</p>
-<p>Check this setting after a reset, after loading a camera-settings file, and after any firmware-related settings reset.</p>
-<h3 id="save-alternate-complete-configurations-to-a-card">Save alternate complete configurations to a card</h3>
-<p>After C1-C3 are registered and verified, use <strong>Set-up 5 &gt; Save/load cam settings on card &gt; Save to card</strong> to preserve the complete camera configuration. Canon describes these files as saving current shooting, menu, and Custom Function settings. A card can hold up to ten files, and each file can be given an eight-character name with the INFO button before saving.</p>
-<p>This makes it practical to keep multiple named sets when the best use of a C-mode slot changes. For example:</p>
+<h2 id="c1-c3-registration-reference">C1-C3 Registration Reference</h2>
+<p>C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card. The cards remain concise field references; this matrix is the single registration reference for the profile-defining settings. Shared Set &amp; Forget settings remain on Camera Setup Essentials and are intentionally not repeated here.</p>
+<p>The exact starting values below convert card ranges and situational guidance into reproducible registrations. Settings not governed by this project remain unchanged and must not be guessed. The <strong>Lens IS switch</strong> is a physical pre-shoot check rather than a camera-registered menu value.</p>
 <table>
-<tr><th>Settings file</th><th>C1</th><th>C2</th><th>C3</th><th>Use</th></tr>
-<tr><td><code>C3LANDSC</code></td><td>Wildlife</td><td>Birds in Flight</td><td>Landscape</td><td>Normal wildlife and landscape set</td></tr>
-<tr><td><code>C3PEOPLE</code></td><td>Wildlife</td><td>Birds in Flight</td><td>People</td><td>Event, family, or portrait set</td></tr>
+<tr><th>Setting</th><th>C1 — Wildlife</th><th>C2 — Birds in Flight</th><th>C3 — Landscape</th></tr>
+<tr><td><strong>Mode</strong></td><td>Fv</td><td>Tv</td><td>Av</td></tr>
+<tr><td><strong>Metering</strong></td><td>Evaluative</td><td>Evaluative</td><td>Evaluative</td></tr>
+<tr><td><strong>Exposure Compensation</strong></td><td>0</td><td>0 starting point; adjust for background in the field</td><td>0</td></tr>
+<tr><td><strong>Shutter Speed</strong></td><td>Auto</td><td><strong>1/2500 sec</strong></td><td>Auto</td></tr>
+<tr><td><strong>Aperture</strong></td><td>Auto</td><td>Auto</td><td><strong>f/9</strong></td></tr>
+<tr><td><strong>ISO</strong></td><td>Auto</td><td>Auto</td><td>100</td></tr>
+<tr><td><strong>Auto ISO Maximum</strong></td><td>12800</td><td>12800</td><td>12800; inactive while ISO 100 is fixed</td></tr>
+<tr><td><strong>AF Operation</strong></td><td>Servo AF</td><td>Servo AF</td><td>One-Shot AF</td></tr>
+<tr><td><strong>AF Method</strong></td><td>Face + Tracking</td><td>Face + Tracking</td><td>1-Point AF</td></tr>
+<tr><td><strong>Subject Detection</strong></td><td>Animals</td><td>Animals</td><td>None</td></tr>
+<tr><td><strong>Eye Detection</strong></td><td>Enable</td><td>Enable</td><td>Disable</td></tr>
+<tr><td><strong>Drive Mode</strong></td><td>High Speed Continuous</td><td>High Speed Continuous+</td><td>Single Shot</td></tr>
+<tr><td><strong>Shutter Type</strong></td><td>Mechanical</td><td>Mechanical</td><td>Mechanical</td></tr>
+<tr><td><strong>EFCS</strong></td><td>Under evaluation; do not substitute for Mechanical</td><td>Under evaluation; do not substitute for Mechanical</td><td>Under evaluation; do not substitute for Mechanical</td></tr>
+<tr><td><strong>Image Stabilizer Mode</strong></td><td>Mode 1</td><td>Mode 3</td><td>Mode 1</td></tr>
+<tr><td><strong>IBIS</strong></td><td>On</td><td>On</td><td>On</td></tr>
+<tr><td><strong>Lens IS switch</strong></td><td>On; physical check</td><td>On; physical check</td><td>On for the registered handheld starting state; turn off for tripod use</td></tr>
+<tr><td><strong>Focus Bracketing</strong></td><td>Disable</td><td>Disable</td><td>Disable; enable situationally for near-to-far depth of field</td></tr>
+<tr><td><strong>Current verification state</strong></td><td>Registration present; match to this matrix pending physical verification</td><td>Not yet registered</td><td>Not yet registered</td></tr>
 </table>
-<p>Loading one of these files restores the <strong>complete saved camera configuration</strong>, not only C3. Confirm the loaded C1-C3 registrations, button assignments, and <strong>Auto update set.: Disable</strong> before the shoot. Save a fresh backup after any intentional configuration change.</p>
-<p>Keep settings files with the camera and copy them elsewhere for recovery. A file from another camera model cannot be loaded, and a file saved under a different firmware version may not load, so create a new verified backup after firmware changes.</p>
+<p>The C2 starting shutter is <strong>1/2500 sec</strong>: fast enough for normal birds-in-flight action while giving the camera more opportunity to retain useful aperture and depth of field than a 1/4000-sec default. Raise it toward 1/3200–1/4000 when wing speed or subject motion requires it. The C3 starting aperture is <strong>f/9</strong>, the practical middle of the card&#x27;s f/8–f/11 range.</p>
+<h3 id="registration-sequence">Registration sequence</h3>
+<ol>
+<li>Confirm the approved shared button and dial layout.</li>
+<li>Set <strong>Custom shooting mode (C1-C3) &gt; Auto update set.</strong> to <strong>Disable</strong>.</li>
+<li>Configure every row in the applicable matrix column. Confirm physical lens controls separately.</li>
+<li>Use <strong>Set-up &gt; Custom shooting mode (C1-C3) &gt; Register settings</strong> and select the intended C1, C2, or C3 slot.</li>
+<li>Leave the mode, recall it with M-Fn, and verify the complete matrix column rather than assuming registration succeeded.</li>
+<li>Record the verification state and save a named camera-settings file after all three modes are confirmed.</li>
+</ol>
 <h3 id="c1-general-wildlife">C1 — General Wildlife</h3>
 <p>C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup.</p>
 <p>Examples include perched birds, deer, herons, eagles on a perch, and ducks on the water. Its priorities are deliberate composition, useful image quality, Animal Detection, Eye Detection, and a continuous drive appropriate for wildlife behavior.</p>
@@ -195,12 +252,13 @@ a{color:#165d9c}
 </ul>
 <h3 id="c2-birds-in-flight-action">C2 — Birds in Flight / Action</h3>
 <p>C2 implements the Birds in Flight card for fast-moving wildlife: birds in flight, osprey diving, ducks taking off, swallows, or running animals.</p>
-<p>It retains the same button layout, Animal Detection, Eye Detection, metering philosophy, and tracking-versus-precision choice as C1. Its primary differences are the shooting environment: much faster shutter targets, High Speed Continuous+, action-oriented exposure, and action stabilization.</p>
+<p>It retains the same button layout, Animal Detection, Eye Detection, metering philosophy, and tracking-versus-precision choice as C1. Its primary differences are the shooting environment: a 1/2500-sec registered starting shutter, High Speed Continuous+, Tv exposure, and Mode 3 stabilization.</p>
 <p>The operating idea is: <strong>the animal is moving fast</strong>.</p>
 <ul>
 <li>Use AF-ON as the primary tracking control.</li>
 <li>Use AE Lock when automatic selection repeatedly chooses the wrong subject.</li>
 <li>Use Expand AF Area manually when subject size, obstruction, or background makes it measurably more reliable.</li>
+<li>Raise the shutter speed when necessary for faster action, but do not use 1/4000 sec by default when the resulting wide aperture would reduce needed depth of field.</li>
 </ul>
 <h3 id="what-c1-and-c2-should-normally-keep-the-same">What C1 and C2 should normally keep the same</h3>
 <ul>
@@ -217,12 +275,14 @@ a{color:#165d9c}
 <ul>
 <li>Av exposure</li>
 <li>Fixed ISO 100</li>
+<li>f/9 registered starting aperture</li>
 <li>One-Shot AF</li>
 <li>Single Shot</li>
-<li>f/8-f/11 aperture strategy</li>
-<li>Tripod, stabilization, and near-to-far sharpness considerations</li>
+<li>Mode 1 and stabilization on as the handheld starting state</li>
+<li>Tripod, stabilization, and near-to-far sharpness checks</li>
 </ul>
 <p>Use AE Lock for normal deliberate 1-Point placement. AF-ON remains available when subject-aware acquisition is useful, and it still maintains C3&#x27;s One-Shot AF unless the DOF button changes the operation.</p>
+<p>For tripod work, turn off stabilization after recalling C3. For a scene that needs greater near-to-far depth of field, enable Focus Bracketing situationally rather than treating a very small aperture as the permanent registration.</p>
 <p>In the normal <code>C3LANDSC</code> configuration, People does not use a C-mode slot. For an occasional people or family shoot, start with <strong>C1</strong>, because it already provides Fv, Auto ISO, Servo AF, Eye Detection, and general handheld stabilization. If people photography will dominate the session, load the alternate <code>C3PEOPLE</code> complete configuration described above instead. Otherwise, make these changes from C1:</p>
 <table>
 <tr><th>Setting</th><th>Change for people</th></tr>
@@ -231,7 +291,22 @@ a{color:#165d9c}
 <tr><td>Shutter target</td><td>Use 1/200-1/320 for portraits or 1/500+ for active people</td></tr>
 <tr><td>Aperture target</td><td>Use f/1.8-f/4 for one person or f/4-f/8 for a group</td></tr>
 </table>
-<p>Keep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people while the normal <code>C3LANDSC</code> configuration is loaded; in that set, C3 recalls the Landscape settings—ISO 100, One-Shot AF, Single Shot, and f/8-f/11.</p>
+<p>Keep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people while the normal <code>C3LANDSC</code> configuration is loaded; in that set, C3 recalls the Landscape settings—ISO 100, One-Shot AF, Single Shot, and f/9.</p>
+<h3 id="protect-the-registered-modes-disable-auto-update">Protect the registered modes: disable Auto update</h3>
+<p><strong>Strong recommendation: set <code>Custom shooting mode (C1-C3) &gt; Auto update set.</code> to <code>Disable</code> and leave it disabled.</strong></p>
+<p>With Auto update enabled, a temporary field change made while using C1, C2, or C3 can be written back into that registered mode. The custom mode may then stop matching its documented subject card without an obvious warning. That defeats the purpose of using C1-C3 as reliable, repeatable starting environments.</p>
+<p>With Auto update disabled, temporary changes remain temporary. Make an intentional change to a registered mode by configuring the camera as desired and using <strong>Register settings</strong> again—not by allowing field adjustments to accumulate automatically.</p>
+<p>Check this setting after a reset, after loading a camera-settings file, and after any firmware-related settings reset.</p>
+<h3 id="save-alternate-complete-configurations-to-a-card">Save alternate complete configurations to a card</h3>
+<p>After C1-C3 are registered and verified, use <strong>Set-up 5 &gt; Save/load cam settings on card &gt; Save to card</strong> to preserve the complete camera configuration. Canon describes these files as saving current shooting, menu, and Custom Function settings. A card can hold up to ten files, and each file can be given an eight-character name with the INFO button before saving.</p>
+<p>This makes it practical to keep multiple named sets when the best use of a C-mode slot changes. For example:</p>
+<table>
+<tr><th>Settings file</th><th>C1</th><th>C2</th><th>C3</th><th>Use</th></tr>
+<tr><td><code>C3LANDSC</code></td><td>Wildlife</td><td>Birds in Flight</td><td>Landscape</td><td>Normal wildlife and landscape set</td></tr>
+<tr><td><code>C3PEOPLE</code></td><td>Wildlife</td><td>Birds in Flight</td><td>People</td><td>Event, family, or portrait set</td></tr>
+</table>
+<p>Loading one of these files restores the <strong>complete saved camera configuration</strong>, not only C3. Confirm the loaded C1-C3 registrations, button assignments, and <strong>Auto update set.: Disable</strong> before the shoot. Save a fresh backup after any intentional configuration change.</p>
+<p>Keep settings files with the camera and copy them elsewhere for recovery. A file from another camera model cannot be loaded, and a file saved under a different firmware version may not load, so create a new verified backup after firmware changes.</p>
 <h2 id="other-af-methods">Other AF Methods</h2>
 <p>The two rear buttons cover the normal tracking and precision decisions. When Spot AF or Expand AF Area is demonstrably better, use <strong>AF Point Selection</strong> and the <strong>Main Dial</strong> to select it manually.</p>
 <p>This is an exception workflow, not a reason to change the constant button assignments.</p>
@@ -285,6 +360,7 @@ a{color:#165d9c}
 <tr><td>Change between still and moving focus behavior</td><td><strong>DOF button</strong></td><td>Switch One-Shot AF ↔ Servo AF.</td></tr>
 <tr><td>Select Spot, Expand, or another AF method manually</td><td><strong>AF Point Selection</strong></td><td>Press it and use the Main Dial.</td></tr>
 <tr><td>Move the active AF point</td><td><strong>Joystick</strong></td><td>Move the point or starting position directly.</td></tr>
+<tr><td>Choose among detected faces or eyes</td><td><strong>Joystick</strong></td><td>During Face + Tracking subject adjustment, move the joystick toward the intended face or eye.</td></tr>
 <tr><td>Return the AF point to center</td><td><strong>Joystick</strong></td><td>Press straight in.</td></tr>
 <tr><td>Temporarily stop lens AF</td><td><strong>Lens AF button</strong></td><td>Use AF Off.</td></tr>
 </table>
@@ -315,7 +391,7 @@ a{color:#165d9c}
 <ul>
 <li>The physical control layout is the project owner&#x27;s confirmed layout.</li>
 <li>Face + Tracking on AF-ON and the SET Eye detection assignment are owner-confirmed on the camera.</li>
-<li>C1-C3 registrations remain approved targets pending physical camera verification.</li>
+<li>C1 contains registered settings, but its match to the complete registration matrix remains pending physical verification. C2 and C3 are not yet registered.</li>
 <li>Historical screenshots are not current-state evidence.</li>
 <li>Plain physical names are used so the layout is readable in the field.</li>
 </ul>
@@ -327,6 +403,7 @@ a{color:#165d9c}
 <li>Test AF-ON and AE Lock in both Servo AF and One-Shot AF to confirm that neither button forces AF Operation.</li>
 <li>Confirm SET changes Eye Detection when Face + Tracking is active and expect no effect with 1-Point AF or Spot AF.</li>
 <li>Remember that AE Lock returns to the last 1-Point position; press the joystick straight in when a centered point is needed.</li>
+<li>With multiple detected faces or eyes, use joystick movement to choose the intended subject; complete the straight-press test before relying on it as a Face Select or release toggle.</li>
 <li>Verify C1, C2, and C3 after registration by checking exposure, drive, AF Operation, Subject Detection, and stabilization.</li>
 <li>Test the 1-Point override on a high-contrast stationary subject and through foreground clutter.</li>
 <li>Photograph the finished control and custom-mode pages after physical verification.</li>
@@ -343,12 +420,11 @@ a{color:#165d9c}
 <li>Expecting SET to toggle Eye Detection while 1-Point AF or Spot AF is active.</li>
 <li>Assuming AE Lock changes Subject Detection or Eye Detection menu values.</li>
 <li>Assuming AE Lock automatically recenters its 1-Point position.</li>
+<li>Assuming joystick face/eye selection changes the stored Subject Detection or Eye Detection setting.</li>
 <li>Pressing AF-ON and AE Lock together.</li>
 <li>Confusing an approved target assignment with a setting already verified on the camera.</li>
 <li>Assuming C1&#x27;s present registration matches the complete Wildlife card without verification, or expecting C2/C3 to be populated before registration.</li>
 </ul>
-<h2 id="operating-principle">Operating Principle</h2>
-<p>The objective of this architecture is to keep muscle memory constant. M-Fn selects among C1-C3, which recall the registered shooting environments. SET chooses eye priority when supported, AF-ON provides intelligent subject acquisition, AE Lock provides precise point placement, and the joystick positions or recenters the deliberate AF point. Both AF-start buttons respect the profile or DOF-selected AF Operation.</p>
 <h2 id="cross-references">Cross References</h2>
 <ul>
 <li>Card: Camera Buttons.</li>
