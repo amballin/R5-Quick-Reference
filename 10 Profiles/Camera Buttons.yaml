@@ -40,6 +40,7 @@ reference_settings:
     assignment: Switch to Custom shooting mode (C1 → C2 → C3)
 checklist:
   - Practice back-button AF before a critical shoot.
+  - If LOCK appears or a dial or joystick will not respond, press the Multi-function Lock button once and retry.
   - Use the linked deep dive for the AF-ON and AE Lock INFO details.
   - Test AF-ON and AE Lock separately; do not hold both AF buttons together.
   - Use SET to choose eye priority before AF-ON when Face + Tracking is active.
@@ -47,6 +48,7 @@ checklist:
   - Confirm Manual + Auto ISO before using exposure compensation.
   - Recheck assignments after a reset or firmware update.
 watch_for:
+  - Multi-function Lock can disable configured dials, the joystick, the control ring, or the touchscreen across shooting modes
   - AE Lock is no longer available for its default exposure-lock function
   - "AE Lock: 1-Point AF does not use Subject Detection or Eye Detection for that AF action; the stored profile settings remain unchanged"
   - SET has no effect when the active AF method cannot use Eye detection

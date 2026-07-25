@@ -15,6 +15,7 @@ overrides: {}
 checklist:
   - RGB Histogram on
   - Highlight Alert enabled
+  - MF Peaking on; Level Low; Color Red
   - Save named camera-settings files to a card after registering C1-C3
   - Continuous AF off
   - Electronic full-time MF off
@@ -29,6 +30,7 @@ common_mistakes:
   - Letting temporary C1-C3 changes overwrite registered settings
 notes:
   - Highlight tools stay on because exposure warnings are useful in the field.
+  - Keep MF Peaking on as a manual-focus aid. Use Level Low and Color Red as the starting display; magnification remains the final check for critical focus because peaking indicates contrast edges rather than guaranteeing exact focus.
   - Keep Auto update disabled so temporary changes made while using C1, C2, or C3 do not silently replace the registered subject setup.
   - Use Save/load cam settings on card for named complete configurations. For example, keep one file with C3 registered for People and another with C3 registered for Landscape; loading a file restores the complete saved camera configuration, not only C3.
   - High ISO Noise Reduction stays off because Lightroom/Topaz handles RAW cleanup better.
@@ -39,3 +41,5 @@ notes:
 appendix_links:
   - id: back_button_af_custom_button_strategies
     label: C1-C3 setup, Auto update, and saved configuration strategy
+  - id: r5_quick_reference
+    label: MF Peaking, Focus Guide, and manual-focus reference

@@ -6,6 +6,8 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 
 ## Topic Index
 
+- [Field Control Troubleshooting](#field-control-troubleshooting)
+  - [LOCK Displayed or Controls Will Not Change](#lock-displayed-or-controls-will-not-change)
 - [Exposure and Shutter](#exposure-and-shutter)
   - [Shooting Modes](#shooting-modes)
   - [Metering Mode](#metering-mode)
@@ -34,6 +36,14 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 
 ## Decision Guide
 
+### Field Control Troubleshooting
+
+#### LOCK Displayed or Controls Will Not Change
+
+Press the **Multi-function Lock button** once to unlock the controls, then retry the adjustment. The button toggles the physical controls selected under **Set-up > Multi function lock**, which may include the Main Dial, Rear Wheel, Top Rear Dial, joystick, control ring, and touchscreen. It does not lock individual settings.
+
+This can affect any shooting mode. In Fv it may prevent the Top Rear Dial from selecting an exposure parameter or the Main Dial from changing its value. After making the adjustment, lock the controls again only when preventing accidental changes is worth giving up immediate access.
+
 ### Exposure and Shutter
 
 #### Shooting Modes
@@ -45,6 +55,8 @@ Canon EOS R5 shooting modes define how exposure decisions are divided between th
 Use P for simple Program AE when you want low-friction general shooting and are happy for the camera to choose shutter speed and aperture.
 
 Use Fv as the flexible R5 general-purpose mode. It can behave like P, but lets you quickly take control of shutter speed, aperture, ISO, or exposure compensation without changing modes. In this project, consider both P and Fv for general shooting; Fv is often better for an experienced R5 user because it gives selective control while staying fast. For full setup guidance, see [Fv (Flexible Priority)](appendix:fv_flexible_priority).
+
+In Fv, turn the **Top Rear Dial (Quick Control Dial 2)** to select an exposure parameter and the **Main Dial** to change it. Press the **Erase (trash-can) button** to return shutter speed, aperture, or ISO to AUTO, or exposure compensation to ±0. If **LOCK** appears, press the Multi-function Lock button first.
 
 Use Av when aperture and depth of field are the main decision, such as landscapes, portraits, perched birds, natural-light macro, and tripod/still scenes.
 
@@ -322,6 +334,8 @@ These features support manual focus precision and depth-of-field workflows. Keep
 **Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.
 
 **Quick Menu:** Menu only.
+
+**Recommended MF Peaking setup:** **On**, **Level: Low**, **Color: Red**. Leave it enabled as a Set & Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon's [Manual Focus](https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html) instructions.
 
 #### Focus Bracketing
 

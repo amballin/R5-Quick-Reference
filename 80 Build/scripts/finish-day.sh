@@ -16,7 +16,7 @@ ask_yes_no() {
 }
 
 run_status() {
-    "$STATUS_SCRIPT"
+    PRS_SUPPRESS_GENERATED_DOC_DETAILS=1 "$STATUS_SCRIPT"
     return $?
 }
 
@@ -51,15 +51,7 @@ prepare_development_docs_for_handoff() {
     fi
 
     echo
-    echo "PAGES SEPARATION: docs/ contains generated changes."
-    echo "GitHub Pages serves main/docs, so a source-handoff commit must leave docs/ unchanged."
-    echo "finish-day can back up these files locally, restore docs/ to HEAD, and continue with source changes."
-    echo "Use publish.sh separately only when you intentionally want to update the live site."
-    echo
-    if ! ask_yes_no "Back up and restore docs/ now so this handoff does not publish?"; then
-        echo "Handoff postponed. No docs/ files were changed by finish-day."
-        return 1
-    fi
+    echo "Separating generated docs/ from the source handoff..."
 
     local workspace backup_root backup_dir timestamp
     workspace="$(local_workspace_dir)"
@@ -83,7 +75,7 @@ prepare_development_docs_for_handoff() {
         return 1
     fi
 
-    echo "Development docs/ changes were backed up and excluded from the handoff commit."
+    echo "Generated docs/ were backed up and excluded from the handoff commit."
     echo "Recovery backup: $backup_dir"
     return 0
 }
@@ -179,35 +171,36 @@ if [[ -n "$(git status --porcelain)" ]]; then
         echo "Validation/build postponed."
     fi
 
-    echo
-    echo "Current changes:"
-    git status --short
-    echo
     prepare_development_docs_for_handoff || exit 1
-    echo
-    echo "Source changes eligible for the handoff commit:"
-    git status --short
-    echo
-    if ask_yes_no "Stage every change listed above for one intentional commit?"; then
-        git add -A || exit 1
-        assert_no_worktree_pages_changes || exit 1
+    if [[ -z "$(git status --porcelain)" ]]; then
         echo
-        git diff --cached --stat
+        echo "No source changes remain after generated docs/ were excluded."
+    else
         echo
-        if ask_yes_no "Commit exactly these staged changes?"; then
-            read -r -p "Commit message: " COMMIT_MESSAGE
-            if [[ -z "$COMMIT_MESSAGE" ]]; then
-                echo "Commit cancelled: a non-empty message is required."
+        echo "Source changes eligible for the handoff commit:"
+        git status --short
+        echo
+        if ask_yes_no "Stage every change listed above for one intentional commit?"; then
+            git add -A || exit 1
+            assert_no_worktree_pages_changes || exit 1
+            echo
+            git --no-pager diff --cached --stat
+            echo
+            if ask_yes_no "Commit exactly these staged changes?"; then
+                read -r -p "Commit message: " COMMIT_MESSAGE
+                if [[ -z "$COMMIT_MESSAGE" ]]; then
+                    echo "Commit cancelled: a non-empty message is required."
+                    exit 1
+                fi
+                git commit -m "$COMMIT_MESSAGE" || exit 1
+            else
+                echo "Commit postponed. Staged changes remain; review them before continuing."
                 exit 1
             fi
-            git commit -m "$COMMIT_MESSAGE" || exit 1
         else
-            echo "Commit postponed. Staged changes remain; review them before continuing."
+            echo "Commit postponed. Local changes remain."
             exit 1
         fi
-    else
-        echo "Commit postponed. Local changes remain."
-        exit 1
     fi
 fi
 
@@ -227,6 +220,10 @@ if [[ "$RESULT" -eq 20 ]]; then
         echo "Push postponed. Do not switch Macs yet."
         exit 1
     fi
+elif [[ "$RESULT" -eq 0 ]]; then
+    echo
+    echo "FINISHED FOR TODAY: Safe to switch Macs."
+    exit 0
 elif [[ "$RESULT" -ne 0 ]]; then
     echo
     echo "NOT FINISHED: The repository state changed and requires review."

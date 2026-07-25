@@ -8,8 +8,14 @@ This file records approved follow-up work and analysis candidates that should no
 - Physically configure and verify AE Lock with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF.
 - Verify that C1's present registration matches the Wildlife profile; register and verify C2 as Birds in Flight / Action and C3 as Landscape.
 - Verify that the DOF button changes One-Shot AF ↔ Servo AF and that both AF-start buttons respect the resulting state.
+- Physically test the joystick straight press with Face + Tracking, including face/eye selection, tracking release, the single- and double-border displays, and the Face Select: Off indication; do not make the behavior definitive until verified.
 - Create a short on-camera verification checklist for AF-ON, AE Lock, DOF, and C1-C3.
 - Decide whether Spot AF needs another immediate control for serious macro work.
+
+## Exposure and Shutter Follow-Up
+
+- Evaluate EFCS against Mechanical shutter in the relevant profiles, including shutter-shock reduction, fast-shutter bokeh, motion, artificial-light banding, flash compatibility, and burst behavior; retain Mechanical as the documented default until the tradeoffs are tested and approved.
+- Evaluate Evaluative, Partial, Spot, and Center-weighted average metering across the documented subjects and representative lighting conditions to determine the optimal default and whether any subject profiles need a metering override.
 
 ## Architecture and Validation Improvements
 

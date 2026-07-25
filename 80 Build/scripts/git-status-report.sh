@@ -70,6 +70,13 @@ fi
 AHEAD="$(git rev-list --count "$UPSTREAM"..HEAD)"
 BEHIND="$(git rev-list --count HEAD.."$UPSTREAM")"
 WORKTREE_STATUS="$(git status --short)"
+DISPLAY_WORKTREE_STATUS="$WORKTREE_STATUS"
+GENERATED_DOCS_STATUS=""
+
+if [[ "${PRS_SUPPRESS_GENERATED_DOC_DETAILS:-0}" == "1" ]]; then
+    DISPLAY_WORKTREE_STATUS="$(git status --short -- . ':(exclude)docs')"
+    GENERATED_DOCS_STATUS="$(git status --short -- docs)"
+fi
 
 echo
 echo "Remote comparison:"
@@ -77,10 +84,15 @@ echo "  Ahead:  $AHEAD commit(s)"
 echo "  Behind: $BEHIND commit(s)"
 echo
 echo "Working tree:"
-if [[ -n "$WORKTREE_STATUS" ]]; then
-    printf '%s\n' "$WORKTREE_STATUS"
+if [[ -n "$DISPLAY_WORKTREE_STATUS" ]]; then
+    printf '%s\n' "$DISPLAY_WORKTREE_STATUS"
 else
-    echo "  clean"
+    if [[ -z "$GENERATED_DOCS_STATUS" ]]; then
+        echo "  clean"
+    fi
+fi
+if [[ -n "$GENERATED_DOCS_STATUS" ]]; then
+    echo "  generated docs/ changes detected; finish-day will back them up and exclude them"
 fi
 echo
 
