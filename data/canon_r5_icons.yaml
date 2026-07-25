@@ -1,3 +1,107 @@
+- id: control_shutter_half_press
+  canon_name: Shutter button half-press
+  display_label: Shutter half-press
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_shutterbtn-halfpress.svg
+  notes: Physical shutter-button half-press control shown in Canon's Customize buttons table.
+- id: control_af_on
+  canon_name: AF-ON
+  display_label: AF-ON
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-af-on.svg
+  notes: Physical AF-ON button shown in Canon's Customize buttons table.
+- id: control_ae_lock
+  canon_name: AE lock button
+  display_label: AE Lock
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-ae-lock.svg
+  notes: Physical AE lock button shown in Canon's Customize buttons table.
+- id: control_af_point
+  canon_name: AF point button
+  display_label: AF Point Selection
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-af-flame.svg
+  notes: Physical AF point selection button shown in Canon's Customize buttons table.
+- id: control_lens_button
+  canon_name: Lens button
+  display_label: Lens AF
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-lens.svg
+  notes: Lens AF stop/function button shown in Canon's Customize buttons table.
+- id: control_set
+  canon_name: SET button
+  display_label: SET
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-set.svg
+  notes: Physical SET button shown in Canon's Customize buttons table.
+- id: control_dof
+  canon_name: Exposure Simulation (during DOF preview)
+  display_label: DOF
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_exp-sim-during.svg
+  notes: Physical depth-of-field preview control shown in Canon's Customize buttons table.
+- id: control_multi_controller
+  canon_name: Multi-controller
+  display_label: Joystick
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_multi-controller.svg
+  notes: Physical Multi-controller identified as Joystick in the project.
+- id: control_main_dial
+  canon_name: Main dial
+  display_label: Main Dial
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_main-dial.svg
+  notes: Physical Main dial shown in Canon's Customize dials table.
+- id: control_quick_control_dial_1
+  canon_name: Quick control dial 1
+  display_label: Rear Wheel
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_sub-dial.svg
+  notes: Physical Quick Control Dial 1 identified as Rear Wheel in the project.
+- id: control_quick_control_dial_2
+  canon_name: Quick control dial 2
+  display_label: Top Rear Dial
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_sub-dial2.svg
+  notes: Physical Quick Control Dial 2 identified as Top Rear Dial in the project.
+- id: control_ring
+  canon_name: Control ring
+  display_label: Control Ring
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_controlring.svg
+  notes: RF lens or mount-adapter Control ring shown in Canon's Customize dials table.
+- id: control_m_fn
+  canon_name: Multifunction button
+  display_label: M-Fn
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-m-fn.svg
+  notes: Physical M-Fn button shown in Canon's Customize buttons table.
 - id: one_point_af
   canon_name: 1-point AF
   display_label: 1-point AF

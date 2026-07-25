@@ -1,6 +1,7 @@
 from html import escape
 import os
 from pathlib import Path
+import re
 from urllib.parse import quote
 
 from validators.common import load_yaml_checked
@@ -40,6 +41,7 @@ LABEL = {
     "image.highlight_tone_priority": "Highlight Tone Priority",
     "image.high_iso_noise_reduction": "High ISO NR",
     "image.long_exposure_noise_reduction.value": "Long Exposure NR",
+    "camera_setup.custom_shooting_mode_auto_update": "C1-C3 Auto Update",
     "camera_setup.electronic_full_time_mf": "Electronic Full-time MF",
     "camera_setup.ibis_high_res_shot": "IBIS High Res Shot",
     "camera_setup.continuous_af": "Continuous AF",
@@ -76,6 +78,7 @@ CAMERA_SETUP_SETTINGS = {
     "image.highlight_tone_priority",
     "image.high_iso_noise_reduction",
     "image.long_exposure_noise_reduction.value",
+    "camera_setup.custom_shooting_mode_auto_update",
     "camera_setup.electronic_full_time_mf",
     "camera_setup.ibis_high_res_shot",
     "camera_setup.continuous_af",
@@ -87,11 +90,11 @@ def settings_rows(profile, merged, paths=None):
     if profile.get("card_type") == "reference":
         return [
             {
-                "key": f"reference.{index}",
+                "key": reference_setting_key(item["control"]),
                 "label": item["control"],
                 "value": item["assignment"],
             }
-            for index, item in enumerate(profile.get("reference_settings") or [])
+            for item in profile.get("reference_settings") or []
         ]
     merged_fields = flatten(merged)
     override_fields = flatten(profile.get("overrides", {}))
@@ -135,6 +138,12 @@ def settings_rows(profile, merged, paths=None):
                 value = iso_display_value(merged_fields)
             rows.append({"key": key, "label": label, "value": value})
     return rows
+
+
+def reference_setting_key(control):
+    """Return a stable renderer key for a reference-card control label."""
+    slug = re.sub(r"[^a-z0-9]+", "_", str(control).casefold()).strip("_")
+    return f"reference.{slug}"
 
 
 def required_card_settings(paths=None):

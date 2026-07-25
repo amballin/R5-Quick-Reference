@@ -186,6 +186,7 @@ appendices:
       - Birds in Flight
       - Birds Perched
       - Camera Buttons
+      - Camera Setup Essentials
       - Landscape
       - Macro
       - People
@@ -203,6 +204,8 @@ appendices:
       - C1 General Wildlife
       - C2 Birds in Flight
       - C3 Landscape
+      - Auto update
+      - Save/load camera settings on card
       - Metering start
       - Metering and AF start
       - Set AF point to center
@@ -216,7 +219,7 @@ appendices:
       - Owner-confirmed custom button layout
       - Owner-confirmed dial layout
       - Leave default
-      - M-Fn unresolved
+      - Switch to Custom shooting mode
       - Joystick
   - id: canon_r5_official_icon_reference
     title: "Canon EOS R5 Official Icon Reference"

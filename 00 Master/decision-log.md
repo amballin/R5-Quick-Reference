@@ -13,6 +13,48 @@ Use **One-Shot AF** and **Single Shot** as the canonical project values. C1, C2,
 
 The Sports profile starts with People detection. Vehicles is a situational change for vehicle-based sports, not a separate profile.
 
+## Official Canon Physical-Control Icons on Camera Buttons
+
+**Status:** Accepted
+**Date:** 2026-07-25
+
+Display the official Canon EOS R5 physical-control icon beside each control name on the Camera Buttons reference card. Use Canon's documented button and dial SVGs for Shutter half-press, AF-ON, AE Lock, AF Point Selection, Lens AF, SET, DOF, Joystick, Main Dial, Rear Wheel, Top Rear Dial, Control Ring, and M-Fn. Map the project's plain physical names to Canon's corresponding controls: Rear Wheel is Quick Control Dial 1, Top Rear Dial is Quick Control Dial 2, and Joystick is the Multi-controller.
+
+Icons identify the physical control, not the assigned function. Keep the authored control text and row order, use stable control-name renderer keys, and do not fabricate fallbacks. This styling applies to the Camera Buttons reference card without changing other card content or control assignments.
+
+## Transparent AF Point Button Card Treatment
+
+**Status:** Accepted
+**Date:** 2026-07-25
+
+The official Canon AF point button SVG contains an opaque white button face that does not survive the card's standard monochrome color treatment cleanly. Preserve that official SVG unchanged in the Canon icon reference. For the Camera Buttons card, use a geometry-preserving derivative that removes only the opaque background fill and retains Canon's button outline and AF-point marks. Apply the same standard card icon color used by the other physical controls, with no special black background or one-off color.
+
+This decision supersedes **Official Canon Physical-Control Icons on Camera Buttons** only for the AF point button's card presentation; the official Canon geometry, physical-control meaning, and source-reference requirements remain in force.
+
+## Owner-Confirmed M-Fn Custom-Mode Switching
+
+**Status:** Accepted
+**Date:** 2026-07-25
+
+Assign **M-Fn** to Canon's **Switch to Custom shooting mode** function. The project owner physically tested the assignment and confirmed that repeated presses switch among C1, C2, and C3.
+
+The switching function is owner-confirmed, but the registered mode contents retain separate evidence states. C1 contains registered settings, although its match to the complete Wildlife profile remains pending verification. C2 and C3 do not yet contain their target registrations. Do not describe all three profile implementations as current merely because M-Fn can select their mode positions.
+
+This decision supersedes the unresolved M-Fn portions of **Owner-Confirmed Eye Priority and AF-Point Position Controls**, **Subject-Profile Custom Modes and Tracking/Precision AF Buttons**, and **Owner-Confirmed EOS R5 Button and Dial Architecture**.
+
+## Owner-Confirmed Eye Priority and AF-Point Position Controls
+
+**Status:** Accepted
+**Date:** 2026-07-25
+
+The project owner physically configured and verified **AF-ON** as Metering and AF start with AF Operation set to Maintain current setting, AF Method set to Face + Tracking, and Servo AF characteristics set to Maintain current setting. AF-ON honors the stored Eye Detection state.
+
+Assign **SET** to **Eye detection**. SET toggles the stored Eye Detection Enable/Disable state when the active AF method supports Eye Detection. The state persists when switching between Face + Tracking and deliberate-point AF methods, and AF-ON uses the stored state when it invokes Face + Tracking. SET has no effect while 1-Point AF or Spot AF is active because those methods cannot use Eye Detection. The AF Point Selection button followed by INFO remains a slower context-sensitive Eye Detection toggle when Face + Tracking is active.
+
+**AE Lock** remains Metering and AF start with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF. Its 1-Point position is the last position used; AE Lock does not automatically recenter it. The joystick directly moves the AF point or starting position, and pressing the joystick straight in recenters it.
+
+This decision confirms the AF-ON target in **Subject-Profile Custom Modes and Tracking/Precision AF Buttons** and supersedes the SET and joystick assignments in **Owner-Confirmed EOS R5 Button and Dial Architecture**. C1-C3 remain approved targets pending physical verification, and M-Fn remains unresolved.
+
 ## Appendix Index Return Navigation
 
 **Status:** Accepted

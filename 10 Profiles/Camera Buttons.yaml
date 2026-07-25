@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-24
+  last_updated: 2026-07-25
   release: true
 title: Camera Buttons
 subtitle: Confirmed Layout + Approved Target
@@ -15,19 +15,19 @@ reference_settings:
   - control: Shutter button half-press
     assignment: Metering start
   - control: AF-ON button
-    assignment: Metering and AF start (Face + Tracking target; verify on camera)
+    assignment: Metering and AF start (Face + Tracking)
   - control: AE Lock button
-    assignment: Metering and AF start (1-Point AF override)
+    assignment: Metering and AF start (1-Point AF override; remembers last point position)
   - control: AF Point Selection button
-    assignment: AF point selection; Main Dial changes selection
+    assignment: AF point selection; Main Dial changes selection; INFO toggles Eye detection when available
   - control: Lens AF button
     assignment: AF Off
   - control: SET button
-    assignment: Set AF point to center
+    assignment: Eye detection toggle when supported by the active AF method
   - control: DOF button
     assignment: One-Shot AF ↔ Servo AF
   - control: Joystick
-    assignment: Direct AF point selection
+    assignment: Direct AF point selection; press straight in to recenter
   - control: Main Dial
     assignment: Shutter Speed
   - control: Rear Wheel
@@ -37,24 +37,28 @@ reference_settings:
   - control: Control Ring
     assignment: Exposure Compensation
   - control: M-Fn button
-    assignment: Unresolved — review later
+    assignment: Switch to Custom shooting mode (C1 → C2 → C3)
 checklist:
   - Practice back-button AF before a critical shoot.
   - Use the linked deep dive for the AF-ON and AE Lock INFO details.
   - Test AF-ON and AE Lock separately; do not hold both AF buttons together.
-  - Verify the AF-ON Face + Tracking target and C1-C3 registrations on the camera.
+  - Use SET to choose eye priority before AF-ON when Face + Tracking is active.
+  - Verify the C1-C3 registrations on the camera.
   - Confirm Manual + Auto ISO before using exposure compensation.
   - Recheck assignments after a reset or firmware update.
 watch_for:
   - AE Lock is no longer available for its default exposure-lock function
-  - "AE Lock: 1-Point AF disables Subject Detection and Eye Detection for that AF action; the stored profile settings remain unchanged"
+  - "AE Lock: 1-Point AF does not use Subject Detection or Eye Detection for that AF action; the stored profile settings remain unchanged"
+  - SET has no effect when the active AF method cannot use Eye detection
+  - AE Lock remembers the last 1-Point AF position; press the joystick straight in when recentering is needed
   - Exposure Compensation on Control Ring requires Auto ISO in Manual exposure
-  - M-Fn remains unresolved pending a separate review
+  - C1 contains registered settings, but its match to the Wildlife profile remains to be verified; C2 and C3 are not yet registered
 common_mistakes:
   - Expecting shutter half-press to autofocus after enabling back-button AF
   - Pressing AF-ON and AE Lock together instead of choosing one AF behavior
   - Expecting Eye Detection to operate with the 1-Point AF override
-  - Changing a confirmed control while experimenting with the unresolved M-Fn assignment
+  - Expecting SET to toggle Eye detection while 1-Point AF or Spot AF is active
+  - Assuming C1, C2, or C3 contains its documented profile without verifying the registration
 appendix_links:
   - id: back_button_af_custom_button_strategies
     label: Button setup and AF-ON / AE Lock INFO details

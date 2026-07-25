@@ -6,7 +6,7 @@ This file records approved follow-up work and analysis candidates that should no
 
 - Physically configure and verify AF-ON with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to Face + Tracking.
 - Physically configure and verify AE Lock with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF.
-- Register and verify C1 as General Wildlife, C2 as Birds in Flight / Action, and C3 as Landscape.
+- Verify that C1's present registration matches the Wildlife profile; register and verify C2 as Birds in Flight / Action and C3 as Landscape.
 - Verify that the DOF button changes One-Shot AF ↔ Servo AF and that both AF-start buttons respect the resulting state.
 - Create a short on-camera verification checklist for AF-ON, AE Lock, DOF, and C1-C3.
 - Decide whether Spot AF needs another immediate control for serious macro work.

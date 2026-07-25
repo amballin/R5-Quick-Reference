@@ -12,8 +12,27 @@ Official Canon icon names and assets extracted from the Canon EOS R5 Product Man
 - [Image Stabilizer (IS Mode)](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html)
 - [Focus Bracketing](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html)
 - [Long Exposure Noise Reduction](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0200.html)
+- [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html)
 
 ## Icon Index
+
+### Camera Controls
+
+| Icon | Canon official name | Card label | Where it appears | Source |
+|---|---|---|---|---|
+| ![Shutter button half-press](../../60 Assets/icons/canon_r5_official/icon_shutterbtn-halfpress.svg) | Shutter button half-press | Shutter half-press | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![AF-ON](../../60 Assets/icons/canon_r5_official/icon_btn-af-on.svg) | AF-ON | AF-ON | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![AE lock button](../../60 Assets/icons/canon_r5_official/icon_btn-ae-lock.svg) | AE lock button | AE Lock | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![AF point button](../../60 Assets/icons/canon_r5_official/icon_btn-af-flame.svg) | AF point button | AF Point Selection | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Lens button](../../60 Assets/icons/canon_r5_official/icon_btn-lens.svg) | Lens button | Lens AF | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![SET button](../../60 Assets/icons/canon_r5_official/icon_btn-set.svg) | SET button | SET | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Exposure Simulation during DOF preview](../../60 Assets/icons/canon_r5_official/icon_exp-sim-during.svg) | Exposure Simulation (during DOF preview) | DOF | Physical depth-of-field preview control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Multi-controller](../../60 Assets/icons/canon_r5_official/icon_multi-controller.svg) | Multi-controller | Joystick | Physical Multi-controller identified as Joystick in the project. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Main dial](../../60 Assets/icons/canon_r5_official/icon_main-dial.svg) | Main dial | Main Dial | Physical control in Canon's Customize dials table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Quick control dial 1](../../60 Assets/icons/canon_r5_official/icon_sub-dial.svg) | Quick control dial 1 | Rear Wheel | Physical control identified as Rear Wheel in the project. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Quick control dial 2](../../60 Assets/icons/canon_r5_official/icon_sub-dial2.svg) | Quick control dial 2 | Top Rear Dial | Physical control identified as Top Rear Dial in the project. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Control ring](../../60 Assets/icons/canon_r5_official/icon_controlring.svg) | Control ring | Control Ring | RF lens or mount-adapter Control ring. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
+| ![Multifunction button](../../60 Assets/icons/canon_r5_official/icon_btn-m-fn.svg) | Multifunction button | M-Fn | Physical control in Canon's Customize buttons table. | [Custom Function Setting Items](https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html) |
 
 ### AF Method
 

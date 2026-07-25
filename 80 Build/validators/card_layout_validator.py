@@ -41,6 +41,7 @@ REQUIRED_DISPLAY_ORDER = [
     "image.white_balance",
     "image.highlight_tone_priority",
     "image.high_iso_noise_reduction",
+    "camera_setup.custom_shooting_mode_auto_update",
     "camera_setup.electronic_full_time_mf",
     "camera_setup.ibis_high_res_shot",
     "camera_setup.continuous_af",

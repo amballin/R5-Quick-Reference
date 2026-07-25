@@ -136,6 +136,7 @@ def _canon_icon_reference_html(paths, site_home_url="../index.html", navigation_
         "subject_to_detect_none": 3,
     }
     order = [
+        "controls",
         "af",
         "subject_to_detect",
         "drive",
@@ -151,6 +152,7 @@ def _canon_icon_reference_html(paths, site_home_url="../index.html", navigation_
         "special_shooting",
     ]
     titles = {
+        "controls": "Camera Controls",
         "af": "AF Method",
         "subject_to_detect": "Subject to Detect",
         "drive": "Drive",

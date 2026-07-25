@@ -1,6 +1,6 @@
 # Canon EOS R5 Owner-Confirmed Controls
 
-**Status:** Owner-confirmed physical layout as of 2026-07-23, with the 2026-07-24 AF-ON detail and C1-C3 assignments approved as targets pending physical camera verification.
+**Status:** Owner-confirmed physical layout, including physically tested M-Fn switching among C1-C3. The intended profile registrations remain subject to the verification states below.
 
 The earlier custom-control screenshots are retired historical material. The camera settings changed after those images were made, so the images are not reliable evidence of the current setup and must not be used to reconstruct or contradict this table.
 
@@ -27,7 +27,7 @@ The earlier custom-control screenshots are retired historical material. The came
 | Movie Record | Leave default | — |
 | MODE | Leave default | — |
 | LCD panel illumination | Leave default | — |
-| M-Fn | **UNRESOLVED** | Review later |
+| M-Fn | Switch to Custom shooting mode | Press repeatedly to switch among C1, C2, and C3; assignment and switching behavior physically verified |
 
 ## Dials and Control Ring
 
@@ -46,9 +46,9 @@ The approved target assignments are complete shooting configurations derived fro
 
 | Custom mode | Canonical profile | Field label | Verification status |
 |---|---|---|---|
-| C1 | Wildlife | General Wildlife | Pending physical camera verification |
-| C2 | Birds in Flight | Birds in Flight / Action | Pending physical camera verification |
-| C3 | Landscape | Landscape | Pending physical camera verification |
+| C1 | Wildlife | General Wildlife | Registered settings present; match to the Wildlife profile pending verification |
+| C2 | Birds in Flight | Birds in Flight / Action | Not yet registered |
+| C3 | Landscape | Landscape | Not yet registered |
 
 They are not independent AF-setting controls.
 

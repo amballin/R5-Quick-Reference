@@ -1,7 +1,7 @@
 camera: Canon EOS R5
 status: owner_confirmed_layout_with_approved_targets
-last_confirmed: 2026-07-23
-approved_architecture_date: 2026-07-24
+last_confirmed: 2026-07-25
+approved_architecture_date: 2026-07-25
 authority: Direct confirmation and approval from the project owner
 
 evidence_rules:
@@ -18,11 +18,12 @@ controls:
     status: owner_confirmed
   - control: AF-ON
     assignment: Metering and AF start
-    status: approved_target_pending_camera_verification
+    status: owner_confirmed
     info_details:
       AF Operation: Maintain current setting
       AF Method: Face + Tracking
       Servo AF characteristics: Maintain current setting
+    notes: Uses the stored Eye detection state, including a state changed with the SET button.
   - control: AE Lock
     assignment: Metering and AF start
     status: owner_confirmed
@@ -30,9 +31,10 @@ controls:
       AF Operation: Maintain current setting
       AF Method: 1-Point AF
       Servo AF characteristics: Maintain current setting
+    notes: Uses the last 1-Point AF position; it does not automatically recenter the point.
   - control: AF Point Selection
     assignment: AF point selection
-    operation: Use Main Dial to change selection
+    operation: Use Main Dial to change selection; when Face + Tracking is active, INFO toggles Eye detection
     status: owner_confirmed
   - control: Lens AF button
     assignment: AF Off
@@ -41,10 +43,12 @@ controls:
     assignment: One-Shot AF / Servo AF
     status: owner_confirmed
   - control: SET
-    assignment: Set AF point to center
+    assignment: Eye detection
     status: owner_confirmed
+    notes: Toggles the stored Eye detection state when the active AF method supports it; it has no effect with 1-Point AF or Spot AF.
   - control: Joystick
     assignment: Direct AF point selection
+    operation: Move the AF point directly; press straight in to recenter it
     status: owner_confirmed
   - control: Movie Record
     assignment: Leave default
@@ -56,9 +60,10 @@ controls:
     assignment: Leave default
     status: owner_confirmed
   - control: M-Fn
-    assignment: UNRESOLVED
-    status: unresolved
-    notes: Review later; do not infer an assignment from historical screenshots.
+    assignment: Switch to Custom shooting mode
+    operation: Press repeatedly to switch among C1, C2, and C3
+    status: owner_confirmed
+    notes: The assignment and C1-C3 switching behavior were physically tested. C1 contains registered settings; C2 and C3 do not yet contain their target registrations.
 
 dials:
   - control: Main Dial
@@ -92,6 +97,11 @@ custom_shooting_modes:
     - Do not treat C1, C2, or C3 as independent AF-setting controls.
     - Each mode implements the corresponding complete subject card.
     - Confirm the registrations on the physical camera before describing them as current.
+  registration_state:
+    switching_behavior: owner_confirmed
+    C1: registered_settings_present_profile_match_pending_verification
+    C2: not_registered
+    C3: not_registered
 
 retired_evidence:
   status: historical_not_current

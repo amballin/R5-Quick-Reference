@@ -79,6 +79,7 @@ defaults:
       value: "Off"
       note: Enable only for multi-second or night exposures.
   camera_setup:
+    custom_shooting_mode_auto_update: "Disable"
     electronic_full_time_mf: "Off"
     ibis_high_res_shot: "Off"
     continuous_af: "Off"

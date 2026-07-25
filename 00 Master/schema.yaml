@@ -66,6 +66,7 @@ settings:
     notes: string
 
   camera_setup:
+    custom_shooting_mode_auto_update: string
     electronic_full_time_mf: string
     ibis_high_res_shot: string
     continuous_af: string

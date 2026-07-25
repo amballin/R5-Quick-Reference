@@ -349,3 +349,10 @@ icons:
     svg: "SVG/touch_shutter.svg"
     confidence: low
     notes: "Fine hand/touch detail converted from raster mask."
+  - field_id: af_point_button
+    label: "AF Point Button"
+    source_svg: "../../canon_r5_official/icon_btn-af-flame.svg"
+    png: "PNG/af_point_button.png"
+    svg: "SVG/af_point_button.svg"
+    confidence: high
+    notes: "Canon control geometry retained; opaque white fill removed for transparent monochrome card presentation."

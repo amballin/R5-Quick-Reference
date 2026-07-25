@@ -12,6 +12,7 @@ DATA_PATH = ROOT / "data/canon_r5_icons.yaml"
 OFFICIAL_ICON_DIR = ROOT / "60 Assets/icons/canon_r5_official"
 MODES_PATH = OFFICIAL_ICON_DIR / "modes.yaml"
 ALLOWED_CATEGORIES = {
+    "controls",
     "af",
     "drive",
     "metering",

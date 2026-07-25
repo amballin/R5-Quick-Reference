@@ -1,4 +1,44 @@
 fields:
+  reference.shutter_button_half_press:
+    label: "Shutter button half-press"
+    svg: "icons/canon_r5_official/icon_shutterbtn-halfpress.svg"
+  reference.af_on_button:
+    label: "AF-ON button"
+    svg: "icons/canon_r5_official/icon_btn-af-on.svg"
+  reference.ae_lock_button:
+    label: "AE Lock button"
+    svg: "icons/canon_r5_official/icon_btn-ae-lock.svg"
+  reference.af_point_selection_button:
+    label: "AF Point Selection button"
+    svg: "icons/card_icons/SVG/af_point_button.svg"
+    png: "icons/card_icons/PNG/af_point_button.png"
+  reference.lens_af_button:
+    label: "Lens AF button"
+    svg: "icons/canon_r5_official/icon_btn-lens.svg"
+  reference.set_button:
+    label: "SET button"
+    svg: "icons/canon_r5_official/icon_btn-set.svg"
+  reference.dof_button:
+    label: "DOF button"
+    svg: "icons/canon_r5_official/icon_exp-sim-during.svg"
+  reference.joystick:
+    label: "Joystick"
+    svg: "icons/canon_r5_official/icon_multi-controller.svg"
+  reference.main_dial:
+    label: "Main Dial"
+    svg: "icons/canon_r5_official/icon_main-dial.svg"
+  reference.rear_wheel:
+    label: "Rear Wheel"
+    svg: "icons/canon_r5_official/icon_sub-dial.svg"
+  reference.top_rear_dial:
+    label: "Top Rear Dial"
+    svg: "icons/canon_r5_official/icon_sub-dial2.svg"
+  reference.control_ring:
+    label: "Control Ring"
+    svg: "icons/canon_r5_official/icon_controlring.svg"
+  reference.m_fn_button:
+    label: "M-Fn button"
+    svg: "icons/canon_r5_official/icon_btn-m-fn.svg"
   mode:
     label: "Shooting Mode"
     svg: "icons/card_icons/SVG/mode.svg"

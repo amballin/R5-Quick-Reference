@@ -67,7 +67,7 @@ Use Bulb only for long manual exposures where you directly control how long the 
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C2** | Custom shooting mode 2 | Recalls registered camera settings. |
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C3** | Custom shooting mode 3 | Recalls registered camera settings. |
 
-**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3).
+**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3). The owner-confirmed M-Fn assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.
 
 **Quick Menu:** Exposure mode is normally changed with the MODE button, not the Q screen.
 
@@ -84,7 +84,7 @@ Evaluative is the safest general default because it reads the whole scene and wo
 
 **Camera Menu:** Shooting menu > Metering mode.
 
-**Quick Menu:** Q screen / M-Fn.
+**Quick Menu:** Q screen. M-Fn is reserved for switching among C1-C3.
 
 #### Shutter Speed
 
@@ -141,7 +141,7 @@ Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus whe
 
 **Camera Menu:** AF1 > AF operation; for Manual Focus use the lens AF/MF switch or AF1 > Focus mode when shown.
 
-**Quick Menu:** Q screen / M-Fn for AF Operation. Manual Focus is usually the lens switch, not Q.
+**Quick Menu:** Q screen for AF Operation. Manual Focus is usually the lens switch, not Q; M-Fn is reserved for switching among C1-C3.
 
 #### AF Method
 
@@ -157,7 +157,7 @@ Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predict
 
 **Camera Menu:** AF1 > AF method.
 
-**Quick Menu:** AF point selection button, then M-Fn.
+**Quick Menu:** AF point selection button, then Main Dial; the Q screen is the alternative. M-Fn is reserved for switching among C1-C3.
 
 #### Subject Detection
 
@@ -186,9 +186,11 @@ Enable it when Face + Tracking and subject detection are useful. It is not usefu
 
 **Camera Menu:** AF1 > Eye detection.
 
-**Quick Menu:** AF point selection button, then INFO toggle when available.
+**Quick Menu:** With Face + Tracking active, press the AF point selection button and then INFO to toggle Eye detection. This shortcut is unavailable when the active AF method cannot use Eye detection.
 
 Assigning **Eye Detection AF** to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the **Eye detection: Enable/Disable** menu setting.
+
+In the owner-confirmed control layout, **SET** is assigned to **Eye detection**. It toggles the stored Enable/Disable state when the active AF method supports Eye detection and has no effect with 1-Point AF or Spot AF. The state persists when switching AF methods, and AF-ON honors it when AF-ON temporarily selects Face + Tracking.
 
 #### Subject Detection and AF Method Combinations
 
@@ -203,7 +205,7 @@ Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF 
 
 **Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.
 
-**Quick Menu:** AF method via AF point selection + M-Fn. Subject Detection is menu only. Manual Focus is usually the lens switch.
+**Quick Menu:** AF method via the AF point selection button and Main Dial. Subject Detection is menu only. Manual Focus is usually the lens switch. M-Fn is reserved for switching among C1-C3.
 
 #### AF Tracking Behavior
 
@@ -236,9 +238,9 @@ Single Shot is deliberate. Low or High Speed Continuous helps with expression, m
 | ![10 sec. self-timer](../../60 Assets/icons/canon_r5_official/self_timer_10_sec_remote_control.svg) | Self-timer: 10 sec. | Delays capture for tripod work, group frames, or remote release timing. |
 | ![2 sec. self-timer](../../60 Assets/icons/canon_r5_official/self_timer_2_sec_remote_control.svg) | Self-timer: 2 sec. | Delays capture briefly to let tripod shake settle after pressing the shutter. |
 
-**Camera Menu:** M-Fn drive mode item.
+**Camera Menu:** Shooting menu > Drive mode.
 
-**Quick Menu:** Q screen / M-Fn.
+**Quick Menu:** Q screen. M-Fn is reserved for switching among C1-C3.
 
 Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.
 

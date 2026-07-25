@@ -39,16 +39,23 @@ def validate(root):
         if not isinstance(entry, dict):
             issues.append(error("icons", icon_map_path, f"Mapping for {field_id} must be a mapping."))
             continue
-        for key in ("svg", "png"):
-            if key not in entry:
-                issues.append(error("icons", icon_map_path, f"{field_id} is missing {key}."))
+        svg_ref = entry.get("svg")
+        if not svg_ref:
+            issues.append(error("icons", icon_map_path, f"{field_id} is missing svg."))
+            continue
+        official_svg = str(svg_ref).startswith("icons/canon_r5_official/")
+        png_ref = entry.get("png")
+        if not png_ref and not official_svg:
+            issues.append(error("icons", icon_map_path, f"{field_id} is missing png."))
+        for key, reference in (("svg", svg_ref), ("png", png_ref)):
+            if not reference:
                 continue
-            asset = root / "60 Assets" / entry[key]
+            asset = root / "60 Assets" / reference
             referenced.add(asset.resolve())
             if key == "svg":
-                svg_refs.append(entry[key])
+                svg_refs.append(reference)
             else:
-                png_refs.append(entry[key])
+                png_refs.append(reference)
             if not asset.exists():
                 issues.append(error("icons", asset, f"Referenced {key.upper()} icon does not exist."))
 

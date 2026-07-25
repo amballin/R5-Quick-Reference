@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-17
+  last_updated: 2026-07-25
   release: true
 title: Camera Setup Essentials
 subtitle: Set & Forget
@@ -15,6 +15,7 @@ overrides: {}
 checklist:
   - RGB Histogram on
   - Highlight Alert enabled
+  - Save named camera-settings files to a card after registering C1-C3
   - Continuous AF off
   - Electronic full-time MF off
   - IBIS High Resolution Shot off
@@ -25,10 +26,16 @@ watch_for:
 common_mistakes:
   - Treating setup items like field profile choices
   - Leaving a specialty mode enabled after testing
+  - Letting temporary C1-C3 changes overwrite registered settings
 notes:
   - Highlight tools stay on because exposure warnings are useful in the field.
+  - Keep Auto update disabled so temporary changes made while using C1, C2, or C3 do not silently replace the registered subject setup.
+  - Use Save/load cam settings on card for named complete configurations. For example, keep one file with C3 registered for People and another with C3 registered for Landscape; loading a file restores the complete saved camera configuration, not only C3.
   - High ISO Noise Reduction stays off because Lightroom/Topaz handles RAW cleanup better.
   - Long Exposure NR can reduce hot pixels and fixed-pattern noise in selected multi-second exposures, but its additional dark-frame wait interrupts shooting; leave it off when cadence matters.
   - Continuous AF is off because it can drain battery by focusing when you are not shooting.
   - Electronic full-time MF is off because it is not useful for your lens.
   - IBIS High Resolution Shot is off because it is a static-scene specialty mode with very large JPEG output.
+appendix_links:
+  - id: back_button_af_custom_button_strategies
+    label: C1-C3 setup, Auto update, and saved configuration strategy
