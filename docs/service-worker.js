@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1785011600";
+const CACHE_NAME = "photography-reference-1785080075";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -37,6 +37,8 @@ const CACHE_URLS = [
   "web-assets/Card%20Logos/png/People.png",
   "web-assets/Card%20Logos/png/Silver%20Logo.png",
   "web-assets/Card%20Logos/png/Wildlife.png",
+  "web-assets/icons/canon_r5_official/autofocus_tab.svg",
+  "web-assets/icons/canon_r5_official/cropping_images.svg",
   "web-assets/icons/canon_r5_official/evaluative_metering.svg",
   "web-assets/icons/canon_r5_official/eye_detection.svg",
   "web-assets/icons/canon_r5_official/face_tracking.svg",
@@ -59,6 +61,7 @@ const CACHE_URLS = [
   "web-assets/icons/canon_r5_official/low_speed_continuous_shooting.svg",
   "web-assets/icons/canon_r5_official/mode-select.svg",
   "web-assets/icons/canon_r5_official/one_point_af.svg",
+  "web-assets/icons/canon_r5_official/shooting_tab.svg",
   "web-assets/icons/canon_r5_official/single_shooting.svg",
   "web-assets/icons/card_icons/SVG/af_point_button.svg",
   "web-assets/icons/card_icons/SVG/aperture.svg",

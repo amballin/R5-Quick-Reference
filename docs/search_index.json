@@ -420,7 +420,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "index",
-    "text": "1. Match by Subject\n2. Canon EF 100-400mm f/4.5-5.6L IS II USM\n3. Canon EF 100mm f/2.8L Macro IS USM\n4. Canon EF 50mm f/1.4 USM\n5. Canon Extender EF 1.4x\n6. EF-EOS R Control Ring Adapter\n7. Canon RF 24-240mm F4-6.3 IS USM\n8. Common Mistakes\n9. Cross References"
+    "text": "1. Match by Subject\n2. Canon EF 100-400mm f/4.5-5.6L IS II USM\n3. Canon EF 100mm f/2.8L Macro IS USM\n4. Canon EF 50mm f/1.4 USM\n5. Canon Extender EF 1.4x\n6. EF-EOS R Control Ring Adapter\n7. Crop Mode and RF-S/EF-S Lenses\n8. Canon RF 24-240mm F4-6.3 IS USM\n9. Common Mistakes\n10. Cross References"
   },
   {
     "appendix_id": "lens_settings",
@@ -569,6 +569,15 @@
   {
     "appendix_id": "lens_settings",
     "title": "Lens Capabilities",
+    "section": "Crop Mode and RF-S/EF-S Lenses",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "crop-mode-and-rf-s-ef-s-lenses",
+    "text": "Keep **Cropping/aspect ratio: Full-frame** as the normal R5 setting. RF lenses and adapted EF lenses use the full sensor unless 1.6\u00d7 crop is selected manually. Do not confuse an adapted full-frame **EF** lens with an **EF-S** lens: using the EF-EOS R adapter alone does not cause a crop.\nIf an RF-S or adapted EF-S lens is attached, the R5 automatically forces **1.6\u00d7 (crop)** and no Full-frame option is available while that lens remains attached.\n  Lens / setting   Capture area   Recorded resolution   File effect  \n --- --- ---: --- \n  RF or adapted EF lens, Full-frame   Full sensor   Approx. 44.8 MP (8192\u00d75464)   Maximum resolution and framing room  \n  RF or adapted EF lens, manual 1.6\u00d7 crop   Center APS-C-size area   Approx. 17.3 MP (5088\u00d73392)   Generally smaller files, with lower resolution  \n  RF-S or adapted EF-S lens   1.6\u00d7 center area, forced   Approx. 17.3 MP (5088\u00d73392)   Generally smaller files, with lower resolution  \nActual file size varies with RAW/cRAW or JPEG quality and subject content, but the 1.6\u00d7 capture contains substantially fewer pixels. The area outside the crop is not recorded in RAW or cRAW and cannot be recovered later.\nManual 1.6\u00d7 crop can make a distant bird, animal, or field-sports subject easier to see and frame in the viewfinder. It does not add optical magnification or capture more subject detail than cropping the same full-frame image later. Use it only when the smaller framing area is an advantage; restore Full-frame after the session."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
     "section": "Canon RF 24-240mm F4-6.3 IS USM",
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
@@ -609,7 +618,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "common-mistakes",
-    "text": "- Leaving IS on for locked tripod long exposures.\n- Leaving Mode 2 on after a panning session.\n- Using the 1.4x extender when light is too low for a clean shutter speed.\n- Forgetting that the EF control ring adapter changes controls, not optics.\n- Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.\n- Using the macro lens handheld when the subject really needs a tripod.\n- Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed."
+    "text": "- Leaving IS on for locked tripod long exposures.\n- Leaving Mode 2 on after a panning session.\n- Using the 1.4x extender when light is too low for a clean shutter speed.\n- Forgetting that the EF control ring adapter changes controls, not optics.\n- Confusing an adapted EF lens with EF-S and expecting the adapter itself to force 1.6\u00d7 crop.\n- Leaving manual 1.6\u00d7 crop enabled after a distant-subject session.\n- Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.\n- Using the macro lens handheld when the subject really needs a tripod.\n- Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed."
   },
   {
     "appendix_id": "lens_settings",
@@ -618,7 +627,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "cross-references",
-    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.\n- Related guides:\n- Focus Bracketing & In-Camera Depth Compositing\n- R5 Quick Reference"
+    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization, IBIS, Lens IS.\n- Related guides:\n- Focus Bracketing & In-Camera Depth Compositing\n- R5 Quick Reference"
   },
   {
     "appendix_id": "long_exposure_night_photography",
@@ -1356,7 +1365,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "overview",
-    "text": "Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference."
+    "text": "Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1365,7 +1374,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "topic-index",
-    "text": "- Field Control Troubleshooting\n- LOCK Displayed or Controls Will Not Change\n- Exposure and Shutter\n- Shooting Modes\n- Metering Mode\n- Shutter Speed\n- Shutter Type\n- Autofocus and Manual Focus\n- Focus Mode\n- AF Operation\n- AF Method\n- Subject Detection\n- Eye Detection\n- Subject Detection and AF Method Combinations\n- AF Tracking Behavior\n- Capture and Timing\n- Drive Mode\n- Flash\n- Flash Modes and Compatibility\n- Stabilization\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Specialized Focus and Long-Exposure Tools\n- Focus Features\n- Focus Bracketing\n- Long Exposure Noise Reduction"
+    "text": "- Field Control Troubleshooting\n- LOCK Displayed or Controls Will Not Change\n- Exposure and Shutter\n- Shooting Modes\n- Metering Mode\n- Shutter Speed\n- Shutter Type\n- Autofocus and Manual Focus\n- Focus Mode\n- AF Operation\n- AF Method\n- Subject Detection\n- Eye Detection\n- Subject Detection and AF Method Combinations\n- AF Tracking Behavior\n- Capture and Timing\n- Cropping / Aspect Ratio\n- Drive Mode\n- Flash\n- Flash Modes and Compatibility\n- Stabilization\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Specialized Focus and Long-Exposure Tools\n- Focus Features\n- Focus Bracketing\n- Long Exposure Noise Reduction"
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1487,6 +1496,15 @@
   {
     "appendix_id": "r5_quick_reference",
     "title": "R5 Quick Reference",
+    "section": "Cropping / Aspect Ratio",
+    "source": "Appendices/R5 Quick Reference.md",
+    "html": "appendices/R5 Quick Reference.html",
+    "anchor": "cropping-aspect-ratio",
+    "text": "Keep **Full-frame** as the Set & Forget starting point. Select **1.6\u00d7 (crop)** temporarily when a distant bird, animal, or field-sports subject will remain predictably inside the smaller capture area and the enlarged view makes framing easier. Return to Full-frame after the session. This is a framing and file-workflow choice, not extra optical reach.\n  Setting   Recorded pixels   Field use  \n --- ---: --- \n  Full-frame   Approx. 44.8 MP (8192\u00d75464)   Maximum resolution and maximum room to follow, crop, or recompose.  \n  1.6\u00d7 (crop)   Approx. 17.3 MP (5088\u00d73392)   Tighter displayed view and generally smaller files when the final image would clearly use only the sensor center.  \nThe camera records only the center area in 1.6\u00d7 mode, including for RAW and cRAW, so the excluded area cannot be recovered later. The lower pixel count generally reduces file size, but actual size varies with image quality and subject content. Use Full-frame for erratic birds, rapidly approaching action, uncertain composition, or whenever maximum resolution and reframing room matter.\nWith **RF-S or adapted EF-S lenses**, the R5 automatically selects 1.6\u00d7 crop and no Full-frame option is available while the lens is attached. RF and adapted EF lenses do not force crop mode.\n**Temporary override process:** begin with Full-frame, select 1.6\u00d7 only for the specific distant-subject situation, and restore Full-frame afterward. When working in C1-C3, keep **Auto update: Disable** so a temporary crop choice does not silently replace the registered subject setup.\n**Camera Menu:** Shooting 1 > Cropping/aspect ratio.\n**Quick Menu:** Menu only.\nSee Canon's Still Photo Cropping/Aspect Ratio instructions and EOS R5 recorded pixel counts."
+  },
+  {
+    "appendix_id": "r5_quick_reference",
+    "title": "R5 Quick Reference",
     "section": "Drive Mode",
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
@@ -1563,7 +1581,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "recommended-settings-by-profile",
-    "text": "- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.\n- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.\n- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.\n- Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.\n- Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.\n- People: Servo AF, People, Eye Detection, Face + Tracking.\n- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable.\n- Travel: Baseline settings unless the subject demands a specialized profile.\n- Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.\n- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable."
+    "text": "- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6\u00d7 only when a distant bird remains predictably framed.\n- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6\u00d7 for a distant, relatively stationary bird when the final image would clearly be cropped.\n- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.\n- Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.\n- Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.\n- People: Servo AF, People, Eye Detection, Face + Tracking.\n- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6\u00d7 for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.\n- Travel: Baseline settings unless the subject demands a specialized profile.\n- Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.\n- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6\u00d7 for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1581,7 +1599,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "tips",
-    "text": "- Change one behavior at a time when troubleshooting focus.\n- If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.\n- For handheld landscape, raise ISO before accepting camera shake.\n- For tripod work, remember to review stabilization and Long Exposure Noise Reduction."
+    "text": "- Change one behavior at a time when troubleshooting focus.\n- Restore Full-frame after a temporary 1.6\u00d7 crop session.\n- If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.\n- For handheld landscape, raise ISO before accepting camera shake.\n- For tripod work, remember to review stabilization and Long Exposure Noise Reduction."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1590,7 +1608,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "common-mistakes",
-    "text": "- Leaving action drive mode on for deliberate static work.\n- Expecting Eye Detection to work when AF Method or Manual Focus prevents it.\n- Using Electronic shutter under lights without checking for banding.\n- Leaving stabilization on for solid tripod long exposures.\n- Using LENR during sequences where the delay causes missed shots."
+    "text": "- Leaving action drive mode on for deliberate static work.\n- Leaving 1.6\u00d7 crop enabled and losing resolution or framing room on the next subject.\n- Expecting 1.6\u00d7 crop to add optical reach or capture more subject detail than a later crop from the same full-frame exposure.\n- Expecting Eye Detection to work when AF Method or Manual Focus prevents it.\n- Using Electronic shutter under lights without checking for banding.\n- Leaving stabilization on for solid tripod long exposures.\n- Using LENR during sequences where the delay causes missed shots."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1599,7 +1617,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "cross-references",
-    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.\n- Related guides: AF Cases & Tracking Behavior; Custom Controls, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography."
+    "text": "- Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.\n- Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.\n- Related guides: AF Cases & Tracking Behavior; Custom Controls, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography."
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1617,7 +1635,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "what-it-does",
-    "text": "This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, stabilization, drive behavior, shutter behavior, and long exposure workflow."
+    "text": "This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, capture area, stabilization, drive behavior, shutter behavior, and long exposure workflow."
   },
   {
     "appendix_id": "r5_quick_reference",
