@@ -101,8 +101,7 @@ Source folders:
 - `50 Field Guide/Appendices/`: editable guide source pages.
 - `60 Assets/`: source visual assets used by cards and guides, including `60 Assets/icons/`.
 - `70 Canon Guides/`: Canon guide source and extraction material.
-- `80 Build/`: build, validation, PWA, iOS wrapper, and extraction code.
-- `ios/`: native Xcode wrapper project.
+- `80 Build/`: build, validation, PWA, and extraction code.
 
 Generated folders:
 
@@ -110,7 +109,7 @@ Generated folders:
 - `../<repository folder name> Local/Build Output/cards/png/` and `cards/phone-png/`: optional fixed PNG exports from a `--png` build.
 - `../<repository folder name> Local/Build Output/field-guide/`: generated guide HTML, search index, and optional PDFs.
 - `../<repository folder name> Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
-- `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub hosts and the native iOS wrapper.
+- `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub web hosts.
 - `../<repository folder name> Local/Build Output/reports/`: generated build and validation reports.
 - `../<repository folder name> Local/Backups/`: timestamped pre-change recovery snapshots.
 - `docs/`: generated GitHub Pages publish folder. GitHub serves this folder.
@@ -124,12 +123,10 @@ Generated site flow:
 ```text
 ../<repository folder name> Local/Build Output/merged-build/
         -> docs/        # GitHub Pages publishing copy
-        -> ../<repository folder name> Local/Build Output/website/
-              -> ../<repository folder name> Local/Native Wrapper/Website/
-                    -> ios/Resources/Website symlink for Xcode
+        -> ../<repository folder name> Local/Build Output/website/  # optional web-host staging
 ```
 
-The normal build refreshes the local `merged-build/` and repository `docs/`. The `build website` target also creates local website staging. The `build ios` target creates local native-wrapper resources and an ignored repository symlink for Xcode.
+The normal build refreshes the local `merged-build/` and repository `docs/`. The `build website` target also creates local website staging.
 
 Asset support folders:
 
@@ -145,13 +142,3 @@ Asset support folders:
 Open the live URL in Safari, select a profile to open its responsive HTML card, then use Share -> Add to Home Screen. The installed site is labeled `Camera Settings`. PNG links appear only when the site was explicitly published with `--png`.
 
 The first online visit caches the cards, guide pages, icons, and supporting assets for offline use.
-
-## Optional Native iOS Wrapper
-
-The Xcode wrapper in `ios/` is not required for GitHub Pages, Safari, iPhone, iPad, or desktop browser use. Keep it only if you later want an actual native iOS app shell around the same web content.
-
-To refresh and build that optional wrapper:
-
-```bash
-python3 "80 Build/build.py" build ios
-```

@@ -9,7 +9,7 @@
 - `python3 "80 Build/build.py" --png` additionally creates fixed PNG cards and includes PNG actions in the generated site. `./80 Build/scripts/publish.sh --png` explicitly publishes them; the normal publish command omits them.
 - `python3 "80 Build/build.py" --pdf` additionally creates current card and appendix PDFs.
 - `python3 "80 Build/build.py" <profile>` preserves the existing single-profile workflow; run a full build before publishing.
-- `python3 "80 Build/build.py" build website`, `build pages`, and `build ios` preserve their existing staging, Pages, and optional wrapper behaviors.
+- `python3 "80 Build/build.py" build website` preserves optional web-host staging behavior; `build pages` refreshes the Pages mirror.
 - Do not place rendering decisions in profile YAML or change build logic as a side effect of documentation/content work.
 
 ## Output and Release Behavior
@@ -18,7 +18,7 @@
 - `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html`, optional secondary PNGs under `Cards/*.png` only for a `--png` build, and copied card assets under `web-assets/`.
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
 - The published index orders its sections by expected frequency of use: **Subjects**, **Field Guides**, **Camera Setup & Controls**, then **Deep Dive**.
-- `Build Output/website/` is optional staging. The iOS target copies it into `Native Wrapper/Website/` in the local workspace and exposes that folder to Xcode through the ignored `ios/Resources/Website` symlink.
+- `Build Output/website/` is optional staging for non-GitHub web hosts.
 - Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
 - Card and field-guide PDFs are opt-in.
 - Profile and appendix release flags independently control inclusion in the offline bundle as defined by their specifications.

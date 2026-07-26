@@ -3,6 +3,18 @@ import shutil
 import time
 
 
+def prepare_website_output(paths):
+    """Publish the local merged build as the optional Website staging bundle."""
+    source = paths.merged_build_output_dir
+    target = paths.website_output_dir
+    if not source.exists():
+        raise FileNotFoundError(f"Generated website source is missing: {source}")
+    remove_numbered_duplicates(source, require_original=False)
+    fresh_copy(source, target, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
+    clean_generated_tree(target)
+    return target
+
+
 def fresh_copy(source, target, ignore=None):
     """Replace a generated output folder with a clean copy."""
     mirror_tree(source, target, ignore=ignore)

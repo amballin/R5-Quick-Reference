@@ -2,6 +2,26 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Retire Native iOS Wrapper
+
+**Status:** Accepted
+**Date:** 2026-07-26
+
+Retire the native iOS wrapper and its Xcode/Swift project, Python wrapper automation, XCTest harness, native-resource staging path, `build ios` target, and supporting documentation. The responsive HTML/PWA and GitHub Pages output provide the required iPhone experience, including Add to Home Screen and offline caching, without maintaining a second native application shell.
+
+Keep `build website` as independent optional staging for other web hosts. This decision does not uninstall system-wide Apple Command Line Tools or Swift because they are machine-level developer tools and are not dependencies of the remaining reference-system build.
+
+## Full-Frame Crop Baseline and Situational 1.6× Override
+
+**Status:** Accepted
+**Date:** 2026-07-26
+
+Keep **Cropping/aspect ratio: Full-frame** as the shared baseline and show it on Camera Setup Essentials as a Set & Forget setting. Do not make 1.6× crop a permanent override in any subject profile. Use it temporarily for distant birds, wildlife, or sports only when the subject will predictably remain within the smaller capture area and tighter viewfinder framing provides a practical advantage. Restore Full-frame after the session. With C1-C3 Auto update disabled, retain this as a temporary field change rather than silently replacing a registered subject setup.
+
+On the EOS R5, Full-frame records approximately 44.8 megapixels at 8192×5464, while 1.6× crop records approximately 17.3 megapixels at 5088×3392. The reduced pixel count generally produces smaller files, although actual file size varies with image quality and subject content. Crop mode does not add optical magnification or capture more subject detail than cropping the same full-frame image later, and the excluded area is not recoverable from a RAW file.
+
+RF-S and adapted EF-S lenses force 1.6× crop automatically and do not offer Full-frame while attached. RF and adapted EF lenses do not force crop mode. This behavior and the recorded pixel counts are verified Canon capabilities; using Full-frame as the project baseline and 1.6× as a situational override is a project recommendation, not an owner-confirmed physical camera setting.
+
 ## Evaluative Metering Baseline and Situational Alternatives
 
 **Status:** Accepted

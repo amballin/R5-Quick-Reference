@@ -24,10 +24,6 @@ class ProjectPaths:
         return self.local_workspace_dir / "Backups"
 
     @property
-    def native_wrapper_output_dir(self):
-        return self.local_workspace_dir / "Native Wrapper" / "Website"
-
-    @property
     def baseline_file(self):
         return self.root / "00 Master" / "baseline.yaml"
 

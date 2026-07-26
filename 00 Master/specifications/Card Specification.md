@@ -34,6 +34,8 @@ If a required merged value is unset, render the row with `—` rather than omitt
 
 `00 Master/card_layout.yaml` may define additional always-shown settings; those remain part of current card behavior.
 
+The Camera Setup Essentials card also renders `image.cropping_aspect_ratio` as **Crop / Aspect**. The shared baseline is **Full-frame**; subject cards inherit it, and a temporary 1.6× field change does not require a permanent profile override.
+
 ## Rendering Requirements
 
 - Render ISO as one quick-reference row. Auto ISO displays as `Auto - maximum`; fixed ISO displays the fixed value. Do not collapse the underlying fields.

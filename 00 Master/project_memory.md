@@ -8,7 +8,7 @@ The repository is the permanent source of truth; conversation history is not. Wh
 
 ## Project Intent
 
-The Photography Reference System produces Canon EOS R5 subject-setting cards, field-guide appendices, an installable web app, GitHub Pages output, and an optional native iOS wrapper. Cards are concise, field-ready quick references; appendices contain explanation and education.
+The Photography Reference System produces Canon EOS R5 subject-setting cards, field-guide appendices, an installable web app, and GitHub Pages output. Cards are concise, field-ready quick references; appendices contain explanation and education.
 
 The project is intentionally evolutionary. Consistency, minimal changes, reuse, and backward compatibility are preferred over theoretical elegance. Research normally happens outside the repository, while a feature conversation owns a deliverable from idea through implementation. The Master Planner maintains roadmap and priorities and protects architectural consistency.
 
@@ -20,7 +20,7 @@ Rendering is separated from profile data so presentation can evolve without rest
 
 The EOS R5 uses one physical button and dial layout across subject profiles. C1, C2, and C3 provide fast camera-side implementations of the canonical Wildlife, Birds in Flight, and Landscape profiles, with General Wildlife and Birds in Flight / Action retained only as field labels. M-Fn is owner-confirmed as **Switch to Custom shooting mode**, and repeated presses were physically verified to switch among C1, C2, and C3. C1 currently contains registered settings but still requires verification against the complete Wildlife profile; C2 and C3 are not yet registered. The selected profile establishes the shooting environment and initial One-Shot/Servo and Eye Detection states. AF-ON consistently supplies Face + Tracking for intelligent subject acquisition, while AE Lock consistently supplies the 1-Point AF precision alternative; both maintain the current AF Operation so the DOF-button switch remains effective. SET toggles the stored Eye Detection state when the active AF method supports it, and AF-ON honors that state. AE Lock remembers the last 1-Point position, the joystick moves the point, and pressing the joystick straight in recenters it. Subject Detection belongs to the profile. Detailed setup and operating rationale belong in the custom-controls deep dive, while the Camera Buttons card remains concise. Historical control screenshots are not treated as current-state evidence, and approved target settings remain distinct from settings physically confirmed on the camera.
 
-The generated site uses the machine-local workspace's `Build Output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `Build Output/website/` is optional machine-local staging and feeds `Native Wrapper/Website/`, exposed through `ios/Resources/Website`, only for the native wrapper workflow. PDF generation is intentionally opt-in.
+The generated site uses the machine-local workspace's `Build Output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `Build Output/website/` remains optional machine-local staging for other web hosts. PDF generation is intentionally opt-in. The former native iOS wrapper was retired after the installable HTML/PWA became the sufficient phone experience.
 
 ## Domain Context and Terminology
 

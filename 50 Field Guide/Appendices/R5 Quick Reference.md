@@ -2,7 +2,7 @@
 
 ## Overview
 
-Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
+Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
 
 ## Topic Index
 
@@ -22,6 +22,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
   - [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
   - [AF Tracking Behavior](#af-tracking-behavior)
 - [Capture and Timing](#capture-and-timing)
+  - [Cropping / Aspect Ratio](#cropping-aspect-ratio)
   - [Drive Mode](#drive-mode)
 - [Flash](#flash)
   - [Flash Modes and Compatibility](#flash-modes-and-compatibility)
@@ -239,6 +240,27 @@ Change one control at a time and test it against the actual background and subje
 
 ### Capture and Timing
 
+#### Cropping / Aspect Ratio
+
+Keep **Full-frame** as the Set & Forget starting point. Select **1.6× (crop)** temporarily when a distant bird, animal, or field-sports subject will remain predictably inside the smaller capture area and the enlarged view makes framing easier. Return to Full-frame after the session. This is a framing and file-workflow choice, not extra optical reach.
+
+| Setting | Recorded pixels | Field use |
+|---|---:|---|
+| Full-frame | Approx. 44.8 MP (8192×5464) | Maximum resolution and maximum room to follow, crop, or recompose. |
+| 1.6× (crop) | Approx. 17.3 MP (5088×3392) | Tighter displayed view and generally smaller files when the final image would clearly use only the sensor center. |
+
+The camera records only the center area in 1.6× mode, including for RAW and cRAW, so the excluded area cannot be recovered later. The lower pixel count generally reduces file size, but actual size varies with image quality and subject content. Use Full-frame for erratic birds, rapidly approaching action, uncertain composition, or whenever maximum resolution and reframing room matter.
+
+With **RF-S or adapted EF-S lenses**, the R5 automatically selects 1.6× crop and no Full-frame option is available while the lens is attached. RF and adapted EF lenses do not force crop mode.
+
+**Temporary override process:** begin with Full-frame, select 1.6× only for the specific distant-subject situation, and restore Full-frame afterward. When working in C1-C3, keep **Auto update: Disable** so a temporary crop choice does not silently replace the registered subject setup.
+
+**Camera Menu:** Shooting 1 > Cropping/aspect ratio.
+
+**Quick Menu:** Menu only.
+
+See Canon's [Still Photo Cropping/Aspect Ratio](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html) instructions and [EOS R5 recorded pixel counts](https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0100.html).
+
 #### Drive Mode
 
 Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.
@@ -372,16 +394,16 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 ## Recommended Settings by Profile
 
-- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect.
-- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow.
+- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
+- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
 - Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.
 - Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
 - Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
 - People: Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable.
+- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
 - Travel: Baseline settings unless the subject demands a specialized profile.
 - Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
-- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable.
+- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
 
 ## Canon-Specific Notes
 
@@ -392,6 +414,7 @@ For Canon's official setting names and the icons used throughout this reference 
 ## Tips
 
 - Change one behavior at a time when troubleshooting focus.
+- Restore Full-frame after a temporary 1.6× crop session.
 - If the camera jumps to the wrong subject, use Spot AF, 1-Point AF, or Expand AF Area for deliberate acquisition. Subject to Detect: None removes category priority but does not disable automatic main-subject detection.
 - For handheld landscape, raise ISO before accepting camera shake.
 - For tripod work, remember to review stabilization and Long Exposure Noise Reduction.
@@ -399,6 +422,8 @@ For Canon's official setting names and the icons used throughout this reference 
 ## Common Mistakes
 
 - Leaving action drive mode on for deliberate static work.
+- Leaving 1.6× crop enabled and losing resolution or framing room on the next subject.
+- Expecting 1.6× crop to add optical reach or capture more subject detail than a later crop from the same full-frame exposure.
 - Expecting Eye Detection to work when AF Method or Manual Focus prevents it.
 - Using Electronic shutter under lights without checking for banding.
 - Leaving stabilization on for solid tripod long exposures.
@@ -407,7 +432,7 @@ For Canon's official setting names and the icons used throughout this reference 
 ## Cross References
 
 - Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
-- Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.
+- Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.
 - Related guides: AF Cases & Tracking Behavior; Custom Controls, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography.
 
 ## Included Appendix
@@ -418,7 +443,7 @@ Explain the card settings whose choices are easy to misread in the field.
 
 ### What it Does
 
-This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, stabilization, drive behavior, shutter behavior, and long exposure workflow.
+This quick reference turns compact card labels into short practical meaning. It focuses on Canon R5 behavior that affects focusing, capture area, stabilization, drive behavior, shutter behavior, and long exposure workflow.
 
 ### How it Works
 

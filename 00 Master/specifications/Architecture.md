@@ -32,7 +32,7 @@ baseline.yaml + profile overrides
         -> merged profile data
         -> machine-local cards / guide / web-PWA outputs
         -> docs (GitHub Pages mirror)
-        -> optional machine-local website staging -> optional iOS wrapper resources
+        -> optional machine-local website staging
 ```
 
 ## Enforcement and Evidence

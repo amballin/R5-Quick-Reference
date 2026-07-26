@@ -64,14 +64,12 @@ They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/
 | `60 Assets/` | Source visual assets used by cards and guides: active card icons in `icons/card_icons/`, official Canon R5 icons in `icons/canon_r5_official/`, cheatsheet reference pages in `icons/cheatsheet/`, and retained photography icons in `Photography Icons/`. | Yes |
 | `60 Reference Tables/` | Empty placeholder. Remove later if no reference-table data is planned. | No |
 | `70 Canon Guides/` | Canon guide source/extraction material. | Yes |
-| `80 Build/` | Build, validation, PWA, iOS wrapper, extraction code, and fixed PNG presentation in `render_card_outputs.js`. | Yes, for tooling |
+| `80 Build/` | Build, validation, PWA, extraction code, and fixed PNG presentation in `render_card_outputs.js`. | Yes, for tooling |
 | `90 Testing/` | Test material and checks. | Yes, for tests |
 | `data/` | Support data for the reference system. | Yes, carefully |
 | `docs/` | Generated GitHub Pages publish folder. GitHub serves this. | No |
-| `ios/` | Optional native Xcode wrapper project. Not required for Pages/browser/iPhone install. | Yes, if keeping native wrapper |
 | `../<repository folder name> Local/Build Output/` | All disposable card, guide, PWA, website, PDF, and report output. | No |
 | `../<repository folder name> Local/Backups/` | Timestamped pre-change recovery snapshots. | No |
-| `../<repository folder name> Local/Native Wrapper/` | Generated website resources consumed by the optional Xcode wrapper. | No |
 
 Everything under local `Build Output/` is rebuilt and safe to discard. The sibling local workspace is the default; set `PRS_LOCAL_WORKSPACE` when a different machine-local path is needed.
 
@@ -80,12 +78,10 @@ Everything under local `Build Output/` is rebuilt and safe to discard. The sibli
 ```text
 ../<repository folder name> Local/Build Output/merged-build/
         -> docs/        # GitHub Pages publishing copy
-        -> ../<repository folder name> Local/Build Output/website/
-              -> ../<repository folder name> Local/Native Wrapper/Website/
-                    -> ios/Resources/Website symlink for Xcode
+        -> ../<repository folder name> Local/Build Output/website/  # optional web-host staging
 ```
 
-The normal build refreshes local `merged-build/` and repository `docs/`. The website and iOS targets create their disposable outputs in the local workspace.
+The normal build refreshes local `merged-build/` and repository `docs/`. The website target creates optional staging in the local workspace.
 
 Generated responsive cards are in `Build Output/cards/html/`. An explicit `--png` build adds fixed PNGs in `Build Output/cards/png/` and `Build Output/cards/phone-png/` and mirrors released PNGs into `docs/Cards/`. Generated icon copies are under `docs/web-assets/`. Source Canon icons remain in `60 Assets/icons/canon_r5_official/`, with SVG preferred and PNG used only when no SVG mapping is available.
 
@@ -200,7 +196,7 @@ GitHub Pages is the simplest useful output because it works in:
 - desktop browsers
 - Add to Home Screen installs
 
-The Xcode wrapper is optional. It only adds a native app shell around the same web content. It is not needed for the Pages site or the Safari-installed app.
+The installable HTML/PWA is the phone application path. No native Xcode wrapper is maintained.
 
 ## Publish To GitHub Pages
 
@@ -263,22 +259,6 @@ The generated folder is:
 ```text
 ../<repository folder name> Local/Build Output/website/
 ```
-
-## Build Optional Native iOS Wrapper
-
-Only use this if you decide to keep the native Xcode app shell:
-
-```bash
-python3 "80 Build/build.py" build ios
-```
-
-That command refreshes:
-
-- `../<repository folder name> Local/Build Output/website/`
-- `../<repository folder name> Local/Native Wrapper/Website/`
-- the ignored `ios/Resources/Website` symlink used by Xcode
-
-Normal Pages builds do not keep `ios/Resources/Website/` populated, so the top-level project does not carry another duplicate copy of the same site.
 
 ## Build GitHub Pages Folder Only
 

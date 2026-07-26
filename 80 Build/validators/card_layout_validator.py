@@ -38,6 +38,7 @@ REQUIRED_DISPLAY_ORDER = [
     "display.histogram",
     "display.highlight_alert",
     "image.quality",
+    "image.cropping_aspect_ratio",
     "image.white_balance",
     "image.highlight_tone_priority",
     "image.high_iso_noise_reduction",

@@ -12,9 +12,10 @@ Image stabilization reduces blur caused by camera movement; it does not freeze a
 4. [Canon EF 50mm f/1.4 USM](#canon-ef-50mm-f-1-4-usm)
 5. [Canon Extender EF 1.4x](#canon-extender-ef-1-4x)
 6. [EF-EOS R Control Ring Adapter](#ef-eos-r-control-ring-adapter)
-7. [Canon RF 24-240mm F4-6.3 IS USM](#canon-rf-24-240mm-f4-6-3-is-usm)
-8. [Common Mistakes](#common-mistakes)
-9. [Cross References](#cross-references)
+7. [Crop Mode and RF-S/EF-S Lenses](#crop-mode-and-rf-s-ef-s-lenses)
+8. [Canon RF 24-240mm F4-6.3 IS USM](#canon-rf-24-240mm-f4-6-3-is-usm)
+9. [Common Mistakes](#common-mistakes)
+10. [Cross References](#cross-references)
 
 ## Match by Subject
 
@@ -141,6 +142,22 @@ Recommended control ring choices:
 
 For this system, exposure compensation is the strongest default recommendation because many profiles already rely on exposure compensation decisions in changing light.
 
+## Crop Mode and RF-S/EF-S Lenses
+
+Keep **Cropping/aspect ratio: Full-frame** as the normal R5 setting. RF lenses and adapted EF lenses use the full sensor unless 1.6× crop is selected manually. Do not confuse an adapted full-frame **EF** lens with an **EF-S** lens: using the EF-EOS R adapter alone does not cause a crop.
+
+If an RF-S or adapted EF-S lens is attached, the R5 automatically forces **1.6× (crop)** and no Full-frame option is available while that lens remains attached.
+
+| Lens / setting | Capture area | Recorded resolution | File effect |
+|---|---|---:|---|
+| RF or adapted EF lens, Full-frame | Full sensor | Approx. 44.8 MP (8192×5464) | Maximum resolution and framing room |
+| RF or adapted EF lens, manual 1.6× crop | Center APS-C-size area | Approx. 17.3 MP (5088×3392) | Generally smaller files, with lower resolution |
+| RF-S or adapted EF-S lens | 1.6× center area, forced | Approx. 17.3 MP (5088×3392) | Generally smaller files, with lower resolution |
+
+Actual file size varies with RAW/cRAW or JPEG quality and subject content, but the 1.6× capture contains substantially fewer pixels. The area outside the crop is not recorded in RAW or cRAW and cannot be recovered later.
+
+Manual 1.6× crop can make a distant bird, animal, or field-sports subject easier to see and frame in the viewfinder. It does not add optical magnification or capture more subject detail than cropping the same full-frame image later. Use it only when the smaller framing area is an advantage; restore Full-frame after the session.
+
 ## Canon RF 24-240mm F4-6.3 IS USM
 
 Best for travel, family, people, casual landscapes, events, and one-lens walking around.
@@ -167,6 +184,8 @@ Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does
 - Leaving Mode 2 on after a panning session.
 - Using the 1.4x extender when light is too low for a clean shutter speed.
 - Forgetting that the EF control ring adapter changes controls, not optics.
+- Confusing an adapted EF lens with EF-S and expecting the adapter itself to force 1.6× crop.
+- Leaving manual 1.6× crop enabled after a distant-subject session.
 - Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.
 - Using the macro lens handheld when the subject really needs a tripod.
 - Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed.
@@ -174,7 +193,7 @@ Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does
 ## Cross References
 
 - Profiles: Birds in Flight, Birds Perched, Camera Defaults, Camera Setup Essentials, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
-- Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Image Stabilization, IBIS, Lens IS.
+- Settings: AF Operation, AF Method, Subject Detection, Drive Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization, IBIS, Lens IS.
 - Related guides:
   - [Focus Bracketing & In-Camera Depth Compositing](appendix:focus_bracketing_depth_compositing)
   - [R5 Quick Reference](appendix:r5_quick_reference)

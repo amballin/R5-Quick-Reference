@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-21
+  last_updated: 2026-07-26
   release: true
 
 title: Birds in Flight
@@ -51,3 +51,6 @@ notes:
   - Use Expand AF Area when the bird is small or obscured, the background is busy, or Face + Tracking repeatedly selects the wrong target. Subject to Detect does not apply to Expand AF Area on the original EOS R5.
   - Use Image Stabilization Mode 3 for erratic flight and action.
   - Switch to Mode 2 only for deliberate steady panning.
+appendix_links:
+  - id: r5_quick_reference
+    label: When to use 1.6× crop mode

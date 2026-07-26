@@ -22,6 +22,7 @@ FIELD_ALIASES = {
     "exposure.mode": "mode",
     "image.long_exposure_noise_reduction.value": "long_exposure_nr",
     "image.quality": "image_quality_raw",
+    "image.cropping_aspect_ratio": "cropping_aspect_ratio",
     "image.white_balance": "white_balance",
     "lens.aperture.target": "aperture",
     "display.histogram": "histogram",

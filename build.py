@@ -16,10 +16,9 @@ from asset_manager import ProjectPaths
 from appendix_renderer import render_appendices
 from baseline import merge
 from build_validator import discover_profiles, is_reference_card, profile_name_from_path, validate_project
-from generated_output import clean_generated_tree, mirror_tree, numbered_duplicates, remove_numbered_duplicates
+from generated_output import clean_generated_tree, mirror_tree, numbered_duplicates, prepare_website_output, remove_numbered_duplicates
 from html_renderer import render_card, write_html_card
 from icon_manager import IconManager
-from ios_wrapper import build_xcode_project, prepare_website_output, update_ios_resources, validate_ios_wrapper
 from offline_index import render_offline_index
 from output_renderer import render_png_pdf
 from profile_loader import canonical_profile_name, load_baseline, load_profile, write_merged_profile
@@ -120,7 +119,6 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/generated_output.py`",
         "- `80 Build/html_renderer.py`",
         "- `80 Build/icon_manager.py`",
-        "- `80 Build/ios_wrapper.py`",
         "- `80 Build/offline_index.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
@@ -237,13 +235,13 @@ def main():
             return 2
         return publish(paths, metadata_path, current_metadata, start, include_png=args.png)
     publish_display = display_publish_metadata(current_metadata)
-    if args.command == "build" and args.target in {"website", "pages", "ios"}:
+    if args.command == "build" and args.target in {"website", "pages"}:
         status = build_site(
             paths,
             requested_profile=args.profile,
             include_png=args.png,
             include_pdf=args.pdf,
-            keep_website=args.target in {"website", "ios"},
+            keep_website=args.target == "website",
             publish_display=publish_display,
         )
         if status != 0:
@@ -256,24 +254,8 @@ def main():
             sync_pages_output(paths)
             print(f"GitHub Pages docs generated: {paths.pages_output_dir}")
             return 0
-        prepare_website_output(paths)
-        update_ios_resources(paths)
-        checks = validate_ios_wrapper(paths)
-        failed_checks = [check for check in checks if not check["ok"]]
-        if failed_checks:
-            print("iOS wrapper validation failed.")
-            for check in failed_checks:
-                print(f"- {check['name']}: {check['detail']}")
-            return 1
-        build_result = build_xcode_project(paths)
-        if not build_result["ok"]:
-            print("Xcode build failed.")
-            print(build_result["detail"])
-            return 1
-        print("iOS wrapper built successfully.")
-        return 0
     if args.command == "build":
-        print("Unknown build target. Use: python build.py build website, python build.py build pages, or python build.py build ios")
+        print("Unknown build target. Use: python build.py build website or python build.py build pages")
         return 2
     requested_profile = args.command or args.profile
     status = build_site(
@@ -458,7 +440,6 @@ def clean_generated_leftovers(paths, include_png=False, include_pdf=False, keep_
         paths.root / "offline.html",
         paths.root / "service-worker.js",
         paths.root / "60 Assets" / ".DS_Store",
-        paths.root / "ios" / ".DS_Store",
         paths.output_dir / ".DS_Store",
         paths.output_dir / "canon_r5_icon_reference.html",
     ]

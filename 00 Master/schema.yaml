@@ -71,6 +71,9 @@ settings:
     ibis_high_res_shot: string
     continuous_af: string
 
+  image:
+    cropping_aspect_ratio: string
+
 checklist:
   - string
 

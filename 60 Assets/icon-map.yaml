@@ -99,6 +99,9 @@ fields:
     label: "Image Quality JPEG"
     svg: "icons/card_icons/SVG/image_quality_jpeg.svg"
     png: "icons/card_icons/PNG/image_quality_jpeg.png"
+  cropping_aspect_ratio:
+    label: "Crop / Aspect"
+    svg: "icons/canon_r5_official/cropping_images.svg"
   highlight_tone_priority:
     label: "Highlight Tone Priority"
     svg: "icons/card_icons/SVG/highlight_tone_priority.svg"

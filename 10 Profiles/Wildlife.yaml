@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-21
+  last_updated: 2026-07-26
   release: true
 title: Wildlife
 card:
@@ -28,3 +28,6 @@ notes:
   - Use Expand AF if Face + Tracking struggles through branches.
   - Use Tv for active wildlife when shutter speed must dominate; Fv may be better for mixed safari or walkaround wildlife.
   - Switch to Mode 3 for active wildlife
+appendix_links:
+  - id: r5_quick_reference
+    label: When to use 1.6× crop mode

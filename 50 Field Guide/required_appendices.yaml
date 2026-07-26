@@ -228,6 +228,7 @@ appendices:
     display_order: 999
     profiles:
       - Birds in Flight
+      - Birds Perched
       - Camera Defaults
       - Fireworks
       - Landscape
@@ -269,6 +270,7 @@ appendices:
     display_order: 10
     profiles:
       - Birds in Flight
+      - Birds Perched
       - Camera Defaults
       - Fireworks
       - Landscape
@@ -299,6 +301,7 @@ appendices:
       - IBIS
       - Lens IS
       - Shutter Type
+      - Cropping/aspect ratio
       - Focus Bracketing
       - Long Exposure Noise Reduction
       - Subject Detection and AF Method Combinations

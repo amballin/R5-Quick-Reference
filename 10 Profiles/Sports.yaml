@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-26
   release: false
 title: Sports
 inherits: baseline
@@ -42,3 +42,6 @@ notes:
   - Switch to Expand AF Area if detection is unreliable.
   - Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
   - Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.
+appendix_links:
+  - id: r5_quick_reference
+    label: When to use 1.6× crop mode

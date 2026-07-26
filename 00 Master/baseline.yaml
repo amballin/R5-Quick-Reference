@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-26
 
 subtitle:
 
@@ -70,6 +70,7 @@ defaults:
     highlight_alert: Enabled
   image:
     quality: cRAW
+    cropping_aspect_ratio: "Full-frame"
     white_balance: "AWB"
     picture_style: "Neutral"
     focus_bracketing: Disable
