@@ -141,13 +141,17 @@ a{color:#165d9c}
 <p><strong>Camera Menu:</strong> Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.</p>
 <p><strong>Quick Menu:</strong> Top dial / Q screen depending on exposure mode.</p>
 <h4 id="shutter-type">Shutter Type</h4>
-<p>Mechanical is the safest general default, including for flash and uncertain artificial lighting. EFCS can reduce vibration but may affect bokeh at very fast shutter speeds. Electronic is silent but can create rolling shutter, banding, or flash limitations.</p>
+<p>EFCS is the approved EOS R5 baseline pending physical verification. It starts the exposure electronically and ends it with the mechanical second curtain, which removes first-curtain shutter shock without taking on the major motion-distortion and flash restrictions of fully Electronic shutter. It is not silent.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
-<tr><td>Mechanical</td><td>Safest general default with broad flash and motion compatibility.</td></tr>
-<tr><td>EFCS</td><td>Reduces vibration while avoiding many electronic shutter tradeoffs.</td></tr>
-<tr><td>Electronic</td><td>Silent shooting, but watch for rolling shutter, banding, and flash limits.</td></tr>
+<tr><td>Mechanical</td><td>Use for fast shutter speeds near maximum aperture and conservative third-party flash/trigger compatibility.</td></tr>
+<tr><td>EFCS</td><td>General baseline; reduces vibration, retains broad motion and flash compatibility, and normally minimizes artificial-light banding.</td></tr>
+<tr><td>Electronic</td><td>Silent and up to approximately 20 fps, but watch for rolling shutter, banding, and flash restrictions.</td></tr>
 </table>
+<p>Use Mechanical for People, Birds in Flight, Sports, and Waterdrops. These profiles prioritize clean wide-aperture bokeh at fast shutter speeds or a conservative third-party flash/trigger workflow. Use EFCS for general shooting, Travel, Wildlife, Birds Perched, Landscape, ambient-light or focus-bracketed Macro, and Fireworks. The R5 automatically uses EFCS for Bulb exposures.</p>
+<p>Canon warns that EFCS can render defocused highlights incompletely when the lens is near maximum aperture at high shutter speeds. Lower the shutter speed, stop down, or switch to Mechanical when background highlights look clipped. Mechanical and EFCS avoid the major fast-subject distortion associated with fully Electronic shutter and normally handle flickering artificial light much more reliably, but test the actual lighting and use Anti-flicker shooting when needed.</p>
+<p>On the R5, Mechanical and EFCS both reach approximately 12 fps in High Speed Continuous+. In regular High Speed Continuous, Canon specifies approximately 6 fps with Mechanical and 8 fps with EFCS. Normal flash sync is up to 1/200 sec. with Mechanical and 1/250 sec. with EFCS; attached flashes, triggers, and other conditions may impose lower limits.</p>
+<p>For Canon&#x27;s fuller explanation and example use cases, see <a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/a-look-at-the-shutter-modes-in-canon-eos-cameras" target="_blank" rel="noopener noreferrer">A Look at the Shutter Modes in Canon EOS Cameras</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting 6 &gt; Shutter mode.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h3 id="autofocus-and-manual-focus">Autofocus and Manual Focus</h3>
@@ -240,7 +244,7 @@ a{color:#165d9c}
 <p><strong>Temporary override process:</strong> begin with Full-frame, select 1.6× only for the specific distant-subject situation, and restore Full-frame afterward. When working in C1-C3, keep <strong>Auto update: Disable</strong> so a temporary crop choice does not silently replace the registered subject setup.</p>
 <p><strong>Camera Menu:</strong> Shooting 1 &gt; Cropping/aspect ratio.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<p>See Canon&#x27;s Still Photo Cropping/Aspect Ratio instructions and EOS R5 recorded pixel counts.</p>
+<p>See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html" target="_blank" rel="noopener noreferrer">Still Photo Cropping/Aspect Ratio</a> instructions and <a href="https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0100.html" target="_blank" rel="noopener noreferrer">EOS R5 recorded pixel counts</a>.</p>
 <h4 id="drive-mode">Drive Mode</h4>
 <p>Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
 <table>
@@ -266,7 +270,7 @@ a{color:#165d9c}
 <tr><td>High Speed Sync</td><td>Allows faster shutter speeds and wider apertures in bright light, with reduced range and power.</td></tr>
 <tr><td>Rear-curtain sync</td><td>Fires near the end of the exposure so motion trails appear behind a moving subject.</td></tr>
 </table>
-<p>Use Mechanical shutter as the safe flash starting point on the R5 and confirm the supported sync behavior of the attached flash or trigger. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
+<p>EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mechanical supports up to 1/200 sec. Use Mechanical as the conservative starting point for unverified third-party flashes or triggers, including the documented Waterdrops setup, and test the complete combination before critical work. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.</p>
 <p><strong>Quick Menu:</strong> Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.</p>
 <h3 id="stabilization">Stabilization</h3>
@@ -310,7 +314,7 @@ a{color:#165d9c}
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Focus bracketing; AF menu &gt; Focus guide; AF menu &gt; MF peaking settings.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<p><strong>Recommended MF Peaking setup:</strong> <strong>On</strong>, <strong>Level: Low</strong>, <strong>Color: Red</strong>. Leave it enabled as a Set &amp; Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon&#x27;s Manual Focus instructions.</p>
+<p><strong>Recommended MF Peaking setup:</strong> <strong>On</strong>, <strong>Level: Low</strong>, <strong>Color: Red</strong>. Leave it enabled as a Set &amp; Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html" target="_blank" rel="noopener noreferrer">Manual Focus</a> instructions.</p>
 <h4 id="focus-bracketing">Focus Bracketing</h4>
 <p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=R5%20Quick%20Reference.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
 <table>
@@ -335,16 +339,16 @@ a{color:#165d9c}
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <ul>
-<li>Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
-<li>Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.</li>
-<li>Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
-<li>Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
-<li>Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
-<li>People: Servo AF, People, Eye Detection, Face + Tracking.</li>
-<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
-<li>Travel: Baseline settings unless the subject demands a specialized profile.</li>
-<li>Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
-<li>Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
+<li>Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
+<li>Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.</li>
+<li>Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
+<li>Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
+<li>Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.</li>
+<li>People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.</li>
+<li>Sports: Mechanical; Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
+<li>Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.</li>
+<li>Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
+<li>Wildlife: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
 </ul>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.</p>

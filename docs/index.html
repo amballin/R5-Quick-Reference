@@ -82,7 +82,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <!-- PWA END -->
 </head>
 <body>
-<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.14 • 2026/07/26</p></header>
+<header class="site-nav" data-site-navigation><span class="site-nav__spacer" aria-hidden="true"></span><a class="site-nav__home" href="index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span><p class="site-nav__meta">Version 1.15 • 2026/07/26</p></header>
 <main>
 <h2>Subjects</h2>
 <div class="cards">
@@ -207,13 +207,17 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Camera Menu:</strong> Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.</p>
 <p><strong>Quick Menu:</strong> Top dial / Q screen depending on exposure mode.</p>
 <h4 id="r5_quick_reference--shutter-type">Shutter Type</h4>
-<p>Mechanical is the safest general default, including for flash and uncertain artificial lighting. EFCS can reduce vibration but may affect bokeh at very fast shutter speeds. Electronic is silent but can create rolling shutter, banding, or flash limitations.</p>
+<p>EFCS is the approved EOS R5 baseline pending physical verification. It starts the exposure electronically and ends it with the mechanical second curtain, which removes first-curtain shutter shock without taking on the major motion-distortion and flash restrictions of fully Electronic shutter. It is not silent.</p>
 <table>
 <tr><th>Setting</th><th>What it Does</th></tr>
-<tr><td>Mechanical</td><td>Safest general default with broad flash and motion compatibility.</td></tr>
-<tr><td>EFCS</td><td>Reduces vibration while avoiding many electronic shutter tradeoffs.</td></tr>
-<tr><td>Electronic</td><td>Silent shooting, but watch for rolling shutter, banding, and flash limits.</td></tr>
+<tr><td>Mechanical</td><td>Use for fast shutter speeds near maximum aperture and conservative third-party flash/trigger compatibility.</td></tr>
+<tr><td>EFCS</td><td>General baseline; reduces vibration, retains broad motion and flash compatibility, and normally minimizes artificial-light banding.</td></tr>
+<tr><td>Electronic</td><td>Silent and up to approximately 20 fps, but watch for rolling shutter, banding, and flash restrictions.</td></tr>
 </table>
+<p>Use Mechanical for People, Birds in Flight, Sports, and Waterdrops. These profiles prioritize clean wide-aperture bokeh at fast shutter speeds or a conservative third-party flash/trigger workflow. Use EFCS for general shooting, Travel, Wildlife, Birds Perched, Landscape, ambient-light or focus-bracketed Macro, and Fireworks. The R5 automatically uses EFCS for Bulb exposures.</p>
+<p>Canon warns that EFCS can render defocused highlights incompletely when the lens is near maximum aperture at high shutter speeds. Lower the shutter speed, stop down, or switch to Mechanical when background highlights look clipped. Mechanical and EFCS avoid the major fast-subject distortion associated with fully Electronic shutter and normally handle flickering artificial light much more reliably, but test the actual lighting and use Anti-flicker shooting when needed.</p>
+<p>On the R5, Mechanical and EFCS both reach approximately 12 fps in High Speed Continuous+. In regular High Speed Continuous, Canon specifies approximately 6 fps with Mechanical and 8 fps with EFCS. Normal flash sync is up to 1/200 sec. with Mechanical and 1/250 sec. with EFCS; attached flashes, triggers, and other conditions may impose lower limits.</p>
+<p>For Canon&#x27;s fuller explanation and example use cases, see <a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/a-look-at-the-shutter-modes-in-canon-eos-cameras" target="_blank" rel="noopener noreferrer">A Look at the Shutter Modes in Canon EOS Cameras</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting 6 &gt; Shutter mode.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h3 id="r5_quick_reference--autofocus-and-manual-focus">Autofocus and Manual Focus</h3>
@@ -306,7 +310,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Temporary override process:</strong> begin with Full-frame, select 1.6× only for the specific distant-subject situation, and restore Full-frame afterward. When working in C1-C3, keep <strong>Auto update: Disable</strong> so a temporary crop choice does not silently replace the registered subject setup.</p>
 <p><strong>Camera Menu:</strong> Shooting 1 &gt; Cropping/aspect ratio.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<p>See Canon&#x27;s Still Photo Cropping/Aspect Ratio instructions and EOS R5 recorded pixel counts.</p>
+<p>See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html" target="_blank" rel="noopener noreferrer">Still Photo Cropping/Aspect Ratio</a> instructions and <a href="https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0100.html" target="_blank" rel="noopener noreferrer">EOS R5 recorded pixel counts</a>.</p>
 <h4 id="r5_quick_reference--drive-mode">Drive Mode</h4>
 <p>Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
 <table>
@@ -332,7 +336,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>High Speed Sync</td><td>Allows faster shutter speeds and wider apertures in bright light, with reduced range and power.</td></tr>
 <tr><td>Rear-curtain sync</td><td>Fires near the end of the exposure so motion trails appear behind a moving subject.</td></tr>
 </table>
-<p>Use Mechanical shutter as the safe flash starting point on the R5 and confirm the supported sync behavior of the attached flash or trigger. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="appendices/Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
+<p>EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mechanical supports up to 1/200 sec. Use Mechanical as the conservative starting point for unverified third-party flashes or triggers, including the documented Waterdrops setup, and test the complete combination before critical work. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="appendices/Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.</p>
 <p><strong>Quick Menu:</strong> Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.</p>
 <h3 id="r5_quick_reference--stabilization">Stabilization</h3>
@@ -376,7 +380,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Focus bracketing; AF menu &gt; Focus guide; AF menu &gt; MF peaking settings.</p>
 <p><strong>Quick Menu:</strong> Menu only.</p>
-<p><strong>Recommended MF Peaking setup:</strong> <strong>On</strong>, <strong>Level: Low</strong>, <strong>Color: Red</strong>. Leave it enabled as a Set &amp; Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon&#x27;s Manual Focus instructions.</p>
+<p><strong>Recommended MF Peaking setup:</strong> <strong>On</strong>, <strong>Level: Low</strong>, <strong>Color: Red</strong>. Leave it enabled as a Set &amp; Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html" target="_blank" rel="noopener noreferrer">Manual Focus</a> instructions.</p>
 <h4 id="r5_quick_reference--focus-bracketing">Focus Bracketing</h4>
 <p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="appendices/Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=R5%20Quick%20Reference.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
 <table>
@@ -401,16 +405,16 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p><strong>Quick Menu:</strong> Menu only.</p>
 <h2 id="r5_quick_reference--recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <ul>
-<li>Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
-<li>Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.</li>
-<li>Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
-<li>Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
-<li>Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.</li>
-<li>People: Servo AF, People, Eye Detection, Face + Tracking.</li>
-<li>Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
-<li>Travel: Baseline settings unless the subject demands a specialized profile.</li>
-<li>Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
-<li>Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
+<li>Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
+<li>Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.</li>
+<li>Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
+<li>Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
+<li>Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.</li>
+<li>People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.</li>
+<li>Sports: Mechanical; Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
+<li>Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.</li>
+<li>Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
+<li>Wildlife: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
 </ul>
 <h2 id="r5_quick_reference--canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.</p>
@@ -738,8 +742,8 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>RAW/JPEG behavior: Keep the source images for maximum quality. In-camera depth compositing may create a processed composite file, while external software can use the original RAW frames.</li>
 <li>Tripod recommendations: Use a tripod for macro, product, landscape, architecture, and any stack where framing must stay fixed.</li>
 <li>Handheld limitations: Handheld bracketing can work for casual close-ups, but framing shifts and subject movement increase stacking errors.</li>
-<li>Flash compatibility: Flash can work, but recycle time must keep up with the bracket sequence. Manual flash with consistent power is usually better than variable automatic flash.</li>
-<li>Electronic shutter considerations: Electronic shutter can reduce vibration, but watch for banding under artificial light. Mechanical shutter may be safer when flash is required.</li>
+<li>Flash compatibility: The EOS R5 does not support flash photography during Focus Bracketing. Use ambient light or continuous lighting, or make a separately controlled manual stack outside the camera&#x27;s Focus Bracketing function.</li>
+<li>Shutter considerations: Use the EFCS baseline to avoid first-curtain shutter shock without the banding and motion-distortion risks of fully Electronic shutter.</li>
 <li>Image Stabilization considerations: Use IS for handheld stacks. Turn IS off on a solid tripod for static subjects unless the lens/body combination handles tripod detection cleanly.</li>
 </ul>
 <h2 id="focus_bracketing_depth_compositing--how-it-works">How it Works</h2>
@@ -770,7 +774,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <ul>
 <li>Requires static subjects or very little movement.</li>
 <li>Wind can ruin flowers, insects, and foreground landscape elements.</li>
-<li>Flash recycle time can interrupt the sequence.</li>
+<li>Flash is unavailable during the R5 Focus Bracketing sequence.</li>
 <li>Focus breathing can change framing between frames.</li>
 <li>Too few images leave gaps; too many images waste storage and time.</li>
 <li>In-camera compositing is convenient but less controllable than external software.</li>
@@ -780,7 +784,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Recommended:</p>
 <ul>
 <li>Macro subjects.</li>
-<li>Water drops.</li>
 <li>Flowers.</li>
 <li>Coins.</li>
 <li>Jewelry.</li>
@@ -792,7 +795,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Landscapes with close foreground elements.</li>
 </ul>
 <h2 id="focus_bracketing_depth_compositing--when-not-to-use">When Not to Use</h2>
-<p>Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, wind is moving important details, or the flash cannot recycle fast enough.</p>
+<p>Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, or wind is moving important details. It is not the Waterdrops flash workflow: the R5 disables flash during Focus Bracketing, and a moving drop cannot align across a stack.</p>
 <p>Avoid it for portraits unless there is a specific static setup. Eye and face movement usually make stacking unnecessary or unreliable.</p>
 <p>Avoid using very small apertures and stacking at the same time unless there is a deliberate reason. Diffraction can soften every frame in the stack.</p>
 <h2 id="focus_bracketing_depth_compositing--every-camera-setting-explained">Every Camera Setting Explained</h2>
@@ -864,7 +867,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <p>Common mistakes:</p>
 <ul>
 <li>Leaving it Off outdoors when clouds are moving quickly.</li>
-<li>Turning it On in a controlled flash setup and expecting it to fix inconsistent flash recycle.</li>
+<li>Turning it On under controlled continuous lighting and expecting it to correct subject movement.</li>
 </ul>
 <p>Recommended starting point: On outdoors, Off in studio.</p>
 <h3 id="focus_bracketing_depth_compositing--depth-compositing">Depth Compositing</h3>
@@ -951,7 +954,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <table>
 <tr><th>Profile / Subject</th><th>Aperture</th><th>Focus Increment</th><th>Number of Shots</th><th>Notes</th></tr>
 <tr><td>Macro</td><td>f/8</td><td>1-3</td><td>80-200</td><td>Use tripod when possible</td></tr>
-<tr><td>Water Drops</td><td>f/8</td><td>1</td><td>150</td><td>Flash recycle and timing matter</td></tr>
 <tr><td>Landscape close foreground</td><td>f/8</td><td>5-8</td><td>5-20</td><td>Start near foreground detail</td></tr>
 <tr><td>Product</td><td>f/8</td><td>3-5</td><td>20-80</td><td>Controlled light and tripod</td></tr>
 <tr><td>Flowers</td><td>f/8</td><td>3-5</td><td>30-80</td><td>Watch wind</td></tr>
@@ -985,7 +987,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Using too few shots.</li>
 <li>Using an increment that is too large for macro.</li>
 <li>Using f/22 and getting diffraction-soft source frames.</li>
-<li>Letting flash recycle time lag behind the bracket sequence.</li>
+<li>Expecting flash to fire during the R5 Focus Bracketing sequence.</li>
 <li>Ignoring subject movement.</li>
 <li>Forgetting focus breathing.</li>
 <li>Keeping hundreds of unnecessary frames.</li>
@@ -1036,7 +1038,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Halo artifacts: usually caused by movement, focus breathing, or difficult high-contrast edges.</li>
 <li>Subject movement: common with insects, flowers, water, and outdoor foregrounds.</li>
 <li>Wind: the main outdoor stacking problem for flowers and foreground landscape elements.</li>
-<li>Flash recycle issues: missed or underexposed frames appear when flash cannot recharge between shots.</li>
+<li>Flash unavailable: the R5 does not support flash photography during Focus Bracketing.</li>
 <li>Focus breathing: framing changes as focus moves, especially at close distances.</li>
 <li>Too many images: slows sorting, stacking, storage, and backup.</li>
 <li>Too few images: leaves gaps or stops before the far edge is sharp.</li>
@@ -1050,7 +1052,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td>Near edge soft</td><td>Started focus too far away</td><td>Start on nearest important detail</td></tr>
 <tr><td>Halo artifacts</td><td>Blend struggled with edges</td><td>Use external software and retouch</td></tr>
 <tr><td>Subject movement</td><td>Wind or living subject moved</td><td>Shield subject, wait, or abandon stack</td></tr>
-<tr><td>Flash misses frames</td><td>Recycle too slow</td><td>Lower flash power, raise ISO, or slow sequence</td></tr>
+<tr><td>Flash does not fire</td><td>Flash is unsupported during R5 Focus Bracketing</td><td>Use ambient or continuous lighting, or make a separately controlled manual stack</td></tr>
 <tr><td>Framing changes</td><td>Focus breathing</td><td>Leave extra crop room and use external software</td></tr>
 <tr><td>Too many images</td><td>Shot count too high</td><td>Reduce shots after test stack</td></tr>
 <tr><td>Diffraction softness</td><td>Aperture too small</td><td>Use wider aperture and stack more frames</td></tr>
@@ -1092,22 +1094,15 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>No: stop down moderately and shoot one frame.</li>
 <li>Yes: use Focus Bracketing at f/8, increment 5-8, 5-20 shots.</li>
 </ul>
-<p>Flash decision tree:</p>
-<p>Using flash?</p>
+<p>Lighting decision:</p>
 <ul>
-<li>No: continue normally.</li>
-<li>Yes: test recycle time.</li>
-</ul>
-<p>Flash keeps up with every frame?</p>
-<ul>
-<li>Yes: continue.</li>
-<li>No: lower flash power, raise ISO, slow the sequence, or reduce the number of frames.</li>
+<li>Ambient or continuous light: use Focus Bracketing normally and watch for exposure changes during the sequence.</li>
+<li>Flash required: do not use the R5 Focus Bracketing function; create a separately controlled manual stack only if the subject and lighting can remain repeatable.</li>
 </ul>
 <h2 id="focus_bracketing_depth_compositing--profile-recommendations">Profile Recommendations</h2>
 <table>
 <tr><th>Profile</th><th>Recommended Starting Point</th></tr>
 <tr><td>Macro</td><td>f/8, increment 1-3, 80-200 shots</td></tr>
-<tr><td>Water Drops</td><td>f/8, increment 1, 150 shots, controlled flash</td></tr>
 <tr><td>Landscape</td><td>f/8, increment 5-8, 5-20 shots when foreground is close</td></tr>
 <tr><td>Product</td><td>f/8, increment 3-5, 20-80 shots</td></tr>
 <tr><td>Flowers</td><td>f/8, increment 3-5, 30-80 shots</td></tr>
@@ -1302,8 +1297,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <tr><td><strong>Subject Detection</strong></td><td>Animals</td><td>Animals</td><td>None</td></tr>
 <tr><td><strong>Eye Detection</strong></td><td>Enable</td><td>Enable</td><td>Disable</td></tr>
 <tr><td><strong>Drive Mode</strong></td><td>High Speed Continuous</td><td>High Speed Continuous+</td><td>Single Shot</td></tr>
-<tr><td><strong>Shutter Type</strong></td><td>Mechanical</td><td>Mechanical</td><td>Mechanical</td></tr>
-<tr><td><strong>EFCS</strong></td><td>Under evaluation; do not substitute for Mechanical</td><td>Under evaluation; do not substitute for Mechanical</td><td>Under evaluation; do not substitute for Mechanical</td></tr>
+<tr><td><strong>Shutter Type</strong></td><td>EFCS</td><td>Mechanical</td><td>EFCS</td></tr>
 <tr><td><strong>Image Stabilizer Mode</strong></td><td>Mode 1</td><td>Mode 3</td><td>Mode 1</td></tr>
 <tr><td><strong>IBIS</strong></td><td>On</td><td>On</td><td>On</td></tr>
 <tr><td><strong>Lens IS switch</strong></td><td>On; physical check</td><td>On; physical check</td><td>On for the registered handheld starting state; turn off for tripod use</td></tr>
@@ -1647,7 +1641,7 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 <li>Direct on-camera flash can look flat or harsh.</li>
 <li>E-TTL can vary with framing, bright clothing, mirrors, or reflective surfaces.</li>
 <li>High Speed Sync reduces effective power and increases recycle demands.</li>
-<li>Flash recycle time can interrupt bursts and focus-bracket sequences.</li>
+<li>Flash recycle time can interrupt ordinary bursts and manually controlled stacks. The EOS R5 does not support flash during its Focus Bracketing function.</li>
 <li>Multiple flashes, radio systems, and external triggers add setup and failure points.</li>
 <li>Flash cannot illuminate subjects beyond its practical range, including distant fireworks.</li>
 </ul>
@@ -1684,8 +1678,9 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 </table>
 <h2 id="flash_photography--canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
-<li>Mechanical shutter is the safe flash starting point on the EOS R5. Confirm compatibility before using another shutter mode.</li>
-<li>Normal maximum sync speed depends on the camera, shutter configuration, flash, and trigger. Stay at or below the supported sync speed unless High Speed Sync is intentionally enabled.</li>
+<li>The EOS R5 supports normal flash synchronization up to 1/250 sec. with EFCS and 1/200 sec. with Mechanical shutter. The attached flash or trigger may impose a lower limit.</li>
+<li>EFCS is suitable for verified compatible flash equipment. Use Mechanical as the conservative starting point for unverified third-party flashes and triggers, including the documented Pluto/manual-flash Waterdrops setup.</li>
+<li>Stay at or below the supported sync speed unless High Speed Sync is intentionally enabled.</li>
 <li>Canon Speedlites can provide E-TTL, Flash Exposure Compensation, HSS, and compatible optical or radio wireless functions, depending on the model.</li>
 <li>A third-party trigger may not pass every Canon feature. Test E-TTL, HSS, rear-curtain behavior, wake-up, channel/group control, and timing independently.</li>
 <li>Pluto and similar sensor/timing triggers initiate the capture or flash event; they do not remove shutter, recycle, latency, or electrical-compatibility limits. Use only documented compatible connections and test delay timing before the subject event.</li>
