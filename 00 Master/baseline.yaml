@@ -51,10 +51,10 @@ defaults:
   drive:
     mode: "Single Shot"
   shutter:
-    type: "Mechanical"
+    type: "EFCS"
     target:
     efcs:
-      status: Under Evaluation
+      status: Approved Target Pending Physical Verification
   lens:
     aperture:
       target:

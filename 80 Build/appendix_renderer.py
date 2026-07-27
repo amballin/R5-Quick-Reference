@@ -59,6 +59,7 @@ def render_appendices(paths, include_pdf=False):
                 rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets, html_path.name)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
                 rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html, html_path.name)
+                rendered_html = _mark_external_reference_links(rendered_html)
                 html_path.write_text(rendered_html, encoding="utf-8")
             if include_pdf:
                 pdf_path = pdf_dir / f"{source.stem}.pdf"
@@ -460,6 +461,26 @@ def _rewrite_appendix_id_links(rendered_html, appendix_targets, return_target):
 
     return re.sub(
         r'<a([^>]*?)href="appendix:([^"]+)"([^>]*)>',
+        replace,
+        rendered_html,
+        flags=re.IGNORECASE,
+    )
+
+
+def _mark_external_reference_links(rendered_html):
+    def replace(match):
+        before = match.group(1)
+        href = match.group(2)
+        after = match.group(3)
+        attributes = f"{before}{after}"
+        if not re.search(r"\btarget\s*=", attributes, flags=re.IGNORECASE):
+            after += ' target="_blank"'
+        if not re.search(r"\brel\s*=", attributes, flags=re.IGNORECASE):
+            after += ' rel="noopener noreferrer"'
+        return f'<a{before}href="{href}"{after}>'
+
+    return re.sub(
+        r'<a([^>]*?)href="(https://[^"]+)"([^>]*)>',
         replace,
         rendered_html,
         flags=re.IGNORECASE,

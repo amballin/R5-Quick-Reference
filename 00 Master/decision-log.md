@@ -2,6 +2,30 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## External Authoritative Reference Links
+
+**Status:** Accepted
+**Date:** 2026-07-26
+
+Preserve explicitly authored HTTPS links to authoritative external references in standalone guides, the published site, and the offline/PWA bundle. Open them separately with safe external-link attributes so the installed reference system remains available. Internal Back, Camera Settings, card, appendix, and index navigation must continue to use validated destinations inside the reference system.
+
+This decision supersedes **Shared Internal Web Navigation** only to permit authored HTTPS content references to open an external source. Its internal-navigation, validated-return-target, and browser-history requirements remain binding.
+
+## EFCS Baseline with Mechanical Profile Overrides
+
+**Status:** Accepted
+**Date:** 2026-07-26
+
+Use **Electronic 1st-curtain shutter (EFCS)** as the shared EOS R5 shutter baseline. EFCS removes first-curtain mechanical movement, reduces the risk of shutter-shock softness, avoids the major rolling-shutter distortion of fully Electronic shutter, and normally minimizes artificial-light banding while retaining a mechanical second curtain. It is the approved starting point for Camera Defaults, Camera Setup Essentials, Travel, Wildlife, Birds Perched, Landscape, ambient-light or focus-bracketed Macro, and Fireworks. The EOS R5 automatically uses EFCS for Bulb exposures.
+
+Use explicit **Mechanical** shutter overrides for **People**, **Birds in Flight**, **Sports**, and **Waterdrops**. People, Birds in Flight, and Sports frequently combine fast shutter speeds with lenses at or near maximum aperture, where Canon warns that EFCS may render defocused highlights incompletely. Waterdrops retains Mechanical at 1/200 sec. as the conservative starting point for the third-party Pluto trigger and manual-flash workflow. Use Mechanical situationally for other unverified third-party flash/trigger setups and for non-bracketed flash macro. Canon EOS R5 focus bracketing does not support flash.
+
+Canon documents a maximum normal flash synchronization speed of 1/250 sec. with EFCS and 1/200 sec. with Mechanical shutter. Mechanical and EFCS both support approximately 12 fps High Speed Continuous+; in regular High Speed Continuous, Canon specifies approximately 6 fps with Mechanical and 8 fps with EFCS. Fully Electronic shutter remains situational for silence or 20 fps because of rolling-shutter, flicker/banding, and flash restrictions.
+
+This is an owner-approved target and project recommendation based on Canon-documented EOS R5 behavior and the project’s profiles and owned lenses. It is not an owner-confirmed current camera configuration or a completed physical comparison. Retain the physical verification task for shutter shock, EF 50mm f/1.4 fast-shutter bokeh, artificial lighting, burst behavior, and the Pluto/manual-flash setup.
+
+Show **Shutter Type** on every merged profile-based camera-settings card, including Camera Setup Essentials, so the inherited EFCS baseline and Mechanical profile exceptions remain visible in the field. Do not add it to permanent reference cards such as Camera Buttons, and do not duplicate the baseline value in profile YAML.
+
 ## Retire Native iOS Wrapper
 
 **Status:** Accepted

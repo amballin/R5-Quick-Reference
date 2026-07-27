@@ -34,7 +34,7 @@ E-TTL fires a metering preflash and automatically estimates flash output. Manual
 - Direct on-camera flash can look flat or harsh.
 - E-TTL can vary with framing, bright clothing, mirrors, or reflective surfaces.
 - High Speed Sync reduces effective power and increases recycle demands.
-- Flash recycle time can interrupt bursts and focus-bracket sequences.
+- Flash recycle time can interrupt ordinary bursts and manually controlled stacks. The EOS R5 does not support flash during its Focus Bracketing function.
 - Multiple flashes, radio systems, and external triggers add setup and failure points.
 - Flash cannot illuminate subjects beyond its practical range, including distant fireworks.
 
@@ -76,8 +76,9 @@ For a natural-looking fill, begin with negative Flash Exposure Compensation and 
 
 ## Canon-Specific Notes
 
-- Mechanical shutter is the safe flash starting point on the EOS R5. Confirm compatibility before using another shutter mode.
-- Normal maximum sync speed depends on the camera, shutter configuration, flash, and trigger. Stay at or below the supported sync speed unless High Speed Sync is intentionally enabled.
+- The EOS R5 supports normal flash synchronization up to 1/250 sec. with EFCS and 1/200 sec. with Mechanical shutter. The attached flash or trigger may impose a lower limit.
+- EFCS is suitable for verified compatible flash equipment. Use Mechanical as the conservative starting point for unverified third-party flashes and triggers, including the documented Pluto/manual-flash Waterdrops setup.
+- Stay at or below the supported sync speed unless High Speed Sync is intentionally enabled.
 - Canon Speedlites can provide E-TTL, Flash Exposure Compensation, HSS, and compatible optical or radio wireless functions, depending on the model.
 - A third-party trigger may not pass every Canon feature. Test E-TTL, HSS, rear-curtain behavior, wake-up, channel/group control, and timing independently.
 - Pluto and similar sensor/timing triggers initiate the capture or flash event; they do not remove shutter, recycle, latency, or electrical-compatibility limits. Use only documented compatible connections and test delay timing before the subject event.

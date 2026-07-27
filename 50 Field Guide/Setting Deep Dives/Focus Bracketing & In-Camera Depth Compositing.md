@@ -41,8 +41,8 @@ Depth Compositing uses the sharp regions from those frames to create a deeper-fo
 - RAW/JPEG behavior: Keep the source images for maximum quality. In-camera depth compositing may create a processed composite file, while external software can use the original RAW frames.
 - Tripod recommendations: Use a tripod for macro, product, landscape, architecture, and any stack where framing must stay fixed.
 - Handheld limitations: Handheld bracketing can work for casual close-ups, but framing shifts and subject movement increase stacking errors.
-- Flash compatibility: Flash can work, but recycle time must keep up with the bracket sequence. Manual flash with consistent power is usually better than variable automatic flash.
-- Electronic shutter considerations: Electronic shutter can reduce vibration, but watch for banding under artificial light. Mechanical shutter may be safer when flash is required.
+- Flash compatibility: The EOS R5 does not support flash photography during Focus Bracketing. Use ambient light or continuous lighting, or make a separately controlled manual stack outside the camera's Focus Bracketing function.
+- Shutter considerations: Use the EFCS baseline to avoid first-curtain shutter shock without the banding and motion-distortion risks of fully Electronic shutter.
 - Image Stabilization considerations: Use IS for handheld stacks. Turn IS off on a solid tripod for static subjects unless the lens/body combination handles tripod detection cleanly.
 
 ## How it Works
@@ -76,7 +76,7 @@ The key relationships are:
 
 - Requires static subjects or very little movement.
 - Wind can ruin flowers, insects, and foreground landscape elements.
-- Flash recycle time can interrupt the sequence.
+- Flash is unavailable during the R5 Focus Bracketing sequence.
 - Focus breathing can change framing between frames.
 - Too few images leave gaps; too many images waste storage and time.
 - In-camera compositing is convenient but less controllable than external software.
@@ -88,7 +88,6 @@ Use Focus Bracketing when the subject is static and depth of field is not enough
 Recommended:
 
 - Macro subjects.
-- Water drops.
 - Flowers.
 - Coins.
 - Jewelry.
@@ -101,7 +100,7 @@ Recommended:
 
 ## When Not to Use
 
-Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, wind is moving important details, or the flash cannot recycle fast enough.
+Avoid Focus Bracketing when the subject is moving, the camera cannot be held steady, or wind is moving important details. It is not the Waterdrops flash workflow: the R5 disables flash during Focus Bracketing, and a moving drop cannot align across a stack.
 
 Avoid it for portraits unless there is a specific static setup. Eye and face movement usually make stacking unnecessary or unreliable.
 
@@ -193,7 +192,7 @@ Typical values:
 Common mistakes:
 
 - Leaving it Off outdoors when clouds are moving quickly.
-- Turning it On in a controlled flash setup and expecting it to fix inconsistent flash recycle.
+- Turning it On under controlled continuous lighting and expecting it to correct subject movement.
 
 Recommended starting point: On outdoors, Off in studio.
 
@@ -296,7 +295,6 @@ These guidelines are practical starting points. Review the first stack at useful
 | Profile / Subject | Aperture | Focus Increment | Number of Shots | Notes |
 | --- | --- | --- | --- | --- |
 | Macro | f/8 | 1-3 | 80-200 | Use tripod when possible |
-| Water Drops | f/8 | 1 | 150 | Flash recycle and timing matter |
 | Landscape close foreground | f/8 | 5-8 | 5-20 | Start near foreground detail |
 | Product | f/8 | 3-5 | 20-80 | Controlled light and tripod |
 | Flowers | f/8 | 3-5 | 30-80 | Watch wind |
@@ -334,7 +332,7 @@ Some Canon lenses change framing noticeably as focus shifts. This focus breathin
 - Using too few shots.
 - Using an increment that is too large for macro.
 - Using f/22 and getting diffraction-soft source frames.
-- Letting flash recycle time lag behind the bracket sequence.
+- Expecting flash to fire during the R5 Focus Bracketing sequence.
 - Ignoring subject movement.
 - Forgetting focus breathing.
 - Keeping hundreds of unnecessary frames.
@@ -399,7 +397,7 @@ These are conservative starting values intended to maximize overlap.
 - Halo artifacts: usually caused by movement, focus breathing, or difficult high-contrast edges.
 - Subject movement: common with insects, flowers, water, and outdoor foregrounds.
 - Wind: the main outdoor stacking problem for flowers and foreground landscape elements.
-- Flash recycle issues: missed or underexposed frames appear when flash cannot recharge between shots.
+- Flash unavailable: the R5 does not support flash photography during Focus Bracketing.
 - Focus breathing: framing changes as focus moves, especially at close distances.
 - Too many images: slows sorting, stacking, storage, and backup.
 - Too few images: leaves gaps or stops before the far edge is sharp.
@@ -414,7 +412,7 @@ These are conservative starting values intended to maximize overlap.
 | Near edge soft | Started focus too far away | Start on nearest important detail |
 | Halo artifacts | Blend struggled with edges | Use external software and retouch |
 | Subject movement | Wind or living subject moved | Shield subject, wait, or abandon stack |
-| Flash misses frames | Recycle too slow | Lower flash power, raise ISO, or slow sequence |
+| Flash does not fire | Flash is unsupported during R5 Focus Bracketing | Use ambient or continuous lighting, or make a separately controlled manual stack |
 | Framing changes | Focus breathing | Leave extra crop room and use external software |
 | Too many images | Shot count too high | Reduce shots after test stack |
 | Diffraction softness | Aperture too small | Use wider aperture and stack more frames |
@@ -458,24 +456,16 @@ Need foreground and background critically sharp?
 - No: stop down moderately and shoot one frame.
 - Yes: use Focus Bracketing at f/8, increment 5-8, 5-20 shots.
 
-Flash decision tree:
+Lighting decision:
 
-Using flash?
-
-- No: continue normally.
-- Yes: test recycle time.
-
-Flash keeps up with every frame?
-
-- Yes: continue.
-- No: lower flash power, raise ISO, slow the sequence, or reduce the number of frames.
+- Ambient or continuous light: use Focus Bracketing normally and watch for exposure changes during the sequence.
+- Flash required: do not use the R5 Focus Bracketing function; create a separately controlled manual stack only if the subject and lighting can remain repeatable.
 
 ## Profile Recommendations
 
 | Profile | Recommended Starting Point |
 | --- | --- |
 | Macro | f/8, increment 1-3, 80-200 shots |
-| Water Drops | f/8, increment 1, 150 shots, controlled flash |
 | Landscape | f/8, increment 5-8, 5-20 shots when foreground is close |
 | Product | f/8, increment 3-5, 20-80 shots |
 | Flowers | f/8, increment 3-5, 30-80 shots |

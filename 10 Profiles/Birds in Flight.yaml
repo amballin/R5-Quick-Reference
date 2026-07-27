@@ -23,6 +23,7 @@ overrides:
     mode: High Speed Continuous+
 
   shutter:
+    type: Mechanical
     target: "1/2000–1/4000"
   stabilization:
     image_stabilization:

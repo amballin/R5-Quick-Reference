@@ -23,6 +23,7 @@ overrides:
   drive:
     mode: High Speed Continuous+
   shutter:
+    type: Mechanical
     target: 1/1000–1/2000 outdoor; 1/640–1/1000 indoor
   stabilization:
     image_stabilization:

@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-22
+  last_updated: 2026-07-26
   release: true
 title: People
 card:
@@ -16,6 +16,7 @@ overrides:
   drive:
     mode: Low Speed Continuous
   shutter:
+    type: Mechanical
     target: 1/200–1/320 portraits; 1/500+ action
   lens:
     aperture:

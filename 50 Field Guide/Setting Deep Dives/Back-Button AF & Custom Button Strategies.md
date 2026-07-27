@@ -216,8 +216,7 @@ The exact starting values below convert card ranges and situational guidance int
 | **Subject Detection** | Animals | Animals | None |
 | **Eye Detection** | Enable | Enable | Disable |
 | **Drive Mode** | High Speed Continuous | High Speed Continuous+ | Single Shot |
-| **Shutter Type** | Mechanical | Mechanical | Mechanical |
-| **EFCS** | Under evaluation; do not substitute for Mechanical | Under evaluation; do not substitute for Mechanical | Under evaluation; do not substitute for Mechanical |
+| **Shutter Type** | EFCS | Mechanical | EFCS |
 | **Image Stabilizer Mode** | Mode 1 | Mode 3 | Mode 1 |
 | **IBIS** | On | On | On |
 | **Lens IS switch** | On; physical check | On; physical check | On for the registered handheld starting state; turn off for tripod use |

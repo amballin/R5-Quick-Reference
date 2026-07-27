@@ -4,17 +4,17 @@ This file records approved follow-up work and analysis candidates that should no
 
 ## Control Architecture Follow-Up
 
+- Run and record the non-published [EOS R5 On-Camera Verification Checklist](../90%20Testing/EOS%20R5%20On-Camera%20Verification%20Checklist.md); promote only completed, unambiguous results to owner-confirmed status.
 - Physically configure and verify AF-ON with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to Face + Tracking.
 - Physically configure and verify AE Lock with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF.
 - Verify that C1's present registration matches the Wildlife profile; register and verify C2 as Birds in Flight / Action and C3 as Landscape.
 - Verify that the DOF button changes One-Shot AF ↔ Servo AF and that both AF-start buttons respect the resulting state.
 - Physically test the joystick straight press with Face + Tracking, including face/eye selection, tracking release, the single- and double-border displays, and the Face Select: Off indication; do not make the behavior definitive until verified.
-- Create a short on-camera verification checklist for AF-ON, AE Lock, DOF, and C1-C3.
 - Decide whether Spot AF needs another immediate control for serious macro work.
 
 ## Exposure and Shutter Follow-Up
 
-- Evaluate EFCS against Mechanical shutter in the relevant profiles, including shutter-shock reduction, fast-shutter bokeh, motion, artificial-light banding, flash compatibility, and burst behavior; retain Mechanical as the documented default until the tradeoffs are tested and approved.
+- Physically verify the approved EFCS baseline on the owner’s EOS R5: compare tripod sharpness at approximately 1/8–1/60 sec.; inspect EF 50mm f/1.4 bokeh at 1/1000–1/8000 sec.; test indoor LED lighting at Sports shutter speeds; confirm High and High Speed Continuous+ burst behavior; and verify the Mechanical 1/200-sec. Pluto/manual-flash Waterdrops setup. Keep the documentation classified as an approved target pending physical verification until these checks are complete.
 
 ## Architecture and Validation Improvements
 

@@ -117,13 +117,21 @@ Shutter speed controls motion. Action profiles use fast shutter speeds; long exp
 
 #### Shutter Type
 
-Mechanical is the safest general default, including for flash and uncertain artificial lighting. EFCS can reduce vibration but may affect bokeh at very fast shutter speeds. Electronic is silent but can create rolling shutter, banding, or flash limitations.
+EFCS is the approved EOS R5 baseline pending physical verification. It starts the exposure electronically and ends it with the mechanical second curtain, which removes first-curtain shutter shock without taking on the major motion-distortion and flash restrictions of fully Electronic shutter. It is not silent.
 
 | Setting | What it Does |
 |---|---|
-| Mechanical | Safest general default with broad flash and motion compatibility. |
-| EFCS | Reduces vibration while avoiding many electronic shutter tradeoffs. |
-| Electronic | Silent shooting, but watch for rolling shutter, banding, and flash limits. |
+| Mechanical | Use for fast shutter speeds near maximum aperture and conservative third-party flash/trigger compatibility. |
+| EFCS | General baseline; reduces vibration, retains broad motion and flash compatibility, and normally minimizes artificial-light banding. |
+| Electronic | Silent and up to approximately 20 fps, but watch for rolling shutter, banding, and flash restrictions. |
+
+Use Mechanical for People, Birds in Flight, Sports, and Waterdrops. These profiles prioritize clean wide-aperture bokeh at fast shutter speeds or a conservative third-party flash/trigger workflow. Use EFCS for general shooting, Travel, Wildlife, Birds Perched, Landscape, ambient-light or focus-bracketed Macro, and Fireworks. The R5 automatically uses EFCS for Bulb exposures.
+
+Canon warns that EFCS can render defocused highlights incompletely when the lens is near maximum aperture at high shutter speeds. Lower the shutter speed, stop down, or switch to Mechanical when background highlights look clipped. Mechanical and EFCS avoid the major fast-subject distortion associated with fully Electronic shutter and normally handle flickering artificial light much more reliably, but test the actual lighting and use Anti-flicker shooting when needed.
+
+On the R5, Mechanical and EFCS both reach approximately 12 fps in High Speed Continuous+. In regular High Speed Continuous, Canon specifies approximately 6 fps with Mechanical and 8 fps with EFCS. Normal flash sync is up to 1/200 sec. with Mechanical and 1/250 sec. with EFCS; attached flashes, triggers, and other conditions may impose lower limits.
+
+For Canon's fuller explanation and example use cases, see [A Look at the Shutter Modes in Canon EOS Cameras](https://www.usa.canon.com/learning/training-articles/training-articles-list/a-look-at-the-shutter-modes-in-canon-eos-cameras).
 
 **Camera Menu:** Shooting 6 > Shutter mode.
 
@@ -294,7 +302,7 @@ Use E-TTL when subject distance or ambient light changes; use Manual flash when 
 | High Speed Sync | Allows faster shutter speeds and wider apertures in bright light, with reduced range and power. |
 | Rear-curtain sync | Fires near the end of the exposure so motion trails appear behind a moving subject. |
 
-Use Mechanical shutter as the safe flash starting point on the R5 and confirm the supported sync behavior of the attached flash or trigger. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see [Flash Photography](appendix:flash_photography).
+EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mechanical supports up to 1/200 sec. Use Mechanical as the conservative starting point for unverified third-party flashes or triggers, including the documented Waterdrops setup, and test the complete combination before critical work. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see [Flash Photography](appendix:flash_photography).
 
 **Camera Menu:** Shooting menu > External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.
 
@@ -394,16 +402,16 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 ## Recommended Settings by Profile
 
-- Birds in Flight: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
-- Birds Perched: Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
-- Fireworks: Manual Focus, Single Shot, tripod stabilization off, long shutter target.
-- Landscape: One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
-- Macro: One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful.
-- People: Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
-- Travel: Baseline settings unless the subject demands a specialized profile.
-- Waterdrops: Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
-- Wildlife: Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
+- Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
+- Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
+- Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.
+- Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
+- Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.
+- People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.
+- Sports: Mechanical; Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
+- Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.
+- Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
+- Wildlife: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
 
 ## Canon-Specific Notes
 

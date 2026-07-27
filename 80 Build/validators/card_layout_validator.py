@@ -4,6 +4,7 @@ from .common import error, load_yaml_checked
 REQUIRED_KEYS = [
     "exposure.mode",
     "shutter.target",
+    "shutter.type",
     "lens.aperture.target",
     "exposure.iso.mode",
     "exposure.auto_iso.maximum",

@@ -20,6 +20,7 @@ Cards render required settings from fully merged baseline + profile data, includ
 
 - `exposure.mode`
 - `shutter.target`
+- `shutter.type`
 - `lens.aperture.target`
 - `exposure.iso.mode`
 - `exposure.auto_iso.maximum`
@@ -34,7 +35,7 @@ If a required merged value is unset, render the row with `—` rather than omitt
 
 `00 Master/card_layout.yaml` may define additional always-shown settings; those remain part of current card behavior.
 
-The Camera Setup Essentials card also renders `image.cropping_aspect_ratio` as **Crop / Aspect**. The shared baseline is **Full-frame**; subject cards inherit it, and a temporary 1.6× field change does not require a permanent profile override.
+The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type** and `image.cropping_aspect_ratio` as **Crop / Aspect**. The shared shutter baseline and any explicit profile override remain visible without duplicating them in profile YAML. The shared cropping baseline is **Full-frame**; subject cards inherit it, and a temporary 1.6× field change does not require a permanent profile override.
 
 ## Rendering Requirements
 

@@ -56,6 +56,7 @@ REQUIRED_CARD_SETTINGS = {
     "autofocus.method",
     "drive.mode",
     "shutter.target",
+    "shutter.type",
     "lens.aperture.target",
     "stabilization.image_stabilization.mode",
     "exposure.iso.mode",
@@ -74,6 +75,7 @@ CAMERA_DEFAULT_EXTRA_SETTINGS = {
 }
 
 CAMERA_SETUP_SETTINGS = {
+    "shutter.type",
     "display.histogram",
     "display.highlight_alert",
     "image.highlight_tone_priority",

@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-07-26
   release: true
 title: Landscape
 card:
@@ -37,5 +37,4 @@ common_mistakes:
 notes:
   - On a tripod, use ISO 100 and turn IS off; handheld, use Mode 1 and raise ISO as needed for a safe shutter speed.
   - For static scenes requiring large near-to-far depth of field, consider focus bracketing at f/8-f/11 instead of stopping down further; use a tripod and watch for wind movement.
-  - Mechanical shutter. EFCS under evaluation.
   - Enable Long Exposure NR only for multi-second/night exposures.

@@ -35,6 +35,8 @@ card_layout:
       label: Mode
     - key: shutter.target
       label: Shutter
+    - key: shutter.type
+      label: Shutter Type
     - key: lens.aperture.target
       label: Aperture
     - key: exposure.iso.mode

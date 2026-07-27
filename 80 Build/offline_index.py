@@ -391,6 +391,12 @@ def _offline_link(match, local_prefix):
         target = href.group(1)
         if target.startswith("#"):
             return match.group(0)
+        if target.startswith("https://"):
+            if not re.search(r"\btarget\s*=", attrs, flags=re.IGNORECASE):
+                attrs += ' target="_blank"'
+            if not re.search(r"\brel\s*=", attrs, flags=re.IGNORECASE):
+                attrs += ' rel="noopener noreferrer"'
+            return f'<a{attrs}>{label}</a>'
         if not target.startswith(("http://", "https://", "mailto:")):
             rewritten = re.sub(
                 r'href="[^"]+"',

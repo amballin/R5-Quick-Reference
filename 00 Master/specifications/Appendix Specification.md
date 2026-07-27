@@ -46,6 +46,7 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 - An appendix with a front `Index`, `Topic Index`, or `Table of Contents` heading provides a persistent internal **Return to index** control both on its standalone page and inside its expanded panel on the main index. Print/output rendering omits this control.
 - Embedded appendix heading IDs and internal fragment links are namespaced per appendix so duplicate source heading IDs cannot send a link into a different expanded guide.
 - Internal heading targets use sufficient scroll offset to remain visible below the sticky Camera Settings header.
+- Preserve explicitly authored HTTPS links to authoritative external references in standalone appendix HTML, the published index, and the offline/PWA bundle. Open them separately with `target="_blank"` and `rel="noopener noreferrer"`; do not treat them as internal Back or return destinations.
 
 ## Enforcement and Evidence
 
