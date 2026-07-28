@@ -19,6 +19,7 @@ from validators import (  # noqa: E402
     output_validator,
     pwa_validator,
     profile_validator,
+    stabilization_validator,
     structure,
     yaml_validator,
 )
@@ -35,6 +36,7 @@ VALIDATORS = [
     ("Profiles and Overrides", profile_validator.validate),
     ("Icon Library", icon_validator.validate),
     ("Canon Guides", canon_guides_validator.validate),
+    ("Stabilization Reference", stabilization_validator.validate),
     ("Build Output", output_validator.validate),
     ("Merged Build PWA", pwa_validator.validate),
     ("Links", link_validator.validate),

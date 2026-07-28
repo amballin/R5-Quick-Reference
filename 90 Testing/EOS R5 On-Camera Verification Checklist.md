@@ -4,6 +4,8 @@
 **Publication:** Non-published repository test material  
 **Evidence rule:** A target becomes owner-confirmed only after the applicable test passes and the result is recorded.
 
+Track progress, session evidence, C1-C3 configuration, and project-update readiness in the companion [EOS R5 On-Camera Verification Tracker](EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx). Keep this Markdown file as the detailed operating procedure and use the workbook as the live progress record.
+
 Use this checklist for one deliberate camera-setup session. Complete the steps in order. Do not register C1, C2, or C3 until every setting for that mode has been checked.
 
 ## Session Record

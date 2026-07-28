@@ -6,8 +6,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 
 ## Topic Index
 
-- [Field Control Troubleshooting](#field-control-troubleshooting)
-  - [LOCK Displayed or Controls Will Not Change](#lock-displayed-or-controls-will-not-change)
+- [LOCK Displayed or Controls Will Not Change](#lock-displayed-or-controls-will-not-change)
 - [Exposure and Shutter](#exposure-and-shutter)
   - [Shooting Modes](#shooting-modes)
   - [Metering Mode](#metering-mode)
@@ -27,9 +26,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 - [Flash](#flash)
   - [Flash Modes and Compatibility](#flash-modes-and-compatibility)
 - [Stabilization](#stabilization)
-  - [Image Stabilization Mode](#image-stabilization-mode)
-  - [IBIS](#ibis)
-  - [Lens IS](#lens-is)
+  - [Image Stabilization](#image-stabilization-mode)
 - [Specialized Focus and Long-Exposure Tools](#specialized-focus-and-long-exposure-tools)
   - [Focus Features](#focus-features)
   - [Focus Bracketing](#focus-bracketing)
@@ -37,9 +34,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
 
 ## Decision Guide
 
-### Field Control Troubleshooting
-
-#### LOCK Displayed or Controls Will Not Change
+### LOCK Displayed or Controls Will Not Change
 
 Press the **Multi-function Lock button** once to unlock the controls, then retry the adjustment. The button toggles the physical controls selected under **Set-up > Multi function lock**, which may include the Main Dial, Rear Wheel, Top Rear Dial, joystick, control ring, and touchscreen. It does not lock individual settings.
 
@@ -312,44 +307,33 @@ EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mec
 
 #### Image Stabilization Mode
 
-Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod. Stabilization reduces camera shake; it does not freeze subject motion, which still requires an appropriate shutter speed.
+This is the normal shake-reduction control, not IBIS High Resolution Shot. Stabilization reduces camera shake; it does not freeze subject movement.
 
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![Image Stabilization](../../60 Assets/icons/card_icons/SVG/image_stabilization.svg) | Mode 1 | General handheld stabilization. |
-| ![Image Stabilization](../../60 Assets/icons/card_icons/SVG/image_stabilization.svg) | Mode 2 | Stabilization for deliberate panning. |
-| ![Image Stabilization](../../60 Assets/icons/card_icons/SVG/image_stabilization.svg) | Mode 3 | Stabilization for erratic action, mainly during exposure. |
-| ![Image Stabilization](../../60 Assets/icons/card_icons/SVG/image_stabilization.svg) | Off | Best for solid tripod work or profiles where stabilization can cause problems. |
+**Camera setting**
 
-**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode, or lens IS controls. Mode 2/3 may be lens-switch settings when available.
+`MENU → Shooting menu → IS (Image Stabilizer) mode`
 
-**Quick Menu:** Menu/lens control; not usually Q.
+Use this for normal body stabilization when the option is available, especially with a lens that has no optical IS switch. The Shooting-menu page number can change with shooting mode, attached lens, firmware, and other camera conditions, so find the exact Canon label rather than a fixed tab number.
 
-#### IBIS
+**Lens control**
 
-In-body image stabilization moves the camera sensor to reduce shake. It helps handheld work and should usually be off for solid tripod long exposures.
+If the attached lens has an Image Stabilizer On/Off switch, use the lens switch. The camera's IS On/Off choice may be unavailable or behave differently while that lens is attached.
 
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![ON](../../60 Assets/icons/canon_r5_official/lens_is_on.svg) | On | Uses in-body sensor movement to reduce camera shake. |
-| ![OFF](../../60 Assets/icons/canon_r5_official/lens_is_off.svg) | Off | Prevents sensor stabilization during solid tripod or locked-down work. |
+**IS Mode 1 / 2 / 3**
 
-**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode.
+Select these with the physical Image Stabilizer mode selector on lenses that provide one:
 
-**Quick Menu:** Menu only.
+- **1 — General:** general-purpose stabilization.
+- **2 — Panning:** stabilization for deliberate panning.
+- **3 — Erratic action:** stabilization applied primarily during exposure, when supported.
 
-#### Lens IS
+These lens modes are not normally selected from the EOS R5 camera menu. A lens without a mode switch does not gain Mode 1 / 2 / 3 choices in the camera menu.
 
-Lens stabilization moves lens elements to reduce shake. With compatible lenses, Lens IS and IBIS may work together. Turn it off on a solid tripod when the profile calls for locked-down work.
+**Interaction**
 
-| Icon | Setting | What it Does |
-|---|---|---|
-| ![ON](../../60 Assets/icons/canon_r5_official/lens_is_on.svg) | On | Uses lens stabilization to reduce shake, often coordinated with IBIS. |
-| ![OFF](../../60 Assets/icons/canon_r5_official/lens_is_off.svg) | Off | Prevents lens stabilization during solid tripod or locked-down work. |
+With a compatible lens switched On, lens optical IS and the R5's in-body stabilization coordinate automatically. Treat them as one coordinated system rather than two independent controls. For lens-specific switches, modes, and exceptions, see [Lens Capabilities](appendix:lens_settings).
 
-**Camera Menu:** Lens IS switch; Shooting 7 > IS mode where available.
-
-**Quick Menu:** Lens switch; not Q.
+**Solid tripod:** Follow the selected profile and lens-specific Canon guidance; turn stabilization Off for locked tripod or Bulb work when directed.
 
 ### Specialized Focus and Long-Exposure Tools
 

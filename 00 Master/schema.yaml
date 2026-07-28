@@ -65,6 +65,9 @@ settings:
     mode: string
     notes: string
 
+  display:
+    screen_info_settings: string
+
   camera_setup:
     custom_shooting_mode_auto_update: string
     electronic_full_time_mf: string

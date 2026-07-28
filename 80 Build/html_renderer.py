@@ -33,6 +33,7 @@ LABEL = {
     "exposure.iso.value": "ISO Value",
     "exposure.auto_iso.maximum": "Auto ISO Max",
     "exposure.exposure_compensation": "Exposure Comp",
+    "display.screen_info_settings": "Screen Info",
     "display.histogram": "Histogram",
     "display.highlight_alert": "Highlight Alert",
     "image.quality": "Image Quality",
@@ -76,6 +77,7 @@ CAMERA_DEFAULT_EXTRA_SETTINGS = {
 
 CAMERA_SETUP_SETTINGS = {
     "shutter.type",
+    "display.screen_info_settings",
     "display.histogram",
     "display.highlight_alert",
     "image.highlight_tone_priority",

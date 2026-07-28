@@ -4,6 +4,8 @@ Use this guide as a quick lens-by-lens setup check before choosing a profile car
 
 Image stabilization reduces blur caused by camera movement; it does not freeze a moving subject. Shutter speed still controls subject-motion blur. Lens IS moves optical elements, IBIS moves the R5 sensor, and compatible combinations may coordinate them automatically. In the field, choose the available lens/body mode for the subject and turn stabilization off for a solid, locked tripod when the profile calls for it.
 
+For normal stabilization, first look for physical controls on the attached lens. If it has an IS On/Off switch, use that switch; the EOS R5's camera-menu IS choice may not appear. If the lens has no optical IS switch, use **MENU → Shooting menu → IS (Image Stabilizer) mode** when available. Lens IS Mode 1 / 2 / 3 is selected only on lenses that provide a physical mode selector.
+
 ## Index
 
 1. [Match by Subject](#match-by-subject)
@@ -41,12 +43,10 @@ Best for birds, wildlife, sports, distant details, compressed landscapes, zoo su
 | Control | What it does | Field setting |
 | --- | --- | --- |
 | AF/MF | Chooses autofocus or manual focus | AF for wildlife/action; MF for static tripod scenes if focus must not move |
-| Stabilizer ON/OFF | Turns lens IS on or off | On handheld, monopod, or gimbal; Off on a solid locked tripod |
-| Stabilizer Mode 1 | General stabilization | Perched birds, resting wildlife, travel telephoto, static subjects |
-| Stabilizer Mode 2 | Panning stabilization | Birds, aircraft, cyclists, motorsports, or runners moving smoothly across the frame |
-| Stabilizer Mode 3 | Exposure-only stabilization | Birds in flight, erratic wildlife, sports, and action that changes direction |
 | Focus distance limiter | Restricts AF range to reduce hunting | Use the longer-distance range for distant wildlife/action; use full range for close subjects |
 | Zoom touch adjustment ring | Changes zoom-ring resistance | Looser for fast reframing; tighter for carrying or slower deliberate zooming |
+
+<!-- STABILIZATION_REFERENCE: ef_100_400_is_ii -->
 
 This guidance is for the IS II version you listed. Treat Mode 1 as the static-subject default, Mode 2 as the panning mode, and Mode 3 as the fast-action mode.
 
@@ -71,8 +71,9 @@ Best for macro, waterdrops, flowers, small objects, product details, portraits w
 | Control | What it does | Field setting |
 | --- | --- | --- |
 | AF/MF | Chooses autofocus or manual focus | AF for general close work; MF for controlled macro, waterdrops, and stacking |
-| Stabilizer ON/OFF | Turns Hybrid IS on or off | On handheld; Off on a locked tripod |
 | Focus distance limiter | Restricts AF range | Use the closest range for macro, longer range for portraits/general work, full range when unsure |
+
+<!-- STABILIZATION_REFERENCE: ef_100_macro_is -->
 
 ### Support
 
@@ -94,7 +95,8 @@ Best for people, low-light details, travel-light, casual portraits, indoor famil
 | --- | --- | --- |
 | AF/MF | Chooses autofocus or manual focus | AF for normal shooting; MF for deliberate static scenes or prefocused compositions |
 | Focus ring | Allows manual focus adjustment | Use gently; avoid bumping it while carrying because this older micro-USM design is less rugged than modern ring-USM/L lenses |
-| Image stabilization | Not available on this lens | Use faster shutter speed, higher ISO, or tripod when light is low |
+
+<!-- STABILIZATION_REFERENCE: ef_50_f14 -->
 
 ### Support
 
@@ -167,8 +169,9 @@ Best for travel, family, people, casual landscapes, events, and one-lens walking
 | Control | What it does | Field setting |
 | --- | --- | --- |
 | AF/MF / focus mode | Chooses autofocus or manual focus through camera/lens focus settings | AF for almost everything; MF only for deliberate static scenes |
-| Stabilizer ON/OFF | Turns lens IS on or off | On handheld; Off on solid tripod long exposures |
 | Focus/control ring | Acts as manual focus ring or configurable control ring depending on lens/camera settings | Use control-ring behavior for exposure compensation/ISO when you want quick field control; use focus behavior for manual focus |
+
+<!-- STABILIZATION_REFERENCE: rf_24_240_is -->
 
 ### Support
 

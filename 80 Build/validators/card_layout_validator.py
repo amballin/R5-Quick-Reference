@@ -36,6 +36,7 @@ REQUIRED_DISPLAY_ORDER = [
     "stabilization.lens_is",
     "image.focus_bracketing",
     "image.long_exposure_noise_reduction.value",
+    "display.screen_info_settings",
     "display.histogram",
     "display.highlight_alert",
     "image.quality",

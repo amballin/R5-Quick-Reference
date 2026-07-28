@@ -27,6 +27,7 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
   - [C2 — Birds in Flight / Action](#c2-birds-in-flight-action)
   - [What C1 and C2 should normally keep the same](#what-c1-and-c2-should-normally-keep-the-same)
   - [C3 — Landscape](#c3-landscape)
+  - [Green-star My Menu: SWITCH](#green-star-my-menu-switch)
   - [Protect the registered modes: disable Auto update](#protect-the-registered-modes-disable-auto-update)
   - [Save alternate complete configurations to a card](#save-alternate-complete-configurations-to-a-card)
 - [Other AF Methods](#other-af-methods)
@@ -296,6 +297,28 @@ In the normal `C3LANDSC` configuration, People does not use a C-mode slot. For a
 | Aperture target | Use f/1.8-f/4 for one person or f/4-f/8 for a group |
 
 Keep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people while the normal `C3LANDSC` configuration is loaded; in that set, C3 recalls the Landscape settings—ISO 100, One-Shot AF, Single Shot, and f/9.
+
+### Green-star My Menu: SWITCH
+
+Use one green-star My Menu tab named **SWITCH** as the starting menu for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. My Menu items are shortcuts to the camera's real settings; selecting an item opens that setting, and it does not apply a complete profile automatically.
+
+| Target | Best starting mode | Already close | Remaining changes | SWITCH items used |
+|---|---|---|---|---|
+| **People** | **C1 Wildlife** | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | Subject to detect; Shutter mode |
+| **Macro** | **C3 Landscape** | Av, One-Shot AF, Single Shot, EFCS, Mode 1, suitable aperture range | ISO 100 to Auto, 1-Point to Spot AF, enable Focus Bracketing, set f/8 | Focus bracketing |
+| **Waterdrops** | **C3 Landscape** | ISO 100, Single Shot, aperture near f/8-f/11 | Av to Manual, 1/200 sec., Mechanical, Manual Focus, stabilization Off | Shutter mode; IS (Image Stabilizer) mode |
+
+Configure the **SWITCH** tab in this starting order:
+
+1. **Subject to detect**
+2. **Shutter mode**
+3. **Focus bracketing**
+4. **IS (Image Stabilizer) mode**
+5. **Cropping/aspect ratio**
+
+Leave the sixth position open until field testing identifies another menu-only need. Cropping/aspect ratio provides a fast way to find and clear a temporary 1.6× crop after wildlife or distant-subject work.
+
+Use Q, the dials, or the AF-point controls for Drive Mode, ISO, shutter speed, aperture, and AF Method when those controls are faster. Keep lens AF/MF and IS switches as physical checks. With **Auto update set.: Disable**, these transition changes must not rewrite the registered C1-C3 starting environments.
 
 ### Protect the registered modes: disable Auto update
 

@@ -1,0 +1,84 @@
+version: 1
+
+camera:
+  model: Canon EOS R5
+  normal_is:
+    menu_path: "MENU → Shooting menu → IS (Image Stabilizer) mode"
+    menu_label: "IS (Image Stabilizer) mode"
+    menu_page_number_variable: true
+    body_control_available_when: "The attached lens does not provide optical IS control."
+    unavailable_when:
+      - "An IS-equipped lens is attached; use the lens Image Stabilizer switch instead."
+    lens_mode_control: "IS Mode 1 / 2 / 3 is selected on lenses that provide a physical Image Stabilizer mode selector switch, not in the EOS R5 camera menu."
+    coordination: "With a compatible IS lens switched On, lens optical IS and camera in-body stabilization coordinate automatically."
+    source:
+      title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
+      url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
+
+lenses:
+  - id: ef_100_400_is_ii
+    name: "Canon EF 100-400mm f/4.5-5.6L IS II USM"
+    optical_is: true
+    is_on_off_switch: true
+    is_mode_switch: true
+    is_modes:
+      - value: "1"
+        purpose: "General-purpose stabilization; corrects vibration in all directions and is mainly for still subjects."
+      - value: "2"
+        purpose: "Panning stabilization; corrects shake perpendicular to the panning direction."
+      - value: "3"
+        purpose: "Stabilization applied primarily during exposure for fast, irregularly moving subjects."
+    control_method: "Lens switches"
+    camera_interaction: "Set the lens Stabilizer switch On; lens optical IS and EOS R5 in-body stabilization coordinate automatically."
+    exceptions:
+      - "Canon directs users to set the Stabilizer switch Off for Bulb exposures because IS may introduce errors."
+    sources:
+      - title: "Canon EF100-400mm f/4.5-5.6L IS II USM Instructions"
+        url: "https://gdlp01.c-wss.com/gds/6/0300017486/01/ef100-400f45-56lisiiusm-im-e.pdf"
+      - title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
+
+  - id: ef_100_macro_is
+    name: "Canon EF 100mm f/2.8L Macro IS USM"
+    optical_is: true
+    is_on_off_switch: true
+    is_mode_switch: false
+    control_method: "Lens Stabilizer On/Off switch"
+    camera_interaction: "Set the lens Stabilizer switch On; the lens Hybrid IS and EOS R5 in-body stabilization coordinate automatically."
+    exceptions:
+      - "This lens has Hybrid IS but no selectable Mode 1 / 2 / 3 switch."
+      - "Canon notes that stabilization effectiveness is lower at shorter focusing distances."
+    sources:
+      - title: "Canon EF100mm f/2.8L Macro IS USM Instructions"
+        url: "https://gdlp01.c-wss.com/gds/2/0300003522/02/ef100f28l-macroisusm-im2-eng.pdf"
+      - title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
+
+  - id: ef_50_f14
+    name: "Canon EF 50mm f/1.4 USM"
+    optical_is: false
+    is_on_off_switch: false
+    is_mode_switch: false
+    control_method: "Camera menu for normal in-body stabilization"
+    camera_interaction: "Because the lens has no optical IS switch, use MENU → Shooting menu → IS (Image Stabilizer) mode when the option is available."
+    sources:
+      - title: "Canon EF 50mm f/1.4 USM Support and Specifications"
+        url: "https://www.usa.canon.com/support/p/ef-50mm-f-1-4-usm"
+      - title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
+
+  - id: rf_24_240_is
+    name: "Canon RF 24-240mm F4-6.3 IS USM"
+    optical_is: true
+    is_on_off_switch: true
+    is_mode_switch: false
+    control_method: "Lens Image Stabilizer On/Off switch; stabilization behavior is selected automatically"
+    camera_interaction: "Set the lens Image Stabilizer switch On; lens optical IS and camera in-body stabilization work in combination."
+    exceptions:
+      - "Canon states that combined operation with in-body Image Stabilizer requires lens firmware 1.0.6 or later."
+      - "The lens automatically provides stabilization appropriate for still subjects and panning; it has no physical Mode 1 / 2 / 3 switch."
+    sources:
+      - title: "Canon RF24-240mm F4-6.3 IS USM Instructions"
+        url: "https://gdlp01.c-wss.com/gds/6/0300036346/02/rf24-240-f4-63isusm-im4-eng.pdf"
+      - title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"

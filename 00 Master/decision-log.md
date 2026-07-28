@@ -2,6 +2,26 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Green-Star SWITCH My Menu Starting Tab
+
+**Status:** Accepted
+**Date:** 2026-07-28
+
+Use one EOS R5 green-star My Menu tab named **SWITCH** as the approved starting recommendation for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. Register these five shortcuts in order: **Subject to detect**, **Shutter mode**, **Focus bracketing**, **IS (Image Stabilizer) mode**, and **Cropping/aspect ratio**. Leave the sixth position open until physical transition testing identifies another menu-only need.
+
+My Menu provides shortcuts to the camera's real menu settings; it does not store or apply a complete subject profile. Start People from C1 Wildlife, and start Macro or Waterdrops from C3 Landscape, then make the remaining changes through SWITCH, Q, dials, AF-point controls, or physical lens switches as appropriate. Keep **Auto update set.: Disable** so field changes do not rewrite the registered C1-C3 starting environments.
+
+Keep the Camera Buttons card concise with a reference to SWITCH and the linked guide. Put the complete configuration, transition table, and operating rationale in **Custom Controls, Back-Button AF & Dial Strategies**. Retain on-camera verification and evaluation of any sixth item or additional My Menu tabs as TODO work.
+
+## Screen Information Displays on Camera Setup Essentials
+
+**Status:** Accepted
+**Date:** 2026-07-27
+
+Keep **Shooting 7 > Shooting info. disp. > Screen info. settings** modes **1–5 enabled** as the owner-confirmed EOS R5 configuration. Mode 5 provides the full Quick Control screen for quickly reviewing and changing camera settings with **Q**, while **INFO** cycles through the enabled displays.
+
+Show **Screen Info: Modes 1–5 enabled** as a visible Set & Forget setting on Camera Setup Essentials and include the menu path and operating purpose in its notes. Keep this concise setup guidance on the Essentials card rather than creating a separate appendix.
+
 ## External Authoritative Reference Links
 
 **Status:** Accepted
@@ -264,12 +284,14 @@ Generate all manifest entries so draft content remains linkable from released do
 
 ## Lens Stabilization Guidance
 
-**Status:** Proposed (non-binding)
-**Date:** 2026-07-05
+**Status:** Accepted
+**Date:** 2026-07-27
 
-Future work could add lens-specific reference guidance covering lens IS switches, Mode 1/2/3, tripod behavior, macro, panning, wildlife, and long exposure. It should avoid repeating lens-specific explanations in profiles.
+Keep normal EOS R5 stabilization guidance in R5 Quick Reference and lens-specific physical-control guidance in Lens Capabilities. Store verified camera and lens stabilization capabilities in `data/stabilization_reference.yaml`, and generate each lens's stabilization-control table from that structured source.
 
-The current separation of stabilization mode, IBIS, and Lens IS is binding through the Profile Specification; this proposal does not itself authorize a data-model change.
+Document optical IS presence, physical Image Stabilizer On/Off and mode switches, only the modes supported by the specific lens, Canon's purpose for each supported mode, the controlling device, automatic lens/body coordination, and Canon-stated exceptions. Retain the exact `IS (Image Stabilizer) mode` camera-menu label because the Shooting-menu page number and availability are conditional.
+
+This structured appendix data does not change the profile schema. The existing separation of stabilization mode, IBIS, and Lens IS remains binding through the Profile Specification, and IBIS High Resolution Shot remains outside this lens-control guidance.
 
 ## Phase 4 — User Experience
 

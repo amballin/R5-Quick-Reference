@@ -316,6 +316,25 @@ Each extraction folder should contain:
 - `extraction_report.md`
 - `comparison_to_baseline.md`
 
+### Extract Stabilization Facts
+
+When a Canon camera or lens source discusses image stabilization, capture the applicable facts as structured data in `data/stabilization_reference.yaml`; do not leave them only in prose notes. Record:
+
+- whether optical IS is present or absent;
+- whether the lens has a physical Image Stabilizer On/Off switch;
+- whether the lens has a physical Image Stabilizer mode selector;
+- only the IS modes Canon documents for that lens;
+- Canon's stated purpose for every documented mode;
+- whether normal stabilization is controlled from the lens or from `IS (Image Stabilizer) mode` in the camera menu;
+- conditions that make the camera-menu IS choice unavailable or different;
+- whether Canon documents coordinated lens optical IS and camera in-body stabilization;
+- lens-specific firmware, tripod, Bulb, focusing-distance, or other exceptions; and
+- the authoritative Canon source title and HTTPS URL.
+
+Use explicit booleans for capability and physical-switch facts. Omit `is_modes` when a lens has no selectable mode switch, and never infer Mode 1 / 2 / 3 merely because another Canon lens provides them. For the EOS R5 camera record, retain the exact Canon label `IS (Image Stabilizer) mode` and mark its Shooting-menu page number as variable rather than recording only a numbered Shooting tab.
+
+The ordinary guide extractor continues to produce baseline/profile candidates. Stabilization capability facts are reference data, not profile overrides, and must be reviewed against the Canon source before they are added to the structured stabilization reference.
+
 ## Firmware Changes
 
 When camera firmware changes settings, menus, terminology, or behavior:

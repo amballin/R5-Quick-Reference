@@ -48,9 +48,20 @@ Manifest `required_topics` describe expected subject coverage. Topics are valida
 - Internal heading targets use sufficient scroll offset to remain visible below the sticky Camera Settings header.
 - Preserve explicitly authored HTTPS links to authoritative external references in standalone appendix HTML, the published index, and the offline/PWA bundle. Open them separately with `target="_blank"` and `rel="noopener noreferrer"`; do not treat them as internal Back or return destinations.
 
+## Structured Stabilization Reference
+
+- `data/stabilization_reference.yaml` is the structured source for normal EOS R5 stabilization control and per-lens stabilization capabilities used by the Lens Capabilities appendix.
+- Lens records distinguish optical IS presence, physical Image Stabilizer On/Off and mode switches, supported modes and their Canon-stated purposes, control location, camera interaction, lens-specific exceptions, and Canon sources.
+- Fields that do not apply remain absent where practical. In particular, a lens without a physical mode selector does not carry an `is_modes` list.
+- Lens Capabilities Markdown uses a stable lens ID marker where the appendix renderer inserts the corresponding generated stabilization table. Rendering shows only modes supported by that lens.
+- Camera guidance retains Canon's exact `IS (Image Stabilizer) mode` label and treats the Shooting-menu page number as conditional rather than fixed.
+- Structured stabilization facts remain explanatory appendix data. They do not alter the baseline-plus-overrides profile schema or collapse the separate profile concepts of stabilization mode, IBIS, and Lens IS.
+
 ## Enforcement and Evidence
 
 - `50 Field Guide/required_appendices.yaml` is the machine-readable appendix inventory, relationship map, required-section list, topic metadata, exceptions, and release selection.
+- `data/stabilization_reference.yaml` is the machine-readable source for generated lens stabilization controls and normal EOS R5 IS menu behavior.
 - `80 Build/validators/appendix_validator.py` checks manifest shape, unique IDs, files, headings, profile references, related appendix references, and strict topics.
+- `80 Build/validators/stabilization_validator.py` checks conditional stabilization fields, lens marker coverage, Canon-source presence, exact camera-menu terminology, and contradictory switch/mode claims.
 - `80 Build/appendix_renderer.py` implements appendix rendering.
 - `80 Build/validators/output_validator.py`, `pwa_validator.py`, and relevant build validation check generated/offline integration.

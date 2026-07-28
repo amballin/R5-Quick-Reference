@@ -44,6 +44,7 @@ def render_appendices(paths, include_pdf=False):
                 continue
             title = entry.get("title") or source.stem
             markdown = source.read_text(encoding="utf-8", errors="replace")
+            markdown = _inject_stabilization_references(markdown, paths)
             html_path = html_stage_dir / f"{source.stem}.html"
             final_html_path = html_dir / html_path.name
             published_html_path = paths.merged_build_output_dir / "appendices" / html_path.name
@@ -75,6 +76,64 @@ def render_appendices(paths, include_pdf=False):
     search_path.write_text(json.dumps(search_entries, indent=2), encoding="utf-8")
     generated["Search"] = 1
     return generated
+
+
+def _inject_stabilization_references(markdown, paths):
+    marker_pattern = re.compile(r"<!--\s*STABILIZATION_REFERENCE:\s*([a-z0-9_]+)\s*-->")
+    if not marker_pattern.search(markdown):
+        return markdown
+    data_path = paths.root / "data" / "stabilization_reference.yaml"
+    data = load_yaml_checked(data_path) or {}
+    lenses = {
+        lens.get("id"): lens
+        for lens in data.get("lenses", []) or []
+        if isinstance(lens, dict) and lens.get("id")
+    }
+
+    def replace(match):
+        lens_id = match.group(1)
+        lens = lenses.get(lens_id)
+        if not lens:
+            raise ValueError(f"Unknown stabilization reference lens id: {lens_id}")
+        return _stabilization_reference_markdown(lens)
+
+    return marker_pattern.sub(replace, markdown)
+
+
+def _stabilization_reference_markdown(lens):
+    def cell(value):
+        return str(value).replace("|", r"\|").replace("\n", " ").strip()
+
+    optical_is = lens.get("optical_is") is True
+    on_off_switch = lens.get("is_on_off_switch") is True
+    mode_switch = lens.get("is_mode_switch") is True
+    modes = lens.get("is_modes", []) or []
+    rows = [
+        ("Optical IS", "Yes" if optical_is else "No"),
+        ("IS switch", "On / Off" if on_off_switch else "Not present"),
+        (
+            "IS mode switch",
+            " / ".join(str(mode.get("value")) for mode in modes) if mode_switch else "Not present",
+        ),
+        ("Control", lens.get("control_method", "Not documented")),
+    ]
+    for mode in modes:
+        rows.append((f"Mode {mode.get('value')}", mode.get("purpose")))
+    rows.append(("Camera interaction", lens.get("camera_interaction", "Not documented")))
+    for exception in lens.get("exceptions", []) or []:
+        rows.append(("Canon-specific note", exception))
+    sources = lens.get("sources", []) or []
+    source_links = "; ".join(f"[{source.get('title')}]({source.get('url')})" for source in sources)
+    rows.append(("Canon sources", source_links))
+
+    lines = [
+        f"### Image Stabilization Controls — {lens.get('name')}",
+        "",
+        "| Control | Documented behavior |",
+        "| --- | --- |",
+    ]
+    lines.extend(f"| **{cell(label)}** | {cell(value)} |" for label, value in rows)
+    return "\n".join(lines)
 
 
 def _site_home_url(output_path, site_root):
