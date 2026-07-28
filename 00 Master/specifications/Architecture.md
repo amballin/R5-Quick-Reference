@@ -11,6 +11,7 @@ This specification defines the system boundaries and ownership of data, content,
 - Do not treat approved targets, historical screenshots, inferred icon meanings, or recommendations as proof of the current camera configuration.
 - Explain the rationale and obtain explicit project-owner approval before changing an established architecture.
 - Present proposed changes and affected files for review before modifying the reference.
+- For each new change task, present a clear recommendation, rationale, and affected files, then request approval as a separate explicit question. Once approved, treat that recommended scope as authorized without requiring the project owner to repeat it. Read-only questions and status checks do not require change approval.
 - Shared behavior and shared camera settings belong in `00 Master/baseline.yaml`.
 - Subject profiles inherit the baseline and contain only necessary overrides.
 - The build resolves baseline and profile data before rendering.

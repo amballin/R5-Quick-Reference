@@ -27,6 +27,14 @@ class ProjectPaths:
     def baseline_file(self):
         return self.root / "00 Master" / "baseline.yaml"
 
+    @property
+    def card_layout_file(self):
+        return self.root / "00 Master" / "card_layout.yaml"
+
+    @property
+    def setting_access_file(self):
+        return self.root / "00 Master" / "setting_access.yaml"
+
     def profile_file(self, profile_name):
         return self.root / "10 Profiles" / f"{profile_name}.yaml"
 
@@ -73,6 +81,10 @@ class ProjectPaths:
     @property
     def reports_output_dir(self):
         return self.output_dir / "reports"
+
+    @property
+    def subject_settings_summary_file(self):
+        return self.reports_output_dir / "Subject Settings Summary.xlsx"
 
     @property
     def field_guide_pdf_output_dir(self):

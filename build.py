@@ -30,6 +30,7 @@ from publish_metadata import (
     next_publish_metadata,
     write_publish_metadata_atomic,
 )
+from subject_settings_summary import generate_subject_settings_summary, remove_subject_settings_summary
 
 
 PAGES_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__")
@@ -43,6 +44,11 @@ def parse_args():
     parser.add_argument("--root", default=".")
     parser.add_argument("--png", action="store_true", help="Also generate and publish fixed PNG card exports. Off by default.")
     parser.add_argument("--pdf", action="store_true", help="Also generate card and appendix PDFs. Off by default.")
+    parser.add_argument(
+        "--settings-summary",
+        action="store_true",
+        help="Also generate the sortable Excel summary of all subject-profile settings. Off by default.",
+    )
     parser.add_argument("--publish", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
 
@@ -122,6 +128,8 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/offline_index.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
+        "- `80 Build/subject_settings_summary.py`",
+        "- `00 Master/setting_access.yaml`",
         "",
         "## Files Created",
         "",
@@ -130,6 +138,8 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/output_renderer.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
+        "- `80 Build/render_settings_summary.mjs`",
+        "- `80 Build/validators/setting_access_validator.py`",
         f"- `{paths.merged_output_dir}`",
         f"- `{paths.html_output_dir}`",
         f"- `{paths.png_output_dir}`",
@@ -230,8 +240,11 @@ def main():
         if os.environ.get("PRS_PUBLISH_AUTHORIZED") != "1":
             print("Publish-mode builds must be run through ./80 Build/scripts/publish.sh", file=sys.stderr)
             return 2
-        if args.command or args.target or args.profile or args.pdf:
-            print("--publish cannot be combined with a profile, build target, or --pdf.", file=sys.stderr)
+        if args.command or args.target or args.profile or args.pdf or args.settings_summary:
+            print(
+                "--publish cannot be combined with a profile, build target, --pdf, or --settings-summary.",
+                file=sys.stderr,
+            )
             return 2
         return publish(paths, metadata_path, current_metadata, start, include_png=args.png)
     publish_display = display_publish_metadata(current_metadata)
@@ -241,6 +254,7 @@ def main():
             requested_profile=args.profile,
             include_png=args.png,
             include_pdf=args.pdf,
+            include_settings_summary=args.settings_summary,
             keep_website=args.target == "website",
             publish_display=publish_display,
         )
@@ -258,12 +272,16 @@ def main():
         print("Unknown build target. Use: python build.py build website or python build.py build pages")
         return 2
     requested_profile = args.command or args.profile
+    if args.settings_summary and requested_profile is not None:
+        print("--settings-summary requires a full build and cannot be combined with a single profile.", file=sys.stderr)
+        return 2
     status = build_site(
         paths,
         requested_profile=requested_profile,
         start=start,
         include_png=args.png,
         include_pdf=args.pdf,
+        include_settings_summary=args.settings_summary,
         publish_display=publish_display,
     )
     if status == 0 and requested_profile is None:
@@ -273,7 +291,16 @@ def main():
     return status
 
 
-def build_site(paths, requested_profile=None, start=None, include_png=False, include_pdf=False, keep_website=False, publish_display=None):
+def build_site(
+    paths,
+    requested_profile=None,
+    start=None,
+    include_png=False,
+    include_pdf=False,
+    include_settings_summary=False,
+    keep_website=False,
+    publish_display=None,
+):
     start = start or time.perf_counter()
     validation_results = validate_project(paths)
     validation_errors = [result for result in validation_results if result[0] == "error"]
@@ -291,6 +318,7 @@ def build_site(paths, requested_profile=None, start=None, include_png=False, inc
         include_pdf=include_pdf,
         keep_website=keep_website,
         full_build=requested_profile is None,
+        include_settings_summary=include_settings_summary,
     )
     profile_names = profile_names_to_build(paths, requested_profile)
     appendix_generated = render_appendices(paths, include_pdf=include_pdf)
@@ -303,6 +331,19 @@ def build_site(paths, requested_profile=None, start=None, include_png=False, inc
     generated.update(appendix_generated)
     generated.update(render_offline_index(paths, publish_display, include_png=include_png))
     generated.update(generate_pwa(paths))
+    if include_settings_summary:
+        try:
+            summary_generated = generate_subject_settings_summary(paths)
+            generated["XLSX"] = summary_generated["XLSX"]
+        except Exception as exc:
+            failures.append(
+                {
+                    "profile": "Subject Settings Summary",
+                    "error": str(exc),
+                    "traceback": traceback.format_exc(),
+                }
+            )
+            generated["XLSX"] = 0
     settle_clean_generated_roots(paths.output_dir, paths.merged_build_output_dir)
     pwa_validation_results = validate_merged_build_pwa(paths)
     validation_results.extend(pwa_validation_results)
@@ -407,7 +448,14 @@ def _mirror_paths(root):
     }
 
 
-def clean_generated_leftovers(paths, include_png=False, include_pdf=False, keep_website=False, full_build=False):
+def clean_generated_leftovers(
+    paths,
+    include_png=False,
+    include_pdf=False,
+    include_settings_summary=False,
+    keep_website=False,
+    full_build=False,
+):
     obsolete_generated_roots = [
         paths.root / "Website",
         paths.root / "30 Cards" / "HTML",
@@ -464,6 +512,9 @@ def clean_generated_leftovers(paths, include_png=False, include_pdf=False, keep_
         for png_dir in [paths.png_output_dir, paths.phone_png_output_dir]:
             if png_dir.exists():
                 shutil.rmtree(png_dir)
+
+    if full_build and not include_settings_summary:
+        remove_subject_settings_summary(paths)
 
     if include_pdf:
         return

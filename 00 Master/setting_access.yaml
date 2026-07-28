@@ -1,0 +1,61 @@
+setting_access:
+  exposure.mode:
+    best_access: MODE button + Main Dial
+    menu_location: Direct control; not normally changed through Q
+    rapid_order: 10
+  exposure.metering:
+    best_access: Q screen
+    menu_location: Shooting menu > Metering mode
+    rapid_order: 100
+  shutter.target:
+    best_access: Main Dial / Fv exposure dials
+    menu_location: Direct control; Q is mode-dependent
+    rapid_order: 20
+  lens.aperture.target:
+    best_access: Main Dial / Fv exposure dials
+    menu_location: Direct control; Q is mode-dependent
+    rapid_order: 30
+  exposure.iso.mode:
+    best_access: Q screen
+    menu_location: Shooting menu > ISO speed settings
+    rapid_order: 110
+  exposure.exposure_compensation:
+    best_access: Rear dial / Fv exposure dials
+    menu_location: Direct control; Q is the alternative
+    rapid_order: 120
+  autofocus.operation:
+    best_access: Q screen
+    menu_location: AF1 > AF operation
+    rapid_order: 130
+  autofocus.method:
+    best_access: AF Point Selection button + Main Dial
+    menu_location: AF1 > AF method; Q is the alternative
+    rapid_order: 140
+  autofocus.eye_detection:
+    best_access: SET button
+    menu_location: AF1 > Eye detection; shortcut works with a compatible AF method
+    rapid_order: 150
+  drive.mode:
+    best_access: Q screen
+    menu_location: Shooting menu > Drive mode
+    rapid_order: 160
+  shutter.type:
+    best_access: SWITCH My Menu > Shutter mode
+    menu_location: Shooting 6 > Shutter mode
+    rapid_order: 210
+  autofocus.subject_detection:
+    best_access: SWITCH My Menu > Subject to detect
+    menu_location: AF1 > Subject to detect
+    rapid_order: 220
+  stabilization.image_stabilization.mode:
+    best_access: SWITCH My Menu > IS (Image Stabilizer) mode
+    menu_location: Shooting menu > IS (Image Stabilizer) mode; page varies by equipment
+    rapid_order: 230
+  image.focus_bracketing:
+    best_access: SWITCH My Menu > Focus bracketing
+    menu_location: Shooting 5 > Focus bracketing
+    rapid_order: 240
+  stabilization.ibis:
+    best_access: Lens IS switch; camera IS menu when available
+    menu_location: Shooting menu > IS (Image Stabilizer) mode; lens mode switch when fitted
+    rapid_order: 40

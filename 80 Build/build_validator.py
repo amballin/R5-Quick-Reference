@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import yaml
 
 from utilities import flatten
+from validators.setting_access_validator import validate as validate_setting_access
 
 
 def discover_profiles(paths):
@@ -43,6 +44,8 @@ def validate_project(paths):
     results.extend(validate_assets(paths))
     results.extend(validate_canon_official_modes(paths))
     results.extend(validate_required_appendices(paths))
+    for issue in validate_setting_access(paths.root):
+        results.append((issue.level, "setting_access", f"{issue.path}: {issue.message}"))
     return results
 
 

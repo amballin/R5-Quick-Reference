@@ -22,6 +22,7 @@ Proposed, Rejected, and Superseded decisions are non-binding. Conversation histo
 - Use the baseline + overrides architecture. Profiles inherit from the baseline, contain only differences from it, and never duplicate baseline settings.
 - Clearly separate verified Canon capabilities, owner-confirmed current configuration, approved targets pending physical verification, project recommendations, and unresolved items. Never present an approved target, recommendation, or historical screenshot as verified current state.
 - Present proposed reference or architectural changes, affected files, and intended changes for project-owner review before creating backups or modifying project files.
+- Before modifying project files for each new change task, provide a clear recommendation with rationale and affected files, then ask a separate explicit approval question. Approval authorizes the recommended scope; the project owner does not need to restate it. Read-only questions and status checks do not require change approval.
 - Keep rendering decisions in the build system, not profile YAML. Keep educational material in appendices rather than profiles.
 - Preserve backward compatibility whenever practical. Identify conflicts instead of silently replacing established constraints.
 - Keep generated files only in documented repository or machine-local output locations and source assets only in asset locations. Reuse existing assets whenever practical.

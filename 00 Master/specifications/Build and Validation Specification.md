@@ -8,6 +8,7 @@
 - Development and test threads must never run the publishing script.
 - `python3 "80 Build/build.py" --png` additionally creates fixed PNG cards and includes PNG actions in the generated site. `./80 Build/scripts/publish.sh --png` explicitly publishes them; the normal publish command omits them.
 - `python3 "80 Build/build.py" --pdf` additionally creates current card and appendix PDFs.
+- `python3 "80 Build/build.py" --settings-summary` additionally creates a sortable Excel matrix of all authored subject profiles in `Build Output/reports/Subject Settings Summary.xlsx`. It requires a full build, remains machine-local, and is not published.
 - `python3 "80 Build/build.py" <profile>` preserves the existing single-profile workflow; run a full build before publishing.
 - `python3 "80 Build/build.py" build website` preserves optional web-host staging behavior; `build pages` refreshes the Pages mirror.
 - Do not place rendering decisions in profile YAML or change build logic as a side effect of documentation/content work.
@@ -19,6 +20,7 @@
 - `docs/` is an exact publishing mirror for GitHub Pages configured as `main / docs`.
 - The published index orders its sections by expected frequency of use: **Subjects**, **Field Guides**, **Camera Setup & Controls**, then **Deep Dive**.
 - `Build Output/website/` is optional staging for non-GitHub web hosts.
+- `Build Output/reports/Subject Settings Summary.xlsx` is an optional machine-local report. Its single worksheet starts in canonical card order with separate Setting, Best or Quick Access, Menu Location, and baseline-derived Default Settings columns followed by the authored subject profiles. Metering is included even though the profiles inherit Evaluative from the baseline. Separate numeric sort columns provide canonical card order and rapid camera-setup order.
 - Timestamped pre-change recovery backups belong under the local workspace's `Backups/` folder, not in the repository.
 - Card and field-guide PDFs are opt-in.
 - Profile and appendix release flags independently control inclusion in the offline bundle as defined by their specifications.
@@ -42,6 +44,7 @@ Run `python3 "80 Build/validator.py"` after relevant changes. It orchestrates va
 - YAML parseability and duplicate keys (`yaml_validator.py`);
 - baseline shape (`baseline_validator.py`);
 - card-layout structure and required-setting alignment (`card_layout_validator.py`);
+- complete, unique access methods and rapid-setup ordering for every subject-summary setting (`setting_access_validator.py`);
 - governing-document presence, local links, stale retired references, and decision statuses (`governance_validator.py`);
 - agreement between the two custom-control records, valid five-class control statuses, canonical C1–C3 profile mappings, and canonical setting terminology (`control_validator.py`);
 - appendix manifest/content relationships (`appendix_validator.py`);
@@ -63,6 +66,7 @@ Run the dedicated `validators/validate_canon_r5_icons.py` when Canon icon refere
 | `00 Master/baseline.yaml` | Shared defaults and camera/workflow context | `baseline_validator.py`, `profile_validator.py`, `yaml_validator.py` |
 | `00 Master/schema.yaml` | Intended profile/YAML field structure | `yaml_validator.py`; parts are enforced directly by `profile_validator.py` |
 | `00 Master/card_layout.yaml` | Card-row display order plus always-shown rows and labels | `card_layout_validator.py`, `yaml_validator.py`; consumed by rendering/build code, with output review |
+| `00 Master/setting_access.yaml` | Best access method, menu location, and rapid-setup order for subject-summary settings | `setting_access_validator.py`, `yaml_validator.py`; consumed by the optional Excel summary build |
 | `controls.yaml` and `data/canon_r5_custom_controls_current.yaml` | Verified current controls, approved targets, and canonical C1–C3 profile mappings | `control_validator.py`, `yaml_validator.py` |
 | `50 Field Guide/required_appendices.yaml` | Required appendices, sections, relationships, topics, exceptions, release flags | `appendix_validator.py`, rendering/build and PWA validation |
 

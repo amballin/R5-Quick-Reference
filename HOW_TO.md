@@ -51,11 +51,21 @@ python3 "80 Build/build.py" --png
 
 They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/`.
 
+## Optional Subject Settings Excel Summary
+
+Generate the sortable matrix of all authored subject profiles with:
+
+```bash
+python3 "80 Build/build.py" --settings-summary
+```
+
+The full build writes `Build Output/reports/Subject Settings Summary.xlsx`. The worksheet starts with **Setting**, **Best or Quick Access**, **Menu Location**, and baseline-derived **Default Settings**, followed by every subject profile. It includes Metering even though subject profiles inherit the common Evaluative default. Sort **Rapid Setup Order** ascending to group rows for efficient camera configuration. Sort **Card Order** ascending to restore the canonical card sequence for profile comparison. The workbook is machine-local and is never copied to `docs/` or published.
+
 ## Current Folder Structure
 
 | Folder | Purpose | Edit by hand? |
 | --- | --- | --- |
-| `00 Master/` | Baseline camera settings, schema, layout rules, and decision log. | Yes |
+| `00 Master/` | Baseline camera settings, schema, layout/access rules, and decision log. | Yes |
 | `10 Profiles/` | Subject/profile YAML files such as Wildlife, Sports, Landscape. | Yes |
 | `20 Templates/` | `card.html` controls responsive HTML card layout and styling. | Yes, carefully |
 | `40 Assets/` | Legacy colors and fonts only; old Canon icon cheatsheet images moved to `60 Assets/icons/cheatsheet/`. | Rarely |

@@ -56,6 +56,14 @@ To create fresh PDFs only when you actually need them:
 python3 "80 Build/build.py" --pdf
 ```
 
+To create the sortable Excel matrix of every authored subject profile:
+
+```bash
+python3 "80 Build/build.py" --settings-summary
+```
+
+The workbook is written to the machine-local `Build Output/reports/` folder. Sort its **Rapid Setup Order** column ascending for camera configuration, then sort **Card Order** ascending to restore the reference-card sequence. It is not copied into `docs/` or published.
+
 ## Publish the website
 
 ```bash
@@ -111,6 +119,7 @@ Generated folders:
 - `../<repository folder name> Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
 - `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub web hosts.
 - `../<repository folder name> Local/Build Output/reports/`: generated build and validation reports.
+- `../<repository folder name> Local/Build Output/reports/Subject Settings Summary.xlsx`: optional sortable subject-profile matrix from `--settings-summary`.
 - `../<repository folder name> Local/Backups/`: timestamped pre-change recovery snapshots.
 - `docs/`: generated GitHub Pages publish folder. GitHub serves this folder.
 

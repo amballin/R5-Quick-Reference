@@ -17,6 +17,7 @@ REQUIRED_FILES = [
     "00 Master/baseline.yaml",
     "00 Master/schema.yaml",
     "00 Master/card_layout.yaml",
+    "00 Master/setting_access.yaml",
     "20 Templates/card.html",
     "60 Assets/icon-map.yaml",
     "build.py",

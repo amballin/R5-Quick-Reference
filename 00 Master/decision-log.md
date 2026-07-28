@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Recommendation-First Change Approval
+
+**Status:** Accepted
+**Date:** 2026-07-28
+
+For every new task that would modify project files, first give the project owner a clear recommendation with its rationale and affected files. Ask for approval as a separate explicit question. The owner's approval authorizes the recommended scope, so the owner does not need to restate the recommendation. Read-only questions and status checks do not require change approval.
+
 ## Green-Star SWITCH My Menu Starting Tab
 
 **Status:** Accepted
