@@ -411,7 +411,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "lens-capabilities",
-    "text": "Use this guide as a quick lens-by-lens setup check before choosing a profile card. Lens switches can override or shape camera behavior, especially stabilization, manual focus, extenders, and adapted EF lenses.\nImage stabilization reduces blur caused by camera movement; it does not freeze a moving subject. Shutter speed still controls subject-motion blur. Lens IS moves optical elements, IBIS moves the R5 sensor, and compatible combinations may coordinate them automatically. In the field, choose the available lens/body mode for the subject and turn stabilization off for a solid, locked tripod when the profile calls for it."
+    "text": "Use this guide as a quick lens-by-lens setup check before choosing a profile card. Lens switches can override or shape camera behavior, especially stabilization, manual focus, extenders, and adapted EF lenses.\nImage stabilization reduces blur caused by camera movement; it does not freeze a moving subject. Shutter speed still controls subject-motion blur. Lens IS moves optical elements, IBIS moves the R5 sensor, and compatible combinations may coordinate them automatically. In the field, choose the available lens/body mode for the subject and turn stabilization off for a solid, locked tripod when the profile calls for it.\nFor normal stabilization, first look for physical controls on the attached lens. If it has an IS On/Off switch, use that switch; the EOS R5's camera-menu IS choice may not appear. If the lens has no optical IS switch, use **MENU \u2192 Shooting menu \u2192 IS (Image Stabilizer) mode** when available. Lens IS Mode 1 / 2 / 3 is selected only on lenses that provide a physical mode selector."
   },
   {
     "appendix_id": "lens_settings",
@@ -447,7 +447,16 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "switches-and-settings",
-    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for wildlife/action; MF for static tripod scenes if focus must not move  \n  Stabilizer ON/OFF   Turns lens IS on or off   On handheld, monopod, or gimbal; Off on a solid locked tripod  \n  Stabilizer Mode 1   General stabilization   Perched birds, resting wildlife, travel telephoto, static subjects  \n  Stabilizer Mode 2   Panning stabilization   Birds, aircraft, cyclists, motorsports, or runners moving smoothly across the frame  \n  Stabilizer Mode 3   Exposure-only stabilization   Birds in flight, erratic wildlife, sports, and action that changes direction  \n  Focus distance limiter   Restricts AF range to reduce hunting   Use the longer-distance range for distant wildlife/action; use full range for close subjects  \n  Zoom touch adjustment ring   Changes zoom-ring resistance   Looser for fast reframing; tighter for carrying or slower deliberate zooming  \nThis guidance is for the IS II version you listed. Treat Mode 1 as the static-subject default, Mode 2 as the panning mode, and Mode 3 as the fast-action mode."
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for wildlife/action; MF for static tripod scenes if focus must not move  \n  Focus distance limiter   Restricts AF range to reduce hunting   Use the longer-distance range for distant wildlife/action; use full range for close subjects  \n  Zoom touch adjustment ring   Changes zoom-ring resistance   Looser for fast reframing; tighter for carrying or slower deliberate zooming  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon EF 100-400mm f/4.5-5.6L IS II USM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   Yes  \n  **IS switch**   On / Off  \n  **IS mode switch**   1 / 2 / 3  \n  **Control**   Lens switches  \n  **Mode 1**   General-purpose stabilization; corrects vibration in all directions and is mainly for still subjects.  \n  **Mode 2**   Panning stabilization; corrects shake perpendicular to the panning direction.  \n  **Mode 3**   Stabilization applied primarily during exposure for fast, irregularly moving subjects.  \n  **Camera interaction**   Set the lens Stabilizer switch On; lens optical IS and EOS R5 in-body stabilization coordinate automatically.  \n  **Canon-specific note**   Canon directs users to set the Stabilizer switch Off for Bulb exposures because IS may introduce errors.  \n  **Canon sources**   Canon EF100-400mm f/4.5-5.6L IS II USM Instructions; Canon EOS R5 Advanced User Guide \u2014 Image Stabilizer (IS Mode)  \nThis guidance is for the IS II version you listed. Treat Mode 1 as the static-subject default, Mode 2 as the panning mode, and Mode 3 as the fast-action mode."
   },
   {
     "appendix_id": "lens_settings",
@@ -483,7 +492,16 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "switches-and-settings",
-    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for general close work; MF for controlled macro, waterdrops, and stacking  \n  Stabilizer ON/OFF   Turns Hybrid IS on or off   On handheld; Off on a locked tripod  \n  Focus distance limiter   Restricts AF range   Use the closest range for macro, longer range for portraits/general work, full range when unsure  "
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for general close work; MF for controlled macro, waterdrops, and stacking  \n  Focus distance limiter   Restricts AF range   Use the closest range for macro, longer range for portraits/general work, full range when unsure  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon EF 100mm f/2.8L Macro IS USM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-ef-100mm-f-2-8l-macro-is-usm",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   Yes  \n  **IS switch**   On / Off  \n  **IS mode switch**   Not present  \n  **Control**   Lens Stabilizer On/Off switch  \n  **Camera interaction**   Set the lens Stabilizer switch On; the lens Hybrid IS and EOS R5 in-body stabilization coordinate automatically.  \n  **Canon-specific note**   This lens has Hybrid IS but no selectable Mode 1 / 2 / 3 switch.  \n  **Canon-specific note**   Canon notes that stabilization effectiveness is lower at shorter focusing distances.  \n  **Canon sources**   Canon EF100mm f/2.8L Macro IS USM Instructions; Canon EOS R5 Advanced User Guide \u2014 Image Stabilizer (IS Mode)  "
   },
   {
     "appendix_id": "lens_settings",
@@ -519,7 +537,16 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "switches-and-settings",
-    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for normal shooting; MF for deliberate static scenes or prefocused compositions  \n  Focus ring   Allows manual focus adjustment   Use gently; avoid bumping it while carrying because this older micro-USM design is less rugged than modern ring-USM/L lenses  \n  Image stabilization   Not available on this lens   Use faster shutter speed, higher ISO, or tripod when light is low  "
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF   Chooses autofocus or manual focus   AF for normal shooting; MF for deliberate static scenes or prefocused compositions  \n  Focus ring   Allows manual focus adjustment   Use gently; avoid bumping it while carrying because this older micro-USM design is less rugged than modern ring-USM/L lenses  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon EF 50mm f/1.4 USM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-ef-50mm-f-1-4-usm",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   No  \n  **IS switch**   Not present  \n  **IS mode switch**   Not present  \n  **Control**   Camera menu for normal in-body stabilization  \n  **Camera interaction**   Because the lens has no optical IS switch, use MENU \u2192 Shooting menu \u2192 IS (Image Stabilizer) mode when the option is available.  \n  **Canon sources**   Canon EF 50mm f/1.4 USM Support and Specifications; Canon EOS R5 Advanced User Guide \u2014 Image Stabilizer (IS Mode)  "
   },
   {
     "appendix_id": "lens_settings",
@@ -591,7 +618,16 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "controls-and-settings",
-    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF / focus mode   Chooses autofocus or manual focus through camera/lens focus settings   AF for almost everything; MF only for deliberate static scenes  \n  Stabilizer ON/OFF   Turns lens IS on or off   On handheld; Off on solid tripod long exposures  \n  Focus/control ring   Acts as manual focus ring or configurable control ring depending on lens/camera settings   Use control-ring behavior for exposure compensation/ISO when you want quick field control; use focus behavior for manual focus  "
+    "text": "  Control   What it does   Field setting  \n  ---   ---   ---  \n  AF/MF / focus mode   Chooses autofocus or manual focus through camera/lens focus settings   AF for almost everything; MF only for deliberate static scenes  \n  Focus/control ring   Acts as manual focus ring or configurable control ring depending on lens/camera settings   Use control-ring behavior for exposure compensation/ISO when you want quick field control; use focus behavior for manual focus  "
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon RF 24-240mm F4-6.3 IS USM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-rf-24-240mm-f4-6-3-is-usm",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   Yes  \n  **IS switch**   On / Off  \n  **IS mode switch**   Not present  \n  **Control**   Lens Image Stabilizer On/Off switch; stabilization behavior is selected automatically  \n  **Camera interaction**   Set the lens Image Stabilizer switch On; lens optical IS and camera in-body stabilization work in combination.  \n  **Canon-specific note**   Canon states that combined operation with in-body Image Stabilizer requires lens firmware 1.0.6 or later.  \n  **Canon-specific note**   The lens automatically provides stabilization appropriate for still subjects and panning; it has no physical Mode 1 / 2 / 3 switch.  \n  **Canon sources**   Canon RF24-240mm F4-6.3 IS USM Instructions; Canon EOS R5 Advanced User Guide \u2014 Image Stabilizer (IS Mode)  "
   },
   {
     "appendix_id": "lens_settings",
@@ -915,7 +951,7 @@
     "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "index",
-    "text": "- What it Does\n- How It Works\n- M-Fn: custom-mode switching\n- AF-ON: intelligent acquisition\n- AE Lock: precision focus\n- SET: eye-priority toggle\n- Why AF Operation remains current\n- DOF: One-Shot and Servo switching\n- Joystick: position and recenter\n- Physical test: joystick straight press\n- Multi-function Lock: when controls stop responding\n- AF Point Selection: exception methods\n- Approved Control Layout\n- Design Philosophy\n- Subject Detection Workflow\n- C1-C3 Registration Reference\n- Registration sequence\n- C1 \u2014 General Wildlife\n- C2 \u2014 Birds in Flight / Action\n- What C1 and C2 should normally keep the same\n- C3 \u2014 Landscape\n- Protect the registered modes: disable Auto update\n- Save alternate complete configurations to a card\n- Other AF Methods\n- Advantages\n- Disadvantages\n- Recommended Uses\n- When Not to Use\n- Decision Guide\n- Recommended Settings by Profile\n- Canon-Specific Notes\n- Tips\n- Common Mistakes\n- Cross References"
+    "text": "- What it Does\n- How It Works\n- M-Fn: custom-mode switching\n- AF-ON: intelligent acquisition\n- AE Lock: precision focus\n- SET: eye-priority toggle\n- Why AF Operation remains current\n- DOF: One-Shot and Servo switching\n- Joystick: position and recenter\n- Physical test: joystick straight press\n- Multi-function Lock: when controls stop responding\n- AF Point Selection: exception methods\n- Approved Control Layout\n- Design Philosophy\n- Subject Detection Workflow\n- C1-C3 Registration Reference\n- Registration sequence\n- C1 \u2014 General Wildlife\n- C2 \u2014 Birds in Flight / Action\n- What C1 and C2 should normally keep the same\n- C3 \u2014 Landscape\n- Green-star My Menu: SWITCH\n- Other My Menu tabs to consider\n- Protect the registered modes: disable Auto update\n- Save alternate complete configurations to a card\n- Other AF Methods\n- Advantages\n- Disadvantages\n- Recommended Uses\n- When Not to Use\n- Decision Guide\n- Recommended Settings by Profile\n- Canon-Specific Notes\n- Tips\n- Common Mistakes\n- Cross References"
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -1105,6 +1141,24 @@
     "html": "appendices/Back-Button AF & Custom Button Strategies.html",
     "anchor": "c3-landscape",
     "text": "C3 implements the Landscape card. Landscape deserves the third instant-recall position because it changes the complete operating state rather than only the detected subject:\n- Av exposure\n- Fixed ISO 100\n- f/9 registered starting aperture\n- One-Shot AF\n- Single Shot\n- Mode 1 and stabilization on as the handheld starting state\n- Tripod, stabilization, and near-to-far sharpness checks\nUse AE Lock for normal deliberate 1-Point placement. AF-ON remains available when subject-aware acquisition is useful, and it still maintains C3's One-Shot AF unless the DOF button changes the operation.\nFor tripod work, turn off stabilization after recalling C3. For a scene that needs greater near-to-far depth of field, enable Focus Bracketing situationally rather than treating a very small aperture as the permanent registration.\nIn the normal C3LANDSC configuration, People does not use a C-mode slot. For an occasional people or family shoot, start with **C1**, because it already provides Fv, Auto ISO, Servo AF, Eye Detection, and general handheld stabilization. If people photography will dominate the session, load the alternate C3PEOPLE complete configuration described above instead. Otherwise, make these changes from C1:\n  Setting   Change for people  \n --- --- \n  Subject Detection   Change Animals to People  \n  Drive   Change High Speed Continuous to Low Speed Continuous  \n  Shutter target   Use 1/200-1/320 for portraits or 1/500+ for active people  \n  Aperture target   Use f/1.8-f/4 for one person or f/4-f/8 for a group  \nKeep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people while the normal C3LANDSC configuration is loaded; in that set, C3 recalls the Landscape settings\u2014ISO 100, One-Shot AF, Single Shot, and f/9."
+  },
+  {
+    "appendix_id": "back_button_af_custom_button_strategies",
+    "title": "Custom Controls, Back-Button AF & Dial Strategies",
+    "section": "Green-star My Menu: SWITCH",
+    "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
+    "html": "appendices/Back-Button AF & Custom Button Strategies.html",
+    "anchor": "green-star-my-menu-switch",
+    "text": "Use one green-star My Menu tab named **SWITCH** as the starting menu for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. My Menu items are shortcuts to the camera's real settings; selecting an item opens that setting, and it does not apply a complete profile automatically.\n  Target   Best starting mode   Already close   Remaining changes   SWITCH items used  \n --- --- --- --- --- \n  **People**   **C1 Wildlife**   Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1   Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets   Subject to detect; Shutter mode  \n  **Macro**   **C3 Landscape**   Av, One-Shot AF, Single Shot, EFCS, Mode 1, suitable aperture range   ISO 100 to Auto, 1-Point to Spot AF, enable Focus Bracketing, set f/8   Focus bracketing  \n  **Waterdrops**   **C3 Landscape**   ISO 100, Single Shot, aperture near f/8-f/11   Av to Manual, 1/200 sec., Mechanical, Manual Focus, stabilization Off   Shutter mode; IS (Image Stabilizer) mode  \nConfigure the **SWITCH** tab in this starting order:\n1. **Subject to detect**\n2. **Shutter mode**\n3. **Focus bracketing**\n4. **IS (Image Stabilizer) mode**\n5. **Cropping/aspect ratio**\nLeave the sixth position open until field testing identifies another menu-only need. Cropping/aspect ratio provides a fast way to find and clear a temporary 1.6\u00d7 crop after wildlife or distant-subject work.\nUse Q, the dials, or the AF-point controls for Drive Mode, ISO, shutter speed, aperture, and AF Method when those controls are faster. Keep lens AF/MF and IS switches as physical checks. With **Auto update set.: Disable**, these transition changes must not rewrite the registered C1-C3 starting environments."
+  },
+  {
+    "appendix_id": "back_button_af_custom_button_strategies",
+    "title": "Custom Controls, Back-Button AF & Dial Strategies",
+    "section": "Other My Menu tabs to consider",
+    "source": "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md",
+    "html": "appendices/Back-Button AF & Custom Button Strategies.html",
+    "anchor": "other-my-menu-tabs-to-consider",
+    "text": "The EOS R5 can hold up to five My Menu tabs, but additional tabs should be created only when repeated field use justifies them. The following are evaluation categories, not approved camera configurations:\n  Candidate tab   Purpose   Items to consider  \n --- --- --- \n  **FOCUS**   Macro, focus stacking, and deliberate manual focus   Focus bracketing; MF peaking settings; Focus guide; IS (Image Stabilizer) mode  \n  **FLASH**   Waterdrops, macro flash, and people flash   External Speedlite control; Shutter mode; Expo. simulation; Image review  \n  **LONG**   Landscape, fireworks, and night work   Bulb timer; Interval timer; Long exp. noise reduction; IS (Image Stabilizer) mode; Shutter mode  \n  **FIELD**   Temporary capture conditions that are easy to leave active   Anti-flicker shoot.; Cropping/aspect ratio; Expo. simulation; Image review  \n  **TRANSFER**   In-camera selection and phone or network transfer   Wi-Fi/Bluetooth connection; Protect images; Rating images; Image search conditions  \nConsider these cautions before creating another tab:\n- Do not fill all five tabs merely because they are available. More tabs increase navigation and make the important SWITCH tab less immediate.\n- Do not duplicate SWITCH items on another tab unless repeated use within that workflow clearly saves time.\n- Prefer Q, a dial, a customized button, the AF-point controls, or a physical lens switch whenever it is faster than opening My Menu.\n- Treat conditional items carefully. A menu item may move, disappear, or behave differently with another shooting mode, lens, flash, trigger, or firmware version.\n- Keep destructive or recovery operations such as **Format card**, **Reset camera**, **Clear settings**, and bulk-delete commands out of frequently used field tabs.\n- Use **Menu display: Display from My Menu tab** rather than **Display only My Menu tab** so the full camera menus remain available.\n- Remember that a My Menu shortcut opens the real setting. It does not store a preferred value, apply several changes together, or replace a C1-C3 registration.\n- Recheck the tabs after a firmware update, camera reset, or loading a saved camera-settings file."
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -1374,7 +1428,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "topic-index",
-    "text": "- Field Control Troubleshooting\n- LOCK Displayed or Controls Will Not Change\n- Exposure and Shutter\n- Shooting Modes\n- Metering Mode\n- Shutter Speed\n- Shutter Type\n- Autofocus and Manual Focus\n- Focus Mode\n- AF Operation\n- AF Method\n- Subject Detection\n- Eye Detection\n- Subject Detection and AF Method Combinations\n- AF Tracking Behavior\n- Capture and Timing\n- Cropping / Aspect Ratio\n- Drive Mode\n- Flash\n- Flash Modes and Compatibility\n- Stabilization\n- Image Stabilization Mode\n- IBIS\n- Lens IS\n- Specialized Focus and Long-Exposure Tools\n- Focus Features\n- Focus Bracketing\n- Long Exposure Noise Reduction"
+    "text": "- LOCK Displayed or Controls Will Not Change\n- Exposure and Shutter\n- Shooting Modes\n- Metering Mode\n- Shutter Speed\n- Shutter Type\n- Autofocus and Manual Focus\n- Focus Mode\n- AF Operation\n- AF Method\n- Subject Detection\n- Eye Detection\n- Subject Detection and AF Method Combinations\n- AF Tracking Behavior\n- Capture and Timing\n- Cropping / Aspect Ratio\n- Drive Mode\n- Flash\n- Flash Modes and Compatibility\n- Stabilization\n- Image Stabilization\n- Specialized Focus and Long-Exposure Tools\n- Focus Features\n- Focus Bracketing\n- Long Exposure Noise Reduction"
   },
   {
     "appendix_id": "r5_quick_reference",
@@ -1527,25 +1581,7 @@
     "source": "Appendices/R5 Quick Reference.md",
     "html": "appendices/R5 Quick Reference.html",
     "anchor": "image-stabilization-mode",
-    "text": "Mode 1 is general handheld stabilization. Mode 2 is for panning. Mode 3 is for erratic action and stabilizes mainly during exposure. Off is safest on a solid tripod. Stabilization reduces camera shake; it does not freeze subject motion, which still requires an appropriate shutter speed.\n  Icon   Setting   What it Does  \n --- --- --- \n  !Image Stabilization   Mode 1   General handheld stabilization.  \n  !Image Stabilization   Mode 2   Stabilization for deliberate panning.  \n  !Image Stabilization   Mode 3   Stabilization for erratic action, mainly during exposure.  \n  !Image Stabilization   Off   Best for solid tripod work or profiles where stabilization can cause problems.  \n**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode, or lens IS controls. Mode 2/3 may be lens-switch settings when available.\n**Quick Menu:** Menu/lens control; not usually Q."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
-    "section": "IBIS",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "ibis",
-    "text": "In-body image stabilization moves the camera sensor to reduce shake. It helps handheld work and should usually be off for solid tripod long exposures.\n  Icon   Setting   What it Does  \n --- --- --- \n  !ON   On   Uses in-body sensor movement to reduce camera shake.  \n  !OFF   Off   Prevents sensor stabilization during solid tripod or locked-down work.  \n**Camera Menu:** Shooting 7 > IS (Image Stabilizer) mode.\n**Quick Menu:** Menu only."
-  },
-  {
-    "appendix_id": "r5_quick_reference",
-    "title": "R5 Quick Reference",
-    "section": "Lens IS",
-    "source": "Appendices/R5 Quick Reference.md",
-    "html": "appendices/R5 Quick Reference.html",
-    "anchor": "lens-is",
-    "text": "Lens stabilization moves lens elements to reduce shake. With compatible lenses, Lens IS and IBIS may work together. Turn it off on a solid tripod when the profile calls for locked-down work.\n  Icon   Setting   What it Does  \n --- --- --- \n  !ON   On   Uses lens stabilization to reduce shake, often coordinated with IBIS.  \n  !OFF   Off   Prevents lens stabilization during solid tripod or locked-down work.  \n**Camera Menu:** Lens IS switch; Shooting 7 > IS mode where available.\n**Quick Menu:** Lens switch; not Q."
+    "text": "This is the normal shake-reduction control, not IBIS High Resolution Shot. Stabilization reduces camera shake; it does not freeze subject movement.\n**Camera setting**\nMENU \u2192 Shooting menu \u2192 IS (Image Stabilizer) mode\nUse this for normal body stabilization when the option is available, especially with a lens that has no optical IS switch. The Shooting-menu page number can change with shooting mode, attached lens, firmware, and other camera conditions, so find the exact Canon label rather than a fixed tab number.\n**Lens control**\nIf the attached lens has an Image Stabilizer On/Off switch, use the lens switch. The camera's IS On/Off choice may be unavailable or behave differently while that lens is attached.\n**IS Mode 1 / 2 / 3**\nSelect these with the physical Image Stabilizer mode selector on lenses that provide one:\n- **1 \u2014 General:** general-purpose stabilization.\n- **2 \u2014 Panning:** stabilization for deliberate panning.\n- **3 \u2014 Erratic action:** stabilization applied primarily during exposure, when supported.\nThese lens modes are not normally selected from the EOS R5 camera menu. A lens without a mode switch does not gain Mode 1 / 2 / 3 choices in the camera menu.\n**Interaction**\nWith a compatible lens switched On, lens optical IS and the R5's in-body stabilization coordinate automatically. Treat them as one coordinated system rather than two independent controls. For lens-specific switches, modes, and exceptions, see Lens Capabilities.\n**Solid tripod:** Follow the selected profile and lens-specific Canon guidance; turn stabilization Off for locked tripod or Bulb work when directed."
   },
   {
     "appendix_id": "r5_quick_reference",
