@@ -252,13 +252,16 @@ This default publish omits PNG cards. To deliberately publish the optional PNG d
 ./80\ Build/scripts/publish.sh --png
 ```
 
-To publish a previously prepared and verified Excel/Numbers subject-settings pair, use:
+To prepare the spreadsheets and then publish the complete website with them included, run these commands in order:
 
 ```bash
+./80\ Build/scripts/build-settings-downloads.sh
 ./80\ Build/scripts/publish.sh --settings-downloads
 ```
 
-The publish command refuses missing, stale, or changed workbook files. Combine both optional output classes when required:
+The second command publishes the entire website and includes the verified spreadsheets; it is not a spreadsheet-only publish. Do not follow it with a plain `publish.sh`: the default publish omits spreadsheet downloads and would remove them from the published site. The publish command refuses missing, stale, or changed workbook files.
+
+Combine both optional output classes when required:
 
 ```bash
 ./80\ Build/scripts/publish.sh --png --settings-downloads
