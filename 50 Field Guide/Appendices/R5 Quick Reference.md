@@ -425,7 +425,7 @@ For Canon's official setting names and the icons used throughout this reference 
 
 - Profiles: Birds in Flight, Birds Perched, Camera Defaults, Fireworks, Landscape, Macro, People, Sports, Travel, Waterdrops, Wildlife.
 - Settings: AF Operation, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, Focus Bracketing, Long Exposure Noise Reduction.
-- Related guides: AF Cases & Tracking Behavior; Custom Controls, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography.
+- Related guides: AF Cases & Tracking Behavior; Custom Controls & Menus, Back-Button AF & Dial Strategies; Flash Photography; Focus Bracketing & In-Camera Depth Compositing; Lens Capabilities; Long Exposure & Night Photography.
 
 ## Included Appendix
 

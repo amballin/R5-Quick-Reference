@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
+from zipfile import ZipFile
 
 from baseline import merge
 from html_renderer import (
@@ -72,6 +74,7 @@ def generate_subject_settings_summary(paths):
             print(result.stdout.strip())
     finally:
         payload_path.unlink(missing_ok=True)
+    _ensure_freeze_panes(paths.subject_settings_summary_file, frozen_rows=5, frozen_columns=3)
     inspect_sidecar = Path(f"{paths.subject_settings_summary_file}.inspect.ndjson")
     inspect_sidecar.unlink(missing_ok=True)
     return {
@@ -83,6 +86,8 @@ def generate_subject_settings_summary(paths):
 def remove_subject_settings_summary(paths):
     for path in (
         paths.subject_settings_summary_file,
+        paths.subject_settings_numbers_file,
+        paths.subject_settings_download_manifest_file,
         paths.reports_output_dir / ".subject-settings-runtime",
     ):
         if path.is_dir():
@@ -215,3 +220,61 @@ def _artifact_modules(paths):
 
 def _node_binary():
     return os.environ.get("NODE") or shutil.which("node") or DEFAULT_NODE
+
+
+def _ensure_freeze_panes(workbook_path, frozen_rows, frozen_columns):
+    """Preserve the requested Excel freeze pane when the workbook exporter omits it."""
+    namespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    ET.register_namespace("x", namespace)
+    worksheet_path = "xl/worksheets/sheet1.xml"
+    replacement_path = workbook_path.with_name(f".{workbook_path.name}.freeze-panes")
+    with ZipFile(workbook_path, "r") as source, ZipFile(replacement_path, "w") as target:
+        for entry in source.infolist():
+            data = source.read(entry.filename)
+            if entry.filename == worksheet_path:
+                root = ET.fromstring(data)
+                sheet_views = root.find(f"{{{namespace}}}sheetViews")
+                if sheet_views is None:
+                    raise RuntimeError("Generated workbook is missing sheetViews.")
+                sheet_view = sheet_views.find(f"{{{namespace}}}sheetView")
+                if sheet_view is None:
+                    raise RuntimeError("Generated workbook is missing sheetView.")
+                for child in list(sheet_view):
+                    if child.tag in {
+                        f"{{{namespace}}}pane",
+                        f"{{{namespace}}}selection",
+                    }:
+                        sheet_view.remove(child)
+                top_left = f"{_excel_column(frozen_columns + 1)}{frozen_rows + 1}"
+                pane = ET.Element(
+                    f"{{{namespace}}}pane",
+                    {
+                        "xSplit": str(frozen_columns),
+                        "ySplit": str(frozen_rows),
+                        "topLeftCell": top_left,
+                        "activePane": "bottomRight",
+                        "state": "frozen",
+                    },
+                )
+                selection = ET.Element(
+                    f"{{{namespace}}}selection",
+                    {
+                        "pane": "bottomRight",
+                        "activeCell": top_left,
+                        "sqref": top_left,
+                    },
+                )
+                sheet_view.insert(0, selection)
+                sheet_view.insert(0, pane)
+                data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            target.writestr(entry, data)
+    replacement_path.replace(workbook_path)
+
+
+def _excel_column(number):
+    result = ""
+    value = number
+    while value:
+        value, remainder = divmod(value - 1, 26)
+        result = chr(65 + remainder) + result
+    return result

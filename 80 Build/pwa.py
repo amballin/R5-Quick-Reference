@@ -18,6 +18,7 @@ CACHE_EXTENSIONS = {
     ".js",
     ".json",
     ".mjs",
+    ".numbers",
     ".svg",
     ".png",
     ".jpg",
@@ -30,6 +31,7 @@ CACHE_EXTENSIONS = {
     ".ttf",
     ".otf",
     ".eot",
+    ".xlsx",
 }
 
 

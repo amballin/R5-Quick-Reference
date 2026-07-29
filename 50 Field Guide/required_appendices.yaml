@@ -177,8 +177,8 @@ appendices:
       - Canon Speedlite notes
       - Decision tree
   - id: back_button_af_custom_button_strategies
-    title: "Custom Controls, Back-Button AF & Dial Strategies"
-    file: "Setting Deep Dives/Back-Button AF & Custom Button Strategies.md"
+    title: "Custom Controls & Menus, Back-Button AF & Dial Strategies"
+    file: "Setting Deep Dives/Custom Controls & Menus, Back-Button AF & Dial Strategies.md"
     content_type: setting_deep_dive
     release: true
     display_order: 30

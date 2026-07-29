@@ -102,4 +102,4 @@ After each adjustment, test the same kind of pass or movement again. If the resu
 - Settings: Servo AF, AF Method, Tracking Sensitivity, Accel./Decel. Tracking, Subject Detection, Eye Detection, subject switching.
 - Related guides:
   - [R5 Quick Reference](appendix:r5_quick_reference)
-  - [Custom Controls, Back-Button AF & Dial Strategies](appendix:back_button_af_custom_button_strategies)
+  - [Custom Controls & Menus, Back-Button AF & Dial Strategies](appendix:back_button_af_custom_button_strategies)

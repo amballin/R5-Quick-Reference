@@ -64,4 +64,4 @@ They are complete shooting environments, not independent AF-setting controls.
 - A recommendation must be labeled as advice and does not become a current setting without owner confirmation.
 - An unresolved item remains unresolved; do not guess from historical screenshots. M-Fn is no longer unresolved: its custom-mode switching assignment has been physically tested.
 
-See [Back-Button AF & Custom Button Strategies](../Setting%20Deep%20Dives/Back-Button%20AF%20%26%20Custom%20Button%20Strategies.md) for the readable control table, exact AF-ON and AE Lock setup details, rationale, and profile behavior.
+See [Custom Controls & Menus, Back-Button AF & Dial Strategies](../Setting%20Deep%20Dives/Custom%20Controls%20%26%20Menus%2C%20Back-Button%20AF%20%26%20Dial%20Strategies.md) for the readable control table, exact AF-ON and AE Lock setup details, rationale, and profile behavior.

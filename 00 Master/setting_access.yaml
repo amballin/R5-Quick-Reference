@@ -40,19 +40,19 @@ setting_access:
     menu_location: Shooting menu > Drive mode
     rapid_order: 160
   shutter.type:
-    best_access: SWITCH My Menu > Shutter mode
+    best_access: MM-SWITCH; MM-FLASH*/MM-LONG*
     menu_location: Shooting 6 > Shutter mode
     rapid_order: 210
   autofocus.subject_detection:
-    best_access: SWITCH My Menu > Subject to detect
+    best_access: MM-SWITCH
     menu_location: AF1 > Subject to detect
     rapid_order: 220
   stabilization.image_stabilization.mode:
-    best_access: SWITCH My Menu > IS (Image Stabilizer) mode
+    best_access: MM-SWITCH; MM-FOCUS*/MM-LONG*
     menu_location: Shooting menu > IS (Image Stabilizer) mode; page varies by equipment
     rapid_order: 230
   image.focus_bracketing:
-    best_access: SWITCH My Menu > Focus bracketing
+    best_access: MM-SWITCH; MM-FOCUS*
     menu_location: Shooting 5 > Focus bracketing
     rapid_order: 240
   stabilization.ibis:

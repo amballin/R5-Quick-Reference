@@ -1,4 +1,4 @@
-# Custom Controls, Back-Button AF & Dial Strategies
+# Custom Controls & Menus, Back-Button AF & Dial Strategies
 
 ## Purpose
 
@@ -28,6 +28,7 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
   - [What C1 and C2 should normally keep the same](#what-c1-and-c2-should-normally-keep-the-same)
   - [C3 — Landscape](#c3-landscape)
   - [Green-star My Menu: SWITCH](#green-star-my-menu-switch)
+    - [Other My Menu tabs to consider](#other-my-menu-tabs-to-consider)
   - [Protect the registered modes: disable Auto update](#protect-the-registered-modes-disable-auto-update)
   - [Save alternate complete configurations to a card](#save-alternate-complete-configurations-to-a-card)
 - [Other AF Methods](#other-af-methods)
@@ -319,6 +320,29 @@ Configure the **SWITCH** tab in this starting order:
 Leave the sixth position open until field testing identifies another menu-only need. Cropping/aspect ratio provides a fast way to find and clear a temporary 1.6× crop after wildlife or distant-subject work.
 
 Use Q, the dials, or the AF-point controls for Drive Mode, ISO, shutter speed, aperture, and AF Method when those controls are faster. Keep lens AF/MF and IS switches as physical checks. With **Auto update set.: Disable**, these transition changes must not rewrite the registered C1-C3 starting environments.
+
+#### Other My Menu tabs to consider
+
+The EOS R5 can hold up to five My Menu tabs, but additional tabs should be created only when repeated field use justifies them. The following are evaluation categories, not approved camera configurations:
+
+| Candidate tab | Purpose | Items to consider |
+|---|---|---|
+| **FOCUS** | Macro, focus stacking, and deliberate manual focus | Focus bracketing; MF peaking settings; Focus guide; IS (Image Stabilizer) mode |
+| **FLASH** | Waterdrops, macro flash, and people flash | External Speedlite control; Shutter mode; Expo. simulation; Image review |
+| **LONG** | Landscape, fireworks, and night work | Bulb timer; Interval timer; Long exp. noise reduction; IS (Image Stabilizer) mode; Shutter mode |
+| **FIELD** | Temporary capture conditions that are easy to leave active | Anti-flicker shoot.; Cropping/aspect ratio; Expo. simulation; Image review |
+| **TRANSFER** | In-camera selection and phone or network transfer | Wi-Fi/Bluetooth connection; Protect images; Rating images; Image search conditions |
+
+Consider these cautions before creating another tab:
+
+- Do not fill all five tabs merely because they are available. More tabs increase navigation and make the important SWITCH tab less immediate.
+- Do not duplicate SWITCH items on another tab unless repeated use within that workflow clearly saves time.
+- Prefer Q, a dial, a customized button, the AF-point controls, or a physical lens switch whenever it is faster than opening My Menu.
+- Treat conditional items carefully. A menu item may move, disappear, or behave differently with another shooting mode, lens, flash, trigger, or firmware version.
+- Keep destructive or recovery operations such as **Format card**, **Reset camera**, **Clear settings**, and bulk-delete commands out of frequently used field tabs.
+- Use **Menu display: Display from My Menu tab** rather than **Display only My Menu tab** so the full camera menus remain available.
+- Remember that a My Menu shortcut opens the real setting. It does not store a preferred value, apply several changes together, or replace a C1-C3 registration.
+- Recheck the tabs after a firmware update, camera reset, or loading a saved camera-settings file.
 
 ### Protect the registered modes: disable Auto update
 

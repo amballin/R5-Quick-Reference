@@ -13,13 +13,23 @@ import yaml
 
 from generated_output import clean_generated_tree, mirror_tree
 from html_renderer import shared_header_icon_path
+from settings_downloads import (
+    WEB_NUMBERS_NAME,
+    WEB_XLSX_NAME,
+    copy_prepared_downloads,
+)
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
 
 APP_TITLE = "Camera Settings"
 
 
-def render_offline_index(paths, publish_metadata, include_png=False):
+def render_offline_index(
+    paths,
+    publish_metadata,
+    include_png=False,
+    include_settings_downloads=False,
+):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
     final_dir = paths.merged_build_output_dir
@@ -31,12 +41,25 @@ def render_offline_index(paths, publish_metadata, include_png=False):
         card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
-        _write_index(output_dir / "index.html", card_files, guides, publish_metadata, paths)
+        downloads = []
+        if include_settings_downloads:
+            downloads = copy_prepared_downloads(paths, output_dir / "downloads")
+        _write_index(
+            output_dir / "index.html",
+            card_files,
+            guides,
+            publish_metadata,
+            paths,
+            include_settings_downloads=include_settings_downloads,
+        )
         _write_readme(output_dir / "README.txt")
         (output_dir / ".nojekyll").touch()
         mirror_tree(output_dir, final_dir, ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"))
         clean_generated_tree(final_dir)
-    return {"Merged Build": 1 if (final_dir / "index.html").exists() else 0}
+    return {
+        "Merged Build": 1 if (final_dir / "index.html").exists() else 0,
+        "Settings Downloads": len(downloads),
+    }
 
 
 def _copy_files(source_dir, target_dir, pattern):
@@ -162,7 +185,14 @@ def _load_yaml(path):
         return yaml.safe_load(file) or {}
 
 
-def _write_index(path, card_files, guides, publish_metadata, paths):
+def _write_index(
+    path,
+    card_files,
+    guides,
+    publish_metadata,
+    paths,
+    include_settings_downloads=False,
+):
     guide_targets = {guide.get("id"): guide["filename"] for guide in guides if guide.get("id")}
     ordered_cards = sorted(card_files, key=lambda card: (card["display_order"], card["html_path"].stem.lower()))
     cards = "\n".join(
@@ -191,6 +221,21 @@ def _write_index(path, card_files, guides, publish_metadata, paths):
         f'{deep_dive_markup}\n</div>'
         if deep_dive_markup else ""
     )
+    downloads_section = ""
+    if include_settings_downloads:
+        xlsx_href = quote(f"downloads/{WEB_XLSX_NAME}", safe="/")
+        numbers_href = quote(f"downloads/{WEB_NUMBERS_NAME}", safe="/")
+        downloads_section = f"""
+<h2>Downloads</h2>
+<div class="downloads">
+<div class="download-row">
+<div class="download-title">Subject Settings Matrix</div>
+<div class="download-actions">
+<a class="download-format" href="{xlsx_href}" download="{WEB_XLSX_NAME}" aria-label="Download Subject Settings Matrix as Excel">.xlsx</a>
+<a class="download-format" href="{numbers_href}" download="{WEB_NUMBERS_NAME}" aria-label="Download Subject Settings Matrix for Apple Numbers">.numbers</a>
+</div>
+</div>
+</div>"""
     icon_path = shared_header_icon_path(paths)
     logo = ""
     if icon_path is not None:
@@ -221,6 +266,12 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .card-primary span{{color:var(--muted);font-weight:400}}
 .card-png{{display:grid;place-items:center;min-width:58px;min-height:48px;color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px;text-decoration:none;font-size:13px;font-weight:700}}
 .guides{{display:grid;gap:9px}}
+.downloads{{display:grid;gap:9px}}
+.download-row{{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px 12px 10px 14px;min-height:58px}}
+.download-title{{font-weight:700}}
+.download-actions{{display:flex;align-items:center;gap:8px;flex-shrink:0}}
+.download-format{{display:grid;place-items:center;min-height:38px;color:var(--accent);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:7px 10px;text-decoration:none;font-size:13px;font-weight:700}}
+.download-format:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
 .guide{{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:13px 14px;min-height:48px;list-style:none}}
 .guide::-webkit-details-marker{{display:none}}
 .guide span{{color:var(--muted)}}
@@ -251,7 +302,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .guide-panel .meta{{color:#5c6670;font-size:11px;line-height:1.25;margin-top:6px}}
 .guide-panel .no-asset{{font-size:11px;color:#5c6670;text-align:center;line-height:1.15;padding:4px}}
 @media print{{.guide-index-return-wrap{{display:none!important}}}}
-@media (max-width:480px){{.guide-index-return__full{{display:none}}.guide-index-return__short{{display:inline}}}}
+@media (max-width:480px){{.download-row{{align-items:flex-start;flex-direction:column}}.download-actions{{align-self:stretch}}.download-format{{flex:1}}.guide-index-return__full{{display:none}}.guide-index-return__short{{display:inline}}}}
 </style>
 </head>
 <body>
@@ -268,6 +319,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 </div>
 {reference_section}
 {deep_dive_section}
+{downloads_section}
 </main>
 </body>
 </html>

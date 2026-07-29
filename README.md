@@ -62,7 +62,7 @@ To create the sortable Excel matrix of every authored subject profile:
 python3 "80 Build/build.py" --settings-summary
 ```
 
-The workbook is written to the machine-local `Build Output/reports/` folder. Sort its **Rapid Setup Order** column ascending for camera configuration, then sort **Card Order** ascending to restore the reference-card sequence. It is not copied into `docs/` or published.
+The workbook is written to the machine-local `Build Output/reports/` folder. Sort its **Rapid Setup Order** column ascending for camera configuration, then sort **Card Order** ascending to restore the reference-card sequence. Use `./80 Build/scripts/build-settings-downloads.sh` to generate, convert, finalize, and verify both spreadsheet formats without running the website build. The interactive `prepare-settings-downloads.sh` workflow remains available as a spreadsheet-only manual fallback and likewise does not build the website. Both outputs remain machine-local unless included in an explicitly authorized `publish.sh --settings-downloads` release.
 
 ## Publish the website
 
@@ -72,7 +72,7 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
 
-The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published.
+The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. Use `./80\ Build/scripts/publish.sh --settings-downloads` only after the Excel and Numbers subject-settings files have been prepared and verified; the two options may be combined.
 
 The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML and PNG cards do not include it.
 
@@ -119,7 +119,8 @@ Generated folders:
 - `../<repository folder name> Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
 - `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub web hosts.
 - `../<repository folder name> Local/Build Output/reports/`: generated build and validation reports.
-- `../<repository folder name> Local/Build Output/reports/Subject Settings Summary.xlsx`: optional sortable subject-profile matrix from `--settings-summary`.
+- `../<repository folder name> Local/Build Output/reports/Subject Settings Matrix.xlsx`: optional sortable subject-profile matrix from `--settings-summary`.
+- `../<repository folder name> Local/Build Output/reports/Subject Settings Matrix.numbers`: generated Apple Numbers companion used only after download verification.
 - `../<repository folder name> Local/Backups/`: timestamped pre-change recovery snapshots.
 - `docs/`: generated GitHub Pages publish folder. GitHub serves this folder.
 

@@ -84,7 +84,15 @@ class ProjectPaths:
 
     @property
     def subject_settings_summary_file(self):
-        return self.reports_output_dir / "Subject Settings Summary.xlsx"
+        return self.reports_output_dir / "Subject Settings Matrix.xlsx"
+
+    @property
+    def subject_settings_numbers_file(self):
+        return self.reports_output_dir / "Subject Settings Matrix.numbers"
+
+    @property
+    def subject_settings_download_manifest_file(self):
+        return self.reports_output_dir / "subject-settings-downloads.json"
 
     @property
     def field_guide_pdf_output_dir(self):

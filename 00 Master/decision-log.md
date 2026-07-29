@@ -9,6 +9,17 @@ Only entries marked **Accepted** are binding. **Proposed** entries are non-bindi
 
 For every new task that would modify project files, first give the project owner a clear recommendation with its rationale and affected files. Ask for approval as a separate explicit question. The owner's approval authorizes the recommended scope, so the owner does not need to restate the recommendation. Read-only questions and status checks do not require change approval.
 
+## Opt-In Subject Settings Workbook Downloads
+
+**Status:** Accepted
+**Date:** 2026-07-29
+
+Provide the complete subject-settings summary in both Excel and Apple Numbers formats as optional website downloads. Keep preparation distinct from publication. The dedicated on-demand spreadsheet script generates the Excel workbook, converts and finalizes the Numbers companion, and verifies both exact files with a machine-local content-hash manifest without running the website build; the interactive preparation script remains as a manual fallback. Only then may the authorized publish workflow use `--settings-downloads`. A publish requested with that option must refuse missing, stale, or changed workbook files. Normal publishing remains unchanged and omits both downloads.
+
+For reliable Excel-to-Numbers transfer, render the title, sorting instructions, and legend as one composite drawing object containing three visual bands. This preserves the three-part presentation while making the entire banner removable with one selection after import. During Numbers verification, remove the import-only rows from the table, position the banner above it, assign and freeze one native header row, and assign and freeze A:C as native header columns. Use 85-point, 80-point, and 80-point widths for columns A, B, and C respectively. Keep A normal and left-aligned, B bold and centered, C bold and right-aligned, and the complete table header row bold. Preserve the sortable Card Order and Rapid Setup Order columns and the frozen row/column settings supported by each format.
+
+Publish stable download filenames under `downloads/` and show separate Excel and Apple Numbers links on the generated index only when the opt-in download flag is used. These files are generated release artifacts, not editable project sources, and publication remains subject to the existing explicit authorization, validation, commit, and push boundary.
+
 ## Green-Star SWITCH My Menu Starting Tab
 
 **Status:** Accepted
@@ -18,7 +29,7 @@ Use one EOS R5 green-star My Menu tab named **SWITCH** as the approved starting 
 
 My Menu provides shortcuts to the camera's real menu settings; it does not store or apply a complete subject profile. Start People from C1 Wildlife, and start Macro or Waterdrops from C3 Landscape, then make the remaining changes through SWITCH, Q, dials, AF-point controls, or physical lens switches as appropriate. Keep **Auto update set.: Disable** so field changes do not rewrite the registered C1-C3 starting environments.
 
-Keep the Camera Buttons card concise with a reference to SWITCH and the linked guide. Put the complete configuration, transition table, and operating rationale in **Custom Controls, Back-Button AF & Dial Strategies**. Retain on-camera verification and evaluation of any sixth item or additional My Menu tabs as TODO work.
+Keep the Camera Buttons card concise with a reference to SWITCH and the linked guide. Put the complete configuration, transition table, and operating rationale in **Custom Controls & Menus, Back-Button AF & Dial Strategies**. Retain on-camera verification and evaluation of any sixth item or additional My Menu tabs as TODO work.
 
 ## Screen Information Displays on Camera Setup Essentials
 
@@ -177,7 +188,7 @@ This decision supersedes the AF-ON AF Method and unresolved C1-C3 portions of **
 
 Use one owner-confirmed physical button and dial layout across the baseline and all subject profiles. AF-ON starts metering and AF with AF Operation, AF Method, and Servo AF characteristics set to Maintain current setting. AE Lock starts metering and AF while overriding only AF Method to 1-Point AF. This gives one normal AF-start button and one precise AF-start button.
 
-Keep the concise Camera Buttons card limited to assignments and a link to the detailed guide. Put AF-ON and AE Lock INFO details, operating explanation, and subject-profile examples in **Custom Controls, Back-Button AF & Dial Strategies**, not R5 Quick Reference. Use the plain physical labels **Main Dial**, **Rear Wheel**, **Top Rear Dial**, and **Control Ring**. Leave Movie Record, MODE, and LCD panel illumination at their defaults. M-Fn and the contents of C1-C3 remain unresolved for later review.
+Keep the concise Camera Buttons card limited to assignments and a link to the detailed guide. Put AF-ON and AE Lock INFO details, operating explanation, and subject-profile examples in **Custom Controls & Menus, Back-Button AF & Dial Strategies**, not R5 Quick Reference. Use the plain physical labels **Main Dial**, **Rear Wheel**, **Top Rear Dial**, and **Control Ring**. Leave Movie Record, MODE, and LCD panel illumination at their defaults. M-Fn and the contents of C1-C3 remain unresolved for later review.
 
 This decision supersedes prior screenshot-derived claims about the current control configuration. Historical screenshots are not current-state evidence.
 
@@ -204,7 +215,7 @@ Display the published version and publication date in the shared header without 
 
 Use **R5 Quick Reference** as the single concise reference for metering modes, drive modes, shutter types, general stabilization, basic flash choices, and AF tracking terminology. Remove the separate Metering Modes, Drive Modes, Electronic vs EFCS vs Mechanical Shutter, Image Stabilization, and Custom Controls manifest entries after preserving their useful guidance in R5 Quick Reference, Lens Capabilities, or the expanded custom-controls guide.
 
-Promote AF Cases & Tracking Behavior, Flash Photography, and Long Exposure & Night Photography to released Setting Deep Dives. Consolidate general custom-control guidance into **Custom Controls, Back-Button AF & Dial Strategies**. Preserve the incomplete Canon EOS R5 Custom Controls Current Configuration source without deciding its eventual disposition. Keep the Canon EOS R5 Official Icon Reference generated and available offline as an unreleased supporting reference linked directly from R5 Quick Reference, rather than listing it as a primary Field Guide.
+Promote AF Cases & Tracking Behavior, Flash Photography, and Long Exposure & Night Photography to released Setting Deep Dives. Consolidate general custom-control guidance into **Custom Controls & Menus, Back-Button AF & Dial Strategies**. Preserve the incomplete Canon EOS R5 Custom Controls Current Configuration source without deciding its eventual disposition. Keep the Canon EOS R5 Official Icon Reference generated and available offline as an unreleased supporting reference linked directly from R5 Quick Reference, rather than listing it as a primary Field Guide.
 
 ## Independent Card Display Categories
 

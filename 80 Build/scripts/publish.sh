@@ -7,21 +7,26 @@ candidate="80 Build/.publish_metadata.candidate.yaml"
 metadata="80 Build/publish_metadata.yaml"
 rm -f "$candidate"
 
-case "${1:-}" in
-  "") include_png=false ;;
-  --png) include_png=true ;;
-  *) echo "Usage: $0 [--png]" >&2; exit 2 ;;
-esac
-if (( $# > 1 )); then
-  echo "Usage: $0 [--png]" >&2
-  exit 2
-fi
+include_png=false
+include_settings_downloads=false
+while (( $# )); do
+  case "$1" in
+    --png) include_png=true ;;
+    --settings-downloads) include_settings_downloads=true ;;
+    *) echo "Usage: $0 [--png] [--settings-downloads]" >&2; exit 2 ;;
+  esac
+  shift
+done
 
+build_args=(--publish)
 if "$include_png"; then
-  PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" --publish --png
-else
-  PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" --publish
+  build_args+=(--png)
 fi
+if "$include_settings_downloads"; then
+  python3 "80 Build/settings_downloads.py" validate
+  build_args+=(--settings-downloads)
+fi
+PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" "${build_args[@]}"
 
 test -f docs/index.html || { echo "Publish failed: docs/index.html was not generated." >&2; exit 1; }
 test -f "$candidate" || { echo "Publish failed: candidate metadata was not generated." >&2; exit 1; }

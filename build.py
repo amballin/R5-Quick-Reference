@@ -31,6 +31,7 @@ from publish_metadata import (
     write_publish_metadata_atomic,
 )
 from subject_settings_summary import generate_subject_settings_summary, remove_subject_settings_summary
+from settings_downloads import SettingsDownloadError, validate_download_manifest
 
 
 PAGES_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__")
@@ -48,6 +49,11 @@ def parse_args():
         "--settings-summary",
         action="store_true",
         help="Also generate the sortable Excel summary of all subject-profile settings. Off by default.",
+    )
+    parser.add_argument(
+        "--settings-downloads",
+        action="store_true",
+        help="Include verified Excel and Apple Numbers settings-summary downloads in the generated site.",
     )
     parser.add_argument("--publish", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
@@ -246,7 +252,20 @@ def main():
                 file=sys.stderr,
             )
             return 2
-        return publish(paths, metadata_path, current_metadata, start, include_png=args.png)
+        return publish(
+            paths,
+            metadata_path,
+            current_metadata,
+            start,
+            include_png=args.png,
+            include_settings_downloads=args.settings_downloads,
+        )
+    if args.settings_summary and args.settings_downloads:
+        print(
+            "--settings-summary and --settings-downloads are separate preparation and publication stages.",
+            file=sys.stderr,
+        )
+        return 2
     publish_display = display_publish_metadata(current_metadata)
     if args.command == "build" and args.target in {"website", "pages"}:
         status = build_site(
@@ -255,6 +274,7 @@ def main():
             include_png=args.png,
             include_pdf=args.pdf,
             include_settings_summary=args.settings_summary,
+            include_settings_downloads=args.settings_downloads,
             keep_website=args.target == "website",
             publish_display=publish_display,
         )
@@ -282,6 +302,7 @@ def main():
         include_png=args.png,
         include_pdf=args.pdf,
         include_settings_summary=args.settings_summary,
+        include_settings_downloads=args.settings_downloads,
         publish_display=publish_display,
     )
     if status == 0 and requested_profile is None:
@@ -298,6 +319,7 @@ def build_site(
     include_png=False,
     include_pdf=False,
     include_settings_summary=False,
+    include_settings_downloads=False,
     keep_website=False,
     publish_display=None,
 ):
@@ -312,6 +334,12 @@ def build_site(
         for _, code, detail in validation_errors:
             print(f"{code}: {detail}")
         return 1
+    if include_settings_downloads:
+        try:
+            validate_download_manifest(paths)
+        except SettingsDownloadError as exc:
+            print(f"Settings downloads are not ready: {exc}", file=sys.stderr)
+            return 1
     clean_generated_leftovers(
         paths,
         include_png=include_png,
@@ -319,6 +347,7 @@ def build_site(
         keep_website=keep_website,
         full_build=requested_profile is None,
         include_settings_summary=include_settings_summary,
+        include_settings_downloads=include_settings_downloads,
     )
     profile_names = profile_names_to_build(paths, requested_profile)
     appendix_generated = render_appendices(paths, include_pdf=include_pdf)
@@ -329,7 +358,14 @@ def build_site(
         include_pdf=include_pdf,
     )
     generated.update(appendix_generated)
-    generated.update(render_offline_index(paths, publish_display, include_png=include_png))
+    generated.update(
+        render_offline_index(
+            paths,
+            publish_display,
+            include_png=include_png,
+            include_settings_downloads=include_settings_downloads,
+        )
+    )
     generated.update(generate_pwa(paths))
     if include_settings_summary:
         try:
@@ -360,7 +396,14 @@ def build_site(
     return 1 if failures else 0
 
 
-def publish(paths, metadata_path, current_metadata, start, include_png=False):
+def publish(
+    paths,
+    metadata_path,
+    current_metadata,
+    start,
+    include_png=False,
+    include_settings_downloads=False,
+):
     override = os.environ.get("PRS_PUBLISH_TIME")
     try:
         published = datetime.fromisoformat(override) if override else None
@@ -369,7 +412,13 @@ def publish(paths, metadata_path, current_metadata, start, include_png=False):
         print(f"Publish timestamp error: {exc}", file=sys.stderr)
         return 2
     display = display_publish_metadata(candidate)
-    status = build_site(paths, start=start, include_png=include_png, publish_display=display)
+    status = build_site(
+        paths,
+        start=start,
+        include_png=include_png,
+        include_settings_downloads=include_settings_downloads,
+        publish_display=display,
+    )
     if status != 0:
         print("Publish aborted: build failed; version metadata was not changed.", file=sys.stderr)
         return status
@@ -453,6 +502,7 @@ def clean_generated_leftovers(
     include_png=False,
     include_pdf=False,
     include_settings_summary=False,
+    include_settings_downloads=False,
     keep_website=False,
     full_build=False,
 ):
@@ -513,7 +563,7 @@ def clean_generated_leftovers(
             if png_dir.exists():
                 shutil.rmtree(png_dir)
 
-    if full_build and not include_settings_summary:
+    if full_build and not include_settings_summary and not include_settings_downloads:
         remove_subject_settings_summary(paths)
 
     if include_pdf:
