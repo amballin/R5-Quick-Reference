@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1785363595";
+const CACHE_NAME = "photography-reference-1785434118";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -24,6 +24,8 @@ const CACHE_URLS = [
   "appendices/Lens%20Capabilities.html",
   "appendices/Long%20Exposure%20%26%20Night%20Photography.html",
   "appendices/R5%20Quick%20Reference.html",
+  "downloads/EOS%20R5%20Setup%20%26%20Verification%20Tracker.numbers",
+  "downloads/EOS%20R5%20Setup%20%26%20Verification%20Tracker.xlsx",
   "downloads/Subject%20Settings%20Matrix.numbers",
   "downloads/Subject%20Settings%20Matrix.xlsx",
   "index.html",
