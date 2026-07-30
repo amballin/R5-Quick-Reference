@@ -148,6 +148,11 @@ if [[ -n "$(git status --porcelain)" ]]; then
             echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
             exit 1
         }
+        python3 "80 Build/finish_day_guide.py" || {
+            echo
+            echo "Finish-day HTML guide generation failed. Nothing was committed or pushed."
+            exit 1
+        }
         python3 "80 Build/validator.py" || {
             echo
             echo "Validation failed. Nothing was committed or pushed."

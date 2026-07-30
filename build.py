@@ -17,6 +17,7 @@ from appendix_renderer import render_appendices
 from baseline import merge
 from build_validator import discover_profiles, is_reference_card, profile_name_from_path, validate_project
 from generated_output import clean_generated_tree, mirror_tree, numbered_duplicates, prepare_website_output, remove_numbered_duplicates
+from finish_day_guide import write_finish_day_html
 from html_renderer import render_card, write_html_card
 from icon_manager import IconManager
 from offline_index import render_offline_index
@@ -30,8 +31,12 @@ from publish_metadata import (
     next_publish_metadata,
     write_publish_metadata_atomic,
 )
-from subject_settings_summary import generate_subject_settings_summary, remove_subject_settings_summary
-from settings_downloads import SettingsDownloadError, validate_download_manifest
+from subject_settings_matrix import generate_subject_settings_matrix, remove_subject_settings_matrix
+from camera_setup_tracker import remove_camera_setup_tracker
+from spreadsheet_downloads import (
+    SpreadsheetDownloadError,
+    validate_download_manifests,
+)
 
 
 PAGES_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__")
@@ -53,7 +58,22 @@ def parse_args():
     parser.add_argument(
         "--settings-downloads",
         action="store_true",
-        help="Include verified Excel and Apple Numbers settings-summary downloads in the generated site.",
+        help="Compatibility alias for --matrix-downloads.",
+    )
+    parser.add_argument(
+        "--matrix-downloads",
+        action="store_true",
+        help="Include verified Matrix downloads in the generated site.",
+    )
+    parser.add_argument(
+        "--setup-downloads",
+        action="store_true",
+        help="Include verified Setup tracker downloads in the generated site.",
+    )
+    parser.add_argument(
+        "--spreadsheet-downloads",
+        action="store_true",
+        help="Include all verified spreadsheet downloads in the generated site.",
     )
     parser.add_argument("--publish", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
@@ -134,7 +154,8 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/offline_index.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
-        "- `80 Build/subject_settings_summary.py`",
+        "- `80 Build/subject_settings_matrix.py`",
+        "- `80 Build/camera_setup_tracker.py`",
         "- `00 Master/setting_access.yaml`",
         "",
         "## Files Created",
@@ -144,7 +165,8 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/output_renderer.py`",
         "- `80 Build/pwa.py`",
         "- `80 Build/render_card_outputs.js`",
-        "- `80 Build/render_settings_summary.mjs`",
+        "- `80 Build/render_subject_settings_matrix.mjs`",
+        "- `80 Build/render_camera_setup_tracker.mjs`",
         "- `80 Build/validators/setting_access_validator.py`",
         f"- `{paths.merged_output_dir}`",
         f"- `{paths.html_output_dir}`",
@@ -235,7 +257,13 @@ def print_summary(profile_count, successes, failures, generated, elapsed):
 def main():
     start = time.perf_counter()
     args = parse_args()
+    spreadsheet_download_targets = []
+    if args.settings_downloads or args.matrix_downloads or args.spreadsheet_downloads:
+        spreadsheet_download_targets.append("matrix")
+    if args.setup_downloads or args.spreadsheet_downloads:
+        spreadsheet_download_targets.append("setup")
     paths = ProjectPaths(args.root)
+    write_finish_day_html(paths.root)
     metadata_path = paths.root / "80 Build" / "publish_metadata.yaml"
     try:
         current_metadata = load_publish_metadata(metadata_path)
@@ -258,9 +286,9 @@ def main():
             current_metadata,
             start,
             include_png=args.png,
-            include_settings_downloads=args.settings_downloads,
+            spreadsheet_download_targets=spreadsheet_download_targets,
         )
-    if args.settings_summary and args.settings_downloads:
+    if args.settings_summary and spreadsheet_download_targets:
         print(
             "--settings-summary and --settings-downloads are separate preparation and publication stages.",
             file=sys.stderr,
@@ -274,7 +302,7 @@ def main():
             include_png=args.png,
             include_pdf=args.pdf,
             include_settings_summary=args.settings_summary,
-            include_settings_downloads=args.settings_downloads,
+            spreadsheet_download_targets=spreadsheet_download_targets,
             keep_website=args.target == "website",
             publish_display=publish_display,
         )
@@ -302,7 +330,7 @@ def main():
         include_png=args.png,
         include_pdf=args.pdf,
         include_settings_summary=args.settings_summary,
-        include_settings_downloads=args.settings_downloads,
+        spreadsheet_download_targets=spreadsheet_download_targets,
         publish_display=publish_display,
     )
     if status == 0 and requested_profile is None:
@@ -319,7 +347,7 @@ def build_site(
     include_png=False,
     include_pdf=False,
     include_settings_summary=False,
-    include_settings_downloads=False,
+    spreadsheet_download_targets=(),
     keep_website=False,
     publish_display=None,
 ):
@@ -334,11 +362,11 @@ def build_site(
         for _, code, detail in validation_errors:
             print(f"{code}: {detail}")
         return 1
-    if include_settings_downloads:
+    if spreadsheet_download_targets:
         try:
-            validate_download_manifest(paths)
-        except SettingsDownloadError as exc:
-            print(f"Settings downloads are not ready: {exc}", file=sys.stderr)
+            validate_download_manifests(paths, spreadsheet_download_targets)
+        except SpreadsheetDownloadError as exc:
+            print(f"Spreadsheet downloads are not ready: {exc}", file=sys.stderr)
             return 1
     clean_generated_leftovers(
         paths,
@@ -347,7 +375,7 @@ def build_site(
         keep_website=keep_website,
         full_build=requested_profile is None,
         include_settings_summary=include_settings_summary,
-        include_settings_downloads=include_settings_downloads,
+        spreadsheet_download_targets=spreadsheet_download_targets,
     )
     profile_names = profile_names_to_build(paths, requested_profile)
     appendix_generated = render_appendices(paths, include_pdf=include_pdf)
@@ -363,13 +391,13 @@ def build_site(
             paths,
             publish_display,
             include_png=include_png,
-            include_settings_downloads=include_settings_downloads,
+            download_targets=spreadsheet_download_targets,
         )
     )
     generated.update(generate_pwa(paths))
     if include_settings_summary:
         try:
-            summary_generated = generate_subject_settings_summary(paths)
+            summary_generated = generate_subject_settings_matrix(paths)
             generated["XLSX"] = summary_generated["XLSX"]
         except Exception as exc:
             failures.append(
@@ -402,7 +430,7 @@ def publish(
     current_metadata,
     start,
     include_png=False,
-    include_settings_downloads=False,
+    spreadsheet_download_targets=(),
 ):
     override = os.environ.get("PRS_PUBLISH_TIME")
     try:
@@ -416,7 +444,7 @@ def publish(
         paths,
         start=start,
         include_png=include_png,
-        include_settings_downloads=include_settings_downloads,
+        spreadsheet_download_targets=spreadsheet_download_targets,
         publish_display=display,
     )
     if status != 0:
@@ -503,6 +531,7 @@ def clean_generated_leftovers(
     include_pdf=False,
     include_settings_summary=False,
     include_settings_downloads=False,
+    spreadsheet_download_targets=(),
     keep_website=False,
     full_build=False,
 ):
@@ -563,8 +592,11 @@ def clean_generated_leftovers(
             if png_dir.exists():
                 shutil.rmtree(png_dir)
 
-    if full_build and not include_settings_summary and not include_settings_downloads:
-        remove_subject_settings_summary(paths)
+    targets = set(spreadsheet_download_targets)
+    if full_build and not include_settings_summary and "matrix" not in targets and not include_settings_downloads:
+        remove_subject_settings_matrix(paths)
+    if full_build and "setup" not in targets and not include_settings_downloads:
+        remove_camera_setup_tracker(paths)
 
     if include_pdf:
         return

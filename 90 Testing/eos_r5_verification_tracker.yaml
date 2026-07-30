@@ -1,0 +1,496 @@
+version: 1
+title: EOS R5 Setup & Verification Tracker
+
+lists:
+  main_status:
+    - Not started
+    - In progress
+    - Configured—not registered
+    - Registered—pending read-back
+    - Backup-Settings
+    - Verified
+    - Failed—needs correction
+    - Inconclusive—needs retest
+    - Blocked
+    - Not applicable
+  evidence_class:
+    - Approved target pending verification
+    - Owner-confirmed current configuration
+    - Verified Canon capability
+    - Project recommendation
+    - Unresolved
+  yes_no:
+    - "Yes"
+    - "No"
+    - Not applicable
+  registration_result:
+    - Not started
+    - Pass
+    - Fail
+    - Needs retest
+    - Not applicable
+
+tests:
+  - test_id: SETUP-01
+    sequence: 1
+    phase: Camera Setup
+    expected_result: A recoverable pre-test camera-settings file exists and its filename is recorded.
+    task: Save the current complete camera configuration to the card.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Save/load cam settings on card > Save to card
+    next_action: Insert card and save the current configuration.
+    evidence_class: Approved target pending verification
+    project_update: "No"
+    target_project_files: ""
+  - test_id: SETUP-02
+    sequence: 2
+    phase: Camera Setup
+    expected_result: Existing registrations are documented before any slot is overwritten.
+    task: Record current C1, C2, and C3 contents before changing them.
+    best_access: M-Fn recall; photograph or record
+    menu_location: No menu
+    menu_detail: Recall C1, C2, and C3 and photograph or record their settings
+    next_action: Photograph or write down all three current slots.
+    evidence_class: Approved target pending verification
+    project_update: "No"
+    target_project_files: ""
+  - test_id: SETUP-03
+    sequence: 3
+    phase: Camera Setup
+    expected_result: Temporary field changes cannot silently rewrite a registered custom mode.
+    task: Set Custom shooting mode Auto update to Disable.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Custom shooting mode (C1-C3) > Auto update set. > Disable
+    observation: Auto update must remain disabled throughout.
+    next_action: Open the Custom shooting mode menu and disable Auto update.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; Camera Setup Essentials; project memory
+  - test_id: SETUP-MM-01
+    sequence: 4
+    phase: Camera Setup
+    expected_result: The approved SWITCH My Menu tab exists with the five approved shortcuts in the correct order and one open position.
+    task: Configure and verify the SWITCH My Menu tab before profile registration.
+    best_access: My Menu
+    menu_location: My Menu
+    menu_detail: "Create tab SWITCH; register in order: Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, Cropping/aspect ratio; leave position 6 open"
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/setting_access.yaml; controls.md; Back-Button AF guide; project memory
+  - test_id: SETUP-04
+    sequence: 5
+    phase: Camera Setup
+    expected_result: Shared capture and exposure defaults match the reference baseline.
+    task: Confirm cRAW, Full-frame, Evaluative metering, and Auto ISO maximum 12800.
+    best_access: Q screen; MM-SWITCH for Cropping/aspect ratio
+    menu_location: Multiple
+    menu_detail: "Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Quick Control: Evaluative metering"
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
+  - test_id: SETUP-05
+    sequence: 6
+    phase: Camera Setup
+    expected_result: Exposure review tools are available in every profile.
+    task: Confirm RGB histogram and highlight alert are enabled.
+    best_access: MENU
+    menu_location: Multiple
+    menu_detail: "Shooting 7: Shooting info. disp. > Screen info. settings > Histogram > RGB; Playback 5: Highlight alert > Enable"
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
+  - test_id: SETUP-06
+    sequence: 7
+    phase: Camera Setup
+    expected_result: Specialty functions do not interfere with the verification session.
+    task: Confirm High ISO NR, Long Exposure NR, Continuous AF, Electronic full-time MF, and IBIS High Resolution Shot are Off.
+    best_access: MENU
+    menu_location: Multiple
+    menu_detail: "Shooting 4: Long exp. noise reduction and High ISO speed NR; AF1: Continuous AF; AF menu: Lens electronic MF; Shooting 5: IBIS High resolution shot"
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
+  - test_id: SETUP-07
+    sequence: 8
+    phase: Camera Setup
+    expected_result: Manual-focus aid matches the approved setup.
+    task: Confirm MF Peaking is On, Low, Red.
+    best_access: MENU
+    menu_location: AF menu
+    menu_detail: "MF peaking settings > Peaking: On; Level: Low; Color: Red"
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Camera Setup Essentials; R5 Quick Reference
+  - test_id: CTRL-CONFIG-01
+    sequence: 9
+    phase: Controls
+    expected_result: Every shared physical control matches the approved assignment and INFO details.
+    task: Configure shutter half-press, AF-ON, AE Lock, AF Point Selection, Lens AF, DOF, SET, joystick, dials, Control Ring, and M-Fn.
+    best_access: Physical controls; MENU
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons and Customize dials; use Customize buttons for shutter half-press, AF-ON, AE Lock, AF Point Selection, lens AF, DOF, SET, joystick, and M-Fn
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; Back-Button AF guide
+  - test_id: BACKUP-SET-01
+    sequence: 10
+    phase: Camera Setup
+    expected_result: A recoverable checkpoint exists after shared settings, SWITCH, and physical controls are configured.
+    task: Save a checkpoint copy of the complete camera configuration and record it in Sessions.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Save/load cam settings on card > Save to card
+    next_action: After saving, set Status to Backup-Settings before configuring C1.
+    evidence_class: Approved target pending verification
+    project_update: "No"
+    target_project_files: ""
+  - test_id: C1-CONFIG-01
+    sequence: 11
+    phase: C1 Wildlife
+    expected_result: Every C1 target setting matches the C1–C3 Registration sheet.
+    task: Build the complete C1 Wildlife environment in a normal shooting mode.
+    best_access: Q, dials, AF controls, MM-SWITCH, lens IS switch
+    menu_location: Multiple
+    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, AF Drive mode, and lens IS switch
+    next_action: Configure from a normal shooting mode, not recalled C1.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; Wildlife profile
+  - test_id: C1-REG-01
+    sequence: 12
+    phase: C1 Wildlife
+    expected_result: C1 registration completes without overwriting C2 or C3.
+    task: Register the validated Wildlife environment to C1.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Custom shooting mode (C1-C3) > Register settings > C1
+    next_action: Register only after every C1 setting is checked.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; Back-Button AF guide
+  - test_id: C1-READ-01
+    sequence: 13
+    phase: C1 Wildlife
+    expected_result: Every recalled value matches the validated C1 column.
+    task: Leave the setup state, recall C1 with M-Fn, and read back every setting.
+    best_access: M-Fn recall; Q; MM-SWITCH; MENU
+    menu_location: No single menu
+    menu_detail: Recall C1 with M-Fn; verify the shooting screen, Quick Control screen, My Menu shortcuts, and applicable menu settings
+    next_action: Record discrepancies before proceeding to C2.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory
+  - test_id: C1-OPS-01
+    sequence: 14
+    phase: C1 Wildlife
+    expected_result: C1 recalls a usable Wildlife environment and controls behave as intended.
+    task: Perform a short Wildlife operational test.
+    best_access: Physical controls
+    menu_location: No menu
+    menu_detail: Operational shooting test
+    next_action: Test acquisition, precision AF, exposure, and continuous drive.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; Wildlife profile
+  - test_id: C2-CONFIG-01
+    sequence: 15
+    phase: C2 Birds in Flight
+    expected_result: Every C2 target setting matches the C1–C3 Registration sheet.
+    task: Return to a normal mode and build the complete C2 Birds in Flight environment.
+    best_access: Q, dials, AF controls, MM-SWITCH, lens IS switch
+    menu_location: Multiple
+    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, AF Drive mode, and lens IS switch
+    next_action: Do not build C2 while working inside recalled C1.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Birds in Flight profile; Back-Button AF guide
+  - test_id: C2-REG-01
+    sequence: 16
+    phase: C2 Birds in Flight
+    expected_result: C2 registration completes without changing C1.
+    task: Register the validated Birds in Flight environment to C2.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Custom shooting mode (C1-C3) > Register settings > C2
+    next_action: Register only after every C2 setting is checked.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; Back-Button AF guide
+  - test_id: C2-READ-01
+    sequence: 17
+    phase: C2 Birds in Flight
+    expected_result: Every recalled value matches the validated C2 column.
+    task: Recall C2 and read back every setting.
+    best_access: M-Fn recall; Q; MM-SWITCH; MENU
+    menu_location: No single menu
+    menu_detail: Recall C2 with M-Fn; verify the shooting screen, Quick Control screen, My Menu shortcuts, and applicable menu settings
+    next_action: Recheck C1 after the C2 read-back.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory
+  - test_id: C2-OPS-01
+    sequence: 18
+    phase: C2 Birds in Flight
+    expected_result: C2 provides 1/2500 sec., Mechanical shutter, H+, animal tracking, and Mode 3.
+    task: Perform a short Birds in Flight operational test.
+    best_access: Physical controls
+    menu_location: No menu
+    menu_detail: Operational shooting test
+    next_action: Test tracking and burst behavior on a moving target.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Birds in Flight profile
+  - test_id: C3-CONFIG-01
+    sequence: 19
+    phase: C3 Landscape
+    expected_result: Every C3 target setting matches the C1–C3 Registration sheet.
+    task: Return to a normal mode and build the complete C3 Landscape environment.
+    best_access: Q, dials, AF controls, MM-SWITCH, lens IS switch
+    menu_location: Multiple
+    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, AF Drive mode, and lens IS switch
+    next_action: Do not build C3 while working inside C1 or C2.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Landscape profile; Back-Button AF guide
+  - test_id: C3-REG-01
+    sequence: 20
+    phase: C3 Landscape
+    expected_result: C3 registration completes without changing C1 or C2.
+    task: Register the validated Landscape environment to C3.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Custom shooting mode (C1-C3) > Register settings > C3
+    next_action: Register only after every C3 setting is checked.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; Back-Button AF guide
+  - test_id: C3-READ-01
+    sequence: 21
+    phase: C3 Landscape
+    expected_result: Every recalled value matches the validated C3 column.
+    task: Recall C3 and read back every setting.
+    best_access: M-Fn recall; Q; MM-SWITCH; MENU
+    menu_location: No single menu
+    menu_detail: Recall C3 with M-Fn; verify the shooting screen, Quick Control screen, My Menu shortcuts, and applicable menu settings
+    next_action: Recall C1, C2, and C3 in sequence afterward.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory
+  - test_id: BACKUP-SET-02
+    sequence: 22
+    phase: Camera Setup
+    expected_result: A recoverable checkpoint exists after C1, C2, and C3 are registered and read back.
+    task: Save a checkpoint copy of the complete camera configuration and record it in Sessions.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Save/load cam settings on card > Save to card
+    next_action: After saving, set Status to Backup-Settings before operational control and shutter testing.
+    evidence_class: Approved target pending verification
+    project_update: "No"
+    target_project_files: ""
+  - test_id: C3-OPS-01
+    sequence: 23
+    phase: C3 Landscape
+    expected_result: C3 provides Av, f/9, ISO 100, One-Shot, 1-Point, Single Shot, and EFCS.
+    task: Perform a short Landscape operational test.
+    best_access: Physical controls
+    menu_location: No menu
+    menu_detail: Operational shooting test
+    next_action: Test handheld starting state, then tripod situational changes.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Landscape profile
+  - test_id: CTRL-AFON-01
+    sequence: 24
+    phase: Controls
+    expected_result: AF-ON invokes Face + Tracking while maintaining the current AF Operation and Servo characteristics.
+    task: Verify AF-ON in Servo and One-Shot environments.
+    best_access: AF-ON; INFO
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons > AF-ON; press INFO to verify AF Operation, AF Method, and Servo AF characteristics
+    next_action: Run in C1/C2 and again in C3.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
+  - test_id: CTRL-AELOCK-01
+    sequence: 25
+    phase: Controls
+    expected_result: AE Lock invokes 1-Point AF while maintaining the current AF Operation and last point position.
+    task: Verify AE Lock in Servo and One-Shot environments.
+    best_access: AE Lock; INFO
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons > AE Lock; press INFO to verify AF Operation, AF Method, and Servo AF characteristics
+    next_action: Run in C1/C2 and again in C3.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
+  - test_id: CTRL-DOF-01
+    sequence: 26
+    phase: Controls
+    expected_result: DOF changes AF Operation and both AF-start buttons respect the changed state.
+    task: Verify the DOF One-Shot ↔ Servo switch.
+    best_access: DOF button
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons > Depth-of-field preview > One-Shot AF ↔ Servo AF
+    next_action: Test both directions from C1/C2 and C3.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory
+  - test_id: CTRL-SET-01
+    sequence: 27
+    phase: Controls
+    expected_result: SET toggles Eye Detection with Face + Tracking and does not imply active eye detection with deliberate-point AF.
+    task: Verify SET Eye Detection behavior.
+    best_access: SET button
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons > SET > Eye detection
+    next_action: Test Face + Tracking, 1-Point AF, and Spot AF.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
+  - test_id: CTRL-JOY-01
+    sequence: 28
+    phase: Controls
+    expected_result: Movement selects the intended point or subject; observed recenter and Face Select behavior are recorded.
+    task: Verify joystick movement and straight-press behavior.
+    best_access: Joystick
+    menu_location: Custom Functions 3
+    menu_detail: Customize buttons > Multi-controller > Direct AF point selection
+    next_action: Record single-border, double-border, release, and Face Select Off behavior.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory; Back-Button AF guide
+  - test_id: EFCS-SHOCK-01
+    sequence: 29
+    phase: EFCS Tests
+    expected_result: At least five matched frames per shutter speed and mode are available for comparison.
+    task: Compare EFCS and Mechanical tripod sharpness at 1/8–1/60 sec.
+    best_access: MM-SWITCH
+    menu_location: Shooting 6
+    menu_detail: Shutter mode; use EFCS and Mechanical for the comparison
+    next_action: Use a detailed static target, stabilization Off, and remote/timer release.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/baseline.yaml; EFCS decision; R5 Quick Reference
+  - test_id: EFCS-BOKEH-01
+    sequence: 30
+    phase: EFCS Tests
+    expected_result: Matched frames show whether EFCS clips out-of-focus highlights at fast shutter speeds.
+    task: Compare EFCS and Mechanical bokeh with the EF 50mm f/1.4 at 1/1000–1/8000 sec.
+    best_access: MM-SWITCH
+    menu_location: Shooting 6
+    menu_detail: Shutter mode; use EFCS and Mechanical for the comparison
+    next_action: Use distinct point highlights and constant focus distance.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: People profile; EFCS decision; R5 Quick Reference
+  - test_id: EFCS-LIGHT-01
+    sequence: 31
+    phase: EFCS Tests
+    expected_result: Exposure and color consistency are assessed at Sports shutter speeds with Anti-flicker Off and On.
+    task: Compare EFCS and Mechanical under representative LED or fluorescent lighting.
+    best_access: MM-SWITCH; MENU for Anti-flicker
+    menu_location: Multiple
+    menu_detail: "Shooting 6: Shutter mode; Shooting 2: Anti-flicker shoot."
+    next_action: Use actual indoor Sports lighting when practical.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Sports profile; EFCS decision; R5 Quick Reference
+  - test_id: EFCS-BURST-01
+    sequence: 32
+    phase: EFCS Tests
+    expected_result: Burst cadence, tracking, and viewfinder behavior are recorded for EFCS and Mechanical.
+    task: Compare High and High Speed Continuous+ burst behavior.
+    best_access: MM-SWITCH; Q for Drive mode
+    menu_location: Multiple
+    menu_detail: "Shooting 6: Shutter mode; AF menu/Quick Control: Drive mode"
+    next_action: Record battery, lens, shutter, aperture, card, and Anti-flicker state.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: EFCS decision; R5 Quick Reference
+  - test_id: FLASH-PLUTO-01
+    sequence: 33
+    phase: EFCS Tests
+    expected_result: Trigger timing, sync, exposure consistency, flash duration, and recycle behavior pass.
+    task: Verify the Mechanical 1/200-sec. Pluto/manual-flash Waterdrops setup.
+    best_access: MM-SWITCH; shooting controls
+    menu_location: Multiple
+    menu_detail: "Shooting 6: Shutter mode > Mechanical; shooting screen: M, 1/200 sec., aperture, ISO; Shooting 2: External Speedlite control when applicable"
+    next_action: Start at manual flash 1/16–1/64 and record the complete setup.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: Waterdrops profile; Flash Photography; EFCS decision
+  - test_id: FINAL-READ-01
+    sequence: 34
+    phase: Finalization
+    expected_result: All three custom modes, My Menu, and shared controls remain correct; Auto update remains disabled.
+    task: Recall C1, C2, and C3 and complete a final read-back.
+    best_access: M-Fn; MM-SWITCH; Q; MENU
+    menu_location: Multiple
+    menu_detail: Recall C1-C3 with M-Fn; verify SWITCH; Set-up 5 confirm Auto update is disabled; Custom Functions 3 confirm control assignments
+    next_action: Resolve every discrepancy before saving the final configuration.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: controls.md; project memory
+  - test_id: FINAL-SAVE-01
+    sequence: 35
+    phase: Finalization
+    expected_result: A named post-verification settings file exists and is recorded in the Sessions sheet.
+    task: Save the verified complete camera configuration to the card.
+    best_access: MENU
+    menu_location: Set-up 5
+    menu_detail: Save/load cam settings on card > Save to card
+    next_action: Preserve the completed workbook and test images.
+    evidence_class: Approved target pending verification
+    project_update: "No"
+    target_project_files: ""
+  - test_id: PROJECT-UPDATE-01
+    sequence: 36
+    phase: Project Update
+    expected_result: Only completed, unambiguous evidence is promoted to owner-confirmed status.
+    task: Review Verified rows that require a project update.
+    best_access: Completed tracker
+    menu_location: No camera menu
+    menu_detail: Review the completed tracker and update the reference-system evidence states
+    status: Blocked
+    next_action: Complete physical testing before updating project evidence states.
+    evidence_class: Unresolved
+    project_update: "Yes"
+    target_project_files: TODO; controls.md; project memory; applicable profiles and guides
+
+registration:
+  title: "C1–C3 Registration: Configure → Register → Read Back → Verify"
+  instructions: Work from a normal shooting mode. Validate the complete column before registering a slot. Record configuration and read-back separately for every setting.
+  profiles:
+    - key: c1
+      heading: C1 Wildlife
+    - key: c2
+      heading: C2 Birds in Flight
+    - key: c3
+      heading: C3 Landscape
+  rows:
+    - {setting: Mode, c1: Fv, c2: Tv, c3: Av}
+    - {setting: Metering, c1: Evaluative, c2: Evaluative, c3: Evaluative}
+    - {setting: Exposure Compensation, c1: "0", c2: 0 starting point, c3: "0"}
+    - {setting: Shutter Speed, c1: Auto, c2: 1/2500 sec., c3: Auto}
+    - {setting: Aperture, c1: Auto, c2: Auto, c3: f/9}
+    - {setting: ISO, c1: Auto, c2: Auto, c3: "100"}
+    - {setting: Auto ISO Maximum, c1: "12800", c2: "12800", c3: 12800; inactive at ISO 100}
+    - {setting: AF Operation, c1: Servo AF, c2: Servo AF, c3: One-Shot AF}
+    - {setting: AF Method, c1: Face + Tracking, c2: Face + Tracking, c3: 1-Point AF}
+    - {setting: Subject Detection, c1: Animals, c2: Animals, c3: None}
+    - {setting: Eye Detection, c1: Enable, c2: Enable, c3: Disable}
+    - {setting: Drive Mode, c1: High Speed Continuous, c2: High Speed Continuous+, c3: Single Shot}
+    - {setting: Shutter Type, c1: EFCS, c2: Mechanical, c3: EFCS}
+    - {setting: Image Stabilizer Mode, c1: Mode 1, c2: Mode 3, c3: Mode 1}
+    - {setting: IBIS, c1: On, c2: On, c3: On}
+    - {setting: Focus Bracketing, c1: Disable, c2: Disable, c3: Disable; enable situationally}
+    - {setting: Lens IS switch, c1: On; physical check, c2: On; physical check, c3: On; handheld registration}

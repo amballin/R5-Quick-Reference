@@ -24,6 +24,8 @@ The EOS R5 uses one physical button and dial layout across subject profiles. C1,
 
 The generated site uses the machine-local workspace's `Build Output/merged-build/` as its canonical web/PWA bundle. It is mirrored to top-level `docs/` because GitHub Pages is configured for `main / docs`; `Build Output/website/` remains optional machine-local staging for other web hosts. PDF generation is intentionally opt-in. The former native iOS wrapper was retired after the installable HTML/PWA became the sufficient phone experience.
 
+Spreadsheet structure is source-driven: shared and workbook-specific layout lives in `00 Master/spreadsheet_layouts.yaml`, while Setup verification content and its Menu access lookups live in `90 Testing/eos_r5_verification_tracker.yaml`. The publishable Setup workbook is always a blank master. Progress from an earlier tracker is migrated into a separate machine-local working copy so release artifacts cannot expose test state.
+
 ## Domain Context and Terminology
 
 - Use Canon terminology and prefer official Canon names, icons, and descriptions.

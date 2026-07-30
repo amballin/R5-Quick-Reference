@@ -8,12 +8,14 @@ metadata="80 Build/publish_metadata.yaml"
 rm -f "$candidate"
 
 include_png=false
-include_settings_downloads=false
+spreadsheet_args=()
 while (( $# )); do
   case "$1" in
     --png) include_png=true ;;
-    --settings-downloads) include_settings_downloads=true ;;
-    *) echo "Usage: $0 [--png] [--settings-downloads]" >&2; exit 2 ;;
+    --settings-downloads|--matrix-downloads) spreadsheet_args=(--matrix-downloads) ;;
+    --setup-downloads) spreadsheet_args=(--setup-downloads) ;;
+    --spreadsheet-downloads) spreadsheet_args=(--spreadsheet-downloads) ;;
+    *) echo "Usage: $0 [--png] [--matrix-downloads|--setup-downloads|--spreadsheet-downloads]" >&2; exit 2 ;;
   esac
   shift
 done
@@ -22,9 +24,20 @@ build_args=(--publish)
 if "$include_png"; then
   build_args+=(--png)
 fi
-if "$include_settings_downloads"; then
-  python3 "80 Build/settings_downloads.py" validate
-  build_args+=(--settings-downloads)
+if (( ${#spreadsheet_args[@]} )); then
+  case "${spreadsheet_args[0]}" in
+    --matrix-downloads)
+      python3 "80 Build/spreadsheet_downloads.py" matrix validate
+      ;;
+    --setup-downloads)
+      python3 "80 Build/spreadsheet_downloads.py" setup validate
+      ;;
+    --spreadsheet-downloads)
+      python3 "80 Build/spreadsheet_downloads.py" matrix validate
+      python3 "80 Build/spreadsheet_downloads.py" setup validate
+      ;;
+  esac
+  build_args+=("${spreadsheet_args[0]}")
 fi
 PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" "${build_args[@]}"
 

@@ -3,6 +3,5 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-python3 "80 Build/settings_downloads.py" build
-
-echo "Excel and Apple Numbers settings downloads are ready and verified."
+echo "build-settings-downloads.sh is retained as a Matrix compatibility alias."
+exec "./80 Build/scripts/build-matrix-downloads.sh"

@@ -18,6 +18,8 @@ REQUIRED_FILES = [
     "00 Master/schema.yaml",
     "00 Master/card_layout.yaml",
     "00 Master/setting_access.yaml",
+    "00 Master/spreadsheet_layouts.yaml",
+    "90 Testing/eos_r5_verification_tracker.yaml",
     "20 Templates/card.html",
     "60 Assets/icon-map.yaml",
     "build.py",

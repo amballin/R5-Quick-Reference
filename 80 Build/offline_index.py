@@ -13,10 +13,9 @@ import yaml
 
 from generated_output import clean_generated_tree, mirror_tree
 from html_renderer import shared_header_icon_path
-from settings_downloads import (
-    WEB_NUMBERS_NAME,
-    WEB_XLSX_NAME,
+from spreadsheet_downloads import (
     copy_prepared_downloads,
+    download_catalog,
 )
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
@@ -29,6 +28,7 @@ def render_offline_index(
     publish_metadata,
     include_png=False,
     include_settings_downloads=False,
+    download_targets=(),
 ):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
@@ -41,16 +41,17 @@ def render_offline_index(
         card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
+        targets = tuple(download_targets) or (("matrix",) if include_settings_downloads else ())
         downloads = []
-        if include_settings_downloads:
-            downloads = copy_prepared_downloads(paths, output_dir / "downloads")
+        if targets:
+            downloads = copy_prepared_downloads(paths, output_dir / "downloads", targets=targets)
         _write_index(
             output_dir / "index.html",
             card_files,
             guides,
             publish_metadata,
             paths,
-            include_settings_downloads=include_settings_downloads,
+            download_targets=targets,
         )
         _write_readme(output_dir / "README.txt")
         (output_dir / ".nojekyll").touch()
@@ -58,7 +59,7 @@ def render_offline_index(
         clean_generated_tree(final_dir)
     return {
         "Merged Build": 1 if (final_dir / "index.html").exists() else 0,
-        "Settings Downloads": len(downloads),
+        "Spreadsheet Downloads": len(downloads),
     }
 
 
@@ -191,7 +192,7 @@ def _write_index(
     guides,
     publish_metadata,
     paths,
-    include_settings_downloads=False,
+    download_targets=(),
 ):
     guide_targets = {guide.get("id"): guide["filename"] for guide in guides if guide.get("id")}
     ordered_cards = sorted(card_files, key=lambda card: (card["display_order"], card["html_path"].stem.lower()))
@@ -222,19 +223,24 @@ def _write_index(
         if deep_dive_markup else ""
     )
     downloads_section = ""
-    if include_settings_downloads:
-        xlsx_href = quote(f"downloads/{WEB_XLSX_NAME}", safe="/")
-        numbers_href = quote(f"downloads/{WEB_NUMBERS_NAME}", safe="/")
+    if download_targets:
+        rows = []
+        for entry in download_catalog(paths, download_targets):
+            xlsx_href = quote(f"downloads/{entry['xlsx_name']}", safe="/")
+            numbers_href = quote(f"downloads/{entry['numbers_name']}", safe="/")
+            title = escape(entry["title"])
+            rows.append(f"""
+<div class="download-row">
+<div class="download-title">{title}</div>
+<div class="download-actions">
+<a class="download-format" href="{xlsx_href}" download="{entry['xlsx_name']}" aria-label="Download {title} as Excel">.xlsx</a>
+<a class="download-format" href="{numbers_href}" download="{entry['numbers_name']}" aria-label="Download {title} for Apple Numbers">.numbers</a>
+</div>
+</div>""")
         downloads_section = f"""
 <h2>Downloads</h2>
 <div class="downloads">
-<div class="download-row">
-<div class="download-title">Subject Settings Matrix</div>
-<div class="download-actions">
-<a class="download-format" href="{xlsx_href}" download="{WEB_XLSX_NAME}" aria-label="Download Subject Settings Matrix as Excel">.xlsx</a>
-<a class="download-format" href="{numbers_href}" download="{WEB_NUMBERS_NAME}" aria-label="Download Subject Settings Matrix for Apple Numbers">.numbers</a>
-</div>
-</div>
+{''.join(rows)}
 </div>"""
     icon_path = shared_header_icon_path(paths)
     logo = ""

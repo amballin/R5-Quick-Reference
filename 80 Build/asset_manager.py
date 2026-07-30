@@ -35,6 +35,14 @@ class ProjectPaths:
     def setting_access_file(self):
         return self.root / "00 Master" / "setting_access.yaml"
 
+    @property
+    def spreadsheet_layouts_file(self):
+        return self.root / "00 Master" / "spreadsheet_layouts.yaml"
+
+    @property
+    def verification_tracker_source_file(self):
+        return self.root / "90 Testing" / "eos_r5_verification_tracker.yaml"
+
     def profile_file(self, profile_name):
         return self.root / "10 Profiles" / f"{profile_name}.yaml"
 
@@ -92,7 +100,31 @@ class ProjectPaths:
 
     @property
     def subject_settings_download_manifest_file(self):
-        return self.reports_output_dir / "subject-settings-downloads.json"
+        return self.reports_output_dir / "subject-settings-matrix-downloads.json"
+
+    @property
+    def setup_tracker_file(self):
+        return self.reports_output_dir / "EOS R5 Setup & Verification Tracker.xlsx"
+
+    @property
+    def setup_tracker_numbers_file(self):
+        return self.reports_output_dir / "EOS R5 Setup & Verification Tracker.numbers"
+
+    @property
+    def setup_tracker_download_manifest_file(self):
+        return self.reports_output_dir / "eos-r5-setup-verification-downloads.json"
+
+    @property
+    def verification_working_dir(self):
+        return self.local_workspace_dir / "Verification"
+
+    @property
+    def setup_tracker_working_file(self):
+        return self.verification_working_dir / "EOS R5 On-Camera Verification Tracker.xlsx"
+
+    @property
+    def setup_tracker_working_numbers_file(self):
+        return self.verification_working_dir / "EOS R5 On-Camera Verification Tracker.numbers"
 
     @property
     def field_guide_pdf_output_dir(self):

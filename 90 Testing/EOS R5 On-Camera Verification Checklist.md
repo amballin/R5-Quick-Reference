@@ -4,7 +4,7 @@
 **Publication:** Non-published repository test material  
 **Evidence rule:** A target becomes owner-confirmed only after the applicable test passes and the result is recorded.
 
-Track progress, session evidence, C1-C3 configuration, and project-update readiness in the companion [EOS R5 On-Camera Verification Tracker](EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx). Keep this Markdown file as the detailed operating procedure and use the workbook as the live progress record.
+The structured checklist source is [`eos_r5_verification_tracker.yaml`](eos_r5_verification_tracker.yaml). Generate a blank publishable master with `./80 Build/scripts/build-setup-downloads.sh`; keep test progress in a separately migrated machine-local working copy. The earlier [EOS R5 On-Camera Verification Tracker](EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx) is retained as a migration source, not as the current blank master.
 
 Use this checklist for one deliberate camera-setup session. Complete the steps in order. Do not register C1, C2, or C3 until every setting for that mode has been checked.
 
@@ -32,6 +32,8 @@ Use this checklist for one deliberate camera-setup session. Complete the steps i
 - [ ] Set **Custom shooting mode (C1-C3) > Auto update set. > Disable**.
 
 ### Confirm shared Camera Setup Essentials
+
+- [ ] Configure the approved **SWITCH** My Menu tab with Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, and Cropping/aspect ratio in that order; leave position 6 open.
 
 - [ ] Image quality: cRAW.
 - [ ] Cropping/aspect ratio: Full-frame.
@@ -69,6 +71,11 @@ Use this checklist for one deliberate camera-setup session. Complete the steps i
 - [ ] M-Fn: Switch to Custom shooting mode.
 
 Do not continue to C1 registration until the shared setup and control assignments above are correct.
+
+### Save the shared-setup checkpoint
+
+- [ ] Use **Set-up 5 > Save/load cam settings on card > Save to card** after SWITCH, shared settings, and physical controls are complete.
+- [ ] Record the checkpoint in the Sessions sheet and set its Checklist status to **Backup-Settings**.
 
 ## 2. Configure, Validate, and Register C1 — Wildlife
 
@@ -179,6 +186,11 @@ Return to a normal shooting mode rather than modifying C1 or C2. Configure the c
 - [ ] Confirm Auto update is still disabled.
 - [ ] Record discrepancies:
 - [ ] C3 result: Pass / Fail / Needs retest.
+
+### Save the registered-modes checkpoint
+
+- [ ] After C1, C2, and C3 have all been registered and read back, save another complete camera configuration to the card.
+- [ ] Record the checkpoint in the Sessions sheet and set its Checklist status to **Backup-Settings**.
 
 ## 5. Verify the Shared AF Controls
 

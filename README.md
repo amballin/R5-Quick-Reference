@@ -32,6 +32,8 @@ Use the repository's handoff scripts from the project root:
 
 `preflight-git.sh` refreshes `origin` and blocks work when the clone is behind or diverged. `finish-day.sh` is interactive and can validate, build, separate generated `docs/`, stage source changes, commit, and push only after confirmation. It backs up changed `docs/` in the machine-local workspace and restores them to `HEAD` so the handoff commit cannot publish Pages. It also refuses to push an older unpushed commit containing `docs/` changes. Review its complete change list before approving staging. Do not switch Macs until the final report says the working tree is clean and synchronized. See [`HOW_TO.md`](HOW_TO.md) for the full workflow.
 
+For the short end-of-day recipe—including source commit/push, both spreadsheet families, publication, and the final synchronization check—open [`FINISH_DAY.html`](FINISH_DAY.html). Its editable source is [`FINISH_DAY.md`](FINISH_DAY.md); normal builds and `finish-day.sh` automatically refresh the tracked HTML copy.
+
 Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
 
 ## Build locally
@@ -62,7 +64,7 @@ To create the sortable Excel matrix of every authored subject profile:
 python3 "80 Build/build.py" --settings-summary
 ```
 
-The workbook is written to the machine-local `Build Output/reports/` folder. Sort its **Rapid Setup Order** column ascending for camera configuration, then sort **Card Order** ascending to restore the reference-card sequence. Use `./80 Build/scripts/build-settings-downloads.sh` to generate, convert, finalize, and verify both spreadsheet formats without running the website build. The interactive `prepare-settings-downloads.sh` workflow remains available as a spreadsheet-only manual fallback and likewise does not build the website. Both outputs remain machine-local unless included in an explicitly authorized `publish.sh --settings-downloads` release.
+The workbook is written to the machine-local `Build Output/reports/` folder. Sort its **Rapid Setup Order** column ascending for camera configuration, then sort **Card Order** ascending to restore the reference-card sequence. Use `./80 Build/scripts/build-matrix-downloads.sh` to generate, convert, finalize, and verify both spreadsheet formats without running the website build. Use `build-setup-downloads.sh` for the blank Setup master or `build-all-spreadsheet-downloads.sh` for both families.
 
 ## Publish the website
 
@@ -72,7 +74,7 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
 
-The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. Use `./80\ Build/scripts/publish.sh --settings-downloads` only after the Excel and Numbers subject-settings files have been prepared and verified; the two options may be combined.
+The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` can include the requested workbook family; these options may be combined with `--png`. Publication still requires separate explicit authorization.
 
 The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML and PNG cards do not include it.
 

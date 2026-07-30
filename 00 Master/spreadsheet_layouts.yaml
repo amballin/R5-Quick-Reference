@@ -1,0 +1,188 @@
+version: 1
+
+shared:
+  font_family: Carlito
+  body_font_size: 11
+  colors:
+    navy: "#17324D"
+    blue: "#295D82"
+    pale_blue: "#DCE8F2"
+    pale_gray: "#F2F5F7"
+    white: "#FFFFFF"
+    dark_text: "#17324D"
+    muted_text: "#52606D"
+    amber: "#B7791F"
+    success: "#70AD47"
+    pale_success: "#E8F3E2"
+    warning: "#FFC000"
+    pale_warning: "#FFF2CC"
+    danger: "#C00000"
+    pale_danger: "#FCE4D6"
+    light_rule: "#D5DEE6"
+  banner:
+    height_px: 126
+    spacer_height_px: 12
+    panels:
+      - height_px: 42
+        role: title
+        fill: "#17324D"
+        text_color: "#FFFFFF"
+        font_size: 24
+        font_weight: 700
+      - height_px: 40
+        role: instructions
+        fill: "#DCE8F2"
+        text_color: "#17324D"
+        font_size: 14
+        font_weight: 700
+      - height_px: 44
+        role: note
+        fill: "#F2F5F7"
+        text_color: "#52606D"
+        font_size: 12
+        font_weight: 600
+        font_style: italic
+
+workbooks:
+  matrix:
+    title: Subject Settings Matrix
+    web_title: Subject Settings Matrix
+    xlsx_name: Subject Settings Matrix.xlsx
+    numbers_name: Subject Settings Matrix.numbers
+    manifest_name: subject-settings-matrix-downloads.json
+    worksheet: Subject Settings Matrix
+    table_name: SubjectSettingsTable
+    banner:
+      width_px: 2000
+      title: Subject Settings Matrix
+      instructions: Sort Rapid Setup Order ascending for efficient camera configuration. Sort Card Order ascending to restore the reference-card sequence.
+      note: Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
+    excel:
+      import_only_rows: 4
+      freeze_rows: 5
+      freeze_columns: 3
+    numbers:
+      header_rows: 1
+      frozen_header_rows: true
+      header_columns: 3
+      frozen_header_columns: true
+    columns:
+      menu_location:
+        heading: Menu Location
+        width_px: 113
+        alignment: left
+        bold: false
+      best_access:
+        heading: Best or Quick Access
+        width_px: 107
+        alignment: center
+        bold: true
+      setting:
+        heading: Setting
+        width_px: 107
+        alignment: right
+        bold: true
+      default:
+        heading: Default Settings
+        width: 20
+        alignment: center
+      profile:
+        width: 20
+        alignment: center
+      order:
+        width: 12
+        alignment: center
+
+  setup:
+    title: EOS R5 Setup & Verification Tracker
+    web_title: EOS R5 Setup & Verification Tracker
+    xlsx_name: EOS R5 Setup & Verification Tracker.xlsx
+    numbers_name: EOS R5 Setup & Verification Tracker.numbers
+    manifest_name: eos-r5-setup-verification-downloads.json
+    local_working_xlsx_name: EOS R5 On-Camera Verification Tracker.xlsx
+    local_working_numbers_name: EOS R5 On-Camera Verification Tracker.numbers
+    banner:
+      width_px: 2600
+      title: EOS R5 Setup & Verification Tracker — Detailed Checklist
+      instructions: Update Status, Test Date, Session ID, evidence, observations, and next action during testing. Work in Sequence order and configure My Menu before C1–C3 registration.
+      note: This download is a blank master. Keep completed evidence in a separate local working copy. Only Verified, unambiguous evidence may be promoted to owner-confirmed project status.
+    sheets:
+      dashboard:
+        name: Dashboard
+        active_on_open: true
+        centered_columns: [B, C, D, E, H]
+        completion_rules:
+          - operator: equal
+            value: 1
+            font_color: success
+          - operator: between
+            values: [0.0001, 0.9999]
+            font_color: dark_text
+            fill: pale_warning
+            bold: true
+          - operator: equal
+            value: 0
+            italic: true
+      checklist:
+        name: Checklist
+        table_name: VerificationChecklist
+        banner_alignment:
+          left_px: 0
+          numbers_table_top_px: 110
+        excel:
+          import_only_rows: 4
+          freeze_rows: 5
+          freeze_columns: 1
+        numbers:
+          header_rows: 1
+          frozen_header_rows: true
+          header_columns: 1
+          frozen_header_columns: true
+        columns:
+          - {key: test_id, heading: Test ID, width_pt: 96, alignment: left}
+          - {key: sequence, heading: Sequence, width_pt: 50, alignment: center}
+          - {key: phase, heading: Phase, width_pt: 89, alignment: left}
+          - {key: expected_result, heading: Expected Result, width_pt: 197.99, alignment: left, wrap: true}
+          - {key: task, heading: Task, width_pt: 204.32, alignment: left, wrap: true}
+          - {key: best_access, heading: Best Access, width_pt: 120, alignment: center, wrap: true}
+          - {key: menu_location, heading: Menu Location, width_pt: 94, alignment: center, bold: true, wrap: true}
+          - {key: menu_detail, heading: Menu Detail, width_pt: 174, alignment: left, wrap: true}
+          - {key: status, heading: Status, width_pt: 91.78, alignment: center, wrap: true}
+          - {key: test_date, heading: Test Date, width_pt: 84, alignment: center}
+          - {key: session_id, heading: Session ID, width_pt: 96, alignment: center}
+          - {key: evidence_files, heading: Evidence Files, width_pt: 144, alignment: left, wrap: true}
+          - {key: observation, heading: Observation, width_pt: 252, alignment: left, wrap: true}
+          - {key: next_action, heading: Next Action, width_pt: 252, alignment: left, wrap: true}
+          - {key: evidence_class, heading: Evidence Class, width_pt: 204, alignment: left, wrap: true}
+          - {key: project_update, heading: "Project Update?", width_pt: 108, alignment: center}
+          - {key: target_project_files, heading: Target Project Files, width_pt: 240, alignment: left, wrap: true}
+          - {key: updated_in_project, heading: Updated in Project, width_pt: 120, alignment: center}
+      registration:
+        name: C1-C3 Registration
+        freeze_rows: 4
+        freeze_columns: 1
+        column_alignments:
+          A: right
+          B: center
+          F: center
+          J: center
+        numbers:
+          header_rows: 4
+          frozen_header_rows: true
+          header_columns: 1
+          frozen_header_columns: true
+      sessions:
+        name: Sessions
+      lists:
+        name: Lists
+      menu:
+        name: Menu
+        table_name: VerificationMenu
+        freeze_rows: 1
+        freeze_columns: 1
+        columns:
+          - {key: test_id, heading: Test ID, width_pt: 98, alignment: left, bold: true}
+          - {key: best_access, heading: Best Access, width_pt: 144, alignment: center, wrap: true}
+          - {key: menu_location, heading: Menu Location, width_pt: 119.65, alignment: center, bold: true}
+          - {key: menu_detail, heading: Menu Detail, width_pt: 297.15, alignment: left, wrap: true}
+          - {key: sequence, heading: Sequence, width_pt: 70, alignment: center}

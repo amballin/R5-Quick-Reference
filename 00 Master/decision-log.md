@@ -2,6 +2,21 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## External Spreadsheet Specifications and Setup Master
+
+**Status:** Accepted
+**Date:** 2026-07-30
+
+Keep reusable spreadsheet presentation and behavior in `00 Master/spreadsheet_layouts.yaml`, not buried in the builders. Keep Setup checklist content, menu access lookups, status lists, and C1–C3 targets in `90 Testing/eos_r5_verification_tracker.yaml`. Both the Subject Settings Matrix and Setup Tracker builders consume these external sources.
+
+Generate a blank Setup master in Excel and Apple Numbers for optional publication. Its Checklist uses the same removable three-band banner pattern as the Matrix, freezes its table header and column A, and keeps Menu Location bold and centered. The Menu sheet is the authoritative workbook lookup for Best Access, Menu Location, and Menu Detail. Configure the approved SWITCH My Menu tab by sequence 4, before shared settings, controls, and C1–C3 registration.
+
+Open the Setup master on Dashboard when the workbook application honors saved active-sheet state. Preserve the Dashboard's formula-driven green Verified, amber pending, and red attention cues; center populated Dashboard columns B–E and H. Center Checklist Status, freeze C1–C3 Registration column A in both formats, and explicitly align the Checklist banner and table left edges. Use `Backup-Settings` as the completed state for checkpoint saves after shared setup/controls and after C1–C3 registration/read-back, in addition to the initial and final configuration saves.
+
+Apply screenshot-matched Completion highlighting in Dashboard column E: 100% uses green text, values above 0% and below 100% use bold black text on pale yellow, and 0% uses italic text. In C1–C3 Registration, right-align column A and center target columns B, F, and J.
+
+Keep any migrated Setup workbook as a separate machine-local working copy and never publish it. Migrate mutable verification state by stable identifiers while regenerating requirements and layout from current sources. Use uniquely named Matrix and Setup scripts, plus a driver for both; retain prior Settings script and flag names only as Matrix compatibility aliases. This decision extends and supersedes the command/file-naming portions of **Opt-In Subject Settings Workbook Downloads**; its publication authorization and readiness safeguards remain binding.
+
 ## Recommendation-First Change Approval
 
 **Status:** Accepted

@@ -51,7 +51,7 @@ python3 "80 Build/build.py" --png
 
 They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/`.
 
-## Optional Subject Settings Excel Summary
+## Optional Spreadsheet Downloads
 
 Generate the sortable matrix of all authored subject profiles with:
 
@@ -61,25 +61,41 @@ python3 "80 Build/build.py" --settings-summary
 
 The full build writes `Build Output/reports/Subject Settings Matrix.xlsx`. The worksheet starts with **Menu Location**, **Best or Quick Access**, **Setting**, and baseline-derived **Default Settings**, followed by every subject profile. Columns A, B, and C are 85 pt, 80 pt, and 80 pt respectively. Column A is normal and left-aligned, B is bold and centered, C is bold and right-aligned, and every table-header cell is bold. The title, sorting instructions, and legend are three visual bands in one removable drawing object above the cell table, leaving the table free of merged cells so Apple Numbers header rows can be assigned quickly after import. The table header and columns A:C are frozen in Excel, and wrapped rows expand for readable menu paths and profile values. It includes Metering even though subject profiles inherit the common Evaluative default. My Menu access uses the `MM-` abbreviation; only proposed tabs carry an asterisk explained in the legend. Sort **Rapid Setup Order** ascending to group rows for efficient camera configuration. Sort **Card Order** ascending to restore the canonical card sequence for profile comparison.
 
-To generate, convert, finalize, and verify both workbook formats without running the website build:
+To generate, convert, finalize, and verify the Matrix in both workbook formats without running the website build:
 
 ```bash
-./80\ Build/scripts/build-settings-downloads.sh
+./80\ Build/scripts/build-matrix-downloads.sh
 ```
 
 This is the normal on-demand spreadsheet workflow. For an interactive/manual Numbers conversion instead:
 
 ```bash
-./80\ Build/scripts/prepare-settings-downloads.sh
+./80\ Build/scripts/prepare-matrix-downloads.sh
 ```
 
 The manual fallback also runs only the spreadsheet generator; it does not build the website. It regenerates the Excel workbook, opens it in Apple Numbers, and prints the exact destination for `Subject Settings Matrix.numbers`. Save the imported document at that path, then verify the pair:
 
 ```bash
-./80\ Build/scripts/prepare-settings-downloads.sh --verify
+./80\ Build/scripts/prepare-matrix-downloads.sh --verify
 ```
 
-Verification finishes the native Numbers layout before recording hashes: it removes the four import-only rows from the Numbers table, leaves the three-band banner as one separate removable image above the table, assigns the column-title row as the native Numbers header, enables **Freeze Header Rows**, assigns A:C as native header columns, and enables **Freeze Header Columns**. Any later workbook change invalidates readiness and requires conversion and verification again. These files remain machine-local until an explicitly authorized publish uses `--settings-downloads`.
+Verification finishes the native Numbers layout before recording hashes: it removes the four import-only rows from the Numbers table, leaves the three-band banner as one separate removable image above the table, assigns the column-title row as the native Numbers header, enables **Freeze Header Rows**, assigns A:C as native header columns, and enables **Freeze Header Columns**.
+
+Prepare the blank Setup & Verification master with:
+
+```bash
+./80\ Build/scripts/build-setup-downloads.sh
+```
+
+Its Checklist freezes the table header and column A, centers Status, keeps Menu Location bold and centered, and derives Best Access and menu fields from the Menu sheet. C1–C3 Registration also freezes column A. Use **Backup-Settings** after the shared setup/control checkpoint and after all C1–C3 registrations have been read back. Use `prepare-setup-downloads.sh` for manual conversion or `build-all-spreadsheet-downloads.sh` to prepare Matrix and Setup together.
+
+To migrate progress from an earlier Excel tracker into a separate local working copy:
+
+```bash
+./80\ Build/scripts/migrate-setup-tracker.sh "/path/to/earlier-tracker.xlsx"
+```
+
+Migration carries mutable Checklist, registration, and session values forward by stable identifiers. The blank master remains unchanged and is the only Setup workbook eligible for publication. Any later workbook change invalidates readiness and requires conversion and verification again.
 
 ## Current Folder Structure
 
@@ -255,8 +271,8 @@ This default publish omits PNG cards. To deliberately publish the optional PNG d
 To prepare the spreadsheets and then publish the complete website with them included, run these commands in order:
 
 ```bash
-./80\ Build/scripts/build-settings-downloads.sh
-./80\ Build/scripts/publish.sh --settings-downloads
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh
+./80\ Build/scripts/publish.sh --spreadsheet-downloads
 ```
 
 The second command publishes the entire website and includes the verified spreadsheets; it is not a spreadsheet-only publish. Do not follow it with a plain `publish.sh`: the default publish omits spreadsheet downloads and would remove them from the published site. The publish command refuses missing, stale, or changed workbook files.
@@ -264,7 +280,7 @@ The second command publishes the entire website and includes the verified spread
 Combine both optional output classes when required:
 
 ```bash
-./80\ Build/scripts/publish.sh --png --settings-downloads
+./80\ Build/scripts/publish.sh --png --spreadsheet-downloads
 ```
 
 `./80 Build/scripts/publish.sh` is the only supported website publishing command. Do not run the internal `build.py --publish` mode directly. Development and test threads must never run the publishing script.
