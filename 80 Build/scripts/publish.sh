@@ -127,7 +127,9 @@ tree="$(git write-tree)"
 commit="$(printf '%s\n' 'Update R5 reference' | git commit-tree "$tree" -p "$parent")"
 git push origin "$commit:refs/heads/$branch"
 git update-ref "refs/heads/$branch" "$commit" "$parent"
+unset GIT_INDEX_FILE
 mv "$candidate" "$metadata"
+git restore --staged --source=HEAD -- "$metadata" docs
 
 verify_args=()
 if (( ${#spreadsheet_args[@]} )); then
