@@ -11,6 +11,8 @@ def validate(root):
     for target in ("matrix", "setup"):
         if target not in workbooks:
             issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, f"Missing {target} layout."))
+        elif not isinstance((workbooks[target] or {}).get("revision"), int) or workbooks[target]["revision"] < 1:
+            issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, f"{target} revision must be a positive integer."))
 
     setup = workbooks.get("setup") or {}
     checklist = ((setup.get("sheets") or {}).get("checklist") or {})
@@ -75,6 +77,20 @@ def validate(root):
         "J": "center",
     }:
         issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "C1-C3 Registration must right-align A and center target columns B, F, and J."))
+    if registration.get("outer_borders") != {
+        "color": "blue",
+        "weight_pt": 3,
+        "ranges": ["A:A", "B:E", "F:I", "J:M"],
+    }:
+        issues.append(
+            error(
+                "spreadsheet_specs",
+                paths.spreadsheet_layouts_file,
+                "C1-C3 Registration outer borders must frame A, B:E, F:I, and J:M in 3-point blue.",
+            )
+        )
+    if (sheets.get("metadata") or {}).get("name") != "Metadata":
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Setup Metadata sheet is required."))
 
     tests = source.get("tests") or []
     ids = [test.get("test_id") for test in tests if isinstance(test, dict)]

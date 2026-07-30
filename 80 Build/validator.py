@@ -25,6 +25,7 @@ from validators import (  # noqa: E402
     spreadsheet_spec_validator,
     stabilization_validator,
     structure,
+    verification_status_validator,
     yaml_validator,
 )
 
@@ -37,6 +38,7 @@ VALIDATORS = [
     ("Setting Access Map", setting_access_validator.validate),
     ("Spreadsheet Specifications", spreadsheet_spec_validator.validate),
     ("Spreadsheet Downloads", spreadsheet_download_validator.validate),
+    ("Verification Status", verification_status_validator.validate),
     ("Governance Documents", governance_validator.validate),
     ("Finish-Day HTML Guide", finish_day_guide_validator.validate),
     ("Camera Controls", control_validator.validate),

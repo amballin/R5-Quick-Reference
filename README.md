@@ -74,7 +74,15 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
 
-The normal publish contains responsive HTML only. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` can include the requested workbook family; these options may be combined with `--png`. Publication still requires separate explicit authorization.
+For an intentional major release, supply the new major number:
+
+```bash
+./80\ Build/scripts/publish.sh --major-version 2
+```
+
+This publishes `2.00`; later ordinary publications continue as `2.01`, `2.02`, and so on. The requested major number must be greater than the current one.
+
+The normal publish omits PNG cards and preserves exact previously published spreadsheet downloads when their source fingerprints remain current. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` replaces the requested workbook family; these options may be combined with `--png`. Use `--remove-spreadsheet-downloads` only when the downloads should deliberately be removed. Publication still requires separate explicit authorization.
 
 The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML and PNG cards do not include it.
 

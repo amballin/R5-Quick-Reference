@@ -9,16 +9,32 @@ rm -f "$candidate"
 
 include_png=false
 spreadsheet_args=()
+remove_spreadsheets=false
+major_version=""
 while (( $# )); do
   case "$1" in
     --png) include_png=true ;;
     --settings-downloads|--matrix-downloads) spreadsheet_args=(--matrix-downloads) ;;
     --setup-downloads) spreadsheet_args=(--setup-downloads) ;;
     --spreadsheet-downloads) spreadsheet_args=(--spreadsheet-downloads) ;;
-    *) echo "Usage: $0 [--png] [--matrix-downloads|--setup-downloads|--spreadsheet-downloads]" >&2; exit 2 ;;
+    --remove-spreadsheet-downloads) remove_spreadsheets=true ;;
+    --major-version)
+      if (( $# < 2 )) || [[ ! "$2" =~ ^[0-9]+$ ]]; then
+        echo "--major-version requires a nonnegative integer." >&2
+        exit 2
+      fi
+      major_version="$2"
+      shift
+      ;;
+    *) echo "Usage: $0 [--png] [--major-version N] [--matrix-downloads|--setup-downloads|--spreadsheet-downloads|--remove-spreadsheet-downloads]" >&2; exit 2 ;;
   esac
   shift
 done
+
+if "$remove_spreadsheets" && (( ${#spreadsheet_args[@]} )); then
+  echo "Removal cannot be combined with spreadsheet replacement options." >&2
+  exit 2
+fi
 
 build_args=(--publish)
 if "$include_png"; then
@@ -38,6 +54,12 @@ if (( ${#spreadsheet_args[@]} )); then
       ;;
   esac
   build_args+=("${spreadsheet_args[0]}")
+fi
+if "$remove_spreadsheets"; then
+  build_args+=(--remove-spreadsheet-downloads)
+fi
+if [[ -n "$major_version" ]]; then
+  build_args+=(--major-version "$major_version")
 fi
 PRS_PUBLISH_AUTHORIZED=1 python3 "80 Build/build.py" "${build_args[@]}"
 

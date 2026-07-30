@@ -97,6 +97,48 @@ def ensure_active_sheet(workbook_path, sheet_name):
     replacement_path.replace(workbook_path)
 
 
+def prefer_rgb_border_colors(workbook_path):
+    """Remove conflicting indexed colors when an explicit RGB border color exists.
+
+    Some XLSX writers emit both attributes. Excel prefers RGB, while Apple
+    Numbers may prefer the indexed palette value and display the wrong color.
+    """
+    workbook_path = workbook_path.resolve()
+    replacement_path = workbook_path.with_name(f".{workbook_path.name}.rgb-borders")
+    ET.register_namespace("x", MAIN_NS)
+
+    with ZipFile(workbook_path, "r") as source, ZipFile(replacement_path, "w") as target:
+        styles = ET.fromstring(source.read("xl/styles.xml"))
+        changed = False
+        for color in styles.findall(
+            f".//{{{MAIN_NS}}}borders//{{{MAIN_NS}}}color"
+        ):
+            if color.attrib.get("rgb") and "indexed" in color.attrib:
+                del color.attrib["indexed"]
+                changed = True
+        styles_xml = (
+            ET.tostring(styles, encoding="utf-8", xml_declaration=True)
+            if changed
+            else source.read("xl/styles.xml")
+        )
+        for entry in source.infolist():
+            data = styles_xml if entry.filename == "xl/styles.xml" else source.read(entry.filename)
+            target.writestr(entry, data)
+    replacement_path.replace(workbook_path)
+
+
+def border_color_attributes(workbook_path):
+    """Return the attributes for every explicitly colored workbook border."""
+    with ZipFile(workbook_path.resolve(), "r") as source:
+        styles = ET.fromstring(source.read("xl/styles.xml"))
+    return [
+        dict(color.attrib)
+        for color in styles.findall(
+            f".//{{{MAIN_NS}}}borders//{{{MAIN_NS}}}color"
+        )
+    ]
+
+
 def worksheet_dimensions(workbook_path, sheet_name):
     """Return the maximum used row and column declared by a named worksheet."""
     worksheet_path = _worksheet_path(workbook_path.resolve(), sheet_name)

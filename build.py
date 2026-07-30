@@ -75,6 +75,12 @@ def parse_args():
         action="store_true",
         help="Include all verified spreadsheet downloads in the generated site.",
     )
+    parser.add_argument(
+        "--remove-spreadsheet-downloads",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument("--major-version", type=int, help=argparse.SUPPRESS)
     parser.add_argument("--publish", action="store_true", help=argparse.SUPPRESS)
     return parser.parse_args()
 
@@ -280,6 +286,12 @@ def main():
                 file=sys.stderr,
             )
             return 2
+        if args.remove_spreadsheet_downloads and spreadsheet_download_targets:
+            print(
+                "--remove-spreadsheet-downloads cannot be combined with spreadsheet replacement options.",
+                file=sys.stderr,
+            )
+            return 2
         return publish(
             paths,
             metadata_path,
@@ -287,7 +299,13 @@ def main():
             start,
             include_png=args.png,
             spreadsheet_download_targets=spreadsheet_download_targets,
+            preserve_spreadsheet_downloads=not args.remove_spreadsheet_downloads,
+            major_version=args.major_version,
         )
+    if args.remove_spreadsheet_downloads or args.major_version is not None:
+        option = "--major-version" if args.major_version is not None else "--remove-spreadsheet-downloads"
+        print(f"{option} is available only through publish.sh.", file=sys.stderr)
+        return 2
     if args.settings_summary and spreadsheet_download_targets:
         print(
             "--settings-summary and --settings-downloads are separate preparation and publication stages.",
@@ -348,6 +366,7 @@ def build_site(
     include_pdf=False,
     include_settings_summary=False,
     spreadsheet_download_targets=(),
+    preserve_spreadsheet_downloads=False,
     keep_website=False,
     publish_display=None,
 ):
@@ -392,6 +411,7 @@ def build_site(
             publish_display,
             include_png=include_png,
             download_targets=spreadsheet_download_targets,
+            preserve_spreadsheet_downloads=preserve_spreadsheet_downloads,
         )
     )
     generated.update(generate_pwa(paths))
@@ -431,13 +451,19 @@ def publish(
     start,
     include_png=False,
     spreadsheet_download_targets=(),
+    preserve_spreadsheet_downloads=True,
+    major_version=None,
 ):
     override = os.environ.get("PRS_PUBLISH_TIME")
     try:
         published = datetime.fromisoformat(override) if override else None
-        candidate = next_publish_metadata(current_metadata, published)
+        candidate = next_publish_metadata(
+            current_metadata,
+            published,
+            major_version=major_version,
+        )
     except (ValueError, PublishMetadataError) as exc:
-        print(f"Publish timestamp error: {exc}", file=sys.stderr)
+        print(f"Publish metadata error: {exc}", file=sys.stderr)
         return 2
     display = display_publish_metadata(candidate)
     status = build_site(
@@ -445,6 +471,7 @@ def publish(
         start=start,
         include_png=include_png,
         spreadsheet_download_targets=spreadsheet_download_targets,
+        preserve_spreadsheet_downloads=preserve_spreadsheet_downloads,
         publish_display=display,
     )
     if status != 0:

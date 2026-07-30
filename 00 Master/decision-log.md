@@ -2,6 +2,26 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Explicit Major Website Version Bumps
+
+**Status:** Accepted
+**Date:** 2026-07-30
+
+Keep ordinary website publications on the existing automatic minor-version increment. Permit an intentional major-version release only through the supported publication command with `--major-version N`. Require `N` to be an integer greater than the currently published major version, set that release to `N.00`, and resume ordinary minor increments from the new major version. Do not permit a major-version request through an ordinary development build or by using a negative minor-number workaround.
+
+## Preserved Spreadsheet Releases and Git-Tracked Verification Status
+
+**Status:** Accepted
+**Date:** 2026-07-30
+
+Preserve compatible spreadsheet downloads during an ordinary website publication instead of removing them. Record a published release manifest containing each workbook family’s revision, source fingerprint, stable filenames, and content hashes. A plain `publish.sh` preserves the exact previously published workbook bytes only when their recorded source fingerprint still matches the current inputs. If relevant Matrix or Setup inputs changed, publication must stop until that family is rebuilt or spreadsheet downloads are explicitly removed. `--matrix-downloads`, `--setup-downloads`, and `--spreadsheet-downloads` deliberately replace selected families; `--remove-spreadsheet-downloads` deliberately removes all workbook downloads. Workbook preparation remains separate from publication.
+
+Show an independent workbook revision, shortened source fingerprint, and generation date inside both workbook families. Do not use the website version as the workbook revision because unrelated website changes increment it. On C1–C3 Registration, apply a three-point project-blue outer border to the complete column ranges `A:A`, `B:E`, `F:I`, and `J:M`.
+
+Keep `90 Testing/eos_r5_verification_status.yaml` as the canonical, non-published, Git-tracked record of mutable testing status. Generate the machine-local Excel/Numbers working tracker from the current definitions plus that status, and import approved mutable workbook fields back into YAML by stable Test ID and registration setting. Keep evidence binaries local; store only their references in YAML. Record definition fingerprints in the working workbook and against verified results. When a test requirement or C1–C3 target changes, preserve prior history and evidence but invalidate affected passes as needing retest. New tests begin unverified, removed tests are archived, and finish-day must refuse to complete while a local working tracker differs from its last YAML synchronization.
+
+This decision supersedes the normal-publish omission/removal behavior in **Opt-In Subject Settings Workbook Downloads** and the machine-local-only status-record portion of **External Spreadsheet Specifications and Setup Master**. The published Setup workbook remains a blank master and must never contain the owner’s testing status.
+
 ## External Spreadsheet Specifications and Setup Master
 
 **Status:** Accepted

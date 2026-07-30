@@ -39,12 +39,26 @@ def load_publish_metadata(path):
     return {"version": {"major": major, "minor": minor}, "published": published}
 
 
-def next_publish_metadata(current, published=None):
+def next_publish_metadata(current, published=None, major_version=None):
     published = published or datetime.now().astimezone()
     if published.tzinfo is None or published.utcoffset() is None:
         raise PublishMetadataError("Publish timestamp must include a UTC offset.")
+    current_major = current["version"]["major"]
+    if major_version is not None:
+        if isinstance(major_version, bool) or not isinstance(major_version, int):
+            raise PublishMetadataError("Requested major version must be an integer.")
+        if major_version <= current_major:
+            raise PublishMetadataError(
+                f"Requested major version must be greater than the current major version {current_major}."
+            )
+        version = {"major": major_version, "minor": 0}
+    else:
+        version = {
+            "major": current_major,
+            "minor": current["version"]["minor"] + 1,
+        }
     return {
-        "version": {"major": current["version"]["major"], "minor": current["version"]["minor"] + 1},
+        "version": version,
         "published": published,
     }
 

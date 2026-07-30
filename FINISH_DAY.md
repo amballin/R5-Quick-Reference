@@ -2,6 +2,16 @@
 
 Use these steps in order when you want to finish the source work, synchronize Git, prepare both spreadsheet downloads, and publish the complete website.
 
+## 0. Import testing status when the working tracker changed
+
+If you updated the local Excel or Numbers verification tracker, close it and run:
+
+```bash
+./80\ Build/scripts/import-verification-status.sh
+```
+
+This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` will stop if the local tracker changed after its last successful import.
+
 ## 1. Finish the source work and synchronize Git
 
 From the repository root, run:
@@ -46,7 +56,7 @@ Run:
 
 This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.
 
-> Do not run plain `publish.sh` afterward. A plain publish omits the spreadsheet downloads and would remove them from the published site.
+Later plain `publish.sh` releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.
 
 ## 4. Verify the final Git state
 
@@ -73,3 +83,13 @@ Use this publishing command instead of the command in Step 3:
 ```
 
 Only include `--png` when fixed PNG card downloads are intentionally wanted on the live site.
+
+## Optional: start a new major website version
+
+To make this publication Version 2.00, use this command instead of Step 3:
+
+```bash
+./80\ Build/scripts/publish.sh --major-version 2 --spreadsheet-downloads
+```
+
+The requested major number must be greater than the current one. Later ordinary publications continue with 2.01, 2.02, and so on. Spreadsheet revisions remain independent.

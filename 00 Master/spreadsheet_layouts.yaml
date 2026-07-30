@@ -45,6 +45,7 @@ shared:
 
 workbooks:
   matrix:
+    revision: 1
     title: Subject Settings Matrix
     web_title: Subject Settings Matrix
     xlsx_name: Subject Settings Matrix.xlsx
@@ -94,6 +95,7 @@ workbooks:
         alignment: center
 
   setup:
+    revision: 1
     title: EOS R5 Setup & Verification Tracker
     web_title: EOS R5 Setup & Verification Tracker
     xlsx_name: EOS R5 Setup & Verification Tracker.xlsx
@@ -161,6 +163,10 @@ workbooks:
         name: C1-C3 Registration
         freeze_rows: 4
         freeze_columns: 1
+        outer_borders:
+          color: blue
+          weight_pt: 3
+          ranges: ["A:A", "B:E", "F:I", "J:M"]
         column_alignments:
           A: right
           B: center
@@ -186,3 +192,5 @@ workbooks:
           - {key: menu_location, heading: Menu Location, width_pt: 119.65, alignment: center, bold: true}
           - {key: menu_detail, heading: Menu Detail, width_pt: 297.15, alignment: left, wrap: true}
           - {key: sequence, heading: Sequence, width_pt: 70, alignment: center}
+      metadata:
+        name: Metadata

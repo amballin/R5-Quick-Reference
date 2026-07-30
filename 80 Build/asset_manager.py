@@ -43,6 +43,10 @@ class ProjectPaths:
     def verification_tracker_source_file(self):
         return self.root / "90 Testing" / "eos_r5_verification_tracker.yaml"
 
+    @property
+    def verification_status_file(self):
+        return self.root / "90 Testing" / "eos_r5_verification_status.yaml"
+
     def profile_file(self, profile_name):
         return self.root / "10 Profiles" / f"{profile_name}.yaml"
 
@@ -115,6 +119,10 @@ class ProjectPaths:
         return self.reports_output_dir / "eos-r5-setup-verification-downloads.json"
 
     @property
+    def published_spreadsheet_manifest_file(self):
+        return self.pages_output_dir / "downloads" / "spreadsheet-releases.json"
+
+    @property
     def verification_working_dir(self):
         return self.local_workspace_dir / "Verification"
 
@@ -125,6 +133,10 @@ class ProjectPaths:
     @property
     def setup_tracker_working_numbers_file(self):
         return self.verification_working_dir / "EOS R5 On-Camera Verification Tracker.numbers"
+
+    @property
+    def verification_import_marker_file(self):
+        return self.verification_working_dir / ".verification-status-import.json"
 
     @property
     def field_guide_pdf_output_dir(self):

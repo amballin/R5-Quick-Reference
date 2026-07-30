@@ -49,7 +49,7 @@ const bannerWidthPx = layout.banner.width_px;
 const bannerTexts = {
   title: layout.banner.title,
   instructions: layout.banner.instructions,
-  note: layout.banner.note,
+  note: `${layout.banner.note} ${payload.release_label}.`,
 };
 const bannerPanels = sharedLayout.banner.panels.map((panel, index) => ({
   row: index,

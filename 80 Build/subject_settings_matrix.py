@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,6 +15,7 @@ from html_renderer import (
 )
 from validators.common import flatten_paths, load_yaml_checked
 from spreadsheet_ooxml import ensure_freeze_panes
+from spreadsheet_revisions import short_fingerprint, source_fingerprint, workbook_revision
 
 
 DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
@@ -64,6 +66,13 @@ def generate_subject_settings_matrix(paths):
         "rows": rows,
         "layout": layout,
         "shared_layout": layouts.get("shared") or {},
+        "workbook_revision": workbook_revision(paths, "matrix"),
+        "source_fingerprint": source_fingerprint(paths, "matrix"),
+        "release_label": (
+            f"Workbook revision {workbook_revision(paths, 'matrix')} • "
+            f"Source {short_fingerprint(source_fingerprint(paths, 'matrix'))} • "
+            f"Generated {datetime.now().astimezone().date().isoformat()}"
+        ),
     }
     payload_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     command = [

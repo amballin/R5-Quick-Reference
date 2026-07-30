@@ -14,8 +14,8 @@ import yaml
 from generated_output import clean_generated_tree, mirror_tree
 from html_renderer import shared_header_icon_path
 from spreadsheet_downloads import (
-    copy_prepared_downloads,
     download_catalog,
+    prepare_spreadsheet_release,
 )
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
@@ -29,6 +29,7 @@ def render_offline_index(
     include_png=False,
     include_settings_downloads=False,
     download_targets=(),
+    preserve_spreadsheet_downloads=False,
 ):
     """Build the merged offline web bundle with cards and guide pages embedded in the index."""
     output_dir = _staging_output_dir(paths)
@@ -41,10 +42,17 @@ def render_offline_index(
         card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
-        targets = tuple(download_targets) or (("matrix",) if include_settings_downloads else ())
-        downloads = []
-        if targets:
-            downloads = copy_prepared_downloads(paths, output_dir / "downloads", targets=targets)
+        replacement_targets = tuple(download_targets) or (
+            ("matrix",) if include_settings_downloads else ()
+        )
+        release = prepare_spreadsheet_release(
+            paths,
+            output_dir / "downloads",
+            replace_targets=replacement_targets,
+            preserve_existing=preserve_spreadsheet_downloads,
+        )
+        downloads = release["files"]
+        targets = release["targets"]
         _write_index(
             output_dir / "index.html",
             card_files,

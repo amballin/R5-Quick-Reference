@@ -112,6 +112,13 @@ clean_generated_metadata || {
     exit 1
 }
 
+if ! python3 "80 Build/verification_status.py" check; then
+    echo
+    echo "NOT FINISHED: Verification tracker changes have not been imported into Git-tracked YAML status."
+    echo "Run ./80\\ Build/scripts/import-verification-status.sh, then rerun finish-day."
+    exit 1
+fi
+
 run_status
 RESULT=$?
 

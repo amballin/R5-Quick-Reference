@@ -1,10 +1,22 @@
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 import shutil
 import subprocess
 
-from spreadsheet_ooxml import ensure_active_sheet, ensure_freeze_panes
+from spreadsheet_revisions import (
+    registration_definition_fingerprints,
+    short_fingerprint,
+    source_fingerprint,
+    tracker_definition_fingerprints,
+    workbook_revision,
+)
+from spreadsheet_ooxml import (
+    ensure_active_sheet,
+    ensure_freeze_panes,
+    prefer_rgb_border_colors,
+)
 from validators.common import load_yaml_checked
 
 
@@ -12,7 +24,12 @@ DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependen
 DEFAULT_NODE_MODULES = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"
 
 
-def generate_camera_setup_tracker(paths, output_path=None, migration_source=None):
+def generate_camera_setup_tracker(
+    paths,
+    output_path=None,
+    migration_source=None,
+    status_data=None,
+):
     """Generate the blank Setup tracker or a migrated local working copy."""
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
@@ -31,7 +48,8 @@ def generate_camera_setup_tracker(paths, output_path=None, migration_source=None
             node_link.unlink()
     node_link.symlink_to(modules_dir, target_is_directory=True)
 
-    preview_dir = runtime_dir / ("working-previews" if migration_source else "previews")
+    is_working_copy = migration_source is not None or status_data is not None
+    preview_dir = runtime_dir / ("working-previews" if is_working_copy else "previews")
     preview_dir.mkdir(parents=True, exist_ok=True)
     payload_path = runtime_dir / "payload.json"
     payload = {
@@ -42,6 +60,18 @@ def generate_camera_setup_tracker(paths, output_path=None, migration_source=None
         "shared_layout": layouts.get("shared") or {},
         "source": source,
         "migration_source": str(Path(migration_source).resolve()) if migration_source else None,
+        "status": status_data,
+        "workbook_revision": workbook_revision(paths, "setup"),
+        "source_fingerprint": source_fingerprint(paths, "setup"),
+        "definition_fingerprints": {
+            "tests": tracker_definition_fingerprints(source),
+            "registration": registration_definition_fingerprints(source),
+        },
+        "release_label": (
+            f"Workbook revision {workbook_revision(paths, 'setup')} • "
+            f"Source {short_fingerprint(source_fingerprint(paths, 'setup'))} • "
+            f"Generated {datetime.now().astimezone().date().isoformat()}"
+        ),
     }
     payload_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     command = [
@@ -74,6 +104,7 @@ def generate_camera_setup_tracker(paths, output_path=None, migration_source=None
     dashboard = ((layout.get("sheets") or {}).get("dashboard") or {})
     if dashboard.get("active_on_open"):
         ensure_active_sheet(output_path, dashboard["name"])
+    prefer_rgb_border_colors(output_path)
     return {
         "XLSX": 1 if output_path.exists() else 0,
         "setup_tracker_preview_dir": preview_dir,

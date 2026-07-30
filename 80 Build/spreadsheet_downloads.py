@@ -11,11 +11,17 @@ import subprocess
 import sys
 
 from asset_manager import ProjectPaths
-from spreadsheet_ooxml import excel_column, worksheet_dimensions
+from spreadsheet_ooxml import (
+    border_color_attributes,
+    excel_column,
+    worksheet_dimensions,
+)
+from spreadsheet_revisions import source_fingerprint, workbook_revision
 from validators.common import load_yaml_checked
 
 
-MANIFEST_VERSION = 1
+MANIFEST_VERSION = 2
+PUBLISHED_MANIFEST_VERSION = 1
 NUMBERS_BUNDLE_IDS = ("com.apple.Numbers", "com.apple.iWork.Numbers")
 SUPPORTED_TARGETS = ("matrix", "setup")
 
@@ -38,6 +44,7 @@ def target_spec(paths, target):
         return {
             "target": target,
             "layout": layout,
+            "shared": layouts.get("shared") or {},
             "xlsx": paths.subject_settings_summary_file,
             "numbers": paths.subject_settings_numbers_file,
             "manifest": paths.subject_settings_download_manifest_file,
@@ -45,6 +52,7 @@ def target_spec(paths, target):
     return {
         "target": target,
         "layout": layout,
+        "shared": layouts.get("shared") or {},
         "xlsx": paths.setup_tracker_file,
         "numbers": paths.setup_tracker_numbers_file,
         "manifest": paths.setup_tracker_download_manifest_file,
@@ -120,7 +128,8 @@ def convert_numbers_automatically(paths, target, xlsx_path=None, numbers_path=No
     document_name = json.dumps(numbers.stem)
     apple_script = f"""
 tell application id "__BUNDLE_ID__"
-    repeat with openDocument in documents
+    repeat with documentIndex from (count documents) to 1 by -1
+        set openDocument to document documentIndex
         if name of openDocument starts with {document_name} then
             close openDocument saving no
         end if
@@ -198,10 +207,29 @@ def verify_prepared_download(paths, target, write_manifest=True):
         raise SpreadsheetDownloadError(
             f"The {target} Numbers document is older than its Excel source."
         )
+    if target == "setup":
+        border_colors = border_color_attributes(spec["xlsx"])
+        expected_rgb = (
+            ((spec["shared"].get("colors") or {}))
+            .get("blue", "")
+            .replace("#", "")
+            .upper()
+        )
+        expected_rgb = f"FF{expected_rgb}"
+        if not border_colors or any(
+            color.get("rgb") != expected_rgb or "indexed" in color
+            for color in border_colors
+        ):
+            raise SpreadsheetDownloadError(
+                "The setup workbook borders are not stored as unambiguous RGB blue; "
+                "Apple Numbers may display a conflicting indexed color."
+            )
     payload = {
         "version": MANIFEST_VERSION,
         "target": target,
         "prepared": datetime.now().astimezone().isoformat(),
+        "workbook_revision": workbook_revision(paths, target),
+        "source_fingerprint": source_fingerprint(paths, target),
         "xlsx": {
             "name": spec["xlsx"].name,
             "sha256": _sha256(spec["xlsx"]),
@@ -231,6 +259,14 @@ def validate_download_manifest(paths, target="matrix"):
         raise SpreadsheetDownloadError(f"Could not read {manifest}: {exc}") from exc
     if payload.get("version") != MANIFEST_VERSION or payload.get("target") != target:
         raise SpreadsheetDownloadError(f"Unsupported prepared-download manifest: {manifest}")
+    if payload.get("workbook_revision") != workbook_revision(paths, target):
+        raise SpreadsheetDownloadError(
+            f"Prepared {target} workbook revision is stale. Rebuild its downloads."
+        )
+    if payload.get("source_fingerprint") != source_fingerprint(paths, target):
+        raise SpreadsheetDownloadError(
+            f"Prepared {target} source inputs changed. Rebuild its downloads."
+        )
     for key in ("xlsx", "numbers"):
         path = spec[key]
         entry = payload.get(key)
@@ -263,29 +299,186 @@ def copy_prepared_downloads(paths, target_dir, targets=("matrix",)):
     return copied
 
 
+def prepare_spreadsheet_release(
+    paths,
+    target_dir,
+    replace_targets=(),
+    preserve_existing=False,
+):
+    """Copy replacement downloads and safely preserve compatible published downloads."""
+    target_dir = Path(target_dir)
+    replace_targets = tuple(dict.fromkeys(replace_targets))
+    unknown = sorted(set(replace_targets) - set(SUPPORTED_TARGETS))
+    if unknown:
+        raise SpreadsheetDownloadError(f"Unknown spreadsheet release targets: {unknown}")
+    needs_existing = preserve_existing and set(replace_targets) != set(SUPPORTED_TARGETS)
+    existing = _published_release_from_head(paths) if needs_existing else {
+        "version": PUBLISHED_MANIFEST_VERSION,
+        "targets": {},
+    }
+    existing_targets = existing.get("targets") or {}
+    target_dir.mkdir(parents=True, exist_ok=True)
+    release = {
+        "version": PUBLISHED_MANIFEST_VERSION,
+        "generated": datetime.now().astimezone().isoformat(),
+        "targets": {},
+    }
+    copied = []
+    for target in SUPPORTED_TARGETS:
+        if target in replace_targets:
+            local = validate_download_manifest(paths, target)
+            spec = target_spec(paths, target)
+            entry = {
+                "workbook_revision": local["workbook_revision"],
+                "source_fingerprint": local["source_fingerprint"],
+                "prepared": local["prepared"],
+                "files": {},
+            }
+            for key in ("xlsx", "numbers"):
+                source = spec[key]
+                name = spec["layout"][f"{key}_name"]
+                destination = target_dir / name
+                shutil.copy2(source, destination)
+                copied.append(destination)
+                entry["files"][key] = {
+                    "name": name,
+                    "sha256": _sha256(destination),
+                }
+            release["targets"][target] = entry
+            continue
+
+        prior = existing_targets.get(target)
+        if not prior:
+            continue
+        current_fingerprint = source_fingerprint(paths, target)
+        if prior.get("source_fingerprint") != current_fingerprint:
+            raise SpreadsheetDownloadError(
+                f"Published {target} downloads no longer match their source inputs. "
+                f"Rebuild them or publish with --remove-spreadsheet-downloads."
+            )
+        if prior.get("workbook_revision") != workbook_revision(paths, target):
+            raise SpreadsheetDownloadError(
+                f"Published {target} workbook revision is outdated. "
+                f"Rebuild it or publish with --remove-spreadsheet-downloads."
+            )
+        preserved = deepcopy_json(prior)
+        for key in ("xlsx", "numbers"):
+            file_entry = (preserved.get("files") or {}).get(key) or {}
+            name = file_entry.get("name")
+            expected_hash = file_entry.get("sha256")
+            if not name or not expected_hash:
+                raise SpreadsheetDownloadError(
+                    f"Published {target} release metadata is incomplete."
+                )
+            content = _git_show(paths, f"docs/downloads/{name}")
+            actual_hash = hashlib.sha256(content).hexdigest()
+            if actual_hash != expected_hash:
+                raise SpreadsheetDownloadError(
+                    f"Published {target} {key} hash does not match its release metadata."
+                )
+            destination = target_dir / name
+            destination.write_bytes(content)
+            copied.append(destination)
+        release["targets"][target] = preserved
+
+    if release["targets"]:
+        manifest = target_dir / "spreadsheet-releases.json"
+        manifest.write_text(json.dumps(release, indent=2) + "\n", encoding="utf-8")
+        copied.append(manifest)
+    elif target_dir.exists():
+        target_dir.rmdir()
+    return {
+        "files": copied,
+        "targets": tuple(
+            target for target in SUPPORTED_TARGETS if target in release["targets"]
+        ),
+        "manifest": release,
+    }
+
+
+def validate_published_release(paths, root=None):
+    root = Path(root or paths.merged_build_output_dir)
+    manifest_path = root / "downloads" / "spreadsheet-releases.json"
+    if not manifest_path.exists():
+        return {}
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SpreadsheetDownloadError(f"Published release manifest is invalid: {exc}") from exc
+    if payload.get("version") != PUBLISHED_MANIFEST_VERSION:
+        raise SpreadsheetDownloadError("Published spreadsheet release manifest version is unsupported.")
+    for target, entry in (payload.get("targets") or {}).items():
+        if target not in SUPPORTED_TARGETS:
+            raise SpreadsheetDownloadError(f"Unknown published spreadsheet target: {target}")
+        if entry.get("source_fingerprint") != source_fingerprint(paths, target):
+            raise SpreadsheetDownloadError(f"Published {target} release has a stale source fingerprint.")
+        for key in ("xlsx", "numbers"):
+            file_entry = (entry.get("files") or {}).get(key) or {}
+            path = root / "downloads" / str(file_entry.get("name") or "")
+            if not path.is_file() or _sha256(path) != file_entry.get("sha256"):
+                raise SpreadsheetDownloadError(f"Published {target} {key} file is missing or changed.")
+    return payload
+
+
+def _published_release_from_head(paths):
+    try:
+        content = _git_show(paths, "docs/downloads/spreadsheet-releases.json")
+    except SpreadsheetDownloadError:
+        legacy = []
+        for target in SUPPORTED_TARGETS:
+            spec = target_spec(paths, target)
+            for key in ("xlsx", "numbers"):
+                name = spec["layout"][f"{key}_name"]
+                if _git_path_exists(paths, f"docs/downloads/{name}"):
+                    legacy.append(name)
+        if legacy:
+            raise SpreadsheetDownloadError(
+                "Published spreadsheet downloads predate safe release metadata. "
+                "Rebuild the affected downloads before the next publish."
+            )
+        return {"version": PUBLISHED_MANIFEST_VERSION, "targets": {}}
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SpreadsheetDownloadError(f"Published spreadsheet metadata is invalid: {exc}") from exc
+    if payload.get("version") != PUBLISHED_MANIFEST_VERSION:
+        raise SpreadsheetDownloadError("Published spreadsheet metadata version is unsupported.")
+    return payload
+
+
+def _git_show(paths, repository_path):
+    result = subprocess.run(
+        ["git", "show", f"HEAD:{repository_path}"],
+        cwd=paths.root,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        raise SpreadsheetDownloadError(f"Published Git file is missing: {repository_path}")
+    return result.stdout
+
+
+def _git_path_exists(paths, repository_path):
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"HEAD:{repository_path}"],
+        cwd=paths.root,
+        capture_output=True,
+    )
+    return result.returncode == 0
+
+
+def deepcopy_json(value):
+    return json.loads(json.dumps(value))
+
+
 def migrate_setup_working_copy(paths, source_path):
     source_path = Path(source_path).expanduser().resolve()
     if not source_path.is_file():
         raise SpreadsheetDownloadError(f"Migration source is missing: {source_path}")
-    paths.verification_working_dir.mkdir(parents=True, exist_ok=True)
-    generate_excel(
-        paths,
-        "setup",
-        output_path=paths.setup_tracker_working_file,
-        migration_source=source_path,
-    )
-    convert_numbers_automatically(
-        paths,
-        "setup",
-        xlsx_path=paths.setup_tracker_working_file,
-        numbers_path=paths.setup_tracker_working_numbers_file,
-    )
-    finalize_numbers_conversion(
-        paths,
-        "setup",
-        numbers_path=paths.setup_tracker_working_numbers_file,
-    )
-    print(f"Migrated local working copy: {paths.setup_tracker_working_numbers_file}")
+    from verification_status import build_working_copy, import_workbook_status
+
+    import_workbook_status(paths, source_path)
+    build_working_copy(paths)
+    print(f"Migrated status and rebuilt local working copy: {paths.setup_tracker_working_numbers_file}")
     return {
         "xlsx": paths.setup_tracker_working_file,
         "numbers": paths.setup_tracker_working_numbers_file,

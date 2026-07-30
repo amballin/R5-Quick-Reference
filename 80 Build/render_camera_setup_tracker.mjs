@@ -23,7 +23,9 @@ const colors = shared.colors;
 const fontName = shared.font_family;
 const migration = payload.migration_source
   ? await readMigration(payload.migration_source, FileBlob, SpreadsheetFile)
-  : emptyMigration();
+  : payload.status
+    ? statusMigration(payload.status)
+    : emptyMigration();
 
 const workbook = Workbook.create();
 const dashboard = workbook.worksheets.add(sheets.dashboard.name);
@@ -32,6 +34,7 @@ const registration = workbook.worksheets.add(sheets.registration.name);
 const sessions = workbook.worksheets.add(sheets.sessions.name);
 const lists = workbook.worksheets.add(sheets.lists.name);
 const menu = workbook.worksheets.add(sheets.menu.name);
+const metadata = workbook.worksheets.add(sheets.metadata.name);
 
 for (const sheet of workbook.worksheets.items) {
   sheet.showGridLines = false;
@@ -44,6 +47,7 @@ const checklistLastRow = checklistHeaderRow + tests.length;
 const checklistColumns = sheets.checklist.columns;
 const checklistLastColumn = columnName(checklistColumns.length);
 const menuLastRow = tests.length + 1;
+const registrationLastRow = 4 + source.registration.rows.length;
 const checklistBannerDataUrl = await compositeBannerDataUrl(
   configuredBannerPanels(),
   layout.banner.width_px,
@@ -56,6 +60,7 @@ buildChecklist();
 buildRegistration();
 buildSessions();
 buildDashboard();
+buildMetadata();
 
 const checklistInspection = await workbook.inspect({
   kind: "table",
@@ -83,7 +88,14 @@ for (const sheet of workbook.worksheets.items) {
         scale: 1,
         format: "png",
       }
-    : {
+    : sheet.name === sheets.registration.name
+      ? {
+          sheetName: sheet.name,
+          range: `A1:M${registrationLastRow}`,
+          scale: 1,
+          format: "png",
+        }
+      : {
         sheetName: sheet.name,
         autoCrop: "all",
         scale: 1,
@@ -301,7 +313,7 @@ function buildRegistration() {
     }
     return values;
   });
-  const lastRow = 4 + rows.length;
+  const lastRow = registrationLastRow;
   registration.getRange(`A4:M${lastRow}`).values = [headers, ...rows];
   const table = registration.tables.add(`A4:M${lastRow}`, true, "RegistrationTable");
   table.style = "TableStyleMedium2";
@@ -321,6 +333,18 @@ function buildRegistration() {
     const letter = columnName(index + 1);
     registration.getRange(`${letter}:${letter}`).format.columnWidthPx = pointsToPixels(width);
   });
+  const outerBorders = sheets.registration.outer_borders || {};
+  for (const range of outerBorders.ranges || []) {
+    const borders = {
+      top: { style: "thick", weight: outerBorders.weight_pt, color: colors[outerBorders.color] },
+      bottom: { style: "thick", weight: outerBorders.weight_pt, color: colors[outerBorders.color] },
+      left: { style: "thick", weight: outerBorders.weight_pt, color: colors[outerBorders.color] },
+      right: { style: "thick", weight: outerBorders.weight_pt, color: colors[outerBorders.color] },
+    };
+    registration.getRange(range).format.borders = borders;
+    const [startColumn, endColumn] = range.split(":");
+    registration.getRange(`${startColumn}1:${endColumn}${lastRow}`).format.borders = borders;
+  }
   for (const range of [`C5:D${lastRow}`, `G5:H${lastRow}`, `K5:L${lastRow}`]) {
     registration.getRange(range).dataValidation = {
       rule: { type: "list", values: source.lists.registration_result },
@@ -374,8 +398,9 @@ function buildDashboard() {
   dashboard.getRange("A1:H2").merge();
   dashboard.getRange("A1").values = [["EOS R5 On-Camera Verification Progress"]];
   dashboard.getRange("A3:H4").merge();
-  dashboard.getRange("A3").values = [[
-    "Blank master template. Update the Checklist and C1-C3 Registration sheets in a separate local working copy. Only Verified, unambiguous results may be promoted to owner-confirmed project status.",
+  dashboard.getRange("A3").values = [[payload.status
+    ? "Git-synchronized working copy. Import spreadsheet updates into verification status before finishing for the day. Changed definitions require retesting."
+    : "Blank master template. Update the Checklist and C1-C3 Registration sheets in a separate working copy. Only Verified, unambiguous results may be promoted to owner-confirmed project status."
   ]];
   dashboard.getRange("A1:H2").format = titleBandFormat(20);
   dashboard.getRange("A3:H4").format = noteBandFormat();
@@ -523,11 +548,36 @@ function buildDashboard() {
 }
 
 
+function buildMetadata() {
+  const rows = [
+    ["Type", "ID", "Revision"],
+    ["workbook_revision", "", String(payload.workbook_revision)],
+    ["source_fingerprint", "", payload.source_fingerprint],
+    ...Object.entries(payload.definition_fingerprints.tests || {}).map(
+      ([id, revision]) => ["test", id, revision],
+    ),
+    ...Object.entries(payload.definition_fingerprints.registration || {}).map(
+      ([id, revision]) => ["registration", id, revision],
+    ),
+  ];
+  metadata.getRange(`A1:C${rows.length}`).values = rows;
+  metadata.getRange("A1:C1").format = headerFormat();
+  metadata.getRange(`A2:C${rows.length}`).format = {
+    font: { name: fontName, size: 10 },
+    verticalAlignment: "center",
+  };
+  metadata.getRange("A:A").format.columnWidth = 24;
+  metadata.getRange("B:B").format.columnWidth = 34;
+  metadata.getRange("C:C").format.columnWidth = 78;
+  metadata.freezePanes.freezeRows(1);
+}
+
+
 function configuredBannerPanels() {
   const textByRole = {
     title: layout.banner.title,
     instructions: layout.banner.instructions,
-    note: layout.banner.note,
+    note: `${layout.banner.note} ${payload.release_label}.`,
   };
   return shared.banner.panels.map((panel, index) => ({
     row: index,
@@ -673,6 +723,30 @@ function emptyMigration() {
     registration: new Map(),
     sessions: [],
   };
+}
+
+
+function statusMigration(status) {
+  const result = emptyMigration();
+  for (const [testId, state] of Object.entries(status.tests || {})) {
+    result.checklist.set(testId, {
+      ...state,
+      evidence_files: Array.isArray(state.evidence_files)
+        ? state.evidence_files.join("\n")
+        : state.evidence_files || "",
+    });
+  }
+  for (const [setting, state] of Object.entries(status.registration || {})) {
+    result.registration.set(setting, state);
+  }
+  const headers = [
+    "session_id", "date", "goal", "firmware", "battery_charge", "lens",
+    "flash_trigger", "starting_backup", "image_range", "outcome", "next_session", "notes",
+  ];
+  result.sessions = (status.sessions || []).map((session) =>
+    headers.map((header) => session[header] ?? ""),
+  );
+  return result;
 }
 
 

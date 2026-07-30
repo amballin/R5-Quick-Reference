@@ -4,8 +4,9 @@ from spreadsheet_downloads import (
     SpreadsheetDownloadError,
     target_spec,
     validate_download_manifest,
+    validate_published_release,
 )
-from .common import error
+from .common import error, warning
 
 
 def validate(root):
@@ -18,7 +19,13 @@ def validate(root):
             try:
                 validate_download_manifest(paths, target)
             except SpreadsheetDownloadError as exc:
-                issues.append(error("spreadsheet_downloads", manifest, str(exc)))
+                issues.append(
+                    warning(
+                        "spreadsheet_downloads",
+                        manifest,
+                        f"{exc} Rebuild before replacement publication.",
+                    )
+                )
 
     downloads_dir = paths.merged_build_output_dir / "downloads"
     if downloads_dir.exists():
@@ -37,4 +44,14 @@ def validate(root):
                                 f"Published {target} download is missing or empty.",
                             )
                         )
+        try:
+            validate_published_release(paths)
+        except SpreadsheetDownloadError as exc:
+            issues.append(error("spreadsheet_downloads", downloads_dir, str(exc)))
+    docs_manifest = paths.published_spreadsheet_manifest_file
+    if docs_manifest.exists():
+        try:
+            validate_published_release(paths, root=paths.pages_output_dir)
+        except SpreadsheetDownloadError as exc:
+            issues.append(error("spreadsheet_downloads", docs_manifest, str(exc)))
     return issues

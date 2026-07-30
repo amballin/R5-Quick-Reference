@@ -89,13 +89,29 @@ Prepare the blank Setup & Verification master with:
 
 Its Checklist freezes the table header and column A, centers Status, keeps Menu Location bold and centered, and derives Best Access and menu fields from the Menu sheet. C1–C3 Registration also freezes column A. Use **Backup-Settings** after the shared setup/control checkpoint and after all C1–C3 registrations have been read back. Use `prepare-setup-downloads.sh` for manual conversion or `build-all-spreadsheet-downloads.sh` to prepare Matrix and Setup together.
 
-To migrate progress from an earlier Excel tracker into a separate local working copy:
+Both workbook families show an independent workbook revision, source fingerprint, and generation date. These do not use the website version.
+
+Generate the status-bearing local working tracker from the Git-tracked YAML record with:
+
+```bash
+./80\ Build/scripts/build-verification-working-copy.sh
+```
+
+After updating the working Excel or Numbers tracker, close it and import the mutable Checklist, C1–C3, and Sessions fields:
+
+```bash
+./80\ Build/scripts/import-verification-status.sh
+```
+
+The importer matches stable Test IDs and registration settings, updates `90 Testing/eos_r5_verification_status.yaml`, and records history. Evidence files remain local; YAML stores their filenames or references. If a test requirement or target changed after verification, the importer preserves the earlier evidence but marks the result **Inconclusive—needs retest**. Run `reconcile-verification-status.sh` after definition-only changes when no workbook import is needed.
+
+To migrate progress from an earlier Excel tracker into the canonical YAML status and a freshly generated local working copy:
 
 ```bash
 ./80\ Build/scripts/migrate-setup-tracker.sh "/path/to/earlier-tracker.xlsx"
 ```
 
-Migration carries mutable Checklist, registration, and session values forward by stable identifiers. The blank master remains unchanged and is the only Setup workbook eligible for publication. Any later workbook change invalidates readiness and requires conversion and verification again.
+Migration carries mutable Checklist, registration, and session values forward by stable identifiers. Results from a workbook without matching definition fingerprints require retesting before they can remain Verified. The blank master remains unchanged and is the only Setup workbook eligible for publication.
 
 ## Current Folder Structure
 
@@ -196,6 +212,8 @@ The preflight script fetches `origin` with pruning, verifies that the branch is 
 - **Behind:** with a clean working tree, run `git pull --ff-only`, then rerun preflight.
 - **Diverged or safety check failed:** stop for manual review; the scripts do not merge automatically.
 
+Preflight also reports that prepared release workbooks are machine-local and warns when a local verification working copy changed after its last YAML import.
+
 For a status-only check at any time, run:
 
 ```bash
@@ -211,6 +229,8 @@ Run the interactive finish workflow:
 ```bash
 ./80\ Build/scripts/finish-day.sh
 ```
+
+If testing status was edited in the local workbook, run `import-verification-status.sh` first. Finish-day blocks rather than leave those changes outside Git.
 
 Depending on repository state, it offers to:
 
@@ -262,7 +282,15 @@ Folder: /docs
 
 This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to the current branch.
 
-This default publish omits PNG cards. To deliberately publish the optional PNG downloads, use:
+To publish an intentional major release such as Version 2.00:
+
+```bash
+./80\ Build/scripts/publish.sh --major-version 2
+```
+
+The requested number must be greater than the current major version. Later ordinary publications continue with `2.01`, `2.02`, and so on. Major website versions do not change spreadsheet revisions.
+
+This default publish omits PNG cards and preserves compatible previously published spreadsheet downloads. It blocks if a workbook’s relevant sources changed, so stale workbook content cannot be carried forward. To deliberately publish the optional PNG downloads, use:
 
 ```bash
 ./80\ Build/scripts/publish.sh --png
@@ -275,7 +303,13 @@ To prepare the spreadsheets and then publish the complete website with them incl
 ./80\ Build/scripts/publish.sh --spreadsheet-downloads
 ```
 
-The second command publishes the entire website and includes the verified spreadsheets; it is not a spreadsheet-only publish. Do not follow it with a plain `publish.sh`: the default publish omits spreadsheet downloads and would remove them from the published site. The publish command refuses missing, stale, or changed workbook files.
+The second command publishes the entire website and replaces both workbook families with the verified files; it is not a spreadsheet-only publish. Later plain publications preserve those exact workbook bytes while their source fingerprints remain current. The publish command refuses missing, stale, or changed replacement files.
+
+To deliberately remove all published spreadsheet downloads:
+
+```bash
+./80\ Build/scripts/publish.sh --remove-spreadsheet-downloads
+```
 
 Combine both optional output classes when required:
 
