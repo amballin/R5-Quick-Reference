@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "generated": "2026-07-30T17:33:22.812424-04:00",
+  "targets": {
+    "matrix": {
+      "workbook_revision": 1,
+      "source_fingerprint": "sha256:eb45559f6f9b2c5dcc839bfbc881438ac83b210d57feb65697ab0a73a27fcb32",
+      "prepared": "2026-07-30T17:30:54.526571-04:00",
+      "files": {
+        "xlsx": {
+          "name": "Subject Settings Matrix.xlsx",
+          "sha256": "1e29ca0273c676915792cfc706a6faaa479ab65a03bd2c23220fd5170c59275c"
+        },
+        "numbers": {
+          "name": "Subject Settings Matrix.numbers",
+          "sha256": "0bc4276979c8ee3b3cdfd377c2d4dbc8003029750a3f3e9cbddf758b9a1a404d"
+        }
+      }
+    },
+    "setup": {
+      "workbook_revision": 1,
+      "source_fingerprint": "sha256:027ae66ff43842715622c7d170c2718e8b7ae4b16d5892319836be05f8861ab0",
+      "prepared": "2026-07-30T17:31:12.291940-04:00",
+      "files": {
+        "xlsx": {
+          "name": "EOS R5 Setup & Verification Tracker.xlsx",
+          "sha256": "faf5fece9f10ee7718e28b273e3ecf0793ce3a3f535fc246ce1b0902dde19dfd"
+        },
+        "numbers": {
+          "name": "EOS R5 Setup & Verification Tracker.numbers",
+          "sha256": "a09d896f1a652760b450c5f0da5dd3c5dade5680fe240e438a20b3beb0c12ade"
+        }
+      }
+    }
+  }
+}
