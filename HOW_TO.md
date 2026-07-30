@@ -282,6 +282,8 @@ Folder: /docs
 
 This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to the current branch.
 
+Every run writes a timestamped log under the machine-local `Logs/` folder. Success requires the final message `PUBLICATION COMPLETE AND VERIFIED`; the script checks the version transition, published index, upstream commit, and any requested spreadsheet hashes. `git-status-report.sh` alone cannot prove that publication happened.
+
 To publish an intentional major release such as Version 2.00:
 
 ```bash

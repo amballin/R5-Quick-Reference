@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Auditable Publication Completion
+
+**Status:** Accepted
+**Date:** 2026-07-30
+
+Do not treat a clean, synchronized Git repository as evidence that website publication occurred. Every supported publication must write a timestamped machine-local log and end with an unmistakable completed or failed result. After the push, verify that the latest commit advanced the website version correctly, the published index displays that version, the commit matches its upstream, and every requested spreadsheet download matches its prepared content hash. The Finish Day procedure must require this publication verification before its final Git synchronization check.
+
 ## Explicit Major Website Version Bumps
 
 **Status:** Accepted

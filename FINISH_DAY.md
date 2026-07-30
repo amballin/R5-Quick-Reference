@@ -56,23 +56,31 @@ Run:
 
 This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.
 
+The command is successful only when it prints `PUBLICATION COMPLETE AND VERIFIED`. It also records a timestamped diagnostic log under the machine-local `Logs/` folder. If publication stops, it prints `PUBLICATION DID NOT COMPLETE` and the exact log location.
+
 Later plain `publish.sh` releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.
 
 ## 4. Verify the final Git state
 
-Run:
+First verify the publication itself:
+
+```bash
+python3 "80 Build/verify_publication.py" --require-target matrix --require-target setup
+```
+
+The required result begins with:
+
+```text
+PUBLICATION VERIFIED
+```
+
+Then run:
 
 ```bash
 ./80\ Build/scripts/git-status-report.sh
 ```
 
-The required final result is:
-
-```text
-STATUS: CLEAN AND SYNCHRONIZED
-```
-
-If that result does not appear, stop and resolve the reported Git state before switching computers.
+Both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.
 
 ## Optional: also publish PNG downloads
 

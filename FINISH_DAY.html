@@ -128,14 +128,17 @@
 <p>Run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
 <p>This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.</p>
+<p>The command is successful only when it prints <code>PUBLICATION COMPLETE AND VERIFIED</code>. It also records a timestamped diagnostic log under the machine-local <code>Logs/</code> folder. If publication stops, it prints <code>PUBLICATION DID NOT COMPLETE</code> and the exact log location.</p>
 <p>Later plain <code>publish.sh</code> releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.</p>
 </section>
 <section class="step"><h2>4. Verify the final Git state</h2>
-<p>Run:</p>
+<p>First verify the publication itself:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
+<p>The required result begins with:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>PUBLICATION VERIFIED</code></pre></div>
+<p>Then run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
-<p>The required final result is:</p>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>STATUS: CLEAN AND SYNCHRONIZED</code></pre></div>
-<p>If that result does not appear, stop and resolve the reported Git state before switching computers.</p>
+<p>Both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code> are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.</p>
 </section>
 <section class="step"><h2>Optional: also publish PNG downloads</h2>
 <p>Use this publishing command instead of the command in Step 3:</p>

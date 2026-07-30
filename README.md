@@ -74,6 +74,8 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 This runs a fresh publish build, increments the minor version, updates the publish timestamp, regenerates `docs`, commits the release, and pushes it to the current branch on GitHub.
 
+A successful publication ends with `PUBLICATION COMPLETE AND VERIFIED` and records its diagnostic log under the machine-local `Logs/` folder. Git being clean is not sufficient evidence of publication.
+
 For an intentional major release, supply the new major number:
 
 ```bash

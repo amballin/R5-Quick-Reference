@@ -24,6 +24,7 @@ REQUIRED_FILES = [
     "20 Templates/card.html",
     "60 Assets/icon-map.yaml",
     "build.py",
+    "80 Build/verify_publication.py",
     "00 Master/specifications/Architecture.md",
     "00 Master/specifications/Profile Specification.md",
     "00 Master/specifications/Card Specification.md",

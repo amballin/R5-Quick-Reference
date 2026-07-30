@@ -26,6 +26,7 @@ The generated site uses the machine-local workspace's `Build Output/merged-build
 
 Spreadsheet structure is source-driven: shared and workbook-specific layout lives in `00 Master/spreadsheet_layouts.yaml`, while Setup verification content and its Menu access lookups live in `90 Testing/eos_r5_verification_tracker.yaml`. The publishable Setup workbook is always a blank master. Mutable testing state is canonical in the non-published, Git-tracked `90 Testing/eos_r5_verification_status.yaml`; Excel/Numbers is the machine-local working interface, and workbook changes are imported back into YAML. Definition fingerprints invalidate affected prior passes when requirements change. Published spreadsheet releases carry independent revisions, source fingerprints, and file hashes so ordinary site publication can preserve compatible workbook bytes without silently retaining stale content.
 Website publications increment the minor version by default. An intentional major release uses `publish.sh --major-version N`, requires a value greater than the current major version, publishes as `N.00`, and leaves spreadsheet revisions independent.
+Publication completion is independently auditable: each run writes a machine-local log, and the latest release must pass version-transition, published-index, upstream-commit, and requested spreadsheet-hash verification. A clean Git report by itself does not prove that publication occurred.
 
 ## Domain Context and Terminology
 

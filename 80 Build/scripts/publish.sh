@@ -5,7 +5,48 @@ cd "$(dirname "$0")/../.."
 
 candidate="80 Build/.publish_metadata.candidate.yaml"
 metadata="80 Build/publish_metadata.yaml"
+temporary_index=""
+publish_succeeded=false
+
+local_workspace_dir() {
+  if [[ -n "${PRS_LOCAL_WORKSPACE:-}" ]]; then
+    case "$PRS_LOCAL_WORKSPACE" in
+      "~") printf '%s\n' "$HOME" ;;
+      "~/"*) printf '%s/%s\n' "$HOME" "${PRS_LOCAL_WORKSPACE#~/}" ;;
+      /*) printf '%s\n' "$PRS_LOCAL_WORKSPACE" ;;
+      *) printf '%s/%s\n' "$PWD" "$PRS_LOCAL_WORKSPACE" ;;
+    esac
+  else
+    printf '%s Local\n' "$PWD"
+  fi
+}
+
+log_dir="$(local_workspace_dir)/Logs"
+mkdir -p "$log_dir"
+log_file="$log_dir/publish-$(date '+%Y%m%d-%H%M%S').log"
+exec > >(tee -a "$log_file") 2>&1
+
+on_exit() {
+  status=$?
+  trap - EXIT
+  if [[ -n "$temporary_index" ]]; then
+    rm -f "$temporary_index"
+  fi
+  rm -f "$candidate"
+  echo
+  if "$publish_succeeded"; then
+    echo "PUBLICATION COMPLETE AND VERIFIED."
+  else
+    echo "PUBLICATION DID NOT COMPLETE."
+  fi
+  echo "Publish log: $log_file"
+  exit "$status"
+}
+trap on_exit EXIT
+
 rm -f "$candidate"
+echo "Publication started: $(date '+%Y-%m-%d %H:%M:%S %z')"
+echo "Publish log: $log_file"
 
 include_png=false
 spreadsheet_args=()
@@ -69,7 +110,6 @@ test -f "$candidate" || { echo "Publish failed: candidate metadata was not gener
 branch="$(git symbolic-ref --quiet --short HEAD)"
 parent="$(git rev-parse HEAD)"
 temporary_index="$(mktemp)"
-trap 'rm -f "$temporary_index" "$candidate"' EXIT
 rm -f "$temporary_index"
 
 export GIT_INDEX_FILE="$temporary_index"
@@ -88,4 +128,20 @@ commit="$(printf '%s\n' 'Update R5 reference' | git commit-tree "$tree" -p "$par
 git push origin "$commit:refs/heads/$branch"
 git update-ref "refs/heads/$branch" "$commit" "$parent"
 mv "$candidate" "$metadata"
+
+verify_args=()
+if (( ${#spreadsheet_args[@]} )); then
+  case "${spreadsheet_args[0]}" in
+    --matrix-downloads) verify_args+=(--require-target matrix) ;;
+    --setup-downloads) verify_args+=(--require-target setup) ;;
+    --spreadsheet-downloads)
+      verify_args+=(--require-target matrix --require-target setup)
+      ;;
+  esac
+elif "$remove_spreadsheets"; then
+  verify_args+=(--require-no-spreadsheets)
+fi
+python3 "80 Build/verify_publication.py" "${verify_args[@]}"
+
+publish_succeeded=true
 echo "Website published successfully."
