@@ -13,10 +13,12 @@ You may copy and run the complete block. The `&&` connections stop the sequence 
 ## Why three commands
 
 - The source-only validator checks editable source without treating expected stale generated files as errors.
-- The build regenerates the local HTML/PWA, workflow HTML, `docs/` review copy, and reports.
+- The build regenerates the local HTML/PWA, workflow HTML, `docs/` review copy, and reports. It automatically includes valid prepared workbook families and preserves compatible committed spreadsheet downloads for the rest, including the main index's **Downloads** section, without regenerating workbooks or opening Apple Numbers.
 - The final validator checks the generated result.
 
 Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.
+
+If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family's dedicated command in [Spreadsheet Workflows](spreadsheets.html), then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.
 
 ## Which website copy to open
 

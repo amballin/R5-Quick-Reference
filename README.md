@@ -44,6 +44,8 @@ python3 "80 Build/build.py"
 
 This rebuilds local outputs without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
+The normal local build automatically includes complete, current workbook families already prepared on this Mac and preserves exact compatible downloads from the committed release manifest for the rest, so the main index keeps its **Downloads** section without extra flags. It does not regenerate workbooks or open Apple Numbers. If spreadsheet inputs changed and no valid prepared replacement exists, the build stops and identifies the workbook family that must be rebuilt with its dedicated download script.
+
 The default build removes stale fixed card PNG and PDF output. Fixed card PNG export is no longer supported; PDFs remain off by default.
 
 To create fresh PDFs only when you actually need them:

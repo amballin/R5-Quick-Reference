@@ -45,6 +45,8 @@ PDF outputs are written to:
 
 ## Optional Spreadsheet Downloads
 
+The normal local build automatically includes complete, current workbook families prepared on this Mac and preserves compatible downloads from the committed release manifest for the rest. No download flag is needed to keep them on the generated main index. This does not regenerate workbooks or invoke Apple Numbers; if relevant workbook inputs changed and no valid prepared replacement exists, rebuild the affected family using the dedicated command below and rerun the normal build.
+
 Generate the sortable matrix of all authored subject profiles with:
 
 ```bash

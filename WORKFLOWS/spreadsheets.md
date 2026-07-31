@@ -2,6 +2,8 @@
 
 Choose the outcome you need. Release workbooks and the testing working copy serve different purposes.
 
+Routine local website builds include valid workbook families already prepared on this Mac and preserve compatible committed spreadsheet downloads for the rest. You do not need an extra website-build flag to keep the **Downloads** section on the local main index. Use the release-workbook commands below only when workbook inputs changed or you intentionally want replacement files; the next normal local build detects and includes them automatically.
+
 ## Build both local release workbook families
 
 Use this after spreadsheet definitions, layout, or generator code changes, or before publishing replacement spreadsheet downloads:

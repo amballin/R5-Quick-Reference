@@ -9,6 +9,13 @@ Only entries marked **Accepted** are binding. **Proposed** entries are non-bindi
 
 Use wrapped text and automatic row heights for every content-bearing table row in the Subject Settings Matrix and in the Setup workbook's Menu, Checklist, C1–C3 Registration, and Sessions sheets. Auto-fit those rows during generation so previews and initial output show all current content, then remove fixed custom-height metadata from the Excel export so rows continue to expand or contract when a user edits notes or other wrapped cells. Preserve deliberate fixed heights only for structural banner and spacer rows. Keep merged title and instruction areas deliberately sized because Excel and Apple Numbers do not reliably auto-fit merged cells.
 
+## Preserve Spreadsheet Downloads in Normal Local Builds
+
+**Status:** Accepted
+**Date:** 2026-07-31
+
+Make the normal local website build automatically include each complete, current, machine-local prepared workbook family and preserve exact compatible spreadsheet downloads from the committed release manifest for any remaining family. Reuse the existing revision, source-fingerprint, filename, and content-hash safeguards; do not regenerate Excel workbooks or invoke Apple Numbers as part of the normal build. If a committed workbook family is stale relative to its current inputs and no valid prepared replacement exists, stop the build with an actionable requirement to rebuild that family rather than silently retaining stale files or removing the Downloads section. Explicit spreadsheet build scripts remain the preparation workflow for new replacement workbook bytes, and website publication remains a separate authorized action.
+
 ## Source-Only Pre-Build Validation
 
 **Status:** Accepted

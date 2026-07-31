@@ -34,7 +34,9 @@ from publish_metadata import (
 from subject_settings_matrix import generate_subject_settings_matrix, remove_subject_settings_matrix
 from camera_setup_tracker import remove_camera_setup_tracker
 from spreadsheet_downloads import (
+    SUPPORTED_TARGETS,
     SpreadsheetDownloadError,
+    validate_download_manifest,
     validate_download_manifests,
 )
 from workflow_guides import write_workflow_guides
@@ -253,6 +255,18 @@ def print_summary(profile_count, successes, failures, generated, elapsed):
     print(f"    {elapsed:.2f} seconds")
 
 
+def prepared_spreadsheet_download_targets(paths):
+    """Return machine-local workbook families that are complete and current."""
+    targets = []
+    for target in SUPPORTED_TARGETS:
+        try:
+            validate_download_manifest(paths, target)
+        except SpreadsheetDownloadError:
+            continue
+        targets.append(target)
+    return targets
+
+
 def main():
     start = time.perf_counter()
     args = parse_args()
@@ -262,6 +276,13 @@ def main():
     if args.setup_downloads or args.spreadsheet_downloads:
         spreadsheet_download_targets.append("setup")
     paths = ProjectPaths(args.root)
+    if not args.publish and not args.settings_summary and not spreadsheet_download_targets:
+        spreadsheet_download_targets = prepared_spreadsheet_download_targets(paths)
+        if spreadsheet_download_targets:
+            print(
+                "Including verified prepared spreadsheet downloads automatically: "
+                + ", ".join(spreadsheet_download_targets)
+            )
     write_finish_day_html(paths.root)
     write_workflow_guides(paths.root)
     metadata_path = paths.root / "80 Build" / "publish_metadata.yaml"
@@ -356,7 +377,7 @@ def build_site(
     include_pdf=False,
     include_settings_summary=False,
     spreadsheet_download_targets=(),
-    preserve_spreadsheet_downloads=False,
+    preserve_spreadsheet_downloads=True,
     keep_website=False,
     publish_display=None,
 ):

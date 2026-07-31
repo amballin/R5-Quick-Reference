@@ -121,10 +121,11 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <section class="step"><h2>Why three commands</h2>
 <ul>
 <li>The source-only validator checks editable source without treating expected stale generated files as errors.</li>
-<li>The build regenerates the local HTML/PWA, workflow HTML, <code>docs/</code> review copy, and reports.</li>
+<li>The build regenerates the local HTML/PWA, workflow HTML, <code>docs/</code> review copy, and reports. It automatically includes valid prepared workbook families and preserves compatible committed spreadsheet downloads for the rest, including the main index&#x27;s <strong>Downloads</strong> section, without regenerating workbooks or opening Apple Numbers.</li>
 <li>The final validator checks the generated result.</li>
 </ul>
 <p>Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.</p>
+<p>If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family&#x27;s dedicated command in <a href="spreadsheets.html">Spreadsheet Workflows</a>, then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.</p>
 </section>
 <section class="step"><h2>Which website copy to open</h2>
 <ul>
