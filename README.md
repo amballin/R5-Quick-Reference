@@ -1,6 +1,6 @@
 # Photography Reference System
 
-Responsive HTML is the primary and default published phone format. Each released profile opens as a crisp, width-responsive card from the Camera Settings page. Fixed PNG cards remain optional exports for Photos, sharing, wallpaper, and offline files; use `--png` when they are wanted. Both formats use the same baseline-plus-overrides YAML data.
+Responsive HTML is the published phone format. Each released profile opens as a crisp, width-responsive card from the Camera Settings page. Card PDFs remain available as an optional local output; fixed card PNG exports have been retired.
 
 This project builds Canon R5 subject-setting cards, guide pages, an installable web app, and the `docs/` folder served by GitHub Pages.
 
@@ -32,7 +32,7 @@ Use the repository's handoff scripts from the project root:
 
 `preflight-git.sh` refreshes `origin` and blocks work when the clone is behind or diverged. `finish-day.sh` is interactive and can validate, build, separate generated `docs/`, stage source changes, commit, and push only after confirmation. It backs up changed `docs/` in the machine-local workspace and restores them to `HEAD` so the handoff commit cannot publish Pages. It also refuses to push an older unpushed commit containing `docs/` changes. Review its complete change list before approving staging. Do not switch Macs until the final report says the working tree is clean and synchronized. See [`HOW_TO.md`](HOW_TO.md) for the full workflow.
 
-For the short end-of-day recipe—including source commit/push, both spreadsheet families, publication, and the final synchronization check—open [`FINISH_DAY.html`](FINISH_DAY.html). Its editable source is [`FINISH_DAY.md`](FINISH_DAY.md); normal builds and `finish-day.sh` automatically refresh the tracked HTML copy.
+Start with the local [`Workflow Index`](WORKFLOWS/index.html) for Preflight, local builds, spreadsheets, publishing, computer handoff, and recovery. For the short end-of-day recipe—including source commit/push, both spreadsheet families, publication, and the final synchronization check—open [`FINISH_DAY.html`](FINISH_DAY.html). Normal builds and `finish-day.sh` automatically refresh all tracked HTML workflow pages from their Markdown sources. These project-help pages are synchronized through Git but are never copied into the published website.
 
 Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
 
@@ -44,13 +44,7 @@ python3 "80 Build/build.py"
 
 This rebuilds local outputs without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
-The default build omits and removes stale fixed PNG and PDF output. Both are off by default.
-
-To create fixed PNG cards and include their secondary index links:
-
-```bash
-python3 "80 Build/build.py" --png
-```
+The default build removes stale fixed card PNG and PDF output. Fixed card PNG export is no longer supported; PDFs remain off by default.
 
 To create fresh PDFs only when you actually need them:
 
@@ -84,9 +78,9 @@ For an intentional major release, supply the new major number:
 
 This publishes `2.00`; later ordinary publications continue as `2.01`, `2.02`, and so on. The requested major number must be greater than the current one.
 
-The normal publish omits PNG cards and preserves exact previously published spreadsheet downloads when their source fingerprints remain current. Use `./80\ Build/scripts/publish.sh --png` only when PNG downloads should also be published. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` replaces the requested workbook family; these options may be combined with `--png`. Use `--remove-spreadsheet-downloads` only when the downloads should deliberately be removed. Publication still requires separate explicit authorization.
+The normal publish preserves exact previously published spreadsheet downloads when their source fingerprints remain current. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` replaces the requested workbook family. Use `--remove-spreadsheet-downloads` only when the downloads should deliberately be removed. Publication still requires separate explicit authorization.
 
-The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML and PNG cards do not include it.
+The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML cards do not include it.
 
 `./80 Build/scripts/publish.sh` is the only supported publishing command. The internal `build.py --publish` mode cannot be run directly.
 
@@ -126,7 +120,6 @@ Source folders:
 Generated folders:
 
 - `../<repository folder name> Local/Build Output/cards/html/`: generated responsive HTML for every profile.
-- `../<repository folder name> Local/Build Output/cards/png/` and `cards/phone-png/`: optional fixed PNG exports from a `--png` build.
 - `../<repository folder name> Local/Build Output/field-guide/`: generated guide HTML, search index, and optional PDFs.
 - `../<repository folder name> Local/Build Output/merged-build/`: canonical generated web/PWA bundle.
 - `../<repository folder name> Local/Build Output/website/`: optional staging copy for non-GitHub web hosts.
@@ -136,7 +129,7 @@ Generated folders:
 - `../<repository folder name> Local/Backups/`: timestamped pre-change recovery snapshots.
 - `docs/`: generated GitHub Pages publish folder. GitHub serves this folder.
 
-`20 Templates/card.html` controls responsive HTML presentation. `80 Build/render_card_outputs.js` independently controls fixed PNG rendering, so responsive layout changes do not change the PNG canvas. Canon icons remain authoritative in `60 Assets/icons/canon_r5_official/`; icon selection prefers SVG and falls back to PNG. The build copies only required published assets into `docs/web-assets/` with relative paths.
+`20 Templates/card.html` controls responsive HTML presentation. `80 Build/render_card_pdf.js` controls the optional fixed card PDF layout. Canon icons remain authoritative in `60 Assets/icons/canon_r5_official/`; icon selection prefers SVG and falls back to PNG. The build copies only required published assets into `docs/web-assets/` with relative paths.
 
 Everything under `Build Output/` is disposable and can be regenerated by a full build. Set `PRS_LOCAL_WORKSPACE` to override the default sibling workspace location.
 
@@ -161,6 +154,6 @@ Asset support folders:
 
 ## iPhone Install
 
-Open the live URL in Safari, select a profile to open its responsive HTML card, then use Share -> Add to Home Screen. The installed site is labeled `Camera Settings`. PNG links appear only when the site was explicitly published with `--png`.
+Open the live URL in Safari, select a profile to open its responsive HTML card, then use Share -> Add to Home Screen. The installed site is labeled `Camera Settings`.
 
 The first online visit caches the cards, guide pages, icons, and supporting assets for offline use.

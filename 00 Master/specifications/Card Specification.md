@@ -48,13 +48,13 @@ The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type**
 - Normal profile-card rows follow `card_layout.display_order`, which mirrors the conceptual sequence of the R5 Quick Reference. Reference-card rows retain the explicit order of their authored `reference_settings` list.
 - Camera Buttons reference rows use stable control-name keys to display the corresponding official Canon physical-control SVG when one is mapped. Keep the authored project control name as text, preserve the existing row order, and do not substitute an assignment icon or fabricate a control icon. If an official SVG contains an opaque background that conflicts with the card's standard monochrome treatment, a geometry-preserving card derivative may remove only that background fill; preserve the official source asset for the icon reference and apply the normal card icon color to the derivative.
 - Responsive HTML is the primary published phone format. It uses the full phone width, a centered maximum width on larger screens, safe-area padding, and browser-rendered text without horizontal scrolling or pinch-to-zoom.
-- PNG remains an optional secondary fixed-size export generated with `--png` from the same merged data. Responsive HTML presentation is controlled by `20 Templates/card.html`; fixed PNG presentation is controlled by `80 Build/render_card_outputs.js`.
+- Fixed card PNG exports are not generated or published. Responsive HTML presentation is controlled by `20 Templates/card.html`; optional card PDF presentation is controlled by `80 Build/render_card_pdf.js`.
 - Published HTML copies required card icons into the generated site and uses relative URLs so local files and repository-subdirectory GitHub Pages hosting remain portable. SVG is preferred when available and PNG is the fallback.
 - Every published HTML card uses the shared Camera Settings header and inherited `card.icons.header`. Its Back control and centered title both use real internal relative links to the main index so navigation works in an iPhone Home Screen installation without browser controls.
 
 ## Release Requirement
 
-Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the primary index action. A PNG secondary action appears only when the build or publish is explicitly run with `--png`. Other generated development outputs may still exist.
+Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the index action. Other generated development outputs may still exist.
 
 Released cards with `display_category: subject` appear under **Subjects**. Cards with `display_category: reference` appear under **Camera Setup & Controls**, regardless of whether their rendering behavior is profile-based or permanent-reference-based.
 

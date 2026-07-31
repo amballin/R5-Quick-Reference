@@ -2,6 +2,8 @@
 
 For governing rules and authority, see [`PROJECT_RULES.md`](PROJECT_RULES.md). For normative architecture, profile, card, appendix, asset, and build requirements, see [`00 Master/specifications/`](00%20Master/specifications/). This guide contains operational procedures rather than duplicate governance.
 
+For concise task-oriented instructions, open the local [`Workflow Index`](WORKFLOWS/index.html). Its HTML pages are automatically generated, tracked in Git, and excluded from the published website.
+
 ## Build Locally
 
 ```bash
@@ -10,7 +12,7 @@ python3 "80 Build/build.py"
 
 This regenerates the card outputs, guide pages, installable web app, and GitHub Pages folder without changing the published version or timestamp. It does not commit, push, or deploy. Development and test threads must use this command and must never run the publishing script.
 
-Responsive HTML is the primary and default published phone card. PNG remains an opt-in fixed-size export. Both resolve from `00 Master/baseline.yaml` plus profile overrides—there is no separate content source.
+Responsive HTML is the published phone card. It resolves from `00 Master/baseline.yaml` plus profile overrides.
 
 Generated or refreshed:
 
@@ -20,7 +22,7 @@ Generated or refreshed:
 - `docs/`
 - `../<repository folder name> Local/Build Output/reports/BUILD_REPORT.md`
 
-The default build also removes stale generated PNGs and PDFs:
+The default build also removes retired card PNG folders and optional PDFs:
 
 - `../<repository folder name> Local/Build Output/cards/png/`
 - `../<repository folder name> Local/Build Output/cards/phone-png/`
@@ -40,16 +42,6 @@ PDF outputs are written to:
 
 - `../<repository folder name> Local/Build Output/cards/pdf/`
 - `../<repository folder name> Local/Build Output/field-guide/pdf/`
-
-## Optional PNG Cards
-
-PNG cards are off by default. To generate them and include secondary PNG actions in the local site:
-
-```bash
-python3 "80 Build/build.py" --png
-```
-
-They are written to `Build Output/cards/png/` and `Build Output/cards/phone-png/`.
 
 ## Optional Spreadsheet Downloads
 
@@ -126,7 +118,8 @@ Migration carries mutable Checklist, registration, and session values forward by
 | `60 Assets/` | Source visual assets used by cards and guides: active card icons in `icons/card_icons/`, official Canon R5 icons in `icons/canon_r5_official/`, cheatsheet reference pages in `icons/cheatsheet/`, and retained photography icons in `Photography Icons/`. | Yes |
 | `60 Reference Tables/` | Empty placeholder. Remove later if no reference-table data is planned. | No |
 | `70 Canon Guides/` | Canon guide source/extraction material. | Yes |
-| `80 Build/` | Build, validation, PWA, extraction code, and fixed PNG presentation in `render_card_outputs.js`. | Yes, for tooling |
+| `80 Build/` | Build, validation, PWA, extraction code, and optional PDF rendering in `render_card_pdf.js`. | Yes, for tooling |
+| `WORKFLOWS/` | Concise local task guides; Markdown is editable and HTML is generated. Never published. | Edit Markdown only |
 | `90 Testing/` | Test material and checks. | Yes, for tests |
 | `data/` | Support data for the reference system. | Yes, carefully |
 | `docs/` | Generated GitHub Pages publish folder. GitHub serves this. | No |
@@ -145,7 +138,7 @@ Everything under local `Build Output/` is rebuilt and safe to discard. The sibli
 
 The normal build refreshes local `merged-build/` and repository `docs/`. The website target creates optional staging in the local workspace.
 
-Generated responsive cards are in `Build Output/cards/html/`. An explicit `--png` build adds fixed PNGs in `Build Output/cards/png/` and `Build Output/cards/phone-png/` and mirrors released PNGs into `docs/Cards/`. Generated icon copies are under `docs/web-assets/`. Source Canon icons remain in `60 Assets/icons/canon_r5_official/`, with SVG preferred and PNG used only when no SVG mapping is available.
+Generated responsive cards are in `Build Output/cards/html/`. Generated icon copies are under `docs/web-assets/`. Source Canon icons remain in `60 Assets/icons/canon_r5_official/`, with SVG preferred and PNG used only when no SVG mapping is available.
 
 ## Control Field Guide and Setting Deep Dive Order
 
@@ -292,11 +285,7 @@ To publish an intentional major release such as Version 2.00:
 
 The requested number must be greater than the current major version. Later ordinary publications continue with `2.01`, `2.02`, and so on. Major website versions do not change spreadsheet revisions.
 
-This default publish omits PNG cards and preserves compatible previously published spreadsheet downloads. It blocks if a workbook’s relevant sources changed, so stale workbook content cannot be carried forward. To deliberately publish the optional PNG downloads, use:
-
-```bash
-./80\ Build/scripts/publish.sh --png
-```
+This default publish preserves compatible previously published spreadsheet downloads. It blocks if a workbook’s relevant sources changed, so stale workbook content cannot be carried forward.
 
 To prepare the spreadsheets and then publish the complete website with them included, run these commands in order:
 
@@ -311,12 +300,6 @@ To deliberately remove all published spreadsheet downloads:
 
 ```bash
 ./80\ Build/scripts/publish.sh --remove-spreadsheet-downloads
-```
-
-Combine both optional output classes when required:
-
-```bash
-./80\ Build/scripts/publish.sh --png --spreadsheet-downloads
 ```
 
 `./80 Build/scripts/publish.sh` is the only supported website publishing command. Do not run the internal `build.py --publish` mode directly. Development and test threads must never run the publishing script.
@@ -339,7 +322,7 @@ python3 "80 Build/build.py" Wildlife
 python3 "80 Build/build.py" "Birds in Flight"
 ```
 
-Single-profile builds update HTML only by default. Add `--png` to update that card's PNG outputs. Run the full build before publishing.
+Single-profile builds update HTML and optional PDF output only. Run the full build before publishing.
 
 ## Build Website Only
 
@@ -367,7 +350,7 @@ This rebuilds the site and refreshes `docs/`.
 
 ## Install On iPhone
 
-Open the live URL in Safari and tap a profile name for the responsive HTML version. If the site was deliberately published with `--png`, a smaller PNG action is also shown. To install the site, use Safari's Share button, choose **Add to Home Screen**, keep the `Camera Settings` name, and tap Add.
+Open the live URL in Safari and tap a profile name for the responsive HTML version. To install the site, use Safari's Share button, choose **Add to Home Screen**, keep the `Camera Settings` name, and tap Add.
 
 The first online visit registers the service worker and caches the generated cards, guide pages, icons, and supporting web assets. After that, the app can open without a network connection.
 
@@ -442,7 +425,7 @@ When camera firmware changes settings, menus, terminology, or behavior:
 4. Update `60 Assets/icon-map.yaml` only if setting names or icons changed.
 5. Run `python3 "80 Build/validator.py"`.
 6. Run `python3 "80 Build/build.py"`.
-7. Review generated HTML cards. Add `--png` or `--pdf` only when those fixed outputs need to be refreshed.
+7. Review generated HTML cards. Add `--pdf` only when the optional fixed PDF output needs to be refreshed.
 8. Record the firmware-related decision in `00 Master/decision-log.md`.
 
 Mark the entry `Proposed`, `Accepted`, `Superseded`, or `Rejected`; only `Accepted` decisions are binding. Follow the rule-change process in `PROJECT_RULES.md` when the firmware change affects architecture or permanent rules.

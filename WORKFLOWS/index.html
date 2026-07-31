@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workflow Index</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Project Workflow Index</h1>
+<p>Follow this order during a typical project day. Spreadsheet testing status and spreadsheet release files have separate places in the sequence.</p>
+<section class="step"><h2>1. Preflight before editing</h2>
+<p>Open <a href="preflight.html">Preflight</a> to confirm this Mac has the current source and is safe to use.</p>
+</section>
+<section class="step"><h2>2. Develop, build, and test</h2>
+<p>Make the intended source changes. Open <a href="local-build.html">Local Build</a> to validate before generation, build the complete local result, and validate the generated result. For routine review, open the completed website at <code>Canon Camera Reference Local/Build Output/merged-build/index.html</code>, not the intermediate card files or the Git-tracked <code>docs/</code> publication mirror.</p>
+</section>
+<section class="step"><h2>3. Record spreadsheet testing status</h2>
+<p>If you updated the machine-local verification workbook, open <a href="spreadsheets.html">Spreadsheet Workflows</a>, close the workbook, and import its testing status into Git-tracked YAML. Do this before Finish Day so the status is included in the source commit.</p>
+<p>If the testing workbook did not change, continue directly to Step 4.</p>
+</section>
+<section class="step"><h2>4. Finish source work for the day</h2>
+<p>Open <a href="../FINISH_DAY.html">Finish Day</a> and complete its source-synchronization step. It validates, builds, commits, and pushes the source work.</p>
+<p>For an ordinary day, stop here after Finish Day reports that the repository is clean and synchronized.</p>
+</section>
+<section class="step"><h2>5. Build spreadsheet release files</h2>
+<p>When the next publication must replace the Matrix, Setup workbook, or both, open <a href="spreadsheets.html">Spreadsheet Workflows</a> and build the required release families now. These verified Excel and Numbers files are machine-local release artifacts; they are not part of the source commit.</p>
+<p>If spreadsheet downloads are unchanged and their source fingerprints are still current, continue to Step 6 without rebuilding them.</p>
+</section>
+<section class="step"><h2>6. Publish the website</h2>
+<p>Open <a href="publish.html">Publish the Website</a> only when you intentionally want to update GitHub Pages. Use ordinary publication when spreadsheet downloads remain current, or spreadsheet replacement publication after Step 5.</p>
+</section>
+<section class="step"><h2>7. Verify the publication and final Git state</h2>
+<p>Complete both publication verification and the final clean-and-synchronized Git check described on <a href="publish.html">Publish the Website</a>. A clean Git report alone does not prove that publication succeeded.</p>
+</section>
+<section class="step"><h2>Continue on another Mac</h2>
+<p>Complete Steps 1–4 on the first Mac. Then open <a href="other-mac.html">Continue on Another Mac</a> before resuming the project elsewhere.</p>
+</section>
+<section class="step"><h2>Recovery and troubleshooting</h2>
+<p>Open <a href="recovery.html">Recovery and Troubleshooting</a> at the first failed safety check. Stop rather than guessing when Git is behind, diverged, a build fails, spreadsheet preparation fails, or publication is not verified.</p>
+</section>
+    <footer>Generated from WORKFLOWS/index.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

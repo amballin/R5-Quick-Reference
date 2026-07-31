@@ -26,7 +26,6 @@ APP_TITLE = "Camera Settings"
 def render_offline_index(
     paths,
     publish_metadata,
-    include_png=False,
     include_settings_downloads=False,
     download_targets=(),
     preserve_spreadsheet_downloads=False,
@@ -39,7 +38,7 @@ def render_offline_index(
         cards_dir = output_dir / "Cards"
         cards_dir.mkdir(parents=True, exist_ok=True)
 
-        card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets", include_png=include_png)
+        card_files = _copy_release_cards(paths, cards_dir, output_dir / "web-assets")
         guides = _all_guides(paths)
         _write_appendices(output_dir / "appendices", guides)
         replacement_targets = tuple(download_targets) or (
@@ -82,7 +81,7 @@ def _copy_files(source_dir, target_dir, pattern):
     return copied
 
 
-def _copy_release_cards(paths, target_dir, web_assets_dir, include_png=False):
+def _copy_release_cards(paths, target_dir, web_assets_dir):
     copied = []
     for profile_path in sorted(paths.profiles_dir.glob("*.yaml"), key=lambda path: path.stem.lower()):
         profile = _load_yaml(profile_path)
@@ -96,7 +95,6 @@ def _copy_release_cards(paths, target_dir, web_assets_dir, include_png=False):
         html = _published_card_html(paths, html_source, web_assets_dir)
         html_target.write_text(html, encoding="utf-8")
         card = {
-            "png_path": None,
             "html_path": html_target,
             "card_type": profile.get("card_type", "profile"),
             "display_category": profile.get("display_category") or (
@@ -105,15 +103,6 @@ def _copy_release_cards(paths, target_dir, web_assets_dir, include_png=False):
             "display_order": profile.get("display_order", 100),
             "appendix_links": profile.get("appendix_links") or [],
         }
-        if include_png:
-            png_source = paths.phone_png_output_file(profile_name)
-            if not png_source.exists():
-                png_source = paths.png_output_file(profile_name)
-            if not png_source.exists():
-                continue
-            png_target = target_dir / png_source.name
-            shutil.copy2(png_source, png_target)
-            card["png_path"] = png_target
         copied.append(card)
     return copied
 
@@ -278,7 +267,6 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .card-row{{display:flex;align-items:stretch;gap:8px}}
 .card-primary{{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:13px 14px;min-height:48px;font-weight:700;text-decoration:none}}
 .card-primary span{{color:var(--muted);font-weight:400}}
-.card-png{{display:grid;place-items:center;min-width:58px;min-height:48px;color:var(--accent);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px;text-decoration:none;font-size:13px;font-weight:700}}
 .guides{{display:grid;gap:9px}}
 .downloads{{display:grid;gap:9px}}
 .download-row{{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px 12px 10px 14px;min-height:58px}}
@@ -346,14 +334,8 @@ def _card_details(card, guide_targets):
     html_path = card["html_path"]
     label = escape(html_path.stem)
     html_href = quote(f"Cards/{html_path.name}", safe="/:#%")
-    png_path = card.get("png_path")
-    png_link = ""
-    if png_path:
-        png_href = quote(f"Cards/{png_path.name}", safe="/:#%")
-        png_link = f'<a class="card-png" href="{png_href}" aria-label="Open {label} PNG">PNG</a>'
     return f"""<div class="card-row">
 <a class="card-primary" href="{html_href}">{label}<span>Open</span></a>
-{png_link}
 </div>"""
 
 

@@ -141,11 +141,11 @@ workbooks:
           header_columns: 1
           frozen_header_columns: true
         columns:
-          - {key: test_id, heading: Test ID, width_pt: 96, alignment: left}
+          - {key: test_id, heading: Test ID, width_pt: 100, alignment: center}
           - {key: sequence, heading: Sequence, width_pt: 50, alignment: center}
           - {key: phase, heading: Phase, width_pt: 89, alignment: left}
-          - {key: expected_result, heading: Expected Result, width_pt: 197.99, alignment: left, wrap: true}
-          - {key: task, heading: Task, width_pt: 204.32, alignment: left, wrap: true}
+          - {key: expected_result, heading: Expected Result, width_pt: 110, alignment: left, wrap: true}
+          - {key: task, heading: Task, width_pt: 100, alignment: left, wrap: true}
           - {key: best_access, heading: Best Access, width_pt: 120, alignment: center, wrap: true}
           - {key: menu_location, heading: Menu Location, width_pt: 94, alignment: center, bold: true, wrap: true}
           - {key: menu_detail, heading: Menu Detail, width_pt: 174, alignment: left, wrap: true}

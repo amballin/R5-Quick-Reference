@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Publish the Website</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Publish the Website</h1>
+<p>Publishing intentionally updates the live GitHub Pages site, version, date, and publication commit. It is separate from Finish Day and ordinary Git pushes.</p>
+<section class="step"><h2>Before publishing</h2>
+<ul>
+<li>Source changes are validated, committed, and pushed.</li>
+<li>The branch is clean and synchronized.</li>
+<li>If spreadsheet inputs changed, rebuild their release workbooks first.</li>
+<li>Confirm that updating the live website is intentional.</li>
+</ul>
+</section>
+<section class="step"><h2>Ordinary publication</h2>
+<p>Use the ordinary command when spreadsheet downloads are unchanged:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh</code></pre></div>
+<p>This increments the minor website version.</p>
+</section>
+<section class="step"><h2>Publication with replacement spreadsheets</h2>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
+<p>This replaces both published workbook families and increments the minor website version. It does not require a major-version bump.</p>
+</section>
+<section class="step"><h2>Optional major release</h2>
+<p>Only when intentionally starting a new major series:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
+<p>Replace <code>N</code> with an integer greater than the current major version. A major release is never required for ordinary site or spreadsheet changes.</p>
+</section>
+<section class="step"><h2>Required success result</h2>
+<p>Do not consider the site published unless the command ends with:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>PUBLICATION COMPLETE AND VERIFIED.</code></pre></div>
+<p>Every run writes a timestamped log under the machine-local <code>Logs/</code> folder.</p>
+<p>For spreadsheet publication, independently verify:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
+<p>Then verify the final Git state:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
+<p>Success requires both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code>. See <a href="recovery.html">Recovery</a> if either check fails.</p>
+</section>
+    <footer>Generated from WORKFLOWS/publish.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

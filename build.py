@@ -21,7 +21,7 @@ from finish_day_guide import write_finish_day_html
 from html_renderer import render_card, write_html_card
 from icon_manager import IconManager
 from offline_index import render_offline_index
-from output_renderer import render_png_pdf
+from output_renderer import render_pdf
 from profile_loader import canonical_profile_name, load_baseline, load_profile, write_merged_profile
 from pwa import generate_pwa, validate_merged_build_pwa
 from publish_metadata import (
@@ -37,6 +37,7 @@ from spreadsheet_downloads import (
     SpreadsheetDownloadError,
     validate_download_manifests,
 )
+from workflow_guides import write_workflow_guides
 
 
 PAGES_IGNORE = shutil.ignore_patterns(".DS_Store", "__pycache__")
@@ -48,7 +49,6 @@ def parse_args():
     parser.add_argument("target", nargs="?")
     parser.add_argument("profile", nargs="?")
     parser.add_argument("--root", default=".")
-    parser.add_argument("--png", action="store_true", help="Also generate and publish fixed PNG card exports. Off by default.")
     parser.add_argument("--pdf", action="store_true", help="Also generate card and appendix PDFs. Off by default.")
     parser.add_argument(
         "--settings-summary",
@@ -85,7 +85,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def build_profile(profile_name, root=".", include_png=False, include_pdf=False):
+def build_profile(profile_name, root=".", include_pdf=False):
     profile_name = canonical_profile_name(profile_name)
     paths = ProjectPaths(root)
     baseline = load_baseline(paths)
@@ -96,21 +96,18 @@ def build_profile(profile_name, root=".", include_png=False, include_pdf=False):
     icon_manager = IconManager(paths)
     html = render_card(template, profile_name, profile, merged, icon_manager, baseline, paths)
     write_html_card(paths, profile_name, html)
-    if include_png or include_pdf:
-        render_png_pdf(
+    if include_pdf:
+        render_pdf(
             paths,
             profile_name,
             profile,
             merged,
             icon_manager,
             baseline,
-            include_png=include_png,
-            include_pdf=include_pdf,
         )
     return {
         "profile": profile_name,
         "html": paths.html_output_file(profile_name),
-        "png": paths.png_output_file(profile_name) if include_png else None,
         "pdf": paths.pdf_output_file(profile_name) if include_pdf else None,
     }
 
@@ -121,18 +118,16 @@ def profile_names_to_build(paths, requested_profile):
     return [profile_name_from_path(path) for path in discover_profiles(paths)]
 
 
-def build_profiles(paths, profile_names, include_png=False, include_pdf=False):
+def build_profiles(paths, profile_names, include_pdf=False):
     successes = []
     failures = []
-    generated = {"HTML": 0, "PNG": 0, "PDF": 0}
+    generated = {"HTML": 0, "PDF": 0}
     for profile_name in profile_names:
         try:
-            result = build_profile(profile_name, paths.root, include_png=include_png, include_pdf=include_pdf)
+            result = build_profile(profile_name, paths.root, include_pdf=include_pdf)
             successes.append(result)
             if result["html"].exists():
                 generated["HTML"] += 1
-            if include_png and result["png"] and result["png"].exists():
-                generated["PNG"] += 1
             if include_pdf and result["pdf"] and result["pdf"].exists():
                 generated["PDF"] += 1
         except Exception as exc:
@@ -159,7 +154,7 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/icon_manager.py`",
         "- `80 Build/offline_index.py`",
         "- `80 Build/pwa.py`",
-        "- `80 Build/render_card_outputs.js`",
+        "- `80 Build/render_card_pdf.js`",
         "- `80 Build/subject_settings_matrix.py`",
         "- `80 Build/camera_setup_tracker.py`",
         "- `00 Master/setting_access.yaml`",
@@ -170,14 +165,12 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
         "- `80 Build/offline_index.py`",
         "- `80 Build/output_renderer.py`",
         "- `80 Build/pwa.py`",
-        "- `80 Build/render_card_outputs.js`",
+        "- `80 Build/render_card_pdf.js`",
         "- `80 Build/render_subject_settings_matrix.mjs`",
         "- `80 Build/render_camera_setup_tracker.mjs`",
         "- `80 Build/validators/setting_access_validator.py`",
         f"- `{paths.merged_output_dir}`",
         f"- `{paths.html_output_dir}`",
-        f"- `{paths.png_output_dir}`",
-        f"- `{paths.phone_png_output_dir}`",
         f"- `{paths.field_guide_html_output_dir}`",
         f"- `{paths.field_guide_search_index_file}`",
         f"- `{paths.merged_build_output_dir}`",
@@ -228,8 +221,8 @@ def write_report(paths, profile_names, validation_results, successes, failures, 
             "",
             "## Rendering Fixes",
             "",
-            "- PNG generation is opt-in with `--png`; the fixed renderer wraps long setting values and list items.",
-            "- PDF generation is opt-in with `--pdf`; default builds skip card and appendix PDFs.",
+            "- Fixed card PNG exports have been retired.",
+            "- PDF generation is opt-in with `--pdf`; the PDF renderer wraps long setting values and list items.",
             "",
             "## Future Enhancement",
             "",
@@ -270,6 +263,7 @@ def main():
         spreadsheet_download_targets.append("setup")
     paths = ProjectPaths(args.root)
     write_finish_day_html(paths.root)
+    write_workflow_guides(paths.root)
     metadata_path = paths.root / "80 Build" / "publish_metadata.yaml"
     try:
         current_metadata = load_publish_metadata(metadata_path)
@@ -297,7 +291,6 @@ def main():
             metadata_path,
             current_metadata,
             start,
-            include_png=args.png,
             spreadsheet_download_targets=spreadsheet_download_targets,
             preserve_spreadsheet_downloads=not args.remove_spreadsheet_downloads,
             major_version=args.major_version,
@@ -317,7 +310,6 @@ def main():
         status = build_site(
             paths,
             requested_profile=args.profile,
-            include_png=args.png,
             include_pdf=args.pdf,
             include_settings_summary=args.settings_summary,
             spreadsheet_download_targets=spreadsheet_download_targets,
@@ -345,7 +337,6 @@ def main():
         paths,
         requested_profile=requested_profile,
         start=start,
-        include_png=args.png,
         include_pdf=args.pdf,
         include_settings_summary=args.settings_summary,
         spreadsheet_download_targets=spreadsheet_download_targets,
@@ -353,7 +344,7 @@ def main():
     )
     if status == 0 and requested_profile is None:
         sync_pages_output(paths)
-        clean_generated_leftovers(paths, include_png=args.png, include_pdf=args.pdf, keep_website=False)
+        clean_generated_leftovers(paths, include_pdf=args.pdf, keep_website=False)
         print(f"GitHub Pages docs generated: {paths.pages_output_dir}")
     return status
 
@@ -362,7 +353,6 @@ def build_site(
     paths,
     requested_profile=None,
     start=None,
-    include_png=False,
     include_pdf=False,
     include_settings_summary=False,
     spreadsheet_download_targets=(),
@@ -375,7 +365,7 @@ def build_site(
     validation_errors = [result for result in validation_results if result[0] == "error"]
     if validation_errors:
         elapsed = time.perf_counter() - start
-        write_report(paths, [], validation_results, [], [], {"HTML": 0, "PNG": 0, "PDF": 0}, elapsed)
+        write_report(paths, [], validation_results, [], [], {"HTML": 0, "PDF": 0}, elapsed)
         print("Build stopped because validation failed.")
         print()
         for _, code, detail in validation_errors:
@@ -389,7 +379,6 @@ def build_site(
             return 1
     clean_generated_leftovers(
         paths,
-        include_png=include_png,
         include_pdf=include_pdf,
         keep_website=keep_website,
         full_build=requested_profile is None,
@@ -401,7 +390,6 @@ def build_site(
     successes, failures, generated = build_profiles(
         paths,
         profile_names,
-        include_png=include_png,
         include_pdf=include_pdf,
     )
     generated.update(appendix_generated)
@@ -409,7 +397,6 @@ def build_site(
         render_offline_index(
             paths,
             publish_display,
-            include_png=include_png,
             download_targets=spreadsheet_download_targets,
             preserve_spreadsheet_downloads=preserve_spreadsheet_downloads,
         )
@@ -449,7 +436,6 @@ def publish(
     metadata_path,
     current_metadata,
     start,
-    include_png=False,
     spreadsheet_download_targets=(),
     preserve_spreadsheet_downloads=True,
     major_version=None,
@@ -469,7 +455,6 @@ def publish(
     status = build_site(
         paths,
         start=start,
-        include_png=include_png,
         spreadsheet_download_targets=spreadsheet_download_targets,
         preserve_spreadsheet_downloads=preserve_spreadsheet_downloads,
         publish_display=display,
@@ -479,7 +464,7 @@ def publish(
         return status
     try:
         sync_pages_output(paths)
-        clean_generated_leftovers(paths, include_png=include_png, keep_website=False)
+        clean_generated_leftovers(paths, keep_website=False)
         candidate_path = metadata_path.with_name(".publish_metadata.candidate.yaml")
         write_publish_metadata_atomic(candidate_path, candidate)
     except OSError as exc:
@@ -554,7 +539,6 @@ def _mirror_paths(root):
 
 def clean_generated_leftovers(
     paths,
-    include_png=False,
     include_pdf=False,
     include_settings_summary=False,
     include_settings_downloads=False,
@@ -575,7 +559,7 @@ def clean_generated_leftovers(
         paths.root / "output",
     ]
     if not keep_website:
-        obsolete_generated_roots.append(paths.root / "output" / "Website")
+        obsolete_generated_roots.append(paths.website_output_dir)
     if full_build:
         obsolete_generated_roots.extend(
             [
@@ -614,8 +598,11 @@ def clean_generated_leftovers(
     for root in generated_roots:
         clean_generated_tree(root)
 
-    if full_build and not include_png:
-        for png_dir in [paths.png_output_dir, paths.phone_png_output_dir]:
+    if full_build:
+        for png_dir in [
+            paths.output_dir / "cards" / "png",
+            paths.output_dir / "cards" / "phone-png",
+        ]:
             if png_dir.exists():
                 shutil.rmtree(png_dir)
 

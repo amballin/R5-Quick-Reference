@@ -23,6 +23,19 @@ def validate(root):
             continue
         issues.extend(_generated_tree_issues(path, allow_root_ds_store=path == paths.output_dir))
 
+    if paths.website_output_dir.exists():
+        issues.extend(_generated_tree_issues(paths.website_output_dir))
+        differences = _tree_differences(paths.merged_build_output_dir, paths.website_output_dir)
+        if differences:
+            sample = ", ".join(differences[:10])
+            issues.append(
+                error(
+                    "build_output",
+                    paths.website_output_dir,
+                    f"Optional website staging does not match the canonical merged build: {sample}",
+                )
+            )
+
     for profile in profiles:
         name = profile.stem
         expected = [
@@ -139,6 +152,29 @@ def _numbered_duplicates(root):
         if original and original.exists():
             duplicates.append(path)
     return sorted(duplicates, key=lambda item: str(item))
+
+
+def _tree_differences(source, target):
+    source_paths = _generated_paths(source)
+    target_paths = _generated_paths(target)
+    differences = [f"missing: {path}" for path in sorted(source_paths - target_paths)]
+    differences.extend(f"extra: {path}" for path in sorted(target_paths - source_paths))
+    for relative in sorted(source_paths & target_paths):
+        source_path = source / relative
+        target_path = target / relative
+        if source_path.is_file() and target_path.is_file() and source_path.read_bytes() != target_path.read_bytes():
+            differences.append(f"content differs: {relative}")
+    return differences
+
+
+def _generated_paths(root):
+    if not root.exists():
+        return set()
+    return {
+        path.relative_to(root)
+        for path in root.rglob("*")
+        if path.name != ".DS_Store" and "__pycache__" not in path.parts
+    }
 
 
 def _unsuffixed_original(path):

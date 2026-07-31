@@ -8,6 +8,7 @@ REQUIRED_FOLDERS = [
     "40 Assets",
     "60 Assets",
     "80 Build",
+    "WORKFLOWS",
 ]
 
 REQUIRED_FILES = [
@@ -25,6 +26,8 @@ REQUIRED_FILES = [
     "60 Assets/icon-map.yaml",
     "build.py",
     "80 Build/verify_publication.py",
+    "80 Build/workflow_guides.py",
+    "WORKFLOWS/index.md",
     "00 Master/specifications/Architecture.md",
     "00 Master/specifications/Profile Specification.md",
     "00 Master/specifications/Card Specification.md",

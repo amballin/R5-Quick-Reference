@@ -67,14 +67,6 @@ class ProjectPaths:
         return self.output_dir / "cards" / "html"
 
     @property
-    def png_output_dir(self):
-        return self.output_dir / "cards" / "png"
-
-    @property
-    def phone_png_output_dir(self):
-        return self.output_dir / "cards" / "phone-png"
-
-    @property
     def pdf_output_dir(self):
         return self.output_dir / "cards" / "pdf"
 
@@ -163,12 +155,6 @@ class ProjectPaths:
 
     def html_output_file(self, profile_name):
         return self.html_output_dir / f"{profile_name}.html"
-
-    def png_output_file(self, profile_name):
-        return self.png_output_dir / f"{profile_name}.png"
-
-    def phone_png_output_file(self, profile_name):
-        return self.phone_png_output_dir / f"{profile_name}.png"
 
     def pdf_output_file(self, profile_name):
         return self.pdf_output_dir / f"{profile_name}.pdf"

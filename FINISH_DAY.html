@@ -77,6 +77,20 @@
       padding: 14px 16px;
     }
     footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
     @media (prefers-color-scheme: dark) {
       :root {
         --page: #111416;
@@ -97,8 +111,9 @@
 </head>
 <body>
   <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="WORKFLOWS/index.html">Workflow Index</a></nav>
 <h1>Finish Day: Sync, Spreadsheets, Publish</h1>
-<p>Use these steps in order when you want to finish the source work, synchronize Git, prepare both spreadsheet downloads, and publish the complete website.</p>
+<p>Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–4 only when you also intend to prepare both spreadsheet downloads and publish the complete website.</p>
 <section class="step"><h2>0. Import testing status when the working tracker changed</h2>
 <p>If you updated the local Excel or Numbers verification tracker, close it and run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/import-verification-status.sh</code></pre></div>
@@ -118,6 +133,7 @@
 <p>Do not continue until the script prints:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>FINISHED FOR TODAY: Safe to switch Macs.</code></pre></div>
 <p>This first commit and push synchronize the editable project source. The script excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
+<aside class="warning">If you are only finishing for the day or switching Macs, stop here. Steps 2–4 are a separate spreadsheet-publication workflow.</aside>
 </section>
 <section class="step"><h2>2. Build and verify both spreadsheet families</h2>
 <p>Run:</p>
@@ -140,15 +156,10 @@
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
 <p>Both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code> are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.</p>
 </section>
-<section class="step"><h2>Optional: also publish PNG downloads</h2>
-<p>Use this publishing command instead of the command in Step 3:</p>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --png --spreadsheet-downloads</code></pre></div>
-<p>Only include <code>--png</code> when fixed PNG card downloads are intentionally wanted on the live site.</p>
-</section>
 <section class="step"><h2>Optional: start a new major website version</h2>
-<p>To make this publication Version 2.00, use this command instead of Step 3:</p>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version 2 --spreadsheet-downloads</code></pre></div>
-<p>The requested major number must be greater than the current one. Later ordinary publications continue with 2.01, 2.02, and so on. Spreadsheet revisions remain independent.</p>
+<p>To start a new major version, replace <code>N</code> with an integer greater than the current major version and use this command instead of Step 3:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
+<p>The requested major number must be greater than the current one. Later ordinary publications continue with minor increments in the new major series. Spreadsheet revisions remain independent.</p>
 </section>
     <footer>Generated from FINISH_DAY.md. Run the normal build after editing the source.</footer>
   </main>

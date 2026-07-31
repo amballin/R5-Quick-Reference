@@ -1,6 +1,6 @@
 # Finish Day: Sync, Spreadsheets, Publish
 
-Use these steps in order when you want to finish the source work, synchronize Git, prepare both spreadsheet downloads, and publish the complete website.
+Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–4 only when you also intend to prepare both spreadsheet downloads and publish the complete website.
 
 ## 0. Import testing status when the working tracker changed
 
@@ -35,6 +35,8 @@ FINISHED FOR TODAY: Safe to switch Macs.
 ```
 
 This first commit and push synchronize the editable project source. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
+
+> If you are only finishing for the day or switching Macs, stop here. Steps 2–4 are a separate spreadsheet-publication workflow.
 
 ## 2. Build and verify both spreadsheet families
 
@@ -82,22 +84,12 @@ Then run:
 
 Both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.
 
-## Optional: also publish PNG downloads
-
-Use this publishing command instead of the command in Step 3:
-
-```bash
-./80\ Build/scripts/publish.sh --png --spreadsheet-downloads
-```
-
-Only include `--png` when fixed PNG card downloads are intentionally wanted on the live site.
-
 ## Optional: start a new major website version
 
-To make this publication Version 2.00, use this command instead of Step 3:
+To start a new major version, replace `N` with an integer greater than the current major version and use this command instead of Step 3:
 
 ```bash
-./80\ Build/scripts/publish.sh --major-version 2 --spreadsheet-downloads
+./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads
 ```
 
-The requested major number must be greater than the current one. Later ordinary publications continue with 2.01, 2.02, and so on. Spreadsheet revisions remain independent.
+The requested major number must be greater than the current one. Later ordinary publications continue with minor increments in the new major series. Spreadsheet revisions remain independent.

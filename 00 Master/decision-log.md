@@ -2,6 +2,27 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Source-Only Pre-Build Validation
+
+**Status:** Accepted
+**Date:** 2026-07-31
+
+Separate editable-source checks from generated-output freshness checks. Provide `validator.py --source-only` for the pre-build stage, excluding prepared and published spreadsheet freshness, generated workflow-guide agreement, generated build output, and merged-PWA checks that are expected to become stale after legitimate source edits. Use the reliable local sequence source-only validation, normal build, then full validation, joined with `&&` to stop at the first error. Finish Day and Preflight guidance use the same sequence.
+
+## Local Task-Oriented Workflow Guides
+
+**Status:** Accepted
+**Date:** 2026-07-31
+
+Maintain a concise local workflow index with separate pages for Preflight, continuing on another Mac, local builds and build timing, spreadsheet creation/publication/status updates, website publication, and recovery. Keep Markdown as the editable source and automatically regenerate readable HTML during normal builds and Finish Day. Track both formats in Git so the guidance follows the repository between computers, but exclude all workflow pages from `docs/` and the public website. Keep `FINISH_DAY.html` as the concise end-of-day recipe and link it with the workflow index.
+
+## Retire Fixed Card PNG Exports
+
+**Status:** Accepted
+**Date:** 2026-07-31
+
+Remove fixed downloadable card PNG generation, publication options, index links, and output folders because this export is not used. Keep responsive HTML as the published card format and PDF as an independent opt-in local output. Retain source/fallback PNG assets, PWA icons, spreadsheet preview images, and temporary in-memory rasterization required to assemble PDFs. This decision supersedes **Opt-In PNG Card Exports** and the fixed-PNG clauses in **Responsive HTML as Primary Published Card Format**.
+
 ## Auditable Publication Completion
 
 **Status:** Accepted
@@ -270,7 +291,7 @@ This decision supersedes the index-placement restriction in **Permanent Referenc
 
 ## Opt-In PNG Card Exports
 
-**Status:** Accepted
+**Status:** Superseded
 **Date:** 2026-07-17
 
 Responsive HTML is the default and primary card output. Fixed PNG cards remain available from the same merged baseline-plus-overrides data, but generation and publication are opt-in with `--png`. A normal build or publish omits PNG cards and PNG index actions. PDF generation remains independently opt-in and may use the fixed renderer internally without retaining PNG files.
@@ -294,7 +315,7 @@ Do not install or use the GitHub CLI (`gh`) for this project. Preserve the estab
 **Status:** Accepted
 **Date:** 2026-07-17
 
-Publish released camera cards as responsive standalone HTML pages optimized for iPhone safe areas and readable browser text. Make each HTML card the primary action on the Camera Settings index while retaining fixed PNG cards as secondary exports. Generate both presentations from the same merged baseline-plus-overrides data. Keep responsive styling in `20 Templates/card.html`, fixed PNG styling in `80 Build/render_card_outputs.js`, and publish required card icons through generated relative asset paths.
+Publish released camera cards as responsive standalone HTML pages optimized for iPhone safe areas and readable browser text. Make each HTML card the primary action on the Camera Settings index and publish required card icons through generated relative asset paths. The later **Retire Fixed Card PNG Exports** decision supersedes this entry's former fixed-PNG clauses; the responsive HTML requirements remain accepted.
 
 ## Explicit Approval Before Git Branch Changes
 

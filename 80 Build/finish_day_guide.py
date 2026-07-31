@@ -15,6 +15,11 @@ def _inline(text):
     rendered = escape(text)
     rendered = re.sub(r"`([^`]+)`", r"<code>\1</code>", rendered)
     rendered = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", rendered)
+    rendered = re.sub(
+        r"\[([^\]]+)\]\(([^)]+)\)",
+        r'<a href="\2">\1</a>',
+        rendered,
+    )
     return rendered
 
 
@@ -101,14 +106,19 @@ def _markdown_body(source):
     return "\n".join(output)
 
 
-def render_finish_day_html(source):
+def render_guide_html(source, page_title, footer_text, navigation=""):
     body = _markdown_body(source)
+    navigation_html = (
+        f'<nav class="guide-nav" aria-label="Workflow navigation">{navigation}</nav>'
+        if navigation
+        else ""
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Finish Day: Sync, Spreadsheets, Publish</title>
+  <title>{escape(page_title)}</title>
   <style>
     :root {{
       color-scheme: light dark;
@@ -182,6 +192,20 @@ def render_finish_day_html(source):
       padding: 14px 16px;
     }}
     footer {{ color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }}
+    a {{ color: var(--accent); font-weight: 700; }}
+    .guide-nav {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }}
+    .guide-nav a {{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }}
     @media (prefers-color-scheme: dark) {{
       :root {{
         --page: #111416;
@@ -202,8 +226,9 @@ def render_finish_day_html(source):
 </head>
 <body>
   <main>
+    {navigation_html}
 {body}
-    <footer>Generated from {SOURCE_NAME}. Run the normal build after editing the source.</footer>
+    <footer>{escape(footer_text)}</footer>
   </main>
   <script>
     for (const button of document.querySelectorAll(".command button")) {{
@@ -218,6 +243,15 @@ def render_finish_day_html(source):
 </body>
 </html>
 """
+
+
+def render_finish_day_html(source):
+    return render_guide_html(
+        source,
+        "Finish Day: Sync, Spreadsheets, Publish",
+        f"Generated from {SOURCE_NAME}. Run the normal build after editing the source.",
+        '<a href="WORKFLOWS/index.html">Workflow Index</a>',
+    )
 
 
 def paths_for(root):

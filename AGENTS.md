@@ -11,8 +11,9 @@ For ordinary local validation and builds, run commands from that repository
 root:
 
 ```bash
+python3 "80 Build/validator.py" --source-only &&
+python3 "80 Build/build.py" &&
 python3 "80 Build/validator.py"
-python3 "80 Build/build.py"
 ```
 
 Never publish, commit, or push unless the project owner explicitly requests

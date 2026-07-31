@@ -149,20 +149,15 @@ esac
 
 if [[ -n "$(git status --porcelain)" ]]; then
     echo
-    if ask_yes_no "Run the documented validator and normal development build now?"; then
+    if ask_yes_no "Run source validation, the normal development build, and final validation now?"; then
         echo
         clean_generated_metadata || {
             echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
             exit 1
         }
-        python3 "80 Build/finish_day_guide.py" || {
+        python3 "80 Build/validator.py" --source-only || {
             echo
-            echo "Finish-day HTML guide generation failed. Nothing was committed or pushed."
-            exit 1
-        }
-        python3 "80 Build/validator.py" || {
-            echo
-            echo "Validation failed. Nothing was committed or pushed."
+            echo "Source validation failed. Nothing was committed or pushed."
             exit 1
         }
         python3 "80 Build/build.py" || {
@@ -176,7 +171,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
             exit 1
         }
         echo
-        echo "Pre-build validation, normal development build, and post-build validation completed."
+        echo "Source validation, normal development build, and final validation completed."
         echo "A normal build may refresh docs/. finish-day will separate those files before staging source changes."
     else
         echo

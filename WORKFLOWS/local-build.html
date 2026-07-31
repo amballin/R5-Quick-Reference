@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local Build</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Local Build: When and Why</h1>
+<p>The normal local build is:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/validator.py&quot; --source-only &amp;&amp;
+python3 &quot;80 Build/build.py&quot; &amp;&amp;
+python3 &quot;80 Build/validator.py&quot;</code></pre></div>
+<p>You may copy and run the complete block. The <code>&amp;&amp;</code> connections stop the sequence at the first error, so a failed check cannot be hidden by a later command. You may also run the three commands one at a time when troubleshooting.</p>
+<section class="step"><h2>Why three commands</h2>
+<ul>
+<li>The source-only validator checks editable source without treating expected stale generated files as errors.</li>
+<li>The build regenerates the local HTML/PWA, workflow HTML, <code>docs/</code> review copy, and reports.</li>
+<li>The final validator checks the generated result.</li>
+</ul>
+<p>Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.</p>
+</section>
+<section class="step"><h2>Which website copy to open</h2>
+<ul>
+<li>For routine local review, open <code>Canon Camera Reference Local/Build Output/merged-build/index.html</code>. This is the complete disposable local website.</li>
+<li>Use <code>Canon Camera Reference/docs/index.html</code> only to inspect the Git-tracked GitHub Pages mirror. Changes under <code>docs/</code> can reach the live website if committed and pushed.</li>
+<li>Do not open <code>Build Output/cards/html/</code> for normal review. Those card pages are intermediate build files, so their links are written for later assembly into the complete website.</li>
+</ul>
+<p>A normal build may refresh both the local website and <code>docs/</code>, but it does not authorize publication.</p>
+</section>
+<section class="step"><h2>Build when</h2>
+<ul>
+<li>Card, profile, baseline, control, appendix, navigation, template, or website content changed.</li>
+<li>Build or rendering code changed.</li>
+<li>Finish Day or workflow Markdown changed; the build automatically refreshes its tracked HTML copy.</li>
+<li>You want to review the complete local website.</li>
+<li>Before committing a substantial source change.</li>
+<li>A validator specifically requests regenerated output.</li>
+</ul>
+</section>
+<section class="step"><h2>A full build is usually unnecessary when</h2>
+<ul>
+<li>You only inspected files or answered a question.</li>
+<li>You changed only machine-local testing observations and are importing them into YAML; validate after import.</li>
+<li>You are preparing spreadsheets only; use their dedicated build commands.</li>
+</ul>
+</section>
+<section class="step"><h2>After pulling on another Mac</h2>
+<p>Build if you need local output or if pulled changes affect generated content. Machine-local output is deliberately not synchronized through Git.</p>
+</section>
+<section class="step"><h2>Important</h2>
+<p>The normal build may change tracked <code>docs/</code>, but that is local generated output—not publication authorization. Finish Day separates those changes from ordinary source commits. Only the supported publish command updates the live site.</p>
+</section>
+    <footer>Generated from WORKFLOWS/local-build.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

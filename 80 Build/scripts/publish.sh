@@ -48,13 +48,11 @@ rm -f "$candidate"
 echo "Publication started: $(date '+%Y-%m-%d %H:%M:%S %z')"
 echo "Publish log: $log_file"
 
-include_png=false
 spreadsheet_args=()
 remove_spreadsheets=false
 major_version=""
 while (( $# )); do
   case "$1" in
-    --png) include_png=true ;;
     --settings-downloads|--matrix-downloads) spreadsheet_args=(--matrix-downloads) ;;
     --setup-downloads) spreadsheet_args=(--setup-downloads) ;;
     --spreadsheet-downloads) spreadsheet_args=(--spreadsheet-downloads) ;;
@@ -67,7 +65,7 @@ while (( $# )); do
       major_version="$2"
       shift
       ;;
-    *) echo "Usage: $0 [--png] [--major-version N] [--matrix-downloads|--setup-downloads|--spreadsheet-downloads|--remove-spreadsheet-downloads]" >&2; exit 2 ;;
+    *) echo "Usage: $0 [--major-version N] [--matrix-downloads|--setup-downloads|--spreadsheet-downloads|--remove-spreadsheet-downloads]" >&2; exit 2 ;;
   esac
   shift
 done
@@ -78,9 +76,6 @@ if "$remove_spreadsheets" && (( ${#spreadsheet_args[@]} )); then
 fi
 
 build_args=(--publish)
-if "$include_png"; then
-  build_args+=(--png)
-fi
 if (( ${#spreadsheet_args[@]} )); then
   case "${spreadsheet_args[0]}" in
     --matrix-downloads)
