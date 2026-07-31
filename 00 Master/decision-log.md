@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Automatic Spreadsheet Row Heights
+
+**Status:** Accepted
+**Date:** 2026-07-31
+
+Use wrapped text and automatic row heights for every content-bearing table row in the Subject Settings Matrix and in the Setup workbook's Menu, Checklist, C1–C3 Registration, and Sessions sheets. Auto-fit those rows during generation so previews and initial output show all current content, then remove fixed custom-height metadata from the Excel export so rows continue to expand or contract when a user edits notes or other wrapped cells. Preserve deliberate fixed heights only for structural banner and spacer rows. Keep merged title and instruction areas deliberately sized because Excel and Apple Numbers do not reliably auto-fit merged cells.
+
 ## Source-Only Pre-Build Validation
 
 **Status:** Accepted

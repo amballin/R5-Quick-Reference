@@ -159,14 +159,7 @@ function buildMenu() {
       wrapText: column.wrap === true,
     };
   });
-  menu.getRange(`1:1`).format.rowHeight = 30;
-  for (let index = 0; index < tests.length; index += 1) {
-    const lineCount = Math.max(
-      estimatedLines(tests[index].best_access, 20),
-      estimatedLines(tests[index].menu_detail, 42),
-    );
-    menu.getRange(`${index + 2}:${index + 2}`).format.rowHeight = Math.min(72, Math.max(24, 10 + lineCount * 15));
-  }
+  menu.getRange(`1:${menuLastRow}`).format.autofitRows();
   menu.freezePanes.freezeRows(sheets.menu.freeze_rows);
   menu.freezePanes.freezeColumns(sheets.menu.freeze_columns);
 }
@@ -262,20 +255,7 @@ function buildChecklist() {
     checklist.getRange(`${index + 1}:${index + 1}`).format.rowHeightPx = panel.height_px;
   });
   checklist.getRange("4:4").format.rowHeightPx = shared.banner.spacer_height_px;
-  checklist.getRange(`${checklistHeaderRow}:${checklistHeaderRow}`).format.rowHeight = 42;
-  for (let index = 0; index < tests.length; index += 1) {
-    const test = tests[index];
-    const lineCount = Math.max(
-      estimatedLines(test.expected_result, 30),
-      estimatedLines(test.task, 31),
-      estimatedLines(test.best_access, 18),
-      estimatedLines(test.menu_detail, 26),
-      estimatedLines(test.next_action, 38),
-      estimatedLines(test.target_project_files, 36),
-    );
-    checklist.getRange(`${checklistFirstDataRow + index}:${checklistFirstDataRow + index}`).format.rowHeight =
-      Math.min(88, Math.max(36, 12 + lineCount * 15));
-  }
+  checklist.getRange(`${checklistHeaderRow}:${checklistLastRow}`).format.autofitRows();
   checklist.freezePanes.freezeRows(sheets.checklist.excel.freeze_rows);
   checklist.freezePanes.freezeColumns(sheets.checklist.excel.freeze_columns);
 }
@@ -350,6 +330,7 @@ function buildRegistration() {
       rule: { type: "list", values: source.lists.registration_result },
     };
   }
+  registration.getRange(`4:${lastRow}`).format.autofitRows();
   registration.freezePanes.freezeRows(sheets.registration.freeze_rows);
   registration.freezePanes.freezeColumns(sheets.registration.freeze_columns);
 }
@@ -391,6 +372,7 @@ function buildSessions() {
     sessions.getRange(`${letter}:${letter}`).format.columnWidthPx = pointsToPixels(width);
   });
   sessions.getRange(`B5:B${4 + rowCount}`).format.numberFormat = "yyyy-mm-dd";
+  sessions.getRange(`4:${4 + rowCount}`).format.autofitRows();
 }
 
 
@@ -661,18 +643,6 @@ function columnName(number) {
 
 function pointsToPixels(points) {
   return Math.round(points * 4 / 3);
-}
-
-
-function estimatedLines(value, capacity) {
-  const text = value === null || value === undefined ? "" : String(value);
-  return Math.max(
-    1,
-    text.split("\n").reduce(
-      (total, segment) => total + Math.max(1, Math.ceil(segment.length / capacity)),
-      0,
-    ),
-  );
 }
 
 

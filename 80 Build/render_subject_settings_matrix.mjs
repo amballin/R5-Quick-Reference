@@ -155,25 +155,7 @@ sharedLayout.banner.panels.forEach((panel, index) => {
   sheet.getRange(`${index + 1}:${index + 1}`).format.rowHeightPx = panel.height_px;
 });
 sheet.getRange("4:4").format.rowHeightPx = sharedLayout.banner.spacer_height_px;
-sheet.getRange(`${headerRow}:${headerRow}`).format.rowHeight = 42;
-const estimatedCapacities = [
-  16,
-  15,
-  15,
-  18,
-  ...payload.profiles.map(() => 18),
-  10,
-  10,
-];
-for (let index = 0; index < rows.length; index += 1) {
-  const lineCount = Math.max(
-    ...rows[index].map((value, columnIndex) =>
-      estimatedLines(value, estimatedCapacities[columnIndex]),
-    ),
-  );
-  const rowHeight = Math.min(84, Math.max(36, 12 + (lineCount * 16)));
-  sheet.getRange(`${headerRow + 1 + index}:${headerRow + 1 + index}`).format.rowHeight = rowHeight;
-}
+sheet.getRange(`${headerRow}:${lastRow}`).format.autofitRows();
 
 sheet.freezePanes.freezeRows(headerRow);
 sheet.freezePanes.freezeColumns(3);
@@ -224,17 +206,6 @@ function columnName(number) {
     value = Math.floor((value - 1) / 26);
   }
   return result;
-}
-
-function estimatedLines(value, capacity) {
-  const text = value === null || value === undefined ? "" : String(value);
-  return Math.max(
-    1,
-    text.split("\n").reduce(
-      (total, segment) => total + Math.max(1, Math.ceil(segment.length / capacity)),
-      0,
-    ),
-  );
 }
 
 async function compositeBannerDataUrl(panels, widthPx, sharpRenderer) {

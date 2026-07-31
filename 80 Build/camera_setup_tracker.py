@@ -13,6 +13,7 @@ from spreadsheet_revisions import (
     workbook_revision,
 )
 from spreadsheet_ooxml import (
+    enable_automatic_row_heights,
     ensure_active_sheet,
     ensure_freeze_panes,
     prefer_rgb_border_colors,
@@ -86,6 +87,18 @@ def generate_camera_setup_tracker(
     finally:
         payload_path.unlink(missing_ok=True)
 
+    sheets = layout.get("sheets") or {}
+    tests = source.get("tests") or []
+    registration_rows = ((source.get("registration") or {}).get("rows") or [])
+    enable_automatic_row_heights(
+        output_path,
+        {
+            sheets["menu"]["name"]: [(1, 1 + len(tests))],
+            sheets["checklist"]["name"]: [(5, 5 + len(tests))],
+            sheets["registration"]["name"]: [(4, 4 + len(registration_rows))],
+            sheets["sessions"]["name"]: [(4, None)],
+        },
+    )
     checklist = ((layout.get("sheets") or {}).get("checklist") or {})
     excel = checklist.get("excel") or {}
     ensure_freeze_panes(

@@ -14,7 +14,7 @@ from html_renderer import (
     stabilization_system_row,
 )
 from validators.common import flatten_paths, load_yaml_checked
-from spreadsheet_ooxml import ensure_freeze_panes
+from spreadsheet_ooxml import enable_automatic_row_heights, ensure_freeze_panes
 from spreadsheet_revisions import short_fingerprint, source_fingerprint, workbook_revision
 
 
@@ -86,6 +86,10 @@ def generate_subject_settings_matrix(paths):
             print(result.stdout.strip())
     finally:
         payload_path.unlink(missing_ok=True)
+    enable_automatic_row_heights(
+        paths.subject_settings_summary_file,
+        {layout["worksheet"]: [(5, 5 + len(rows))]},
+    )
     excel_layout = layout.get("excel") or {}
     ensure_freeze_panes(
         paths.subject_settings_summary_file,

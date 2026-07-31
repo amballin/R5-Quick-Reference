@@ -97,6 +97,40 @@ def ensure_active_sheet(workbook_path, sheet_name):
     replacement_path.replace(workbook_path)
 
 
+def enable_automatic_row_heights(workbook_path, sheet_row_ranges):
+    """Allow Excel to recalculate content-row heights after user edits.
+
+    Artifact-tool autofit writes the calculated height as a custom row height.
+    Removing that saved height after export preserves the visual autofit used by
+    previews while restoring Excel's automatic wrapped-text behavior.
+    """
+    workbook_path = workbook_path.resolve()
+    replacement_path = workbook_path.with_name(f".{workbook_path.name}.automatic-row-heights")
+    worksheet_ranges = {
+        _worksheet_path(workbook_path, sheet_name): tuple(row_ranges)
+        for sheet_name, row_ranges in sheet_row_ranges.items()
+    }
+    ET.register_namespace("x", MAIN_NS)
+
+    with ZipFile(workbook_path, "r") as source, ZipFile(replacement_path, "w") as target:
+        for entry in source.infolist():
+            data = source.read(entry.filename)
+            row_ranges = worksheet_ranges.get(entry.filename)
+            if row_ranges:
+                root = ET.fromstring(data)
+                for row in root.findall(f".//{{{MAIN_NS}}}sheetData/{{{MAIN_NS}}}row"):
+                    row_number = int(row.attrib["r"])
+                    if any(
+                        first <= row_number and (last is None or row_number <= last)
+                        for first, last in row_ranges
+                    ):
+                        row.attrib.pop("ht", None)
+                        row.attrib.pop("customHeight", None)
+                data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            target.writestr(entry, data)
+    replacement_path.replace(workbook_path)
+
+
 def prefer_rgb_border_colors(workbook_path):
     """Remove conflicting indexed colors when an explicit RGB border color exists.
 
