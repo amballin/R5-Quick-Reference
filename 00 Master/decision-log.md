@@ -21,7 +21,7 @@ Separate editable-source checks from generated-output freshness checks. Provide 
 **Status:** Accepted
 **Date:** 2026-07-31
 
-Maintain a concise local workflow index with separate pages for Preflight, continuing on another Mac, local builds and build timing, spreadsheet creation/publication/status updates, website publication, and recovery. Keep Markdown as the editable source and automatically regenerate readable HTML during normal builds and Finish Day. Track both formats in Git so the guidance follows the repository between computers, but exclude all workflow pages from `docs/` and the public website. Keep `FINISH_DAY.html` as the concise end-of-day recipe and link it with the workflow index.
+Maintain a concise local workflow index with separate pages for Preflight, continuing on another Mac, local builds and build timing, spreadsheet creation/publication/status updates, on-camera verification testing, website publication, and recovery. The verification-testing page links to the machine-local working tracker, incorporates the operational sequence and evidence rules from the repository Checklist, and uses Git-tracked YAML rather than a shared live workbook for two-Mac handoff. Keep Markdown as the editable source and automatically regenerate readable HTML during normal builds and Finish Day. Track both formats in Git so the guidance follows the repository between computers, but exclude all workflow pages from `docs/` and the public website. Keep `FINISH_DAY.html` as the concise end-of-day recipe and link it with the workflow index.
 
 ## Retire Fixed Card PNG Exports
 

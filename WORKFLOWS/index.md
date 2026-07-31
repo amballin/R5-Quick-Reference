@@ -12,7 +12,9 @@ Make the intended source changes. Open [Local Build](local-build.html) to valida
 
 ## 3. Record spreadsheet testing status
 
-If you updated the machine-local verification workbook, open [Spreadsheet Workflows](spreadsheets.html), close the workbook, and import its testing status into Git-tracked YAML. Do this before Finish Day so the status is included in the source commit.
+For camera setup and physical testing, open [On-Camera Verification Testing](verification-testing.html). It opens or creates the correct machine-local tracker, explains the required test order and evidence rules, and covers the complete import and two-Mac handoff cycle.
+
+If you updated the machine-local verification workbook, close it and import its testing status into Git-tracked YAML. Do this before Finish Day so the status is included in the source commit.
 
 If the testing workbook did not change, continue directly to Step 4.
 
@@ -39,6 +41,8 @@ Complete both publication verification and the final clean-and-synchronized Git 
 ## Continue on another Mac
 
 Complete Steps 1–4 on the first Mac. Then open [Continue on Another Mac](other-mac.html) before resuming the project elsewhere.
+
+For camera testing specifically, follow the two-Mac procedure in [On-Camera Verification Testing](verification-testing.html). Transfer status through Git-tracked YAML rather than copying the active tracker between Macs.
 
 ## Recovery and troubleshooting
 

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>On-Camera Verification Testing</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>On-Camera Verification Testing</h1>
+<p>Use this workflow for EOS R5 setup checks, C1–C3 registration and read-back, physical-control behavior, shutter tests, and the final promotion of supported results. The detailed test requirements remain in the <a href="../90%20Testing/EOS%20R5%20On-Camera%20Verification%20Checklist.md">EOS R5 On-Camera Verification Checklist</a>.</p>
+<section class="step"><h2>Open the correct working tracker</h2>
+<p>The preferred command safely creates the machine-local tracker only when no working copy exists, reports whether it matches the last YAML import, and opens the newest Numbers or Excel copy:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/open-verification-working-copy.sh</code></pre></div>
+<p>With the default local-workspace location, use either direct link:</p>
+<ul>
+<li><a href="../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.numbers">Open the Numbers testing tracker</a></li>
+<li><a href="../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx">Open the Excel testing tracker</a></li>
+</ul>
+<p>If the direct link is missing or <code>PRS_LOCAL_WORKSPACE</code> points elsewhere, use the helper. Never record test progress in the blank publishable Setup master.</p>
+</section>
+<section class="step"><h2>Prepare the camera and session record</h2>
+<p>Work in Checklist Sequence order and use one Session ID for each camera session. Record the date, tester, firmware, battery, card, lenses, flash or trigger, evidence location, and notes in Sessions.</p>
+<p>Before changing the camera:</p>
+<ol>
+<li>Record anything currently stored in C1, C2, and C3.</li>
+<li>Save the complete starting camera configuration to the card and record its filename.</li>
+<li>Work from a normal shooting mode rather than C1, C2, or C3.</li>
+<li>Set Auto update set. to Disable.</li>
+</ol>
+</section>
+<section class="step"><h2>Complete setup and registration in order</h2>
+<ol>
+<li>Configure the SWITCH My Menu tab, shared Camera Setup Essentials, and physical controls.</li>
+<li>Save the first checkpoint and mark that Checklist row Backup-Settings.</li>
+<li>Build the complete C1 Wildlife environment in a normal mode, register it, leave it, recall it, and read back every target setting.</li>
+<li>Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.</li>
+<li>Do not begin C3 until C1 and C2 both recall correctly. Then complete C3 Landscape.</li>
+<li>Save the second Backup-Settings checkpoint after all three registrations have been read back.</li>
+<li>Perform the operational control, transition, joystick, shutter, burst, lighting, bokeh, and flash or trigger tests required by the Checklist.</li>
+<li>Complete the final C1–C3 and control read-back, confirm Auto update remains disabled, and save the verified final camera configuration to the card.</li>
+</ol>
+<p>Do not register a custom mode until every setting in that mode&#x27;s complete target column has been checked. C1–C3 registration rows require separate Configure and Read Back results; both must pass against the current target.</p>
+</section>
+<section class="step"><h2>Record results and evidence</h2>
+<p>For each Checklist row, update Status, Test Date, Session ID, Evidence Files, Observation, Next Action, Evidence Class, and Updated in Project as applicable.</p>
+<p>Use the status that describes the observed result:</p>
+<ul>
+<li>Verified only when the camera produced the exact Expected Result and the observation is complete and unambiguous.</li>
+<li>Failed—needs correction when the observed behavior clearly differs from the requirement.</li>
+<li>Inconclusive—needs retest when the evidence cannot support a clear pass or fail.</li>
+<li>Blocked when the required test cannot presently be performed.</li>
+<li>Backup-Settings only for the two prescribed checkpoint saves.</li>
+</ul>
+<p>Evidence files remain machine-local or in an owner-controlled evidence location; the tracker and YAML store filenames or references. Preserve the completed tracker and supporting images until applicable project evidence states have been updated.</p>
+<p>The importer validates allowed statuses and current definition fingerprints, but it cannot judge whether an observation is genuinely sufficient. Selecting Verified is the tester&#x27;s confirmation that the current Expected Result passed. If a test definition or C1–C3 target later changes, its earlier pass is preserved in history and changed to Inconclusive—needs retest or Needs retest.</p>
+</section>
+<section class="step"><h2>Understand completion and project updates</h2>
+<p>The Dashboard counts Verified rows plus the two prescribed Backup-Settings rows toward phase completion. There is no separate Complete Checklist status.</p>
+<p>A camera result may become owner-confirmed project state only when its row has Project Update? = Yes, Status = Verified, and complete unambiguous evidence. Update the named project files only after that review, then set Updated in Project to Yes. Approved targets remain pending physical verification until this promotion is complete.</p>
+</section>
+<section class="step"><h2>Close and import after testing</h2>
+<p>Save and close Numbers or Excel before importing:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/import-verification-status.sh</code></pre></div>
+<p>The importer chooses the most recently modified local Numbers or Excel tracker, matches stable Test IDs and registration settings, records history, and updates <code>90 Testing/eos_r5_verification_status.yaml</code>. Finish Day stops if a local tracker changed after its last successful import.</p>
+</section>
+<section class="step"><h2>Continue on the other Mac</h2>
+<p>On the first Mac:</p>
+<ol>
+<li>Close the tracker and import its status.</li>
+<li>Use Finish Day and do not switch until the repository is clean and synchronized.</li>
+</ol>
+<p>On the second Mac:</p>
+<ol>
+<li>Run Preflight.</li>
+<li>If the clean clone is behind, run <code>git pull --ff-only</code>, then rerun Preflight.</li>
+<li>Run the open helper; it creates that Mac&#x27;s tracker from the synchronized YAML when needed.</li>
+</ol>
+<p>Do not copy the active tracker through iCloud as the normal handoff. Git-tracked YAML is authoritative and prevents an older workbook from replacing newer status. iCloud may carry evidence photographs and other supporting files.</p>
+</section>
+<section class="step"><h2>Recover from an interrupted handoff</h2>
+<p>If unimported workbook changes remain on the first Mac, return to that Mac, close the tracker, import it, and complete Finish Day before working on the second Mac. Do not rebuild a tracker over unimported changes and do not choose a workbook solely because its timestamp appears newer.</p>
+</section>
+    <footer>Generated from WORKFLOWS/verification-testing.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

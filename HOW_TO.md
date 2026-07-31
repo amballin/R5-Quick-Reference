@@ -89,6 +89,14 @@ Generate the status-bearing local working tracker from the Git-tracked YAML reco
 ./80\ Build/scripts/build-verification-working-copy.sh
 ```
 
+For routine testing, the safer helper creates a tracker only when none exists, checks synchronization, and opens the newest Numbers or Excel working copy:
+
+```bash
+./80\ Build/scripts/open-verification-working-copy.sh
+```
+
+See [`WORKFLOWS/verification-testing.html`](WORKFLOWS/verification-testing.html) for the complete on-camera sequence, evidence rules, status import, and two-Mac handoff.
+
 After updating the working Excel or Numbers tracker, close it and import the mutable Checklist, C1–C3, and Sessions fields:
 
 ```bash

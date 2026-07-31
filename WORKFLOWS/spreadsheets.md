@@ -30,13 +30,28 @@ The `prepare-*` scripts are manual conversion fallbacks. Use them only when auto
 
 ## Create the testing working copy
 
-The testing workbook contains private working status and is never published:
+The testing workbook contains private working status and is never published. Follow [On-Camera Verification Testing](verification-testing.html) for opening the correct workbook, recording evidence, importing results, and changing Macs safely.
+
+The preferred helper creates the tracker only when neither local format exists, reports its synchronization state, and opens the newest Numbers or Excel copy:
+
+```bash
+./80\ Build/scripts/open-verification-working-copy.sh
+```
+
+With the default local-workspace location, these direct links open the existing file:
+
+- [Open the Numbers testing tracker](../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.numbers)
+- [Open the Excel testing tracker](../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx)
+
+If `PRS_LOCAL_WORKSPACE` points somewhere else, use the helper rather than the direct links.
+
+To rebuild the testing workbook deliberately from Git-tracked status:
 
 ```bash
 ./80\ Build/scripts/build-verification-working-copy.sh
 ```
 
-It combines current definitions with Git-tracked testing status.
+It combines current definitions with Git-tracked testing status. Do not run this rebuild over a tracker containing unimported changes.
 
 ## Record testing-status updates
 

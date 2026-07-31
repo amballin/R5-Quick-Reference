@@ -121,7 +121,8 @@
 <p>Make the intended source changes. Open <a href="local-build.html">Local Build</a> to validate before generation, build the complete local result, and validate the generated result. For routine review, open the completed website at <code>Canon Camera Reference Local/Build Output/merged-build/index.html</code>, not the intermediate card files or the Git-tracked <code>docs/</code> publication mirror.</p>
 </section>
 <section class="step"><h2>3. Record spreadsheet testing status</h2>
-<p>If you updated the machine-local verification workbook, open <a href="spreadsheets.html">Spreadsheet Workflows</a>, close the workbook, and import its testing status into Git-tracked YAML. Do this before Finish Day so the status is included in the source commit.</p>
+<p>For camera setup and physical testing, open <a href="verification-testing.html">On-Camera Verification Testing</a>. It opens or creates the correct machine-local tracker, explains the required test order and evidence rules, and covers the complete import and two-Mac handoff cycle.</p>
+<p>If you updated the machine-local verification workbook, close it and import its testing status into Git-tracked YAML. Do this before Finish Day so the status is included in the source commit.</p>
 <p>If the testing workbook did not change, continue directly to Step 4.</p>
 </section>
 <section class="step"><h2>4. Finish source work for the day</h2>
@@ -140,6 +141,7 @@
 </section>
 <section class="step"><h2>Continue on another Mac</h2>
 <p>Complete Steps 1–4 on the first Mac. Then open <a href="other-mac.html">Continue on Another Mac</a> before resuming the project elsewhere.</p>
+<p>For camera testing specifically, follow the two-Mac procedure in <a href="verification-testing.html">On-Camera Verification Testing</a>. Transfer status through Git-tracked YAML rather than copying the active tracker between Macs.</p>
 </section>
 <section class="step"><h2>Recovery and troubleshooting</h2>
 <p>Open <a href="recovery.html">Recovery and Troubleshooting</a> at the first failed safety check. Stop rather than guessing when Git is behind, diverged, a build fails, spreadsheet preparation fails, or publication is not verified.</p>

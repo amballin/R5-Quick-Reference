@@ -117,6 +117,7 @@
 <p>Use <a href="../FINISH_DAY.html">Finish Day</a>. Do not switch computers until it reports that the source is clean and synchronized.</p>
 <p>If you edited the testing workbook, import its status before finishing:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/import-verification-status.sh</code></pre></div>
+<p>Then complete Finish Day so the updated YAML status is committed and pushed. The workbook itself does not need to move between Macs.</p>
 <p>Machine-local spreadsheets, reports, backups, and build output do not travel through Git.</p>
 </section>
 <section class="step"><h2>On the other Mac</h2>
@@ -125,14 +126,20 @@
 <p>If the clean clone is behind:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>git pull --ff-only</code></pre></div>
 <p>Then rerun preflight. Begin work only when the result is clean and synchronized.</p>
+<p>To recreate and open the verification tracker from the synchronized YAML status:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/open-verification-working-copy.sh</code></pre></div>
 </section>
 <section class="step"><h2>Recreate local artifacts only when needed</h2>
 <ul>
 <li>Use <a href="local-build.html">Local Build</a> when you need to review the site locally.</li>
-<li>Use <a href="spreadsheets.html">Spreadsheet Workflows</a> when you need local Excel or Numbers files.</li>
-<li>Generate the verification working copy from Git-tracked YAML before continuing camera testing.</li>
+<li>Use <a href="spreadsheets.html">Spreadsheet Workflows</a> when you need local release Excel or Numbers files.</li>
+<li>Use <a href="verification-testing.html">On-Camera Verification Testing</a> when continuing camera testing.</li>
 </ul>
 <p>Never copy an older machine-local workbook over newer Git-tracked status.</p>
+</section>
+<section class="step"><h2>iCloud and evidence files</h2>
+<p>Do not edit one live verification workbook from both Macs and do not use iCloud as the authoritative status store. iCloud may carry test photographs, screenshots, and other evidence files. Record stable filenames or folder references in the tracker, while keeping the mutable testing status in Git-tracked YAML.</p>
+<p>If an exceptional interrupted session leaves unimported workbook changes on the first Mac, finish that import on the first Mac before resuming on the second. This preserves definition fingerprints and avoids choosing between competing workbook versions.</p>
 </section>
     <footer>Generated from WORKFLOWS/other-mac.md. Local project guidance; never published.</footer>
   </main>
