@@ -86,6 +86,16 @@ The version/publish footer appears only on the main Camera Settings index in the
 
 `./80 Build/scripts/publish.sh` is the only supported publishing command. The internal `build.py --publish` mode cannot be run directly.
 
+## Reader-facing release notes
+
+To summarize the two most recent website publications:
+
+```bash
+python3 "80 Build/release_notes.py"
+```
+
+The command prints Markdown assembled from curated highlights in `00 Master/release_notes.yaml`; it does not publish or write a file. Use `--from 1.17`, `--to 1.20`, or both options to select a historical range. `--from` alone continues through the latest release, while `--to` alone starts with the immediately preceding publication. The command stops if an included publication lacks curated notes rather than guessing from commit messages.
+
 GitHub Pages watches `main / docs`. Consequently, any push to `main` that changes `docs/` can update the live site, regardless of which Git command created the commit. Keep `docs/` out of ordinary development and computer-handoff commits. The supported publish script is the deliberate control point: it performs the publish-mode build, validates the output, updates publish metadata, commits the approved Pages files, and pushes them. Run it only when you explicitly intend to publish.
 
 GitHub Pages must be configured to publish from:

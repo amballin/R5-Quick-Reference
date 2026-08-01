@@ -138,9 +138,9 @@ def reconcile_status(paths, write=True):
 
 
 def import_workbook_status(paths, source_path=None):
-    source_path, temporary = _select_import_source(paths, source_path)
+    selected_source, extraction_source, temporary = _select_import_source(paths, source_path)
     try:
-        extracted = _extract_workbook(paths, source_path)
+        extracted = _extract_workbook(paths, extraction_source)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
@@ -237,7 +237,7 @@ def import_workbook_status(paths, source_path=None):
     status["updated"] = now
     write_status(paths, status)
     mark_working_synced(paths)
-    print(f"Verification status imported from: {source_path}")
+    print(f"Verification status imported from: {selected_source}")
     print(f"Git-tracked status updated: {paths.verification_status_file}")
     return status
 
@@ -396,12 +396,12 @@ def _select_import_source(paths, requested):
     if not source.exists():
         raise VerificationStatusError(f"Verification workbook is missing: {source}")
     if source.suffix.lower() == ".xlsx":
-        return source, None
+        return source, source, None
     if source.suffix.lower() != ".numbers":
         raise VerificationStatusError("Verification import supports .xlsx or .numbers files.")
     temporary = paths.verification_working_dir / ".verification-import.xlsx"
     _export_numbers_to_xlsx(source, temporary)
-    return temporary, temporary
+    return source, temporary, temporary
 
 
 def _export_numbers_to_xlsx(numbers_path, output_path):

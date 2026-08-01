@@ -7,6 +7,7 @@ Publishing intentionally updates the live GitHub Pages site, version, date, and 
 - Source changes are validated, committed, and pushed.
 - The branch is clean and synchronized.
 - If spreadsheet inputs changed, rebuild their release workbooks first.
+- Add concise reader-facing highlights for the upcoming version to `00 Master/release_notes.yaml`.
 - Confirm that updating the live website is intentional.
 
 ## Ordinary publication
@@ -60,3 +61,13 @@ Then verify the final Git state:
 ```
 
 Success requires both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED`. See [Recovery](recovery.html) if either check fails.
+
+## Generate reader-facing release notes
+
+After publication succeeds and is verified, summarize it against the preceding publication:
+
+```bash
+python3 "80 Build/release_notes.py"
+```
+
+The command prints curated Markdown without writing or publishing a file. It stops if the new release lacks highlights in `00 Master/release_notes.yaml`. For an older comparison, use `--from VERSION`, `--to VERSION`, or both; the default needs no version arguments.

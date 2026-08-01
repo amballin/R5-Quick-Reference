@@ -58,6 +58,65 @@ Examples include:
 - Focus-bracketing compatibility.
 - HDR-related compatibility.
 
+### Portable Tracker and Status Migration
+
+Consider a repository-independent way for another photographer to use a released Setup & Verification Tracker on their own computer and carry their local progress into a later tracker revision. Treat this as a demand-dependent enhancement rather than committed work: its value may be limited if the other photographer configures the camera differently enough that the project's checklist requirements, C1-C3 targets, or evidence model are not useful to them.
+
+If pursued, build a small local **Tracker Upgrader**, not a portable copy of the project's Git/YAML synchronization workflow. The user's workbook should remain their sole source of truth. The upgrader must not require this repository, Git, GitHub access, a project clone, or knowledge of the machine-local project workspace.
+
+#### Recommended first release
+
+- Distribute a ZIP containing the current blank `.xlsx` tracker, a local migration utility, and concise instructions.
+- Accept an earlier tracker in `.xlsx` format and either bundle the current blank tracker or let the user select it.
+- Write a new migrated `.xlsx` file beside a user-selected destination. Never overwrite the earlier tracker or the blank master.
+- Keep all processing local and offline; do not upload workbook data or evidence references.
+- Support the defined EOS R5 tracker family only. Do not imply that the utility can translate arbitrary camera configurations or independently customized workbook structures.
+- For Apple Numbers users, initially require exporting the earlier tracker to `.xlsx`; the migrated `.xlsx` can then be opened in Numbers. Native `.numbers` input/output, automatic conversion, and Mac-only Apple automation are optional later additions.
+
+#### Migration contract
+
+Carry forward only mutable user state:
+
+- Checklist: Status, Test Date, Session ID, Evidence Files, Observation, Next Action, Evidence Class, and Updated in Project.
+- C1-C3 Registration: Configured, Read-back, and Notes for each custom mode.
+- Sessions: all nonblank session rows and their twelve defined fields.
+
+Match Checklist rows by stable **Test ID**, registration rows by stable **Setting** name, and session fields by their headings. Never match progress by row number. Preserve current definitions, formulas, validations, formatting, menu locations, targets, and dashboard logic from the new blank tracker rather than copying those elements from the old workbook.
+
+Use the hidden Metadata sheet's per-test and per-registration definition fingerprints when available:
+
+- Preserve a completed result only when its recorded definition fingerprint matches the current definition.
+- Change an old `Verified` checklist result to `Inconclusive—needs retest` when the definition is missing, older, or different, while preserving its evidence and observation.
+- Change affected C1-C3 `Pass` results to `Needs retest` when the registration target fingerprint is missing or different.
+- Leave tests newly introduced by the current tracker at their current default state.
+- Do not silently discard removed Test IDs or registration settings; list them in the migration report as retired/unmatched items.
+- Reject unsupported status or evidence values rather than writing an internally inconsistent workbook.
+
+After migration, show or save a summary containing the source and destination filenames, workbook revisions/fingerprints, counts migrated, new, retired/unmatched, reset, and requiring retest, plus any warnings. A successful run must also confirm that the earlier workbook and blank master were left unchanged.
+
+#### Implementation starting point
+
+Existing project behavior can inform the implementation, but should be extracted or reimplemented without repository dependencies:
+
+- `80 Build/render_camera_setup_tracker.mjs` already reads mutable Checklist, C1-C3 Registration, and Sessions values using stable identifiers.
+- `80 Build/verification_status.py` already defines validation, definition-fingerprint comparison, history-preserving retest behavior, and default states.
+- `80 Build/spreadsheet_revisions.py` defines the current fingerprint semantics.
+- `80 Build/spreadsheet_ooxml.py` demonstrates targeted OOXML changes that preserve the workbook package.
+
+Do not distribute the current `migrate-setup-tracker.sh` workflow unchanged. It writes to the repository's canonical YAML status, rebuilds from repository source files, depends on the bundled `@oai/artifact-tool` runtime, and uses Apple Numbers automation. The direct migration reader in the renderer also needs the fingerprint/retest safeguards before it is safe as an independent upgrader.
+
+Prefer a small, testable migration core with a thin double-clickable wrapper. For maximum workbook fidelity, either make targeted OOXML updates to a copy of the new template or prove through fixture tests that the selected spreadsheet library preserves formulas, tables, validations, hidden metadata, images, styles, freeze panes, and conditional formatting. Packaging and code signing for polished Mac and Windows applications are separate distribution work; begin with one supported platform only if there is demonstrated demand.
+
+#### Acceptance criteria
+
+- Migration works without the repository, Git, GitHub, project YAML files, or private Codex runtime paths.
+- A fixture from the immediately preceding tracker revision migrates every supported mutable field correctly.
+- Changed definitions invalidate affected passes while retaining evidence and observations.
+- New and removed tests are reported correctly, and duplicate or missing stable identifiers stop migration with a useful error.
+- The migrated workbook opens without repair warnings and retains formulas, tables, validations, formatting, frozen panes, hidden metadata, and dashboard behavior.
+- The tool never overwrites either input and produces a deterministic, reviewable migration report.
+- Instructions clearly state that migration preserves recorded progress; it does not adapt project targets to another photographer's preferred camera configuration.
+
 ## Macro Refinement
 
 - Refine the Macro profile and guidance as a separately approved content change.

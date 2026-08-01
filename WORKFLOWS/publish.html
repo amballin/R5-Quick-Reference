@@ -119,6 +119,7 @@
 <li>Source changes are validated, committed, and pushed.</li>
 <li>The branch is clean and synchronized.</li>
 <li>If spreadsheet inputs changed, rebuild their release workbooks first.</li>
+<li>Add concise reader-facing highlights for the upcoming version to <code>00 Master/release_notes.yaml</code>.</li>
 <li>Confirm that updating the live website is intentional.</li>
 </ul>
 </section>
@@ -145,6 +146,11 @@
 <p>Then verify the final Git state:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
 <p>Success requires both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code>. See <a href="recovery.html">Recovery</a> if either check fails.</p>
+</section>
+<section class="step"><h2>Generate reader-facing release notes</h2>
+<p>After publication succeeds and is verified, summarize it against the preceding publication:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/release_notes.py&quot;</code></pre></div>
+<p>The command prints curated Markdown without writing or publishing a file. It stops if the new release lacks highlights in <code>00 Master/release_notes.yaml</code>. For an older comparison, use <code>--from VERSION</code>, <code>--to VERSION</code>, or both; the default needs no version arguments.</p>
 </section>
     <footer>Generated from WORKFLOWS/publish.md. Local project guidance; never published.</footer>
   </main>

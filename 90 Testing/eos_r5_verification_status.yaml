@@ -1,7 +1,289 @@
 version: 1
-updated: '2026-07-31T06:49:47.449514-04:00'
-tests: {}
+updated: '2026-08-01T07:45:01.583037-04:00'
+tests:
+  SETUP-01:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Insert card and save the current configuration.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:6298d64e10367b2e38e5d41253bb816c1012479ab7612afc5a53ad66630e975f
+  SETUP-02:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Photograph or write down all three current slots.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:2c28c37a65e2efee3349ec9d9c3a6e75de10e76697f1c3b5ec5ca8d1ceae0030
+  SETUP-03:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: Auto update must remain disabled throughout.
+    next_action: Open the Custom shooting mode menu and disable Auto update.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:eb596d6e2a1ad3dba500a053b487e07af4813566f59012575380f500c95740a3
+  SETUP-MM-01:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:10c1951c74b44263db5ff6b5725ac0017ef930c909beb4e4acb1fb7b0d6a1e37
+  SETUP-04:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+  SETUP-05:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
+  SETUP-06:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
+  SETUP-07:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
+  CTRL-CONFIG-01:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
+  BACKUP-SET-01:
+    status: Backup-Settings
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: After saving, set Status to Backup-Settings before configuring C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
 registration: {}
 sessions: []
 retired_tests: {}
-history: []
+history:
+- timestamp: '2026-07-31T13:02:47.081637-04:00'
+  event: spreadsheet_import
+  id: SETUP-01
+  previous: null
+  current:
+    status: Not applicable
+    test_date: ''
+    session_id: ''
+    evidence_files: []
+    observation: ''
+    next_action: Insert card and save the current configuration.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+- timestamp: '2026-07-31T13:02:47.081637-04:00'
+  event: spreadsheet_import
+  id: SETUP-02
+  previous: null
+  current:
+    status: Verified
+    test_date: ''
+    session_id: ''
+    evidence_files: []
+    observation: ''
+    next_action: Photograph or write down all three current slots.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:2c28c37a65e2efee3349ec9d9c3a6e75de10e76697f1c3b5ec5ca8d1ceae0030
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-01
+  previous:
+    status: Not applicable
+    test_date: ''
+    session_id: ''
+    evidence_files: []
+    observation: ''
+    next_action: Insert card and save the current configuration.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Insert card and save the current configuration.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:6298d64e10367b2e38e5d41253bb816c1012479ab7612afc5a53ad66630e975f
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-02
+  previous:
+    status: Verified
+    test_date: ''
+    session_id: ''
+    evidence_files: []
+    observation: ''
+    next_action: Photograph or write down all three current slots.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:2c28c37a65e2efee3349ec9d9c3a6e75de10e76697f1c3b5ec5ca8d1ceae0030
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Photograph or write down all three current slots.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable
+    verified_against: sha256:2c28c37a65e2efee3349ec9d9c3a6e75de10e76697f1c3b5ec5ca8d1ceae0030
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-03
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: Auto update must remain disabled throughout.
+    next_action: Open the Custom shooting mode menu and disable Auto update.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:eb596d6e2a1ad3dba500a053b487e07af4813566f59012575380f500c95740a3
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-MM-01
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:10c1951c74b44263db5ff6b5725ac0017ef930c909beb4e4acb1fb7b0d6a1e37
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-04
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-05
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-06
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: SETUP-07
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: CTRL-CONFIG-01
+  previous: null
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
+- timestamp: '2026-08-01T07:45:01.583037-04:00'
+  event: spreadsheet_import
+  id: BACKUP-SET-01
+  previous: null
+  current:
+    status: Backup-Settings
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: After saving, set Status to Backup-Settings before configuring C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: Not applicable

@@ -2,6 +2,20 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Workflow Documentation Review for Procedural Changes
+
+**Status:** Accepted
+**Date:** 2026-08-01
+
+When a change affects an established command, workflow, or operator-facing procedure, review the relevant `WORKFLOWS` Markdown and `FINISH_DAY.md`. Before editing, identify whether those guides need updating and include the affected guide files in the proposed change scope; if no update is appropriate, state why. Keep Markdown authoritative and regenerate tracked workflow HTML through the established build rather than editing generated HTML directly.
+
+## Curated Reader-Facing Release Notes
+
+**Status:** Accepted
+**Date:** 2026-08-01
+
+Maintain concise reader-facing publication highlights in `00 Master/release_notes.yaml`. Generate summaries with `80 Build/release_notes.py`, using committed publish metadata and valid version transitions as the authority for publication boundaries and dates. With no version options, compare the two most recent publications. Permit optional `--from` and `--to` selection for historical ranges, using the latest matching publication when historical version reuse makes a label ambiguous. Keep prose curated rather than inferred from commit messages or file counts, and stop with an actionable error when any included publication lacks notes. Print Markdown to standard output by default; do not publish, commit, or write a generated artifact as a side effect.
+
 ## Automatic Spreadsheet Row Heights
 
 **Status:** Accepted
