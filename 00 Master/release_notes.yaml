@@ -1,5 +1,75 @@
 version: 1
 releases:
+  "1.02":
+    highlights:
+      - Added an extensive Field Guide covering AF cases and tracking, custom controls, drive and shutter behavior, flash, focus bracketing, Fv mode, stabilization, lenses, long exposures, and metering.
+      - Expanded the R5 Quick Reference and searchable offline content so the new guidance is available from the main site.
+  "1.03":
+    highlights:
+      - Added the Camera Buttons reference card with back-button autofocus and current-control guidance.
+      - Added dedicated Fv and Focus Bracketing deep dives, plus portable links between cards, guides, and the main index.
+  "1.04":
+    highlights:
+      - Updated Birds in Flight guidance for Animal and Eye Detection, background-aware exposure compensation, reliable tracking alternatives, and focus-limiter checks.
+      - Expanded Landscape guidance to recommend focus bracketing around f/8–f/11 when large near-to-far depth of field is needed.
+  "1.05":
+    highlights:
+      - Introduced responsive HTML camera cards designed for clear reading on an iPhone.
+      - Refined subject guidance across Birds Perched, Birds in Flight, Fireworks, Landscape, People, and Wildlife, including eye detection, shutter and aperture targets, stabilization, and practical field checks.
+  "1.06":
+    highlights:
+      - Added consistent site navigation across cards and Field Guide pages, including reliable Home and Back destinations that work in the installed offline app.
+  "1.07":
+    highlights:
+      - Made responsive HTML the default card experience and kept fixed PNG card links available only when deliberately included in a release.
+  "1.08":
+    highlights:
+      - Reorganized the main index into clearer subject and camera-reference sections, and renamed Camera Setup to Camera Setup Essentials.
+      - Reorganized the R5 Quick Reference and moved back-button autofocus guidance into a dedicated deep dive for easier navigation.
+  "1.09":
+    highlights:
+      - Consolidated overlapping appendices into the R5 Quick Reference and expanded the AF Cases, Flash Photography, Focus Bracketing, Back-Button AF, and Long Exposure deep dives.
+      - Simplified the Field Guide index so the principal guides and deeper technical material are easier to distinguish.
+  "1.10":
+    highlights:
+      - "Corrected Subject Detection guidance: selecting None removes category priority but does not disable automatic main-subject detection, while Spot, 1-Point, and Expand AF provide deliberate point placement."
+      - Updated Birds Perched, Birds in Flight, and Wildlife to use Face + Tracking as their normal method, with practical alternatives for clutter or unreliable subject selection.
+  "1.11":
+    highlights:
+      - "Established a consistent autofocus control strategy: AF-ON uses the active profile's tracking setup, while AE Lock starts a precise 1-Point AF alternative."
+      - Aligned the Camera Buttons card, R5 Quick Reference, and custom-controls deep dive around the same physical controls and operating guidance.
+  "1.12":
+    highlights:
+      - Added the approved C1 Wildlife, C2 Birds in Flight, and C3 Landscape registration reference, including starting values, verification steps, and protection against accidental Auto update changes.
+      - Updated Camera Buttons for M-Fn switching among C1–C3, SET Eye Detection control, joystick operation, saved camera configurations, and official Canon control icons.
+  "1.13":
+    highlights:
+      - Added joystick straight-press recentering and Multi-function Lock troubleshooting to the Camera Buttons and Quick Reference guidance.
+      - Clarified metering behavior and related field controls after completing the project evaluation.
+  "1.14":
+    highlights:
+      - Added practical 1.6× crop guidance for birds, wildlife, and distant sports, including its reduced resolution, forced use with RF-S/EF-S lenses, and reminder that it does not add optical reach.
+      - Updated Camera Setup Essentials and the Quick Reference to help prevent crop mode from being left enabled unintentionally.
+  "1.15":
+    highlights:
+      - Adopted EFCS as the general shutter starting point while retaining Mechanical shutter for People, Birds in Flight, Sports, and Waterdrops.
+      - Expanded shutter guidance with burst-rate, flash-sync, artificial-light, fast-aperture bokeh, and physical-verification considerations.
+  "1.16":
+    highlights:
+      - Added the green-star SWITCH My Menu layout for moving efficiently from C1–C3 into People, Macro, and Waterdrops configurations.
+      - Added Camera Setup guidance for the full Quick Control display and expanded lens-specific stabilization instructions, including which controls live on the lens versus in the camera menu.
+  "1.17":
+    highlights:
+      - Added the downloadable Subject Settings Matrix in Excel and Apple Numbers formats, with sortable card order, rapid setup order, menu locations, and quick-access guidance.
+      - Expanded and renamed the Custom Controls & Menus deep dive to incorporate My Menu alongside the button, dial, and autofocus strategy.
+  "1.18":
+    highlights:
+      - Added the downloadable EOS R5 Setup & Verification Tracker in Excel and Apple Numbers formats, with a dashboard, setup checklist, C1–C3 registration sheets, and session tracking.
+      - Standardized the presentation and preparation of both spreadsheet families while keeping the published Setup workbook as a blank reusable master.
+  "1.19":
+    highlights:
+      - Refreshed both spreadsheet downloads with visible workbook revisions, source identification, and clearer C1–C3 registration grouping.
+      - Camera settings, subject cards, and Field Guide guidance are unchanged from Version 1.18.
   "1.20":
     highlights:
       - Updated the Subject Settings Matrix and EOS R5 Setup & Verification Tracker so wrapped rows open at a readable height and continue adjusting as notes are edited in Excel or Apple Numbers.

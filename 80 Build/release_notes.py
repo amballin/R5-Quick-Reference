@@ -97,6 +97,17 @@ def publication_history(root):
                     commit=commit,
                 )
             )
+    # A historical rollback reused Version 1.08. Keep the latest publication for
+    # any repeated label so range selection and rendering use one authoritative
+    # endpoint, matching _publication_index().
+    latest_index = {
+        publication.version: index for index, publication in enumerate(publications)
+    }
+    publications = [
+        publication
+        for index, publication in enumerate(publications)
+        if latest_index[publication.version] == index
+    ]
     if len(publications) < 2:
         raise ReleaseNotesError("At least two identifiable publications are required.")
     return publications
