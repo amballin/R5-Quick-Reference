@@ -1,16 +1,24 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-26
+  last_updated: 2026-08-02
   release: true
 title: Landscape
 card:
   icons:
     left: landscape
+  field_setup:
+    start: C3
+    source_profile: Landscape
 inherits: baseline
 overrides:
   autofocus:
     operation: One-Shot AF
+    method: 1-Point AF
+    subject_detection: None
+    eye_detection: Disable
+  drive:
+    mode: Single Shot
   exposure:
     mode: Av
     iso:

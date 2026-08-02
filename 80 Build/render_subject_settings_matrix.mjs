@@ -21,11 +21,13 @@ const sharedLayout = payload.shared_layout;
 const sheet = workbook.worksheets.add(layout.worksheet);
 sheet.showGridLines = false;
 
+const registeredProfileHeaders = payload.registered_profiles.map((profile) => profile.heading);
 const profileHeaders = payload.profiles.map((profile) => profile.title);
 const headers = [
   layout.columns.menu_location.heading,
   layout.columns.best_access.heading,
   layout.columns.setting.heading,
+  ...registeredProfileHeaders,
   layout.columns.default.heading,
   ...profileHeaders,
   "Card Order",
@@ -35,6 +37,7 @@ const rows = payload.rows.map((row) => [
   row.menu_location,
   row.best_access,
   row.setting,
+  ...row.registered_values,
   row.default_value,
   ...row.values,
   row.card_order,
@@ -42,14 +45,19 @@ const rows = payload.rows.map((row) => [
 ]);
 const columnCount = headers.length;
 const visibleLastColumn = columnName(columnCount);
-const headerRow = 5;
+const comparisonControls = layout.comparison_controls;
+const cardStartControls = layout.card_start_controls;
+const headerRow = cardStartControls.row + 1;
 const firstDataRow = headerRow + 1;
 const lastRow = headerRow + rows.length;
-const comparisonControls = layout.comparison_controls;
-const targetCount = 1 + payload.profiles.length;
+const registeredProfileCount = payload.registered_profiles.length;
+const targetCount = registeredProfileCount + 1 + payload.profiles.length;
 const firstTargetColumnNumber = 4;
-const firstHelperColumnNumber = columnCount + 1;
-const helperLastColumn = columnName(firstHelperColumnNumber + targetCount - 1);
+const defaultColumnNumber = firstTargetColumnNumber + registeredProfileCount;
+const firstProfileColumnNumber = defaultColumnNumber + 1;
+const lastTargetColumnNumber = firstTargetColumnNumber + targetCount - 1;
+const firstComparisonHelperColumnNumber = columnCount + 1;
+const helperLastColumn = columnName(firstComparisonHelperColumnNumber + targetCount - 1);
 
 const bannerWidthPx = layout.banner.width_px;
 const bannerTexts = {
@@ -96,7 +104,7 @@ sheet.getRange(`D${headerRow}:${visibleLastColumn}${headerRow}`).format.horizont
 
 for (let index = 0; index < payload.profiles.length; index += 1) {
   if (!payload.profiles[index].release) {
-    const col = columnName(5 + index);
+    const col = columnName(firstProfileColumnNumber + index);
     sheet.getRange(`${col}${headerRow}`).format = {
       fill: "#B7791F",
       font: { bold: true, color: "#FFFFFF", size: 10 },
@@ -119,7 +127,7 @@ sheet.getRange(`B${headerRow + 1}:C${lastRow}`).format.font = {
 };
 sheet.getRange(`B${headerRow + 1}:B${lastRow}`).format.horizontalAlignment = "center";
 sheet.getRange(`C${headerRow + 1}:C${lastRow}`).format.horizontalAlignment = "right";
-sheet.getRange(`D${headerRow + 1}:${columnName(4 + payload.profiles.length)}${lastRow}`).format = {
+sheet.getRange(`D${headerRow + 1}:${columnName(lastTargetColumnNumber)}${lastRow}`).format = {
   horizontalAlignment: "center",
   verticalAlignment: "center",
   wrapText: true,
@@ -131,7 +139,7 @@ sheet.getRange(`${columnName(columnCount - 1)}${headerRow + 1}:${visibleLastColu
 };
 
 const profileBody = sheet.getRange(
-  `D${headerRow + 1}:${columnName(4 + payload.profiles.length)}${lastRow}`,
+  `D${headerRow + 1}:${columnName(lastTargetColumnNumber)}${lastRow}`,
 );
 const comparisonTargets = Array.from({ length: targetCount }, (_, index) => ({
   column: columnName(firstTargetColumnNumber + index),
@@ -148,10 +156,9 @@ sheet.getRange(`${comparisonControls.label_column}${compareRow}`).format = {
 };
 for (let index = 0; index < comparisonTargets.length; index += 1) {
   const target = comparisonTargets[index];
-  const helperColumn = columnName(firstHelperColumnNumber + index);
-  const defaultHeading = index === 0 ? target.heading : comparisonControls.default_target;
+  const helperColumn = columnName(firstComparisonHelperColumnNumber + index);
   const selectorCell = sheet.getRange(`${target.column}${compareRow}`);
-  selectorCell.values = [[defaultHeading]];
+  selectorCell.values = [[target.heading]];
   selectorCell.dataValidation = { rule: { type: "list", values: comparisonHeadings } };
   selectorCell.format = {
     fill: sharedLayout.colors.pale_warning,
@@ -182,6 +189,28 @@ for (let index = 0; index < comparisonTargets.length; index += 1) {
     },
   );
 }
+const cardStartRow = cardStartControls.row;
+const cardStartValues = [
+  ...registeredProfileHeaders,
+  cardStartControls.default_value,
+  ...payload.profiles.map((profile) => profile.card_start || cardStartControls.empty_value),
+];
+sheet.getRange(`${cardStartControls.label_column}${cardStartRow}`).values = [[cardStartControls.label]];
+sheet.getRange(`${cardStartControls.label_column}${cardStartRow}`).format = {
+  fill: sharedLayout.colors[cardStartControls.fill],
+  font: { bold: true, color: cardStartControls.font_color, size: 10 },
+  horizontalAlignment: "center",
+  verticalAlignment: "center",
+  wrapText: true,
+};
+sheet.getRange(`${comparisonControls.first_target_column}${cardStartRow}:${columnName(lastTargetColumnNumber)}${cardStartRow}`).values = [cardStartValues];
+sheet.getRange(`${comparisonControls.first_target_column}${cardStartRow}:${columnName(lastTargetColumnNumber)}${cardStartRow}`).format = {
+  fill: sharedLayout.colors[cardStartControls.fill],
+  font: { bold: true, color: cardStartControls.font_color, size: 9 },
+  horizontalAlignment: "center",
+  verticalAlignment: "center",
+  wrapText: true,
+};
 profileBody.conditionalFormats.add("containsText", {
   text: "Not Used",
   format: {
@@ -196,9 +225,9 @@ profileBody.conditionalFormats.add("cellIs", {
     font: { color: "#9AA4AE", italic: true },
   },
 });
-sheet.getRange(`${columnName(firstHelperColumnNumber)}:${helperLastColumn}`).format.columnWidthPx =
+sheet.getRange(`${columnName(firstComparisonHelperColumnNumber)}:${helperLastColumn}`).format.columnWidthPx =
   comparisonControls.helper_width_px;
-sheet.getRange(`${columnName(firstHelperColumnNumber)}1:${helperLastColumn}${lastRow}`).format.font = {
+sheet.getRange(`${columnName(firstComparisonHelperColumnNumber)}1:${helperLastColumn}${lastRow}`).format.font = {
   color: sharedLayout.colors.white,
   size: 1,
 };
@@ -206,20 +235,106 @@ sheet.getRange(`${columnName(firstHelperColumnNumber)}1:${helperLastColumn}${las
 sheet.getRange("A:A").format.columnWidthPx = layout.columns.menu_location.width_px;
 sheet.getRange("B:B").format.columnWidthPx = layout.columns.best_access.width_px;
 sheet.getRange("C:C").format.columnWidthPx = layout.columns.setting.width_px;
-sheet.getRange("D:D").format.columnWidth = layout.columns.default.width;
+for (let index = 0; index < registeredProfileCount; index += 1) {
+  const col = columnName(firstTargetColumnNumber + index);
+  sheet.getRange(`${col}:${col}`).format.columnWidth = layout.columns.profile.width;
+}
+sheet.getRange(`${columnName(defaultColumnNumber)}:${columnName(defaultColumnNumber)}`).format.columnWidth =
+  layout.columns.default.width;
 for (let index = 0; index < payload.profiles.length; index += 1) {
-  const col = columnName(5 + index);
+  const col = columnName(firstProfileColumnNumber + index);
   sheet.getRange(`${col}:${col}`).format.columnWidth = layout.columns.profile.width;
 }
 sheet.getRange(`${columnName(columnCount - 1)}:${visibleLastColumn}`).format.columnWidth = layout.columns.order.width;
 sharedLayout.banner.panels.forEach((panel, index) => {
   sheet.getRange(`${index + 1}:${index + 1}`).format.rowHeightPx = panel.height_px;
 });
-sheet.getRange("4:4").format.rowHeight = 22;
+sheet.getRange(`${compareRow}:${cardStartRow}`).format.rowHeight = 22;
 sheet.getRange(`${headerRow}:${lastRow}`).format.autofitRows();
 
 sheet.freezePanes.freezeRows(headerRow);
 sheet.freezePanes.freezeColumns(3);
+
+const defaultsLayout = layout.registered_profiles.defaults_sheet;
+const defaultsSheet = workbook.worksheets.add(defaultsLayout.worksheet);
+defaultsSheet.showGridLines = false;
+const defaultsHeaderRow = 2;
+const defaultsFirstDataRow = 3;
+const defaultsLastRow = defaultsHeaderRow + rows.length;
+const defaultsLastColumn = columnName(1 + registeredProfileCount);
+const defaultsFirstHelperColumnNumber = firstComparisonHelperColumnNumber;
+const defaultsLastHelperColumnNumber = defaultsFirstHelperColumnNumber + registeredProfileCount - 1;
+const defaultsFirstHelperColumn = columnName(defaultsFirstHelperColumnNumber);
+const defaultsLastHelperColumn = columnName(defaultsLastHelperColumnNumber);
+defaultsSheet.getRange(`A1:${defaultsLastColumn}1`).merge();
+defaultsSheet.getRange("A1").values = [[defaultsLayout.note]];
+defaultsSheet.getRange(`A1:${defaultsLastColumn}1`).format = {
+  fill: sharedLayout.colors.pale_gray,
+  font: { bold: true, italic: true, color: sharedLayout.colors.muted_text, size: 10 },
+  horizontalAlignment: "left",
+  verticalAlignment: "center",
+  wrapText: true,
+};
+defaultsSheet.getRange(`A${defaultsHeaderRow}:${defaultsLastColumn}${defaultsLastRow}`).values = [
+  ["Setting", ...registeredProfileHeaders],
+  ...payload.rows.map((row) => [row.setting, ...row.registered_values]),
+];
+const defaultsTable = defaultsSheet.tables.add(
+  `A${defaultsHeaderRow}:${defaultsLastColumn}${defaultsLastRow}`,
+  true,
+  defaultsLayout.table_name,
+);
+defaultsTable.style = "TableStyleMedium2";
+defaultsTable.showFilterButton = true;
+defaultsTable.showBandedRows = true;
+defaultsSheet.getRange(`A${defaultsHeaderRow}:${defaultsLastColumn}${defaultsHeaderRow}`).format = {
+  fill: sharedLayout.colors.blue,
+  font: { bold: true, color: sharedLayout.colors.white, size: 10 },
+  horizontalAlignment: "center",
+  verticalAlignment: "center",
+  wrapText: true,
+};
+defaultsSheet.getRange(`A${defaultsFirstDataRow}:A${defaultsLastRow}`).format = {
+  font: { bold: true },
+  horizontalAlignment: "right",
+  verticalAlignment: "center",
+  wrapText: true,
+};
+defaultsSheet.getRange(`B${defaultsFirstDataRow}:${defaultsLastColumn}${defaultsLastRow}`).format = {
+  horizontalAlignment: "center",
+  verticalAlignment: "center",
+  wrapText: true,
+};
+for (let index = 0; index < registeredProfileCount; index += 1) {
+  const targetColumn = columnName(2 + index);
+  const helperColumn = columnName(defaultsFirstHelperColumnNumber + index);
+  defaultsSheet.getRange(`${helperColumn}${defaultsFirstDataRow}:${helperColumn}${defaultsLastRow}`).formulas =
+    Array.from({ length: rows.length }, (_, rowOffset) => [
+      `=${targetColumn}${defaultsFirstDataRow + rowOffset}`,
+    ]);
+  defaultsSheet.getRange(`${targetColumn}${defaultsFirstDataRow}:${targetColumn}${defaultsLastRow}`).conditionalFormats.add(
+    "cellIs",
+    {
+      operator: "notEqual",
+      formula: `$${helperColumn}${defaultsFirstDataRow}`,
+      format: {
+        fill: sharedLayout.colors[comparisonControls.fill],
+        font: { color: comparisonControls.font_color },
+      },
+    },
+  );
+}
+defaultsSheet.getRange("A:A").format.columnWidth = 24;
+defaultsSheet.getRange(`B:${defaultsLastColumn}`).format.columnWidth = layout.columns.profile.width;
+defaultsSheet.getRange(`E:${defaultsLastHelperColumn}`).format.columnWidthPx = comparisonControls.helper_width_px;
+defaultsSheet.getRange(`${defaultsFirstHelperColumn}1:${defaultsLastHelperColumn}${defaultsLastRow}`).format.font = {
+  color: sharedLayout.colors.white,
+  size: 1,
+};
+defaultsSheet.getRange("1:1").format.rowHeight = 36;
+defaultsSheet.getRange(`${defaultsHeaderRow}:${defaultsLastRow}`).format.autofitRows();
+defaultsSheet.freezePanes.freezeRows(defaultsLayout.excel.freeze_rows);
+defaultsSheet.freezePanes.freezeColumns(defaultsLayout.excel.freeze_columns);
 
 const inspection = await workbook.inspect({
   kind: "table",
@@ -237,6 +352,14 @@ const inspectionTail = await workbook.inspect({
   tableMaxCols: columnCount,
   maxChars: 5000,
 });
+const defaultsInspection = await workbook.inspect({
+  kind: "table",
+  range: `'${defaultsLayout.worksheet}'!A1:${defaultsLastColumn}${defaultsLastRow}`,
+  include: "values,formulas",
+  tableMaxRows: defaultsLastRow,
+  tableMaxCols: 1 + registeredProfileCount,
+  maxChars: 5000,
+});
 const errors = await workbook.inspect({
   kind: "match",
   searchTerm: "#REF!|#DIV/0!|#VALUE!|#NAME\\?|#N/A",
@@ -245,6 +368,7 @@ const errors = await workbook.inspect({
 });
 console.log(inspection.ndjson);
 console.log(inspectionTail.ndjson);
+console.log(defaultsInspection.ndjson);
 console.log(errors.ndjson);
 
 await fs.mkdir(path.dirname(payload.output), { recursive: true });
@@ -255,6 +379,13 @@ const preview = await workbook.render({
   format: "png",
 });
 await fs.writeFile(payload.preview, new Uint8Array(await preview.arrayBuffer()));
+const defaultsPreview = await workbook.render({
+  sheetName: defaultsLayout.worksheet,
+  range: `A1:${defaultsLastColumn}${defaultsLastRow}`,
+  scale: 1,
+  format: "png",
+});
+await fs.writeFile(payload.defaults_preview, new Uint8Array(await defaultsPreview.arrayBuffer()));
 const output = await SpreadsheetFile.exportXlsx(workbook);
 await output.save(payload.output);
 

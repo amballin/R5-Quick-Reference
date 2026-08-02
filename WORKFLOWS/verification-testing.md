@@ -30,9 +30,9 @@ Before changing the camera:
 
 ## Complete setup and registration in order
 
-1. Configure the SWITCH My Menu tab, shared Camera Setup Essentials, and physical controls.
+1. Configure the SWITCH My Menu tab, the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
 2. Save the first checkpoint and mark that Checklist row Backup-Settings.
-3. Build the complete C1 Wildlife environment in a normal mode, register it, leave it, recall it, and read back every target setting.
+3. In a normal mode, read back the complete C1-aligned default state, register it to C1, leave it, recall it, and read back every target setting again.
 4. Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.
 5. Do not begin C3 until C1 and C2 both recall correctly. Then complete C3 Landscape.
 6. Save the second Backup-Settings checkpoint after all three registrations have been read back.

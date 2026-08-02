@@ -40,6 +40,10 @@ def source_fingerprint(paths, target):
                 "baseline": load_yaml_checked(paths.baseline_file) or {},
                 "card_layout": load_yaml_checked(paths.card_layout_file) or {},
                 "setting_access": load_yaml_checked(paths.setting_access_file) or {},
+                "registration": (
+                    (load_yaml_checked(paths.verification_tracker_source_file) or {}).get("registration")
+                    or {}
+                ),
                 "profiles": {
                     path.name: load_yaml_checked(path) or {}
                     for path in sorted(paths.profiles_dir.glob("*.yaml"))
@@ -49,6 +53,7 @@ def source_fingerprint(paths, target):
         code_files = [
             paths.root / "80 Build" / "subject_settings_matrix.py",
             paths.root / "80 Build" / "render_subject_settings_matrix.mjs",
+            paths.root / "80 Build" / "spreadsheet_downloads.py",
             paths.root / "80 Build" / "html_renderer.py",
         ]
     elif target == "setup":

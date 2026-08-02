@@ -386,6 +386,8 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 ## Recommended Settings by Profile
 
+**Default/reset state:** Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera's current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.
+
 - Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
 - Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
 - Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.
@@ -439,7 +441,7 @@ This quick reference turns compact card labels into short practical meaning. It 
 
 ### How it Works
 
-The cards show merged baseline and profile settings. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space.
+The cards show merged baseline and profile settings. The baseline is the C1-aligned operational reset state; neutral, deliberate-point, static, and manual-focus profiles show their intentional differences as overrides. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space.
 
 ### Advantages
 

@@ -14,13 +14,17 @@ This file records approved follow-up work and analysis candidates that should no
 
 ### My Menu Transition Verification and Expansion
 
-Verify the approved starting workflow from the registered C1-C3 profiles to People, Macro, and Waterdrops, then evaluate whether another green-star My Menu item or tab is warranted.
+Verify the approved starting workflow from the registered C1-C3 profiles to every derived subject card, then evaluate whether another green-star My Menu item or tab is warranted.
 
 | Target | Best starting mode | Already close | Remaining changes | Strong My Menu candidates |
 |---|---|---|---|---|
 | People | C1 Wildlife | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | Subject to detect; Shutter mode |
+| Birds Perched | C1 Wildlife | Fv, Auto ISO, Servo AF, Face + Tracking, Animals, Eye Detection, High Speed Continuous, EFCS, Mode 1 | Set perched-bird shutter/aperture targets and exposure compensation | None; use dials |
+| Sports | C2 Birds in Flight | Tv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, High Speed Continuous+, Mechanical, Mode 3 | Animals to People, sports shutter target, reset exposure compensation | Subject to detect |
+| Travel | C3 Landscape | 1-Point AF, no subject detection, Eye Detection disabled, Single Shot, EFCS, Mode 1 | Av to Fv, ISO 100 to Auto, One-Shot to Servo AF, clear the landscape aperture target | None; use MODE, Q, DOF button, and dials |
 | Macro | C3 Landscape | Av, One-Shot AF, Single Shot, EFCS, Mode 1, suitable aperture range | ISO 100 to Auto, 1-Point to Spot AF, enable Focus Bracketing, set f/8 | Focus bracketing |
 | Waterdrops | C3 Landscape | ISO 100, Single Shot, aperture near f/8-f/11 | Av to Manual, 1/200 sec., Mechanical, Manual Focus, stabilization Off | Shutter mode; IS (Image Stabilizer) mode |
+| Fireworks | C3 Landscape | ISO 100, Single Shot, EFCS, f/8-f/11 | Av to Manual, 2-6 sec., Manual Focus, stabilization Off | IS (Image Stabilizer) mode |
 
 Test these transitions on the camera with **Auto update set.: Disable**. Record whether the mode-specific exposure values and broader settings retain, revert, or carry across, including exposure compensation and any temporary 1.6× crop. Confirm that recalling C1 or C3 supplies the expected starting state and that subsequent changes do not rewrite the registered mode.
 
@@ -32,7 +36,7 @@ Verify the approved starting My Menu tab named **SWITCH**:
 4. IS (Image Stabilizer) mode
 5. Cropping/aspect ratio
 
-Leave the sixth position open until the physical transition test identifies another menu-only need. My Menu only shortens navigation to the real setting; it does not apply a complete People, Macro, or Waterdrops configuration. Keep Drive Mode, ISO, shutter speed, aperture, and AF Method on Q, the dials, or the AF-point controls when those remain faster, and keep lens AF/MF and IS switches as physical checks. After verifying SWITCH, evaluate other My Menu tabs separately by field frequency, menu depth, risk of leaving a temporary setting active, and whether Q, a dial, a button, or a physical lens control is already faster.
+Leave the sixth position open until physical transition testing identifies another menu-only need. My Menu only shortens navigation to the real setting; it does not apply a complete derived subject configuration. Keep Drive Mode, ISO, shutter speed, aperture, and AF Method on Q, the dials, or the AF-point controls when those remain faster, and keep lens AF/MF and IS switches as physical checks. After verifying SWITCH, evaluate other My Menu tabs separately by field frequency, menu depth, risk of leaving a temporary setting active, and whether Q, a dial, a button, or a physical lens control is already faster.
 
 ## Exposure and Shutter Follow-Up
 

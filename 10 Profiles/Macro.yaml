@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-08-02
   release: false
 title: Macro
 inherits: baseline
@@ -9,6 +9,13 @@ inherits: baseline
 card:
   icons:
     left: macro
+  field_setup:
+    start: C3
+    source_profile: Landscape
+    my_menus:
+      - name: SWITCH
+        settings:
+          - image.focus_bracketing
   colors:
     background:
     text:
@@ -27,6 +34,10 @@ overrides:
   autofocus:
     operation: One-Shot AF
     method: Spot AF
+    subject_detection: None
+    eye_detection: Disable
+  drive:
+    mode: Single Shot
 checklist:
   - Stable support
   - Focus bracketing enabled

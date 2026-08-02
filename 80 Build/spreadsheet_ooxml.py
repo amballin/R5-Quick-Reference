@@ -131,6 +131,45 @@ def enable_automatic_row_heights(workbook_path, sheet_row_ranges):
     replacement_path.replace(workbook_path)
 
 
+def hide_columns(workbook_path, sheet_name, first_column, last_column):
+    """Hide a contiguous range of generated helper columns."""
+    workbook_path = workbook_path.resolve()
+    replacement_path = workbook_path.with_name(f".{workbook_path.name}.hidden-columns")
+    worksheet_path = _worksheet_path(workbook_path, sheet_name)
+    ET.register_namespace("x", MAIN_NS)
+
+    with ZipFile(workbook_path, "r") as source, ZipFile(replacement_path, "w") as target:
+        for entry in source.infolist():
+            data = source.read(entry.filename)
+            if entry.filename == worksheet_path:
+                root = ET.fromstring(data)
+                columns = root.find(f"{{{MAIN_NS}}}cols")
+                if columns is None:
+                    raise RuntimeError(f"Generated worksheet {sheet_name} is missing cols.")
+                covered = False
+                for column in columns.findall(f"{{{MAIN_NS}}}col"):
+                    minimum = int(column.attrib["min"])
+                    maximum = int(column.attrib["max"])
+                    if minimum >= first_column and maximum <= last_column:
+                        column.set("hidden", "1")
+                        covered = True
+                if not covered:
+                    ET.SubElement(
+                        columns,
+                        f"{{{MAIN_NS}}}col",
+                        {
+                            "min": str(first_column),
+                            "max": str(last_column),
+                            "width": "0",
+                            "hidden": "1",
+                            "customWidth": "1",
+                        },
+                    )
+                data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            target.writestr(entry, data)
+    replacement_path.replace(workbook_path)
+
+
 def prefer_rgb_border_colors(workbook_path):
     """Remove conflicting indexed colors when an explicit RGB border color exists.
 

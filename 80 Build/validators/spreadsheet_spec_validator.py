@@ -26,18 +26,51 @@ def validate(root):
     matrix = workbooks.get("matrix") or {}
     if (matrix.get("excel") or {}).get("import_only_rows") != 3:
         issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must preserve the comparison row after removing its three banner rows in Numbers."))
-    if (matrix.get("numbers") or {}).get("header_rows") != 2:
-        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must freeze the comparison row and table header as two Numbers header rows."))
+    if (matrix.get("excel") or {}).get("freeze_rows") != 6:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must freeze its comparison row, card-start row, and table header below the three-row banner."))
+    if (matrix.get("numbers") or {}).get("header_rows") != 3:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must freeze the comparison row, card-start row, and table header as three Numbers header rows."))
     if matrix.get("comparison_controls") != {
         "row": 4,
         "label_column": "A",
         "first_target_column": "D",
-        "default_target": "Default Settings",
+        "default_selection": "self",
         "fill": "comparison_highlight",
         "font_color": "#000000",
         "helper_width_px": 2,
     }:
-        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix comparison controls must begin in frozen row 4 and use one narrow same-sheet helper per target."))
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix comparison controls must begin in frozen row 4, default to self-comparison, and use one narrow same-sheet helper per target."))
+    if matrix.get("card_start_controls") != {
+        "row": 5,
+        "label_column": "A",
+        "label": "Card starts from:",
+        "default_value": "Camera defaults",
+        "empty_value": "—",
+        "fill": "pale_blue",
+        "font_color": "#17324D",
+    }:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must show the authored card-start route in frozen row 5."))
+    registered_profiles = matrix.get("registered_profiles") or {}
+    if registered_profiles.get("keys") != ["c1", "c2", "c3"]:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must include static editable C1, C2, and C3 columns in order."))
+    defaults_sheet = registered_profiles.get("defaults_sheet") or {}
+    if defaults_sheet != {
+        "worksheet": "C1-C3 Defaults",
+        "table_name": "CxDefaultsTable",
+        "note": "Approved registration targets pending physical verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.",
+        "excel": {"freeze_rows": 2, "freeze_columns": 1},
+        "numbers": {
+            "header_rows": 2,
+            "frozen_header_rows": True,
+            "header_columns": 1,
+            "frozen_header_columns": True,
+        },
+    }:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must keep the approved C1-C3 restoration table with transferable comparison highlighting on the frozen C1-C3 Defaults worksheet."))
+    registration_profiles = (source.get("registration") or {}).get("profiles") or []
+    registration_keys = [profile.get("key") for profile in registration_profiles if isinstance(profile, dict)]
+    if registration_keys != ["c1", "c2", "c3"]:
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Subject Settings Matrix and its defaults table require C1, C2, and C3 registration profiles in order."))
 
     setup = workbooks.get("setup") or {}
     checklist = ((setup.get("sheets") or {}).get("checklist") or {})

@@ -1,23 +1,21 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-26
+  last_updated: 2026-08-02
   release: true
 
 title: Birds in Flight
 card:
   icons:
     left: bird_in_flight
+  field_setup:
+    start: C2
+    source_profile: Birds in Flight
 inherits: baseline
 overrides:
   exposure:
     mode: Tv
     exposure_compensation: "Adjust for background"
-
-  autofocus:
-    method: Face + Tracking
-    subject_detection: Animals
-    eye_detection: Enable
 
   drive:
     mode: High Speed Continuous+

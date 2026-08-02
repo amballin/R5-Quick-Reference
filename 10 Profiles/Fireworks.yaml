@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-08-02
   release: true
 
 title: Fireworks
@@ -11,6 +11,13 @@ inherits: baseline
 card:
   icons:
     left: fireworks
+  field_setup:
+    start: C3
+    source_profile: Landscape
+    my_menus:
+      - name: SWITCH
+        settings:
+          - stabilization.image_stabilization.mode
   colors:
     background:
     text:
@@ -32,6 +39,11 @@ overrides:
   autofocus:
     operation: Manual Focus
     method: Not Used
+    subject_detection: None
+    eye_detection: Disable
+
+  drive:
+    mode: Single Shot
 
   stabilization:
     image_stabilization:

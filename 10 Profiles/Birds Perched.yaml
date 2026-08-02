@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-26
+  last_updated: 2026-08-02
   release: true
 
 title: Birds Perched
@@ -10,19 +10,14 @@ inherits: baseline
 card:
   icons:
     left: bird_perched
+  field_setup:
+    start: C1
+    source_profile: Wildlife
   colors:
     background:
     text:
 
 overrides:
-  autofocus:
-    method: Face + Tracking
-    subject_detection: Animals
-    eye_detection: Enable
-
-  drive:
-    mode: High Speed Continuous
-
   shutter:
     target: "1/500–1/1000"
 

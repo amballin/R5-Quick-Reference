@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-27
+  last_updated: 2026-08-02
 
 subtitle:
 
@@ -45,19 +45,19 @@ defaults:
       maximum: 12800
   autofocus:
     operation: Servo AF
-    subject_detection: None
-    eye_detection: Disable
-    method: 1-Point AF
+    subject_detection: Animals
+    eye_detection: Enable
+    method: Face + Tracking
   drive:
-    mode: "Single Shot"
+    mode: "High Speed Continuous"
   shutter:
     type: "EFCS"
-    target:
+    target: Auto
     efcs:
       status: Approved Target Pending Physical Verification
   lens:
     aperture:
-      target:
+      target: Auto
       strategy: Camera Selected
       note: Actual aperture depends on the attached lens and focal length.
   stabilization:

@@ -167,12 +167,27 @@ def finalize_numbers_conversion(paths, target, numbers_path=None):
             spec["xlsx"],
             spec["layout"]["worksheet"],
         )
+        defaults_layout = spec["layout"]["registered_profiles"]["defaults_sheet"]
+        defaults_rows, defaults_columns = worksheet_dimensions(
+            spec["xlsx"],
+            defaults_layout["worksheet"],
+        )
         expected_rows = matrix_rows - spec["layout"]["excel"]["import_only_rows"]
-        script = _matrix_finalize_script(paths, numbers, expected_rows, matrix_columns)
+        script = _matrix_finalize_script(
+            paths,
+            numbers,
+            expected_rows,
+            matrix_columns,
+            defaults_rows,
+            defaults_columns,
+        )
         numbers_layout = spec["layout"]["numbers"]
+        defaults_numbers_layout = defaults_layout["numbers"]
         expected = (
             f"{expected_rows}, {matrix_columns}, {numbers_layout['header_rows']}, true, "
-            f"{numbers_layout['header_columns']}, true"
+            f"{numbers_layout['header_columns']}, true, {defaults_rows}, {defaults_columns}, "
+            f"{defaults_numbers_layout['header_rows']}, true, "
+            f"{defaults_numbers_layout['header_columns']}, true"
         )
     else:
         expected_rows = 1 + len(
@@ -489,11 +504,21 @@ def migrate_setup_working_copy(paths, source_path):
     }
 
 
-def _matrix_finalize_script(paths, numbers, expected_rows, expected_columns):
+def _matrix_finalize_script(
+    paths,
+    numbers,
+    expected_rows,
+    expected_columns,
+    defaults_expected_rows,
+    defaults_columns,
+):
     spec = target_spec(paths, "matrix")
     layout = spec["layout"]
     quoted_path = json.dumps(str(numbers))
     imported_rows = expected_rows + layout["excel"]["import_only_rows"]
+    defaults = layout["registered_profiles"]["defaults_sheet"]
+    first_data_row = layout["numbers"]["header_rows"] + 1
+    last_visible_defaults_column = 1 + len(layout["registered_profiles"]["keys"])
     return f"""
 tell application id "__BUNDLE_ID__"
     activate
@@ -512,8 +537,8 @@ tell application id "__BUNDLE_ID__"
             else if row count is not {expected_rows} then
                 error "Unexpected Matrix row count."
             end if
-            set normalFont to font name of cell "A3"
-            set boldFont to font name of cell "C3"
+            set normalFont to font name of cell "A{first_data_row}"
+            set boldFont to font name of cell "C{first_data_row}"
             set header row count to {layout["numbers"]["header_rows"]}
             set header rows frozen to true
             set header column count to {layout["numbers"]["header_columns"]}
@@ -521,20 +546,43 @@ tell application id "__BUNDLE_ID__"
             set width of column "A" to 85
             set width of column "B" to 80
             set width of column "C" to 80
-            set font name of range "A3:A{expected_rows}" to normalFont
-            set alignment of range "A3:A{expected_rows}" to left
-            set font name of range "B3:B{expected_rows}" to boldFont
-            set alignment of range "B3:B{expected_rows}" to center
-            set font name of range "C3:C{expected_rows}" to boldFont
-            set alignment of range "C3:C{expected_rows}" to right
-            set font name of range "A2:{excel_column(expected_columns)}2" to boldFont
+            set font name of range "A{first_data_row}:A{expected_rows}" to normalFont
+            set alignment of range "A{first_data_row}:A{expected_rows}" to left
+            set font name of range "B{first_data_row}:B{expected_rows}" to boldFont
+            set alignment of range "B{first_data_row}:B{expected_rows}" to center
+            set font name of range "C{first_data_row}:C{expected_rows}" to boldFont
+            set alignment of range "C{first_data_row}:C{expected_rows}" to right
+            set font name of range "A{layout['numbers']['header_rows']}:{excel_column(expected_columns)}{layout['numbers']['header_rows']}" to boldFont
             set position to {{0, 110}}
         end tell
     end tell
+    tell sheet {json.dumps(defaults["worksheet"])} of targetDocument
+        tell table 1
+            if column count is {defaults_columns + 1} then delete column {defaults_columns + 1}
+            if row count is {defaults_expected_rows + 1} then delete row {defaults_expected_rows + 1}
+            if column count is not {defaults_columns} then error "Unexpected C1-C3 Defaults column count."
+            if row count is not {defaults_expected_rows} then error "Unexpected C1-C3 Defaults row count."
+            set header row count to {defaults["numbers"]["header_rows"]}
+            set header rows frozen to true
+            set header column count to {defaults["numbers"]["header_columns"]}
+            set header columns frozen to true
+            set width of column "A" to 160
+            repeat with columnIndex from 2 to {last_visible_defaults_column}
+                set width of column columnIndex to 130
+            end repeat
+            repeat with columnIndex from {last_visible_defaults_column + 1} to {defaults_columns}
+                set width of column columnIndex to 2
+            end repeat
+        end tell
+    end tell
     save targetDocument
-    tell table 1 of sheet 1 of targetDocument to return ¬
+    tell table 1 of sheet 1 of targetDocument to set mainProperties to ¬
         {{row count, column count, header row count, header rows frozen, ¬
             header column count, header columns frozen}}
+    tell table 1 of sheet {json.dumps(defaults["worksheet"])} of targetDocument to set defaultsProperties to ¬
+        {{row count, column count, header row count, header rows frozen, ¬
+            header column count, header columns frozen}}
+    return mainProperties & defaultsProperties
 end tell
 """
 

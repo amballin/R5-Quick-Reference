@@ -135,6 +135,13 @@ function cardContent(data) {
   } else {
     y += 48;
   }
+  if (data.field_setup) {
+    let route = `<tspan>${esc(data.field_setup.start)}</tspan>`;
+    for (const menu of data.field_setup.menus || []) {
+      route += `<tspan>   ·   </tspan><tspan fill="${esc(menu.color)}">★ ${esc(menu.name)}</tspan>`;
+    }
+    content += `<text x="196.5" y="${y - 13}" class="field-route" text-anchor="middle">${route}</text>`;
+  }
   if (data.rows.length) {
     content += `<text x="22" y="${y}" class="h2">Settings</text><line x1="22" y1="${y + 8}" x2="371" y2="${y + 8}" class="rule"/>`;
     y += 30;
@@ -148,11 +155,13 @@ function cardContent(data) {
       lineHeight: 17,
     });
     content += renderedLabel[0];
-    const renderedValue = textBlock(row.value, 371, y, "value", 22, {
+    const valueClass = row.access_color ? "value field-value" : "value";
+    const valueColor = row.access_color ? ` style="fill:${esc(row.access_color)}"` : "";
+    const renderedValue = textBlock(row.value, 371, y, valueClass, 22, {
       anchor: "end",
       lineHeight: 17,
     });
-    content += renderedValue[0];
+    content += valueColor ? renderedValue[0].replace(/<text /g, `<text${valueColor} `) : renderedValue[0];
     y = Math.max(y + 24, renderedLabel[1] + 5, renderedValue[1] + 5);
   }
   y += data.rows.length ? 18 : 0;
@@ -181,6 +190,7 @@ function cardSvg(data, options = {}) {
   <style>
     .title{fill:${esc(layout.colors.text)};font:700 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .sub{fill:#b7d2e8;font:400 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .field-route{fill:#dbe8f2;font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .h2{fill:#8dc8ff;font:700 20px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .rule{stroke:#53738c;stroke-width:1}
     .label{fill:#b7d2e8;font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}

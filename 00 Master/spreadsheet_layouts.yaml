@@ -46,7 +46,7 @@ shared:
 
 workbooks:
   matrix:
-    revision: 1
+    revision: 4
     title: Subject Settings Matrix
     web_title: Subject Settings Matrix
     xlsx_name: Subject Settings Matrix.xlsx
@@ -55,16 +55,16 @@ workbooks:
     worksheet: Subject Settings Matrix
     table_name: SubjectSettingsTable
     banner:
-      width_px: 2000
+      width_px: 2600
       title: Subject Settings Matrix
-      instructions: Sort Rapid Setup Order ascending for efficient camera configuration. Sort Card Order ascending to restore the reference-card sequence.
-      note: Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
+      instructions: Edit or paste into C1–C3 to experiment, then copy the approved targets from the C1-C3 Defaults tab to reset. Each column initially compares with itself, so yellow appears only after you choose a different comparison.
+      note: C1–C3 values are approved registration targets pending physical verification, not verified current camera state. Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
     excel:
       import_only_rows: 3
-      freeze_rows: 5
+      freeze_rows: 6
       freeze_columns: 3
     numbers:
-      header_rows: 2
+      header_rows: 3
       frozen_header_rows: true
       header_columns: 3
       frozen_header_columns: true
@@ -72,10 +72,32 @@ workbooks:
       row: 4
       label_column: A
       first_target_column: D
-      default_target: Default Settings
+      default_selection: self
       fill: comparison_highlight
       font_color: "#000000"
       helper_width_px: 2
+    card_start_controls:
+      row: 5
+      label_column: A
+      label: "Card starts from:"
+      default_value: Camera defaults
+      empty_value: "—"
+      fill: pale_blue
+      font_color: "#17324D"
+    registered_profiles:
+      keys: [c1, c2, c3]
+      defaults_sheet:
+        worksheet: C1-C3 Defaults
+        table_name: CxDefaultsTable
+        note: Approved registration targets pending physical verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.
+        excel:
+          freeze_rows: 2
+          freeze_columns: 1
+        numbers:
+          header_rows: 2
+          frozen_header_rows: true
+          header_columns: 1
+          frozen_header_columns: true
     columns:
       menu_location:
         heading: Menu Location

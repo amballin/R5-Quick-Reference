@@ -83,11 +83,11 @@ tests:
   - test_id: SETUP-04
     sequence: 5
     phase: Camera Setup
-    expected_result: Shared capture and exposure defaults match the reference baseline.
-    task: Confirm cRAW, Full-frame, Evaluative metering, and Auto ISO maximum 12800.
-    best_access: Q screen; MM-SWITCH for Cropping/aspect ratio
+    expected_result: Shared operational defaults match the complete C1-aligned reference baseline.
+    task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF, Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering.
+    best_access: Q screen; direct exposure controls; AF Point Selection button; MM-SWITCH for Subject to detect, Shutter mode, and Cropping/aspect ratio
     menu_location: Multiple
-    menu_detail: "Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Quick Control: Evaluative metering"
+    menu_detail: "Direct/Q: Fv, shutter Auto, aperture Auto, Auto ISO, Servo AF, High Speed Continuous, Evaluative metering; AF1: AF method, Subject to detect, Eye detection; Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Shooting 6: Shutter mode; Shooting menu: IS (Image Stabilizer) mode"
     next_action: Check Camera Setup Essentials and Camera Defaults.
     evidence_class: Approved target pending verification
     project_update: "Yes"

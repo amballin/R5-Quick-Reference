@@ -35,6 +35,18 @@ Use this checklist for one deliberate camera-setup session. Complete the steps i
 
 - [ ] Configure the approved **SWITCH** My Menu tab with Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, and Cropping/aspect ratio in that order; leave position 6 open.
 
+- [ ] Mode: Fv.
+- [ ] Shutter Speed: Auto.
+- [ ] Aperture: Auto.
+- [ ] ISO: Auto.
+- [ ] AF Operation: Servo AF.
+- [ ] AF Method: Face + Tracking.
+- [ ] Subject Detection: Animals.
+- [ ] Eye Detection: Enable.
+- [ ] Drive Mode: High Speed Continuous.
+- [ ] Shutter Type: EFCS.
+- [ ] Image Stabilizer Mode: Mode 1.
+- [ ] IBIS: On.
 - [ ] Image quality: cRAW.
 - [ ] Cropping/aspect ratio: Full-frame.
 - [ ] Metering: Evaluative.
@@ -79,7 +91,7 @@ Do not continue to C1 registration until the shared setup and control assignment
 
 ## 2. Configure, Validate, and Register C1 — Wildlife
 
-Remain in a normal shooting mode while configuring these settings.
+Remain in a normal shooting mode and read back the complete C1-aligned default state below before registering it.
 
 | Setting | Required C1 value | Checked |
 |---|---|---|

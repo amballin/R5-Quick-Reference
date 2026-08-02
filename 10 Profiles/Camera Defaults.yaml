@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-17
+  last_updated: 2026-08-02
   release: true
 title: Camera Defaults
 subtitle:
@@ -25,4 +25,4 @@ common_mistakes:
   - Wrong shooting mode
   - Forgetting exposure compensation
 notes:
-  - Standard starting configuration.
+  - Standard starting configuration; intentionally matches the approved C1 Wildlife target pending physical verification.

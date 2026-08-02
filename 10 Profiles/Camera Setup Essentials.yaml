@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-07-27
+  last_updated: 2026-08-02
   release: true
 title: Camera Setup Essentials
 subtitle: Set & Forget
@@ -26,6 +26,7 @@ common_mistakes:
   - Treating 1.6× crop as added optical reach
   - Letting temporary C1-C3 changes overwrite registered settings
 notes:
+  - The shared operational defaults intentionally match the approved C1 Wildlife starting state; verify them after a reset or loading a saved camera-settings file.
   - "Keep Screen info. settings modes 1–5 enabled. Mode 5 provides the full Quick Control screen for reviewing and changing camera settings quickly with Q; INFO cycles through the enabled displays. Camera menu: Shooting 7 > Shooting info. disp. > Screen info. settings."
   - Highlight tools stay on because exposure warnings are useful in the field.
   - Keep Cropping/aspect ratio at Full-frame. Temporarily use 1.6× for a distant, predictably framed subject when the tighter view helps, then restore Full-frame. RF-S and adapted EF-S lenses force 1.6× while attached.

@@ -1,5 +1,5 @@
 version: 1
-updated: '2026-08-01T21:13:41.752458-04:00'
+updated: '2026-08-02T09:18:46.832779-04:00'
 tests:
   SETUP-01:
     status: Verified
@@ -42,7 +42,7 @@ tests:
     updated_in_project: 'No'
     verified_against: sha256:10c1951c74b44263db5ff6b5725ac0017ef930c909beb4e4acb1fb7b0d6a1e37
   SETUP-04:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -51,6 +51,8 @@ tests:
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
     verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+    current_definition: sha256:0fd3d39f08967cfa6c6072c55ec3ea4582751e1df839097908d8157e9e08ce0a
+    retest_reason: The workbook test definition is older than the current project definition.
   SETUP-05:
     status: Verified
     test_date: 46235
@@ -525,3 +527,55 @@ history:
     next_action: After saving, set Status to Backup-Settings before operational control and shutter testing.
     evidence_class: Approved target pending verification
     updated_in_project: Not applicable
+- timestamp: '2026-08-02T09:11:50.568558-04:00'
+  event: definition_changed
+  id: SETUP-04
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+    current_definition: sha256:0fd3d39f08967cfa6c6072c55ec3ea4582751e1df839097908d8157e9e08ce0a
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-02T09:18:46.832779-04:00'
+  event: spreadsheet_import
+  id: SETUP-04
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+    current_definition: sha256:0fd3d39f08967cfa6c6072c55ec3ea4582751e1df839097908d8157e9e08ce0a
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check Camera Setup Essentials and Camera Defaults.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:7aa728826b22f45cd601a8c9193b752d723f64e0860d54a7cbce4259e04600c5
+    current_definition: sha256:0fd3d39f08967cfa6c6072c55ec3ea4582751e1df839097908d8157e9e08ce0a
+    retest_reason: The workbook test definition is older than the current project definition.

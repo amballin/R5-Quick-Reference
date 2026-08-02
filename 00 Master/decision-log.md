@@ -2,6 +2,28 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## C1-Aligned Operational Baseline
+
+**Status:** Accepted
+**Date:** 2026-08-02
+
+Use the approved C1 Wildlife registration target as the shared operational baseline and the Camera Defaults reset state. In addition to the existing matching values, set **Shutter Speed: Auto**, **Aperture: Auto**, **AF Method: Face + Tracking**, **Subject Detection: Animals**, **Eye Detection: Enable**, and **Drive Mode: High Speed Continuous** in `baseline.yaml`. This keeps Default Settings, C1 Wildlife, profile cards, and generated spreadsheet comparisons aligned instead of treating unset shutter or aperture targets as equivalent to the explicit C1 Auto values.
+
+Keep baseline-plus-overrides behavior intact. Wildlife becomes baseline-derived; profiles that require deliberate-point AF, no subject priority, Eye Detection disabled, Single Shot, or another drive mode retain those differences explicitly. C1, C2, and C3 remain complete target configurations, and their verification states do not change merely because the project baseline now matches C1.
+
+Classify this baseline as an approved target pending physical verification, not as owner-confirmed current camera state. After a camera reset or saved-configuration load, verify the shared defaults, controls, Auto update setting, and C1–C3 registrations before relying on them.
+
+## Compact Cx and My Menu Field Cues
+
+**Status:** Accepted
+**Date:** 2026-08-02
+
+Put a compact field-access route beneath the title of applicable iPhone cards: the intended starting C1–C3 mode followed by the abbreviated names of any My Menu tabs used to reach displayed changes. Keep ordinary Quick Control, dial, and button values white. Color My Menu setting values to match the visibly named tab token, with **SWITCH permanently green** because it is expected to be the primary transition tab. Support as many as five named tabs and distinct renderer-managed colors without putting raw styling values in profile YAML or relying on color alone.
+
+Configure the approved routes now: C1 Wildlife, C2 Birds in Flight, C3 Landscape, Birds Perched from C1 Wildlife, People from C1 Wildlife through SWITCH, Sports from C2 Birds in Flight through SWITCH, Travel from C3 Landscape, and Macro, Waterdrops, or Fireworks from C3 Landscape through SWITCH. These are field-start recommendations pending physical transition verification. Add a generated Notes explanation that names the complete starting profile, requires registration verification before reliance, and explains the white-versus-colored access cue. Do not add hypothetical My Menu tabs merely to exercise the multi-tab support.
+
+This decision implements the field-access portion of the earlier non-binding **Card Visual Format** direction without adopting its proposed light-body or profile-theme redesign.
+
 ## Workflow Documentation Review for Procedural Changes
 
 **Status:** Accepted

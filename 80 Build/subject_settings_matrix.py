@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
@@ -14,7 +15,7 @@ from html_renderer import (
     stabilization_system_row,
 )
 from validators.common import flatten_paths, load_yaml_checked
-from spreadsheet_ooxml import enable_automatic_row_heights, ensure_freeze_panes
+from spreadsheet_ooxml import enable_automatic_row_heights, ensure_freeze_panes, hide_columns
 from spreadsheet_revisions import short_fingerprint, source_fingerprint, workbook_revision
 
 
@@ -35,8 +36,21 @@ def generate_subject_settings_matrix(paths):
     access = access.get("setting_access") or {}
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     layout = ((layouts.get("workbooks") or {}).get("matrix") or {})
+    tracker = load_yaml_checked(paths.verification_tracker_source_file) or {}
+    registration = tracker.get("registration") or {}
+    registered_profiles = _registered_profiles(
+        registration,
+        baseline.get("defaults") or {},
+        ((layout.get("registered_profiles") or {}).get("keys") or []),
+    )
     ordered_keys = _summary_keys(paths, profiles, access)
-    rows = _summary_rows(ordered_keys, profiles, baseline.get("defaults") or {}, access)
+    rows = _summary_rows(
+        ordered_keys,
+        profiles,
+        registered_profiles,
+        baseline.get("defaults") or {},
+        access,
+    )
 
     paths.reports_output_dir.mkdir(parents=True, exist_ok=True)
     runtime_dir = paths.reports_output_dir / ".subject-settings-runtime"
@@ -52,16 +66,26 @@ def generate_subject_settings_matrix(paths):
 
     payload_path = runtime_dir / "payload.json"
     preview_path = runtime_dir / "preview.png"
+    defaults_preview_path = runtime_dir / "defaults-preview.png"
     payload = {
         "output": str(paths.subject_settings_summary_file),
         "preview": str(preview_path),
+        "defaults_preview": str(defaults_preview_path),
         "runtime_dir": str(runtime_dir),
         "profiles": [
             {
                 "title": profile["title"],
                 "release": profile["release"],
+                "card_start": _card_start_label(profile.get("field_setup") or {}),
             }
             for profile in profiles
+        ],
+        "registered_profiles": [
+            {
+                "key": profile["key"],
+                "heading": profile["heading"],
+            }
+            for profile in registered_profiles
         ],
         "rows": rows,
         "layout": layout,
@@ -86,9 +110,14 @@ def generate_subject_settings_matrix(paths):
             print(result.stdout.strip())
     finally:
         payload_path.unlink(missing_ok=True)
+    header_row = (layout.get("card_start_controls") or {})["row"] + 1
+    defaults_layout = (layout.get("registered_profiles") or {})["defaults_sheet"]
     enable_automatic_row_heights(
         paths.subject_settings_summary_file,
-        {layout["worksheet"]: [(5, 5 + len(rows))]},
+        {
+            layout["worksheet"]: [(header_row, header_row + len(rows))],
+            defaults_layout["worksheet"]: [(2, 2 + len(rows))],
+        },
     )
     excel_layout = layout.get("excel") or {}
     ensure_freeze_panes(
@@ -97,11 +126,35 @@ def generate_subject_settings_matrix(paths):
         frozen_rows=excel_layout["freeze_rows"],
         frozen_columns=excel_layout["freeze_columns"],
     )
+    defaults_excel_layout = defaults_layout.get("excel") or {}
+    ensure_freeze_panes(
+        paths.subject_settings_summary_file,
+        defaults_layout["worksheet"],
+        frozen_rows=defaults_excel_layout["freeze_rows"],
+        frozen_columns=defaults_excel_layout["freeze_columns"],
+    )
+    visible_column_count = 3 + len(registered_profiles) + 1 + len(profiles) + 2
+    helper_column_count = len(registered_profiles) + 1 + len(profiles)
+    hide_columns(
+        paths.subject_settings_summary_file,
+        layout["worksheet"],
+        first_column=visible_column_count + 1,
+        last_column=visible_column_count + helper_column_count,
+    )
+    defaults_first_helper_column = visible_column_count + 1
+    defaults_last_helper_column = defaults_first_helper_column + len(registered_profiles) - 1
+    hide_columns(
+        paths.subject_settings_summary_file,
+        defaults_layout["worksheet"],
+        first_column=2 + len(registered_profiles),
+        last_column=defaults_last_helper_column,
+    )
     inspect_sidecar = Path(f"{paths.subject_settings_summary_file}.inspect.ndjson")
     inspect_sidecar.unlink(missing_ok=True)
     return {
         "XLSX": 1 if paths.subject_settings_summary_file.exists() else 0,
         "subject_settings_preview": preview_path,
+        "subject_settings_defaults_preview": defaults_preview_path,
     }
 
 
@@ -138,10 +191,27 @@ def _subject_profiles(paths):
                 "title": profile.get("title") or profile_path.stem,
                 "display_order": profile.get("display_order", 100),
                 "release": (profile.get("metadata") or {}).get("release") is True,
+                "field_setup": (profile.get("card") or {}).get("field_setup") or {},
                 "overrides": profile.get("overrides") or {},
             }
         )
     return sorted(profiles, key=lambda item: (item["display_order"], item["title"].lower()))
+
+
+def _card_start_label(field_setup):
+    start = field_setup.get("start")
+    source_profile = field_setup.get("source_profile")
+    if not start or not source_profile:
+        return ""
+    menu_names = [
+        menu.get("name")
+        for menu in field_setup.get("my_menus") or []
+        if isinstance(menu, dict) and menu.get("name")
+    ]
+    route = f"{start} {source_profile}"
+    if menu_names:
+        route += " + " + " + ".join(menu_names)
+    return route
 
 
 def _summary_keys(paths, profiles, access):
@@ -158,27 +228,91 @@ def _summary_keys(paths, profiles, access):
     return [key for key in card_layout.get("display_order") or [] if key in normalized]
 
 
-def _summary_rows(ordered_keys, profiles, defaults, access):
+def _summary_rows(ordered_keys, profiles, registered_profiles, defaults, access):
     rows = []
     for card_order, key in enumerate(ordered_keys, start=1):
         access_entry = access[key]
         values = []
         for profile in profiles:
             merged = merge(defaults, profile["overrides"])
-            values.append(_summary_value(key, merged))
+            values.append(_spreadsheet_value(_summary_value(key, merged)))
         rows.append(
             {
                 "key": key,
                 "setting": _setting_label(key),
                 "best_access": access_entry["best_access"],
                 "menu_location": access_entry["menu_location"],
-                "default_value": _summary_value(key, defaults),
+                "default_value": _spreadsheet_value(_summary_value(key, defaults)),
+                "registered_values": [
+                    _spreadsheet_value(_summary_value(key, profile["merged"]))
+                    for profile in registered_profiles
+                ],
                 "values": values,
                 "card_order": card_order,
                 "rapid_order": access_entry["rapid_order"],
             }
         )
     return rows
+
+
+def _spreadsheet_value(value):
+    if isinstance(value, str) and re.fullmatch(r"-?\d+", value):
+        return int(value)
+    if isinstance(value, str) and re.fullmatch(r"-?\d+\.\d+", value):
+        return float(value)
+    return value
+
+
+def _registered_profiles(registration, defaults, configured_keys):
+    definitions = {
+        profile["key"]: profile
+        for profile in registration.get("profiles") or []
+        if isinstance(profile, dict) and profile.get("key")
+    }
+    missing = [key for key in configured_keys if key not in definitions]
+    if missing:
+        raise ValueError(f"Missing configured Cx registration profiles: {missing}")
+    profiles = []
+    for key in configured_keys:
+        overrides = {}
+        for row in registration.get("rows") or []:
+            baseline_key = row.get("baseline_key")
+            if baseline_key and row.get(key) not in (None, ""):
+                _apply_registration_value(overrides, baseline_key, row[key])
+        profiles.append(
+            {
+                "key": key,
+                "heading": definitions[key]["heading"],
+                "merged": merge(defaults, overrides),
+            }
+        )
+    return profiles
+
+
+def _apply_registration_value(overrides, baseline_key, raw_value):
+    if isinstance(raw_value, bool):
+        value = "On" if raw_value else "Off"
+    else:
+        value = str(raw_value).split(";", 1)[0].strip()
+    if baseline_key == "exposure.iso.mode":
+        if re.fullmatch(r"\d+", value):
+            _set_nested(overrides, "exposure.iso.mode", "Fixed")
+            _set_nested(overrides, "exposure.iso.value", value)
+        else:
+            _set_nested(overrides, baseline_key, value)
+        return
+    if baseline_key == "exposure.auto_iso.maximum":
+        match = re.match(r"\d+", value)
+        value = match.group(0) if match else value
+    _set_nested(overrides, baseline_key, value)
+
+
+def _set_nested(target, dotted_key, value):
+    current = target
+    parts = dotted_key.split(".")
+    for part in parts[:-1]:
+        current = current.setdefault(part, {})
+    current[parts[-1]] = value
 
 
 def _summary_value(key, merged):

@@ -13,6 +13,7 @@ This specification defines the system boundaries and ownership of data, content,
 - Present proposed changes and affected files for review before modifying the reference.
 - For each new change task, present a clear recommendation, rationale, and affected files, then request approval as a separate explicit question. Once approved, treat that recommended scope as authorized without requiring the project owner to repeat it. Read-only questions and status checks do not require change approval.
 - Shared behavior and shared camera settings belong in `00 Master/baseline.yaml`.
+- The operational baseline and Camera Defaults card match the approved C1 Wildlife starting state: Fv with shutter and aperture on Auto, Servo AF, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. Neutral, deliberate-point, static, or manual-focus profiles express their differences as overrides.
 - Subject profiles inherit the baseline and contain only necessary overrides.
 - The build resolves baseline and profile data before rendering.
 - Presentation and rendering decisions belong in build code and templates, not profile YAML.

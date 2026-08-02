@@ -7,6 +7,7 @@ LIST_KEYS = ["checklist", "watch_for", "common_mistakes", "notes"]
 CARD_TYPES = {"profile", "reference"}
 DISPLAY_CATEGORIES = {"subject", "reference"}
 ICON_POSITIONS = {"header", "left", "right"}
+FIELD_SETUP_STARTS = {"C1", "C2", "C3"}
 
 
 def validate(root):
@@ -24,6 +25,8 @@ def validate(root):
 
     profile_paths = sorted((root / "10 Profiles").glob("*.yaml"))
     stems = [path.stem.lower() for path in profile_paths]
+    profile_titles = _profile_titles(profile_paths)
+    card_setting_paths = _card_setting_paths(root)
     titles = []
     appendix_ids = _appendix_ids(root)
 
@@ -67,6 +70,15 @@ def validate(root):
             if key in data and not isinstance(data[key], list):
                 issues.append(error("profiles", path, f"{key} must be a list."))
         issues.extend(_validate_card_icons(path, data.get("card")))
+        issues.extend(
+            _validate_field_setup(
+                path,
+                data.get("card"),
+                profile_titles,
+                card_setting_paths,
+                card_type,
+            )
+        )
         issues.extend(_validate_appendix_links(path, data.get("appendix_links"), appendix_ids))
 
     for duplicate in _duplicates(titles):
@@ -92,6 +104,98 @@ def _validate_card_icons(path, card):
         if value is not None and not isinstance(value, str):
             issues.append(error("profiles", path, f"card.icons.{position} must be a string or null."))
     return issues
+
+
+def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_type):
+    if card is None or not isinstance(card, dict) or "field_setup" not in card:
+        return []
+    if card_type == "reference":
+        return [error("profiles", path, "Reference cards must not define card.field_setup.")]
+    setup = card.get("field_setup")
+    if not isinstance(setup, dict):
+        return [error("profiles", path, "card.field_setup must be a mapping.")]
+    issues = []
+    unknown = sorted(set(setup) - {"start", "source_profile", "my_menus"})
+    if unknown:
+        issues.append(error("profiles", path, f"Unknown card.field_setup keys: {', '.join(unknown)}."))
+    if setup.get("start") not in FIELD_SETUP_STARTS:
+        issues.append(error("profiles", path, "card.field_setup.start must be C1, C2, or C3."))
+    source_profile = setup.get("source_profile")
+    if not isinstance(source_profile, str) or not source_profile.strip():
+        issues.append(error("profiles", path, "card.field_setup.source_profile must be a non-empty string."))
+    elif source_profile not in profile_titles:
+        issues.append(error("profiles", path, f"card.field_setup.source_profile does not match a profile title: {source_profile}"))
+    menus = setup.get("my_menus", [])
+    if not isinstance(menus, list):
+        issues.append(error("profiles", path, "card.field_setup.my_menus must be a list."))
+        return issues
+    if len(menus) > 5:
+        issues.append(error("profiles", path, "card.field_setup.my_menus supports at most five tabs."))
+    names = []
+    assigned_settings = []
+    for index, menu in enumerate(menus, start=1):
+        if not isinstance(menu, dict):
+            issues.append(error("profiles", path, f"card.field_setup.my_menus item {index} must be a mapping."))
+            continue
+        unknown_menu_keys = sorted(set(menu) - {"name", "settings"})
+        if unknown_menu_keys:
+            issues.append(
+                error(
+                    "profiles",
+                    path,
+                    f"card.field_setup.my_menus item {index} has unknown keys: {', '.join(unknown_menu_keys)}.",
+                )
+            )
+        name = menu.get("name")
+        if not isinstance(name, str) or not name.strip():
+            issues.append(error("profiles", path, f"card.field_setup.my_menus item {index} requires a non-empty name."))
+        else:
+            names.append(name.casefold())
+        settings = menu.get("settings")
+        if not isinstance(settings, list) or not settings:
+            issues.append(
+                error("profiles", path, f"card.field_setup.my_menus item {index} requires a non-empty settings list.")
+            )
+            continue
+        for setting in settings:
+            if not isinstance(setting, str) or not setting.strip():
+                issues.append(
+                    error("profiles", path, f"card.field_setup.my_menus item {index} settings must be non-empty strings.")
+                )
+            elif setting not in card_setting_paths:
+                issues.append(error("profiles", path, f"Field-setup setting is not in card display order: {setting}"))
+            else:
+                assigned_settings.append(setting)
+    duplicate_names = _duplicates(names)
+    if duplicate_names:
+        issues.append(error("profiles", path, f"Duplicate My Menu names in card.field_setup: {', '.join(duplicate_names)}."))
+    duplicate_settings = _duplicates(assigned_settings)
+    if duplicate_settings:
+        issues.append(
+            error("profiles", path, f"Settings assigned to more than one My Menu tab: {', '.join(duplicate_settings)}.")
+        )
+    return issues
+
+
+def _profile_titles(profile_paths):
+    titles = set()
+    for path in profile_paths:
+        try:
+            data = load_yaml_checked(path) or {}
+        except Exception:
+            continue
+        title = data.get("title")
+        if isinstance(title, str):
+            titles.add(title)
+    return titles
+
+
+def _card_setting_paths(root):
+    try:
+        layout = load_yaml_checked(root / "00 Master" / "card_layout.yaml") or {}
+    except Exception:
+        return set()
+    return set((layout.get("card_layout") or {}).get("display_order") or [])
 
 
 def _appendix_ids(root):

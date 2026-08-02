@@ -1,20 +1,17 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-26
+  last_updated: 2026-08-02
   release: true
 title: Wildlife
 card:
   icons:
     left: wildlife
+  field_setup:
+    start: C1
+    source_profile: Wildlife
 inherits: baseline
-overrides:
-  autofocus:
-    method: Face + Tracking
-    subject_detection: Animals
-    eye_detection: Enable
-  drive:
-    mode: High Speed Continuous
+overrides: {}
 checklist:
   - Eye detected
   - Histogram

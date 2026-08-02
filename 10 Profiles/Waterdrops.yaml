@@ -1,12 +1,20 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-26
+  last_updated: 2026-08-02
   release: false
 title: Waterdrops
 card:
   icons:
     left: water_drops
+  field_setup:
+    start: C3
+    source_profile: Landscape
+    my_menus:
+      - name: SWITCH
+        settings:
+          - shutter.type
+          - stabilization.image_stabilization.mode
 inherits: baseline
 overrides:
   exposure:
@@ -17,6 +25,10 @@ overrides:
   autofocus:
     operation: Manual Focus
     method: Not Used
+    subject_detection: None
+    eye_detection: Disable
+  drive:
+    mode: Single Shot
   shutter:
     type: Mechanical
     target: 1/200

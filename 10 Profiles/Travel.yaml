@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-07-17
+  last_updated: 2026-08-02
   release: false
 title: Travel
 inherits: baseline
@@ -9,11 +9,20 @@ inherits: baseline
 card:
   icons:
     left: travel
+  field_setup:
+    start: C3
+    source_profile: Landscape
   colors:
     background:
     text:
 
-overrides: {}
+overrides:
+  autofocus:
+    method: 1-Point AF
+    subject_detection: None
+    eye_detection: Disable
+  drive:
+    mode: Single Shot
 checklist:
   - Battery
   - Spare card

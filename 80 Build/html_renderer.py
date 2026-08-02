@@ -15,6 +15,15 @@ DEFAULT_CARD_COLORS = {
     "text": "#ffffff",
 }
 
+FIELD_ACCESS_COLORS = {
+    "access-switch": "#72dda8",
+    "access-menu-2": "#f0bf69",
+    "access-menu-3": "#c6a6ff",
+    "access-menu-4": "#ff9fba",
+    "access-menu-5": "#80d8ff",
+    "access-menu-6": "#ff9b7a",
+}
+
 LABEL = {
     "exposure.mode": "Mode",
     "exposure.metering": "Metering",
@@ -230,11 +239,14 @@ def iso_display_value(merged_fields):
 def table(profile, merged, icon_manager=None, paths=None):
     """Render the settings table with optional field-based icons."""
     html = "<table>"
+    access_classes = field_setup_setting_classes(profile)
     for row in settings_rows(profile, merged, paths):
         rendered_label = row["label"]
         if icon_manager is not None:
             rendered_label = icon_manager.icon_html(row["key"], row["label"], row["value"])
-        html += f"<tr><td>{rendered_label}</td><td>{row['value']}</td></tr>"
+        access_class = access_classes.get(row["key"])
+        class_attribute = f' class="field-value {access_class}"' if access_class else ""
+        html += f"<tr><td>{rendered_label}</td><td{class_attribute}>{row['value']}</td></tr>"
     return html + "</table>"
 
 
@@ -248,6 +260,7 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
     return (
         template.replace("{{TITLE}}", profile.get("title", profile_name))
         .replace("{{SUBTITLE_BLOCK}}", subtitle_block(profile, baseline))
+        .replace("{{FIELD_SETUP_STRIP}}", field_setup_strip(profile))
         .replace("{{BACKGROUND_COLOR}}", colors["background"])
         .replace("{{TEXT_COLOR}}", colors["text"])
         .replace("{{SITE_NAV_CSS}}", SITE_NAV_CSS)
@@ -291,7 +304,11 @@ def appendix_link_entries(profile, paths=None):
 
 
 def card_note_items(profile, paths=None):
-    items = list(profile.get("notes") or [])
+    items = []
+    setup_note = field_setup_note(profile)
+    if setup_note:
+        items.append(setup_note)
+    items.extend(profile.get("notes") or [])
     for link in appendix_link_entries(profile, paths):
         return_target = quote(f"../Cards/{profile.get('title', 'Card')}.html", safe="/.")
         href = quote(f"../../field-guide/html/{link['filename']}", safe="/:#%")
@@ -302,6 +319,91 @@ def card_note_items(profile, paths=None):
 
 def settings_section(profile, merged, icon_manager=None, paths=None):
     return f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths)}"
+
+
+def field_setup(profile):
+    card = profile.get("card") or {}
+    setup = card.get("field_setup") or {}
+    return setup if isinstance(setup, dict) else {}
+
+
+def field_setup_menus(profile):
+    """Return My Menu entries with stable renderer-managed color classes."""
+    menus = field_setup(profile).get("my_menus") or []
+    alternate_number = 2
+    rendered = []
+    for menu in menus:
+        if not isinstance(menu, dict):
+            continue
+        name = str(menu.get("name") or "").strip()
+        if name.casefold() == "switch":
+            access_class = "access-switch"
+        else:
+            access_class = f"access-menu-{min(alternate_number, 6)}"
+            alternate_number += 1
+        rendered.append(
+            {
+                **menu,
+                "name": name,
+                "access_class": access_class,
+                "color": FIELD_ACCESS_COLORS[access_class],
+            }
+        )
+    return rendered
+
+
+def field_setup_setting_classes(profile):
+    classes = {}
+    for menu in field_setup_menus(profile):
+        for key in menu.get("settings") or []:
+            classes[key] = menu["access_class"]
+    return classes
+
+
+def field_setup_value_colors(profile):
+    return {
+        key: FIELD_ACCESS_COLORS[access_class]
+        for key, access_class in field_setup_setting_classes(profile).items()
+    }
+
+
+def field_setup_summary(profile):
+    setup = field_setup(profile)
+    if not setup:
+        return None
+    return {
+        "start": setup.get("start", ""),
+        "source_profile": setup.get("source_profile", ""),
+        "menus": field_setup_menus(profile),
+    }
+
+
+def field_setup_strip(profile):
+    summary = field_setup_summary(profile)
+    if not summary:
+        return ""
+    parts = [f'<span class="field-route-start">{escape(str(summary["start"]))}</span>']
+    for menu in summary["menus"]:
+        parts.append(
+            f'<span class="field-route-menu {menu["access_class"]}">'
+            f'★ {escape(menu["name"])}</span>'
+        )
+    return '<div class="field-route" aria-label="Field setup shortcuts">' + "".join(parts) + "</div>"
+
+
+def field_setup_note(profile):
+    summary = field_setup_summary(profile)
+    if not summary:
+        return ""
+    start = escape(str(summary["start"]))
+    source = escape(str(summary["source_profile"]))
+    prefix = f"Start from {start} {source} after verifying its registration."
+    if not summary["menus"]:
+        return prefix
+    return (
+        f"{prefix} Colored setting values use the matching My Menu tab; "
+        "white values use Quick Control, dials, or buttons."
+    )
 
 
 def profile_subtitle(profile, baseline=None):

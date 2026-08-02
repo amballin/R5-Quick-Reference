@@ -202,6 +202,8 @@ Changing from the complete Wildlife card to the complete People card involves mo
 
 C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card. The cards remain concise field references; this matrix is the single registration reference for the profile-defining settings. Shared Set & Forget settings remain on Camera Setup Essentials and are intentionally not repeated here.
 
+Camera Defaults and the shared operational baseline intentionally match the complete C1 Wildlife target, including explicit Auto shutter and aperture values. This makes the documented reset state a practical wildlife starting point; it does not prove that a reset camera, loaded settings file, or existing C1 registration currently matches the target. Verify the shared setup, controls, Auto update setting, and every registered C mode after either recovery operation.
+
 The exact starting values below convert card ranges and situational guidance into reproducible registrations. Settings not governed by this project remain unchanged and must not be guessed. The **Lens IS switch** is a physical pre-shoot check rather than a camera-registered menu value.
 
 | Setting | C1 — Wildlife | C2 — Birds in Flight | C3 — Landscape |

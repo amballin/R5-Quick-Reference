@@ -21,6 +21,14 @@ card:
   colors:
     background: optional color string
     text: optional color string
+  field_setup:
+    start: optional C1|C2|C3
+    source_profile: optional exact profile title represented by the starting Cx
+    my_menus: optional list of up to five My Menu tabs
+
+field_setup my_menus item:
+  name: non-empty My Menu tab name
+  settings: non-empty list of unique card setting paths colored for this tab
 
 reference_settings: optional list for card_type reference
 reference_settings item:
