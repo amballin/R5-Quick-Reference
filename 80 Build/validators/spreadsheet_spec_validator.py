@@ -8,11 +8,36 @@ def validate(root):
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
     workbooks = layouts.get("workbooks") or {}
+    colors = ((layouts.get("shared") or {}).get("colors") or {})
+    if colors.get("comparison_highlight") != "#FFFC98":
+        issues.append(
+            error(
+                "spreadsheet_specs",
+                paths.spreadsheet_layouts_file,
+                "C1-C3 comparison highlighting must use the approved pale yellow #FFFC98.",
+            )
+        )
     for target in ("matrix", "setup"):
         if target not in workbooks:
             issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, f"Missing {target} layout."))
         elif not isinstance((workbooks[target] or {}).get("revision"), int) or workbooks[target]["revision"] < 1:
             issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, f"{target} revision must be a positive integer."))
+
+    matrix = workbooks.get("matrix") or {}
+    if (matrix.get("excel") or {}).get("import_only_rows") != 3:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must preserve the comparison row after removing its three banner rows in Numbers."))
+    if (matrix.get("numbers") or {}).get("header_rows") != 2:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix must freeze the comparison row and table header as two Numbers header rows."))
+    if matrix.get("comparison_controls") != {
+        "row": 4,
+        "label_column": "A",
+        "first_target_column": "D",
+        "default_target": "Default Settings",
+        "fill": "comparison_highlight",
+        "font_color": "#000000",
+        "helper_width_px": 2,
+    }:
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Subject Settings Matrix comparison controls must begin in frozen row 4 and use one narrow same-sheet helper per target."))
 
     setup = workbooks.get("setup") or {}
     checklist = ((setup.get("sheets") or {}).get("checklist") or {})
@@ -73,26 +98,50 @@ def validate(root):
     if registration.get("column_alignments") != {
         "A": "right",
         "B": "center",
-        "F": "center",
-        "J": "center",
+        "C": "center",
+        "G": "center",
+        "K": "center",
     }:
-        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "C1-C3 Registration must right-align A and center target columns B, F, and J."))
-    if registration.get("outer_borders") != {
-        "color": "blue",
-        "weight_pt": 3,
-        "ranges": ["A:A", "B:E", "F:I", "J:M"],
+        issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "C1-C3 Registration must right-align A and center target columns B, C, G, and K."))
+    if registration.get("comparison_controls") != {
+        "row": 3,
+        "label_column": "A",
+        "fill": "comparison_highlight",
+        "font_color": "#000000",
+        "targets": {
+            "B": {"source": "default", "default": "B", "helper": "O"},
+            "C": {"profile": "c1", "default": "B", "helper": "P"},
+            "G": {"profile": "c2", "default": "B", "helper": "Q"},
+            "K": {"profile": "c3", "default": "B", "helper": "R"},
+        },
     }:
         issues.append(
             error(
                 "spreadsheet_specs",
                 paths.spreadsheet_layouts_file,
-                "C1-C3 Registration outer borders must frame A, B:E, F:I, and J:M in 3-point blue.",
+                "C1-C3 Registration must keep Compare to in frozen A3 and give Default, C1, C2, and C3 named-target selectors with self-comparison support.",
+            )
+        )
+    if registration.get("outer_borders") != {
+        "color": "blue",
+        "weight_pt": 3,
+        "ranges": ["A:A", "B:B", "C:F", "G:J", "K:N"],
+    }:
+        issues.append(
+            error(
+                "spreadsheet_specs",
+                paths.spreadsheet_layouts_file,
+                "C1-C3 Registration outer borders must frame A, B, C:F, G:J, and K:N in 3-point blue.",
             )
         )
     if (sheets.get("metadata") or {}).get("name") != "Metadata":
         issues.append(error("spreadsheet_specs", paths.spreadsheet_layouts_file, "Setup Metadata sheet is required."))
 
     tests = source.get("tests") or []
+    registration_rows = ((source.get("registration") or {}).get("rows") or [])
+    missing_baseline_keys = [row.get("setting") for row in registration_rows if not row.get("baseline_key")]
+    if missing_baseline_keys:
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"Registration rows missing baseline_key: {missing_baseline_keys}"))
     ids = [test.get("test_id") for test in tests if isinstance(test, dict)]
     sequences = [test.get("sequence") for test in tests if isinstance(test, dict)]
     if len(ids) != len(set(ids)):

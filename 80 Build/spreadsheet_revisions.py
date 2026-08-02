@@ -53,6 +53,7 @@ def source_fingerprint(paths, target):
         ]
     elif target == "setup":
         payload["tracker"] = load_yaml_checked(paths.verification_tracker_source_file) or {}
+        payload["baseline"] = load_yaml_checked(paths.baseline_file) or {}
         code_files = [
             paths.root / "80 Build" / "camera_setup_tracker.py",
             paths.root / "80 Build" / "render_camera_setup_tracker.mjs",

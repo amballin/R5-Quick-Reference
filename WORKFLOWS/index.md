@@ -2,6 +2,8 @@
 
 Follow this order during a typical project day. Spreadsheet testing status and spreadsheet release files have separate places in the sequence.
 
+Use the **Project Terminal** panel at the top of the generated HTML guide to copy the displayed `cd` command, then paste it into an open Terminal session.
+
 ## 1. Preflight before editing
 
 Open [Preflight](preflight.html) to confirm this Mac has the current source and is safe to use.

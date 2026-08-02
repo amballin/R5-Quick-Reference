@@ -169,7 +169,11 @@ def finalize_numbers_conversion(paths, target, numbers_path=None):
         )
         expected_rows = matrix_rows - spec["layout"]["excel"]["import_only_rows"]
         script = _matrix_finalize_script(paths, numbers, expected_rows, matrix_columns)
-        expected = f"{expected_rows}, {matrix_columns}, 1, true, 3, true"
+        numbers_layout = spec["layout"]["numbers"]
+        expected = (
+            f"{expected_rows}, {matrix_columns}, {numbers_layout['header_rows']}, true, "
+            f"{numbers_layout['header_columns']}, true"
+        )
     else:
         expected_rows = 1 + len(
             (load_yaml_checked(paths.verification_tracker_source_file) or {}).get("tests") or []
@@ -508,22 +512,22 @@ tell application id "__BUNDLE_ID__"
             else if row count is not {expected_rows} then
                 error "Unexpected Matrix row count."
             end if
-            set normalFont to font name of cell "A2"
-            set boldFont to font name of cell "C2"
-            set header row count to 1
+            set normalFont to font name of cell "A3"
+            set boldFont to font name of cell "C3"
+            set header row count to {layout["numbers"]["header_rows"]}
             set header rows frozen to true
-            set header column count to 3
+            set header column count to {layout["numbers"]["header_columns"]}
             set header columns frozen to true
             set width of column "A" to 85
             set width of column "B" to 80
             set width of column "C" to 80
-            set font name of range "A2:A{expected_rows}" to normalFont
-            set alignment of range "A2:A{expected_rows}" to left
-            set font name of range "B2:B{expected_rows}" to boldFont
-            set alignment of range "B2:B{expected_rows}" to center
-            set font name of range "C2:C{expected_rows}" to boldFont
-            set alignment of range "C2:C{expected_rows}" to right
-            set font name of range "A1:{excel_column(expected_columns)}1" to boldFont
+            set font name of range "A3:A{expected_rows}" to normalFont
+            set alignment of range "A3:A{expected_rows}" to left
+            set font name of range "B3:B{expected_rows}" to boldFont
+            set alignment of range "B3:B{expected_rows}" to center
+            set font name of range "C3:C{expected_rows}" to boldFont
+            set alignment of range "C3:C{expected_rows}" to right
+            set font name of range "A2:{excel_column(expected_columns)}2" to boldFont
             set position to {{0, 110}}
         end tell
     end tell

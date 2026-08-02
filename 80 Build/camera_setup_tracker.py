@@ -12,6 +12,7 @@ from spreadsheet_revisions import (
     tracker_definition_fingerprints,
     workbook_revision,
 )
+from subject_settings_matrix import _display, _flatten, _summary_value
 from spreadsheet_ooxml import (
     enable_automatic_row_heights,
     ensure_active_sheet,
@@ -34,6 +35,12 @@ def generate_camera_setup_tracker(
     """Generate the blank Setup tracker or a migrated local working copy."""
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
+    defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
+    for row in ((source.get("registration") or {}).get("rows") or []):
+        baseline_key = row.get("baseline_key")
+        if not baseline_key:
+            raise ValueError(f"Registration row is missing baseline_key: {row.get('setting', '<unknown>')}")
+        row["default_value"] = _registration_default_value(baseline_key, defaults)
     layout = ((layouts.get("workbooks") or {}).get("setup") or {})
     output_path = Path(output_path or paths.setup_tracker_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -136,6 +143,16 @@ def remove_camera_setup_tracker(paths):
             shutil.rmtree(path)
         elif path.exists() or path.is_symlink():
             path.unlink()
+
+
+def _registration_default_value(key, defaults):
+    """Render baseline values in the same row-level terms as the C1-C3 targets."""
+    fields = _flatten(defaults)
+    if key in {"shutter.target", "lens.aperture.target"} and not fields.get(key):
+        return "Auto"
+    if key in {"exposure.iso.mode", "stabilization.ibis"}:
+        return _display(fields.get(key))
+    return _summary_value(key, defaults)
 
 
 def _artifact_modules(paths):

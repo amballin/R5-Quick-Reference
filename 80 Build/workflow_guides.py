@@ -38,6 +38,7 @@ def expected_workflow_html(root, stem):
         PAGES[stem],
         f"Generated from WORKFLOWS/{stem}.md. Local project guidance; never published.",
         navigation,
+        project_terminal=stem == "index",
     )
 
 

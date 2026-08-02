@@ -41,9 +41,15 @@ const rows = payload.rows.map((row) => [
   row.rapid_order,
 ]);
 const columnCount = headers.length;
-const lastColumn = columnName(columnCount);
+const visibleLastColumn = columnName(columnCount);
 const headerRow = 5;
+const firstDataRow = headerRow + 1;
 const lastRow = headerRow + rows.length;
+const comparisonControls = layout.comparison_controls;
+const targetCount = 1 + payload.profiles.length;
+const firstTargetColumnNumber = 4;
+const firstHelperColumnNumber = columnCount + 1;
+const helperLastColumn = columnName(firstHelperColumnNumber + targetCount - 1);
 
 const bannerWidthPx = layout.banner.width_px;
 const bannerTexts = {
@@ -70,14 +76,14 @@ sheet.images.add({
     extent: { widthPx: bannerWidthPx, heightPx: bannerHeightPx },
   },
 });
-sheet.getRange(`A${headerRow}:${lastColumn}${lastRow}`).values = [headers, ...rows];
+sheet.getRange(`A${headerRow}:${visibleLastColumn}${lastRow}`).values = [headers, ...rows];
 
-const table = sheet.tables.add(`A${headerRow}:${lastColumn}${lastRow}`, true, layout.table_name);
+const table = sheet.tables.add(`A${headerRow}:${visibleLastColumn}${lastRow}`, true, layout.table_name);
 table.style = "TableStyleMedium2";
 table.showFilterButton = true;
 table.showBandedRows = true;
 
-sheet.getRange(`A${headerRow}:${lastColumn}${headerRow}`).format = {
+sheet.getRange(`A${headerRow}:${visibleLastColumn}${headerRow}`).format = {
   fill: "#295D82",
   font: { bold: true, color: "#FFFFFF", size: 10 },
   wrapText: true,
@@ -86,7 +92,7 @@ sheet.getRange(`A${headerRow}:${lastColumn}${headerRow}`).format = {
 sheet.getRange(`A${headerRow}:A${headerRow}`).format.horizontalAlignment = "left";
 sheet.getRange(`B${headerRow}:B${headerRow}`).format.horizontalAlignment = "center";
 sheet.getRange(`C${headerRow}:C${headerRow}`).format.horizontalAlignment = "right";
-sheet.getRange(`D${headerRow}:${lastColumn}${headerRow}`).format.horizontalAlignment = "center";
+sheet.getRange(`D${headerRow}:${visibleLastColumn}${headerRow}`).format.horizontalAlignment = "center";
 
 for (let index = 0; index < payload.profiles.length; index += 1) {
   if (!payload.profiles[index].release) {
@@ -118,7 +124,7 @@ sheet.getRange(`D${headerRow + 1}:${columnName(4 + payload.profiles.length)}${la
   verticalAlignment: "center",
   wrapText: true,
 };
-sheet.getRange(`${columnName(columnCount - 1)}${headerRow + 1}:${lastColumn}${lastRow}`).format = {
+sheet.getRange(`${columnName(columnCount - 1)}${headerRow + 1}:${visibleLastColumn}${lastRow}`).format = {
   horizontalAlignment: "center",
   verticalAlignment: "center",
   numberFormat: "0",
@@ -127,6 +133,55 @@ sheet.getRange(`${columnName(columnCount - 1)}${headerRow + 1}:${lastColumn}${la
 const profileBody = sheet.getRange(
   `D${headerRow + 1}:${columnName(4 + payload.profiles.length)}${lastRow}`,
 );
+const comparisonTargets = Array.from({ length: targetCount }, (_, index) => ({
+  column: columnName(firstTargetColumnNumber + index),
+  heading: headers[firstTargetColumnNumber - 1 + index],
+}));
+const comparisonHeadings = comparisonTargets.map((target) => target.heading);
+const compareRow = comparisonControls.row;
+sheet.getRange(`${comparisonControls.label_column}${compareRow}`).values = [["Compare to:"]];
+sheet.getRange(`${comparisonControls.label_column}${compareRow}`).format = {
+  fill: sharedLayout.colors.pale_warning,
+  font: { bold: true, color: sharedLayout.colors.dark_text, size: 10 },
+  horizontalAlignment: "center",
+  verticalAlignment: "center",
+};
+for (let index = 0; index < comparisonTargets.length; index += 1) {
+  const target = comparisonTargets[index];
+  const helperColumn = columnName(firstHelperColumnNumber + index);
+  const defaultHeading = index === 0 ? target.heading : comparisonControls.default_target;
+  const selectorCell = sheet.getRange(`${target.column}${compareRow}`);
+  selectorCell.values = [[defaultHeading]];
+  selectorCell.dataValidation = { rule: { type: "list", values: comparisonHeadings } };
+  selectorCell.format = {
+    fill: sharedLayout.colors.pale_warning,
+    font: { bold: true, color: comparisonControls.font_color, size: 10 },
+    horizontalAlignment: "center",
+    verticalAlignment: "center",
+    wrapText: true,
+  };
+  const helperFormulas = Array.from({ length: rows.length }, (_, rowOffset) => {
+    const rowNumber = firstDataRow + rowOffset;
+    const selectorFormula = comparisonTargets.reduceRight(
+      (fallback, choice) =>
+        `IF($${target.column}$${compareRow}="${choice.heading.replaceAll('"', '""')}",${choice.column}${rowNumber},${fallback})`,
+      `""`,
+    );
+    return [`=${selectorFormula}`];
+  });
+  sheet.getRange(`${helperColumn}${firstDataRow}:${helperColumn}${lastRow}`).formulas = helperFormulas;
+  sheet.getRange(`${target.column}${firstDataRow}:${target.column}${lastRow}`).conditionalFormats.add(
+    "cellIs",
+    {
+      operator: "notEqual",
+      formula: `$${helperColumn}${firstDataRow}`,
+      format: {
+        fill: sharedLayout.colors[comparisonControls.fill],
+        font: { color: comparisonControls.font_color },
+      },
+    },
+  );
+}
 profileBody.conditionalFormats.add("containsText", {
   text: "Not Used",
   format: {
@@ -141,6 +196,12 @@ profileBody.conditionalFormats.add("cellIs", {
     font: { color: "#9AA4AE", italic: true },
   },
 });
+sheet.getRange(`${columnName(firstHelperColumnNumber)}:${helperLastColumn}`).format.columnWidthPx =
+  comparisonControls.helper_width_px;
+sheet.getRange(`${columnName(firstHelperColumnNumber)}1:${helperLastColumn}${lastRow}`).format.font = {
+  color: sharedLayout.colors.white,
+  size: 1,
+};
 
 sheet.getRange("A:A").format.columnWidthPx = layout.columns.menu_location.width_px;
 sheet.getRange("B:B").format.columnWidthPx = layout.columns.best_access.width_px;
@@ -150,11 +211,11 @@ for (let index = 0; index < payload.profiles.length; index += 1) {
   const col = columnName(5 + index);
   sheet.getRange(`${col}:${col}`).format.columnWidth = layout.columns.profile.width;
 }
-sheet.getRange(`${columnName(columnCount - 1)}:${lastColumn}`).format.columnWidth = layout.columns.order.width;
+sheet.getRange(`${columnName(columnCount - 1)}:${visibleLastColumn}`).format.columnWidth = layout.columns.order.width;
 sharedLayout.banner.panels.forEach((panel, index) => {
   sheet.getRange(`${index + 1}:${index + 1}`).format.rowHeightPx = panel.height_px;
 });
-sheet.getRange("4:4").format.rowHeightPx = sharedLayout.banner.spacer_height_px;
+sheet.getRange("4:4").format.rowHeight = 22;
 sheet.getRange(`${headerRow}:${lastRow}`).format.autofitRows();
 
 sheet.freezePanes.freezeRows(headerRow);
@@ -162,7 +223,7 @@ sheet.freezePanes.freezeColumns(3);
 
 const inspection = await workbook.inspect({
   kind: "table",
-  range: `'${layout.worksheet}'!A${headerRow}:${lastColumn}10`,
+  range: `'${layout.worksheet}'!A${compareRow}:${visibleLastColumn}10`,
   include: "values,formulas",
   tableMaxRows: 10,
   tableMaxCols: columnCount,
@@ -170,7 +231,7 @@ const inspection = await workbook.inspect({
 });
 const inspectionTail = await workbook.inspect({
   kind: "table",
-  range: `'${layout.worksheet}'!A11:${lastColumn}${lastRow}`,
+  range: `'${layout.worksheet}'!A11:${visibleLastColumn}${lastRow}`,
   include: "values,formulas",
   tableMaxRows: 10,
   tableMaxCols: columnCount,
@@ -189,7 +250,7 @@ console.log(errors.ndjson);
 await fs.mkdir(path.dirname(payload.output), { recursive: true });
 const preview = await workbook.render({
   sheetName: layout.worksheet,
-  range: `A1:${lastColumn}${lastRow}`,
+  range: `A1:${visibleLastColumn}${lastRow}`,
   scale: 1,
   format: "png",
 });

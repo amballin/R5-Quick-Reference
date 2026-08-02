@@ -18,6 +18,7 @@ shared:
     pale_warning: "#FFF2CC"
     danger: "#C00000"
     pale_danger: "#FCE4D6"
+    comparison_highlight: "#FFFC98"
     light_rule: "#D5DEE6"
   banner:
     height_px: 126
@@ -59,14 +60,22 @@ workbooks:
       instructions: Sort Rapid Setup Order ascending for efficient camera configuration. Sort Card Order ascending to restore the reference-card sequence.
       note: Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
     excel:
-      import_only_rows: 4
+      import_only_rows: 3
       freeze_rows: 5
       freeze_columns: 3
     numbers:
-      header_rows: 1
+      header_rows: 2
       frozen_header_rows: true
       header_columns: 3
       frozen_header_columns: true
+    comparison_controls:
+      row: 4
+      label_column: A
+      first_target_column: D
+      default_target: Default Settings
+      fill: comparison_highlight
+      font_color: "#000000"
+      helper_width_px: 2
     columns:
       menu_location:
         heading: Menu Location
@@ -163,15 +172,26 @@ workbooks:
         name: C1-C3 Registration
         freeze_rows: 4
         freeze_columns: 1
+        comparison_controls:
+          row: 3
+          label_column: A
+          fill: comparison_highlight
+          font_color: "#000000"
+          targets:
+            B: {source: default, default: B, helper: O}
+            C: {profile: c1, default: B, helper: P}
+            G: {profile: c2, default: B, helper: Q}
+            K: {profile: c3, default: B, helper: R}
         outer_borders:
           color: blue
           weight_pt: 3
-          ranges: ["A:A", "B:E", "F:I", "J:M"]
+          ranges: ["A:A", "B:B", "C:F", "G:J", "K:N"]
         column_alignments:
           A: right
           B: center
-          F: center
-          J: center
+          C: center
+          G: center
+          K: center
         numbers:
           header_rows: 4
           frozen_header_rows: true

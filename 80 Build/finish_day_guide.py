@@ -106,13 +106,111 @@ def _markdown_body(source):
     return "\n".join(output)
 
 
-def render_guide_html(source, page_title, footer_text, navigation=""):
+def render_guide_html(source, page_title, footer_text, navigation="", project_terminal=False):
     body = _markdown_body(source)
     navigation_html = (
         f'<nav class="guide-nav" aria-label="Workflow navigation">{navigation}</nav>'
         if navigation
         else ""
     )
+    terminal_html = ""
+    terminal_styles = ""
+    terminal_print_style = ""
+    terminal_script = ""
+    if project_terminal:
+        terminal_html = """    <section class="project-terminal" data-project-terminal aria-labelledby="project-terminal-title">
+      <div>
+        <h2 id="project-terminal-title">Project Terminal</h2>
+        <p>Copy the exact command for opening this checkout's repository root in an existing Terminal session.</p>
+      </div>
+      <div class="terminal-actions">
+        <button class="terminal-action terminal-action-secondary" type="button" data-copy-project-root>Copy cd Command</button>
+      </div>
+      <code data-project-root-command>Determining project root...</code>
+      <p class="terminal-status" data-project-terminal-status>Paste the copied command into any open Terminal session.</p>
+    </section>
+"""
+        terminal_styles = """    .project-terminal {
+      display: grid;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 0 0 22px;
+      padding: 18px clamp(18px, 4vw, 28px);
+    }
+    .project-terminal h2 { margin: 0 0 4px; }
+    .project-terminal p { margin: 0; }
+    .terminal-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .terminal-action {
+      appearance: none;
+      border: 1px solid var(--accent);
+      border-radius: 9px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+      padding: 9px 14px;
+      text-decoration: none;
+    }
+    .terminal-action-secondary {
+      background: var(--card);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .terminal-action:disabled { cursor: not-allowed; opacity: .55; }
+    .project-terminal > code {
+      display: block;
+      overflow-x: auto;
+      border-radius: 8px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 11px 13px;
+      white-space: nowrap;
+    }
+    .terminal-status { color: var(--muted); font-size: .9rem; }
+"""
+        terminal_print_style = "      .project-terminal { display: none; }\n"
+        terminal_script = r"""    const terminalPanel = document.querySelector("[data-project-terminal]");
+    if (terminalPanel) {
+      const commandElement = terminalPanel.querySelector("[data-project-root-command]");
+      const copyButton = terminalPanel.querySelector("[data-copy-project-root]");
+      const statusElement = terminalPanel.querySelector("[data-project-terminal-status]");
+      const shellQuote = (value) => "'" + value.split("'").join("'\\''") + "'";
+
+      if (window.location.protocol === "file:") {
+        const projectRootUrl = new URL("../", window.location.href);
+        const projectRoot = decodeURIComponent(projectRootUrl.pathname.replace(/\/$/, ""));
+        const projectCommand = `cd -- ${shellQuote(projectRoot)}`;
+        commandElement.textContent = projectCommand;
+        copyButton.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(projectCommand);
+          } catch (error) {
+            const textarea = document.createElement("textarea");
+            textarea.value = projectCommand;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+          }
+          copyButton.textContent = "Copied";
+          statusElement.textContent = "cd command copied. Paste it into any open Terminal session.";
+          window.setTimeout(() => { copyButton.textContent = "Copy cd Command"; }, 1600);
+        });
+      } else {
+        commandElement.textContent = "Open this guide as a local file to determine the checkout path.";
+        copyButton.disabled = true;
+        statusElement.textContent = "The project-root command is available when this local-only guide is opened from disk.";
+      }
+    }
+"""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -206,7 +304,7 @@ def render_guide_html(source, page_title, footer_text, navigation=""):
       padding: 8px 14px;
       text-decoration: none;
     }}
-    @media (prefers-color-scheme: dark) {{
+{terminal_styles}    @media (prefers-color-scheme: dark) {{
       :root {{
         --page: #111416;
         --card: #1d2327;
@@ -220,13 +318,13 @@ def render_guide_html(source, page_title, footer_text, navigation=""):
       main {{ margin: 0; width: 100%; }}
       .step {{ break-inside: avoid; box-shadow: none; }}
       .command button {{ display: none; }}
-      pre {{ background: #eee; color: black; }}
+{terminal_print_style}      pre {{ background: #eee; color: black; }}
     }}
   </style>
 </head>
 <body>
   <main>
-    {navigation_html}
+{terminal_html}    {navigation_html}
 {body}
     <footer>{escape(footer_text)}</footer>
   </main>
@@ -239,7 +337,7 @@ def render_guide_html(source, page_title, footer_text, navigation=""):
         window.setTimeout(() => {{ button.textContent = "Copy"; }}, 1400);
       }});
     }}
-  </script>
+{terminal_script}  </script>
 </body>
 </html>
 """

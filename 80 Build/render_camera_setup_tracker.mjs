@@ -91,7 +91,7 @@ for (const sheet of workbook.worksheets.items) {
     : sheet.name === sheets.registration.name
       ? {
           sheetName: sheet.name,
-          range: `A1:M${registrationLastRow}`,
+          range: `A1:N${registrationLastRow}`,
           scale: 1,
           format: "png",
         }
@@ -119,18 +119,20 @@ function buildLists() {
     ["Evidence Class", ...source.lists.evidence_class],
     ["Yes / No", ...source.lists.yes_no],
     ["Registration Result", ...source.lists.registration_result],
+    ["Comparison Target", "Default Settings", ...source.registration.profiles.map((profile) => profile.heading)],
   ];
   const rowCount = Math.max(...columns.map((column) => column.length));
+  const lastColumn = columnName(columns.length);
   const values = Array.from({ length: rowCount }, (_, rowIndex) =>
     columns.map((column) => column[rowIndex] ?? null),
   );
-  lists.getRange(`A1:D${rowCount}`).values = values;
-  lists.getRange("A1:D1").format = headerFormat();
-  lists.getRange(`A2:D${rowCount}`).format = {
+  lists.getRange(`A1:${lastColumn}${rowCount}`).values = values;
+  lists.getRange(`A1:${lastColumn}1`).format = headerFormat();
+  lists.getRange(`A2:${lastColumn}${rowCount}`).format = {
     font: { name: fontName, size: 11 },
     verticalAlignment: "center",
   };
-  lists.getRange("A:D").format.columnWidth = 31;
+  lists.getRange(`A:${lastColumn}`).format.columnWidth = 31;
   lists.freezePanes.freezeRows(1);
 }
 
@@ -263,15 +265,16 @@ function buildChecklist() {
 
 function buildRegistration() {
   const specification = source.registration;
-  registration.getRange("A1:M1").merge();
+  const comparisonControls = sheets.registration.comparison_controls;
+  registration.getRange("A1:N1").merge();
   registration.getRange("A1").values = [[specification.title]];
-  registration.getRange("A2:M2").merge();
+  registration.getRange("A2:N2").merge();
   registration.getRange("A2").values = [[specification.instructions]];
-  registration.getRange("A1:M1").format = titleBandFormat(16);
-  registration.getRange("A2:M2").format = noteBandFormat();
-  registration.getRange("3:3").format.rowHeight = 12;
+  registration.getRange("A1:N1").format = titleBandFormat(16);
+  registration.getRange("A2:N2").format = noteBandFormat();
+  registration.getRange("3:3").format.rowHeight = 22;
 
-  const headers = ["Setting"];
+  const headers = ["Setting", "Default Settings"];
   for (const profile of specification.profiles) {
     headers.push(
       `${profile.heading} Target`,
@@ -282,7 +285,7 @@ function buildRegistration() {
   }
   const rows = specification.rows.map((row) => {
     const migrated = migration.registration.get(row.setting) || {};
-    const values = [row.setting];
+    const values = [row.setting, row.default_value];
     for (const profile of specification.profiles) {
       values.push(
         row[profile.key],
@@ -294,13 +297,14 @@ function buildRegistration() {
     return values;
   });
   const lastRow = registrationLastRow;
-  registration.getRange(`A4:M${lastRow}`).values = [headers, ...rows];
-  const table = registration.tables.add(`A4:M${lastRow}`, true, "RegistrationTable");
+  const firstDataRow = 5;
+  registration.getRange(`A4:N${lastRow}`).values = [headers, ...rows];
+  const table = registration.tables.add(`A4:N${lastRow}`, true, "RegistrationTable");
   table.style = "TableStyleMedium2";
   table.showFilterButton = true;
   table.showBandedRows = true;
-  registration.getRange("A4:M4").format = headerFormat();
-  registration.getRange(`A5:M${lastRow}`).format = {
+  registration.getRange("A4:N4").format = headerFormat();
+  registration.getRange(`A5:N${lastRow}`).format = {
     font: { name: fontName, size: 11 },
     verticalAlignment: "center",
     wrapText: true,
@@ -308,11 +312,76 @@ function buildRegistration() {
   for (const [column, alignment] of Object.entries(sheets.registration.column_alignments || {})) {
     registration.getRange(`${column}5:${column}${lastRow}`).format.horizontalAlignment = alignment;
   }
-  const widths = [150, 168, 96, 96, 180, 168, 96, 96, 180, 168, 96, 96, 180];
+  const widths = [150, 168, 168, 96, 96, 180, 168, 96, 96, 180, 168, 96, 96, 180];
   widths.forEach((width, index) => {
     const letter = columnName(index + 1);
     registration.getRange(`${letter}:${letter}`).format.columnWidthPx = pointsToPixels(width);
   });
+  const compareRow = comparisonControls.row;
+  const comparisonTargets = Object.entries(comparisonControls.targets).map(
+    ([column, targetConfig]) => {
+      if (targetConfig.source === "default") {
+        return { column, heading: "Default Settings" };
+      }
+      const profile = specification.profiles.find((item) => item.key === targetConfig.profile);
+      if (!profile) {
+        throw new Error(`Missing comparison profile: ${targetConfig.profile}`);
+      }
+      return { column, heading: profile.heading };
+    },
+  );
+  const comparisonHeadings = comparisonTargets.map((target) => target.heading);
+  const labelCell = registration.getRange(`${comparisonControls.label_column}${compareRow}`);
+  labelCell.values = [["Compare to:"]];
+  labelCell.format = {
+    fill: colors.pale_warning,
+    font: { name: fontName, size: 10, bold: true, color: colors.dark_text },
+    horizontalAlignment: "center",
+    verticalAlignment: "center",
+  };
+  for (const [targetColumn, targetConfig] of Object.entries(comparisonControls.targets)) {
+    const helperColumn = targetConfig.helper;
+    const defaultTarget = comparisonTargets.find((target) => target.column === targetConfig.default);
+    if (!defaultTarget) {
+      throw new Error(`Missing default comparison target column: ${targetConfig.default}`);
+    }
+    const controlCell = registration.getRange(`${targetColumn}${compareRow}`);
+    controlCell.values = [[defaultTarget.heading]];
+    controlCell.dataValidation = { rule: { type: "list", values: comparisonHeadings } };
+    controlCell.format = {
+      fill: colors.pale_warning,
+      font: { name: fontName, size: 10, bold: true, color: colors.dark_text },
+      horizontalAlignment: "center",
+      verticalAlignment: "center",
+    };
+    const helperFormulas = Array.from({ length: lastRow - firstDataRow + 1 }, (_, rowOffset) => {
+      const rowNumber = firstDataRow + rowOffset;
+      const selectorFormula = comparisonTargets.reduceRight(
+        (fallback, choice) =>
+          `IF($${targetColumn}$${compareRow}="${choice.heading.replaceAll('"', '""')}",${choice.column}${rowNumber},${fallback})`,
+        `""`,
+      );
+      return [`=${selectorFormula}`];
+    });
+    registration.getRange(`${helperColumn}${firstDataRow}:${helperColumn}${lastRow}`).formulas = helperFormulas;
+    registration.getRange(`${targetColumn}${firstDataRow}:${targetColumn}${lastRow}`).conditionalFormats.add(
+      "cellIs",
+      {
+        operator: "notEqual",
+        formula: `$${helperColumn}${firstDataRow}`,
+        format: {
+          fill: colors[comparisonControls.fill],
+          font: { color: comparisonControls.font_color },
+        },
+      },
+    );
+  }
+  const helperColumns = Object.values(comparisonControls.targets).map((target) => target.helper);
+  registration.getRange(`${helperColumns[0]}:${helperColumns.at(-1)}`).format.columnWidthPx = 2;
+  registration.getRange(`${helperColumns[0]}1:${helperColumns.at(-1)}${lastRow}`).format.font = {
+    color: colors.white,
+    size: 1,
+  };
   const outerBorders = sheets.registration.outer_borders || {};
   for (const range of outerBorders.ranges || []) {
     const borders = {
@@ -325,7 +394,7 @@ function buildRegistration() {
     const [startColumn, endColumn] = range.split(":");
     registration.getRange(`${startColumn}1:${endColumn}${lastRow}`).format.borders = borders;
   }
-  for (const range of [`C5:D${lastRow}`, `G5:H${lastRow}`, `K5:L${lastRow}`]) {
+  for (const range of [`D5:E${lastRow}`, `H5:I${lastRow}`, `L5:M${lastRow}`]) {
     registration.getRange(range).dataValidation = {
       rule: { type: "list", values: source.lists.registration_result },
     };
