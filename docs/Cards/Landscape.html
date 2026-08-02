@@ -23,11 +23,25 @@ body{margin:0;min-width:0;background:#1e3553;color:#ffffff;font-family:-apple-sy
 .header-icon img{display:block;max-width:38px;max-height:38px;width:auto;height:auto;object-fit:contain}
 h1{text-align:center;font-size:clamp(26px,7.5vw,32px);line-height:1.08;margin:0;overflow-wrap:anywhere}
 .sub{text-align:center;color:#b7d2e8;margin:4px 0 12px}
+.field-route{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:7px 0 12px;font-size:clamp(12px,3.25vw,14px);font-weight:600}
+.field-route-start,.field-route-menu{padding:2px 8px;border:1px solid #6d8aa1;border-radius:999px;white-space:nowrap}
+.field-route-menu.access-switch{border-color:#72dda8;color:#72dda8}
+.field-route-menu.access-menu-2{border-color:#f0bf69;color:#f0bf69}
+.field-route-menu.access-menu-3{border-color:#c6a6ff;color:#c6a6ff}
+.field-route-menu.access-menu-4{border-color:#ff9fba;color:#ff9fba}
+.field-route-menu.access-menu-5{border-color:#80d8ff;color:#80d8ff}
+.field-route-menu.access-menu-6{border-color:#ff9b7a;color:#ff9b7a}
 h2{color:#8dc8ff;border-bottom:1px solid #53738c;padding-bottom:3px;margin:12px 0 5px;font-size:clamp(19px,5vw,21px);line-height:1.1}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
 td{padding:3px 0;vertical-align:top;overflow-wrap:anywhere}
 td:first-child{width:48%;padding-right:10px;color:#b7d2e8}
 td:last-child{text-align:right;font-weight:600}
+td.field-value.access-switch{color:#72dda8}
+td.field-value.access-menu-2{color:#f0bf69}
+td.field-value.access-menu-3{color:#c6a6ff}
+td.field-value.access-menu-4{color:#ff9fba}
+td.field-value.access-menu-5{color:#80d8ff}
+td.field-value.access-menu-6{color:#ff9b7a}
 .setting-label{display:inline-flex;align-items:center;gap:7px;max-width:100%}
 .setting-icon{display:block;width:22px;height:22px;object-fit:contain;flex:0 0 22px;filter:brightness(0) saturate(100%) invert(76%) sepia(32%) saturate(784%) hue-rotate(178deg) brightness(103%) contrast(101%)}
 .setting-icon[src$="af_point_button.svg"]{width:31px;height:18px;flex-basis:31px;object-fit:contain}
@@ -61,7 +75,8 @@ a{color:#b7dfff;text-underline-offset:2px}
 <div class="header-icon right"></div>
 </div>
 
-<h2>Settings</h2><table><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td>Av</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td>—</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter Type</span></span></td><td>EFCS</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td>f/8–f/11; bracket before f/16</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td>100</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td>One-Shot AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/one_point_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Method</span></span></td><td>1-Point AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/subject_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Subject Detection</span></span></td><td>None</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/eye_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Eye Detection</span></span></td><td>Disable</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/single_shooting.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td>Single Shot</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td>Mode 1</td></tr></table>
+<div class="field-route" aria-label="Field setup shortcuts"><span class="field-route-start">C3</span></div>
+<h2>Settings</h2><table><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td>Av</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td>Auto</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter Type</span></span></td><td>EFCS</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td>f/8–f/11; bracket before f/16</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td>100</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td>One-Shot AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/one_point_af.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Method</span></span></td><td>1-Point AF</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/subject_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Subject Detection</span></span></td><td>None</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/eye_detection.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Eye Detection</span></span></td><td>Disable</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/single_shooting.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td>Single Shot</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td>Mode 1</td></tr></table>
 <h2>Checklist</h2>
 <ul><li>Tripod: ISO 100, IS off</li><li>Handheld: safe shutter, raise ISO, IS Mode 1</li><li>Level horizon</li><li>Histogram checked</li><li>Focus point confirmed</li></ul>
 <h2>Watch For</h2>
@@ -69,7 +84,7 @@ a{color:#b7dfff;text-underline-offset:2px}
 <h2>Common Mistakes</h2>
 <ul><li>Shutter too slow handheld</li><li>Using f/22 unnecessarily</li><li>Forgetting to turn IS off on tripod</li></ul>
 <h2>Notes</h2>
-<ul><li>On a tripod, use ISO 100 and turn IS off; handheld, use Mode 1 and raise ISO as needed for a safe shutter speed.</li><li>For static scenes requiring large near-to-far depth of field, consider focus bracketing at f/8-f/11 instead of stopping down further; use a tripod and watch for wind movement.</li><li>Enable Long Exposure NR only for multi-second/night exposures.</li></ul>
+<ul><li>Start from C3 Landscape after verifying its registration.</li><li>On a tripod, use ISO 100 and turn IS off; handheld, use Mode 1 and raise ISO as needed for a safe shutter speed.</li><li>For static scenes requiring large near-to-far depth of field, consider focus bracketing at f/8-f/11 instead of stopping down further; use a tripod and watch for wind movement.</li><li>Enable Long Exposure NR only for multi-second/night exposures.</li></ul>
 </article>
 </body>
 </html>
