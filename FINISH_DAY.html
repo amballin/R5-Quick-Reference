@@ -140,10 +140,13 @@
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
 <p>This prepares and verifies the Subject Settings Matrix and the EOS R5 Setup &amp; Verification Tracker in both Excel and Apple Numbers formats. The workbook files are machine-local release artifacts; they are not committed to Git.</p>
 </section>
-<section class="step"><h2>3. Publish the website with the spreadsheets</h2>
-<p>Run:</p>
+<section class="step"><h2>3. Choose the website version and publish</h2>
+<p>To start a new major website version, replace <code>N</code> with an integer greater than the current major version:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
+<p>Otherwise, publish the next minor website version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
 <p>This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.</p>
+<p>The selected version must already have curated highlights in <code>00 Master/release_notes.yaml</code>. Publication stops before building or pushing when they are missing. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.</p>
 <p>The command is successful only when it prints <code>PUBLICATION COMPLETE AND VERIFIED</code>. It also records a timestamped diagnostic log under the machine-local <code>Logs/</code> folder. If publication stops, it prints <code>PUBLICATION DID NOT COMPLETE</code> and the exact log location.</p>
 <p>Later plain <code>publish.sh</code> releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.</p>
 </section>
@@ -155,11 +158,6 @@
 <p>Then run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
 <p>Both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code> are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.</p>
-</section>
-<section class="step"><h2>Optional: start a new major website version</h2>
-<p>To start a new major version, replace <code>N</code> with an integer greater than the current major version and use this command instead of Step 3:</p>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
-<p>The requested major number must be greater than the current one. Later ordinary publications continue with minor increments in the new major series. Spreadsheet revisions remain independent.</p>
 </section>
     <footer>Generated from FINISH_DAY.md. Run the normal build after editing the source.</footer>
   </main>

@@ -10,33 +10,35 @@ Publishing intentionally updates the live GitHub Pages site, version, date, and 
 - Add concise reader-facing highlights for the upcoming version to `00 Master/release_notes.yaml`.
 - Confirm that updating the live website is intentional.
 
-## Ordinary publication
+## Choose the version first
 
-Use the ordinary command when spreadsheet downloads are unchanged:
-
-```bash
-./80\ Build/scripts/publish.sh
-```
-
-This increments the minor website version.
-
-## Publication with replacement spreadsheets
+To start a new major series, replace `N` with an integer greater than the current major version:
 
 ```bash
-./80\ Build/scripts/publish.sh --spreadsheet-downloads
+./80\ Build/scripts/publish.sh --major-version N
 ```
 
-This replaces both published workbook families and increments the minor website version. It does not require a major-version bump.
-
-## Optional major release
-
-Only when intentionally starting a new major series:
+If both spreadsheet families must also be replaced:
 
 ```bash
 ./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads
 ```
 
-Replace `N` with an integer greater than the current major version. A major release is never required for ordinary site or spreadsheet changes.
+A major release publishes `N.00`. Later ordinary publications continue with minor increments in that major series. Spreadsheet revisions remain independent.
+
+Otherwise, publish the next minor version with unchanged spreadsheet downloads:
+
+```bash
+./80\ Build/scripts/publish.sh
+```
+
+Or publish the next minor version while replacing both spreadsheet families:
+
+```bash
+./80\ Build/scripts/publish.sh --spreadsheet-downloads
+```
+
+Publication automatically stops before building or pushing if the selected version has no curated entry in `00 Master/release_notes.yaml`.
 
 ## Required success result
 
@@ -70,4 +72,4 @@ After publication succeeds and is verified, summarize it against the preceding p
 python3 "80 Build/release_notes.py"
 ```
 
-The command prints curated Markdown without writing or publishing a file. It stops if the new release lacks highlights in `00 Master/release_notes.yaml`. For an older comparison, use `--from VERSION`, `--to VERSION`, or both; the default needs no version arguments.
+The command prints curated Markdown without writing or publishing a file. For an older comparison, use `--from VERSION`, `--to VERSION`, or both; the default needs no version arguments.

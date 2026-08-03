@@ -31,6 +31,11 @@ from publish_metadata import (
     next_publish_metadata,
     write_publish_metadata_atomic,
 )
+from release_notes import (
+    ReleaseNotesError,
+    load_release_notes,
+    require_release_notes_version,
+)
 from subject_settings_matrix import generate_subject_settings_matrix, remove_subject_settings_matrix
 from camera_setup_tracker import remove_camera_setup_tracker
 from spreadsheet_downloads import (
@@ -472,6 +477,14 @@ def publish(
     except (ValueError, PublishMetadataError) as exc:
         print(f"Publish metadata error: {exc}", file=sys.stderr)
         return 2
+    version = candidate["version"]
+    candidate_version = f"{version['major']}.{version['minor']:02d}"
+    try:
+        notes = load_release_notes(paths.root / "00 Master" / "release_notes.yaml")
+        require_release_notes_version(notes, candidate_version)
+    except (OSError, ReleaseNotesError, ValueError) as exc:
+        print(f"Publish blocked: {exc}", file=sys.stderr)
+        return 1
     display = display_publish_metadata(candidate)
     status = build_site(
         paths,

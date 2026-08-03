@@ -82,6 +82,15 @@ def load_release_notes(path):
     return normalized
 
 
+def require_release_notes_version(notes, version):
+    canonical_version = normalize_version(version)
+    if canonical_version not in notes:
+        raise ReleaseNotesError(
+            f"Curated reader-facing notes are missing for Version {canonical_version}. "
+            f"Add highlights to {NOTES_PATH} before publishing."
+        )
+
+
 def publication_history(root):
     commits = _git_lines(root, ["log", "--first-parent", "--format=%H", "--", METADATA_PATH])
     publications = []

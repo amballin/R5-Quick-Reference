@@ -1,8 +1,6 @@
 from asset_manager import ProjectPaths
-from spreadsheet_revisions import (
-    registration_definition_fingerprints,
-    tracker_definition_fingerprints,
-)
+from camera_setup_tracker import effective_registration_definition_fingerprints
+from spreadsheet_revisions import tracker_definition_fingerprints
 from verification_status import STATUS_VERSION, load_status
 
 from .common import error, load_yaml_checked
@@ -20,7 +18,8 @@ def validate(root):
         issues.append(error("verification_status", paths.verification_status_file, "Unsupported status version."))
         return issues
     valid_ids = tracker_definition_fingerprints(source)
-    valid_registration = registration_definition_fingerprints(source)
+    defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
+    valid_registration = effective_registration_definition_fingerprints(source, defaults)
     statuses = set((source.get("lists") or {}).get("main_status") or [])
     for test_id, state in status.get("tests", {}).items():
         if test_id not in valid_ids:

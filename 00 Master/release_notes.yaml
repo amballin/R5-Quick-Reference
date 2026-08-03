@@ -74,3 +74,8 @@ releases:
     highlights:
       - Updated the Subject Settings Matrix and EOS R5 Setup & Verification Tracker so wrapped rows open at a readable height and continue adjusting as notes are edited in Excel or Apple Numbers.
       - Camera settings, subject cards, and Field Guide guidance are unchanged from Version 1.19.
+  "2.00":
+    highlights:
+      - Aligned Camera Defaults and the shared operational baseline with the approved C1 Wildlife target while preserving subject-specific overrides and pending physical-verification status.
+      - Added compact C1–C3 and My Menu starting routes to applicable subject cards for faster field setup.
+      - Expanded the Subject Settings Matrix with editable C1–C3 columns, selectable comparisons, highlighted differences, card-start routes, and an approved-defaults sheet for restoration.

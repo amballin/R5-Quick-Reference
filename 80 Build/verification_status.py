@@ -17,9 +17,9 @@ import yaml
 
 from asset_manager import ProjectPaths
 from spreadsheet_revisions import (
-    registration_definition_fingerprints,
     tracker_definition_fingerprints,
 )
+from camera_setup_tracker import effective_registration_definition_fingerprints
 from validators.common import load_yaml_checked
 
 
@@ -79,7 +79,8 @@ def reconcile_status(paths, write=True):
     original = deepcopy(status)
     now = datetime.now().astimezone().isoformat()
     test_fingerprints = tracker_definition_fingerprints(source)
-    registration_fingerprints = registration_definition_fingerprints(source)
+    defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
+    registration_fingerprints = effective_registration_definition_fingerprints(source, defaults)
 
     for test_id in list(status["tests"]):
         state = status["tests"][test_id]
@@ -149,7 +150,8 @@ def import_workbook_status(paths, source_path=None):
     valid_statuses = set((definition.get("lists") or {}).get("main_status") or [])
     valid_evidence = set((definition.get("lists") or {}).get("evidence_class") or [])
     current_tests = tracker_definition_fingerprints(definition)
-    current_registration = registration_definition_fingerprints(definition)
+    defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
+    current_registration = effective_registration_definition_fingerprints(definition, defaults)
     workbook_tests = ((extracted.get("metadata") or {}).get("tests") or {})
     workbook_registration = ((extracted.get("metadata") or {}).get("registration") or {})
     test_definitions = {

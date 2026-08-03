@@ -48,15 +48,23 @@ Run:
 
 This prepares and verifies the Subject Settings Matrix and the EOS R5 Setup & Verification Tracker in both Excel and Apple Numbers formats. The workbook files are machine-local release artifacts; they are not committed to Git.
 
-## 3. Publish the website with the spreadsheets
+## 3. Choose the website version and publish
 
-Run:
+To start a new major website version, replace `N` with an integer greater than the current major version:
+
+```bash
+./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads
+```
+
+Otherwise, publish the next minor website version:
 
 ```bash
 ./80\ Build/scripts/publish.sh --spreadsheet-downloads
 ```
 
 This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.
+
+The selected version must already have curated highlights in `00 Master/release_notes.yaml`. Publication stops before building or pushing when they are missing. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.
 
 The command is successful only when it prints `PUBLICATION COMPLETE AND VERIFIED`. It also records a timestamped diagnostic log under the machine-local `Logs/` folder. If publication stops, it prints `PUBLICATION DID NOT COMPLETE` and the exact log location.
 
@@ -83,13 +91,3 @@ Then run:
 ```
 
 Both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.
-
-## Optional: start a new major website version
-
-To start a new major version, replace `N` with an integer greater than the current major version and use this command instead of Step 3:
-
-```bash
-./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads
-```
-
-The requested major number must be greater than the current one. Later ordinary publications continue with minor increments in the new major series. Spreadsheet revisions remain independent.

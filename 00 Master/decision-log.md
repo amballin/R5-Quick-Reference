@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Sticky Card Identity During Scrolling
+
+**Status:** Accepted
+**Date:** 2026-08-03
+
+Keep the existing identity region visible beneath the shared Camera Settings navigation while responsive HTML card content scrolls. Apply this consistently to subject and reference cards: subject cards retain the title and existing Cx / My Menu route, while reference cards retain the title and any existing subtitle. Reuse the existing content without adding a duplicate title, route, or legend. Give a displayed Cx / My Menu route 8 px of breathing room before the identity divider without changing reference-card spacing, and disable the sticky treatment for print output.
+
 ## C1-Aligned Operational Baseline
 
 **Status:** Accepted
@@ -37,6 +44,8 @@ When a change affects an established command, workflow, or operator-facing proce
 **Date:** 2026-08-01
 
 Maintain concise reader-facing publication highlights in `00 Master/release_notes.yaml`. Generate summaries with `80 Build/release_notes.py`, using committed publish metadata and valid version transitions as the authority for publication boundaries and dates. With no version options, compare the two most recent publications. Permit optional `--from` and `--to` selection for historical ranges, using the latest matching publication when historical version reuse makes a label ambiguous. Keep prose curated rather than inferred from commit messages or file counts, and stop with an actionable error when any included publication lacks notes. Print Markdown to standard output by default; do not publish, commit, or write a generated artifact as a side effect.
+
+Before a supported publication builds, commits, or pushes, calculate its candidate version and require a matching curated entry in `00 Master/release_notes.yaml`. Block publication with an actionable error when the entry is absent. This gate automates coverage enforcement only; it must not generate or infer the highlight prose.
 
 ## Automatic Spreadsheet Row Heights
 

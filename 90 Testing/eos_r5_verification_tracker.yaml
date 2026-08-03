@@ -477,20 +477,20 @@ registration:
     - key: c3
       heading: C3 Landscape
   rows:
-    - {setting: Mode, baseline_key: exposure.mode, c1: Fv, c2: Tv, c3: Av}
-    - {setting: Metering, baseline_key: exposure.metering, c1: Evaluative, c2: Evaluative, c3: Evaluative}
-    - {setting: Exposure Compensation, baseline_key: exposure.exposure_compensation, c1: "0", c2: 0 starting point, c3: "0"}
-    - {setting: Shutter Speed, baseline_key: shutter.target, c1: Auto, c2: 1/2500 sec., c3: Auto}
-    - {setting: Aperture, baseline_key: lens.aperture.target, c1: Auto, c2: Auto, c3: f/9}
-    - {setting: ISO, baseline_key: exposure.iso.mode, c1: Auto, c2: Auto, c3: "100"}
-    - {setting: Auto ISO Maximum, baseline_key: exposure.auto_iso.maximum, c1: "12800", c2: "12800", c3: 12800; inactive at ISO 100}
-    - {setting: AF Operation, baseline_key: autofocus.operation, c1: Servo AF, c2: Servo AF, c3: One-Shot AF}
-    - {setting: AF Method, baseline_key: autofocus.method, c1: Face + Tracking, c2: Face + Tracking, c3: 1-Point AF}
-    - {setting: Subject Detection, baseline_key: autofocus.subject_detection, c1: Animals, c2: Animals, c3: None}
-    - {setting: Eye Detection, baseline_key: autofocus.eye_detection, c1: Enable, c2: Enable, c3: Disable}
-    - {setting: Drive Mode, baseline_key: drive.mode, c1: High Speed Continuous, c2: High Speed Continuous+, c3: Single Shot}
-    - {setting: Shutter Type, baseline_key: shutter.type, c1: EFCS, c2: Mechanical, c3: EFCS}
-    - {setting: Image Stabilizer Mode, baseline_key: stabilization.image_stabilization.mode, c1: Mode 1, c2: Mode 3, c3: Mode 1}
-    - {setting: IBIS, baseline_key: stabilization.ibis, c1: On, c2: On, c3: On}
-    - {setting: Focus Bracketing, baseline_key: image.focus_bracketing, c1: Disable, c2: Disable, c3: Disable; enable situationally}
-    - {setting: Lens IS switch, baseline_key: stabilization.lens_is, c1: On; physical check, c2: On; physical check, c3: On; handheld registration}
+    - {setting: Mode, baseline_key: exposure.mode, c2: Tv, c3: Av}
+    - {setting: Metering, baseline_key: exposure.metering}
+    - {setting: Exposure Compensation, baseline_key: exposure.exposure_compensation, c2: 0 starting point}
+    - {setting: Shutter Speed, baseline_key: shutter.target, c2: 1/2500 sec.}
+    - {setting: Aperture, baseline_key: lens.aperture.target, c3: f/9}
+    - {setting: ISO, baseline_key: exposure.iso.mode, c3: "100"}
+    - {setting: Auto ISO Maximum, baseline_key: exposure.auto_iso.maximum}
+    - {setting: AF Operation, baseline_key: autofocus.operation, c3: One-Shot AF}
+    - {setting: AF Method, baseline_key: autofocus.method, c3: 1-Point AF}
+    - {setting: Subject Detection, baseline_key: autofocus.subject_detection, c3: None}
+    - {setting: Eye Detection, baseline_key: autofocus.eye_detection, c3: Disable}
+    - {setting: Drive Mode, baseline_key: drive.mode, c2: High Speed Continuous+, c3: Single Shot}
+    - {setting: Shutter Type, baseline_key: shutter.type, c2: Mechanical}
+    - {setting: Image Stabilizer Mode, baseline_key: stabilization.image_stabilization.mode, c2: Mode 3}
+    - {setting: IBIS, baseline_key: stabilization.ibis}
+    - {setting: Focus Bracketing, baseline_key: image.focus_bracketing}
+    - {setting: Lens IS switch, baseline_key: stabilization.lens_is}

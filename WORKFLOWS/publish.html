@@ -123,19 +123,17 @@
 <li>Confirm that updating the live website is intentional.</li>
 </ul>
 </section>
-<section class="step"><h2>Ordinary publication</h2>
-<p>Use the ordinary command when spreadsheet downloads are unchanged:</p>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh</code></pre></div>
-<p>This increments the minor website version.</p>
-</section>
-<section class="step"><h2>Publication with replacement spreadsheets</h2>
-<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
-<p>This replaces both published workbook families and increments the minor website version. It does not require a major-version bump.</p>
-</section>
-<section class="step"><h2>Optional major release</h2>
-<p>Only when intentionally starting a new major series:</p>
+<section class="step"><h2>Choose the version first</h2>
+<p>To start a new major series, replace <code>N</code> with an integer greater than the current major version:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N</code></pre></div>
+<p>If both spreadsheet families must also be replaced:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
-<p>Replace <code>N</code> with an integer greater than the current major version. A major release is never required for ordinary site or spreadsheet changes.</p>
+<p>A major release publishes <code>N.00</code>. Later ordinary publications continue with minor increments in that major series. Spreadsheet revisions remain independent.</p>
+<p>Otherwise, publish the next minor version with unchanged spreadsheet downloads:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh</code></pre></div>
+<p>Or publish the next minor version while replacing both spreadsheet families:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
+<p>Publication automatically stops before building or pushing if the selected version has no curated entry in <code>00 Master/release_notes.yaml</code>.</p>
 </section>
 <section class="step"><h2>Required success result</h2>
 <p>Do not consider the site published unless the command ends with:</p>
@@ -150,7 +148,7 @@
 <section class="step"><h2>Generate reader-facing release notes</h2>
 <p>After publication succeeds and is verified, summarize it against the preceding publication:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/release_notes.py&quot;</code></pre></div>
-<p>The command prints curated Markdown without writing or publishing a file. It stops if the new release lacks highlights in <code>00 Master/release_notes.yaml</code>. For an older comparison, use <code>--from VERSION</code>, <code>--to VERSION</code>, or both; the default needs no version arguments.</p>
+<p>The command prints curated Markdown without writing or publishing a file. For an older comparison, use <code>--from VERSION</code>, <code>--to VERSION</code>, or both; the default needs no version arguments.</p>
 </section>
     <footer>Generated from WORKFLOWS/publish.md. Local project guidance; never published.</footer>
   </main>

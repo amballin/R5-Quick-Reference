@@ -1,4 +1,7 @@
+from copy import deepcopy
+
 from asset_manager import ProjectPaths
+from camera_setup_tracker import materialize_registration_values
 from .common import error, load_yaml_checked
 
 
@@ -175,6 +178,36 @@ def validate(root):
     missing_baseline_keys = [row.get("setting") for row in registration_rows if not row.get("baseline_key")]
     if missing_baseline_keys:
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"Registration rows missing baseline_key: {missing_baseline_keys}"))
+    defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
+    materialized_registration = deepcopy(source.get("registration") or {})
+    try:
+        materialize_registration_values(materialized_registration, defaults)
+    except (KeyError, TypeError, ValueError) as exc:
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"C1-C3 registration targets cannot be generated: {exc}"))
+    else:
+        required_targets = ["default_value", "c1", "c2", "c3"]
+        incomplete_targets = [
+            f"{row.get('setting', '<unknown>')}:{key}"
+            for row in materialized_registration.get("rows") or []
+            for key in required_targets
+            if row.get(key) in (None, "")
+        ]
+        if incomplete_targets:
+            issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"Generated C1-C3 registration values are incomplete: {incomplete_targets}"))
+        source_rows = {
+            row.get("setting"): row
+            for row in registration_rows
+            if isinstance(row, dict) and row.get("setting")
+        }
+        redundant_overrides = [
+            f"{row.get('setting', '<unknown>')}:{key}"
+            for row in materialized_registration.get("rows") or []
+            for key in ("c1", "c2", "c3")
+            if key in source_rows.get(row.get("setting"), {})
+            and row.get(key) == row.get("default_value")
+        ]
+        if redundant_overrides:
+            issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"C1-C3 rows must omit values inherited unchanged from the baseline: {redundant_overrides}"))
     ids = [test.get("test_id") for test in tests if isinstance(test, dict)]
     sequences = [test.get("sequence") for test in tests if isinstance(test, dict)]
     if len(ids) != len(set(ids)):

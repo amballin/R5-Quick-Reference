@@ -12,7 +12,12 @@ from spreadsheet_revisions import (
     tracker_definition_fingerprints,
     workbook_revision,
 )
-from subject_settings_matrix import _display, _flatten, _summary_value
+from subject_settings_matrix import (
+    _display,
+    _flatten,
+    _registered_profiles,
+    _summary_value,
+)
 from spreadsheet_ooxml import (
     enable_automatic_row_heights,
     ensure_active_sheet,
@@ -36,11 +41,8 @@ def generate_camera_setup_tracker(
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
     defaults = (load_yaml_checked(paths.baseline_file) or {}).get("defaults") or {}
-    for row in ((source.get("registration") or {}).get("rows") or []):
-        baseline_key = row.get("baseline_key")
-        if not baseline_key:
-            raise ValueError(f"Registration row is missing baseline_key: {row.get('setting', '<unknown>')}")
-        row["default_value"] = _registration_default_value(baseline_key, defaults)
+    registration = source.get("registration") or {}
+    materialize_registration_values(registration, defaults)
     layout = ((layouts.get("workbooks") or {}).get("setup") or {})
     output_path = Path(output_path or paths.setup_tracker_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -132,6 +134,39 @@ def generate_camera_setup_tracker(
     }
 
 
+def materialize_registration_values(registration, defaults):
+    """Fill every visible registration target from current merged settings."""
+    profile_keys = [
+        profile.get("key")
+        for profile in registration.get("profiles") or []
+        if isinstance(profile, dict) and profile.get("key")
+    ]
+    profiles = {
+        profile["key"]: profile
+        for profile in _registered_profiles(registration, defaults, profile_keys)
+    }
+    for row in registration.get("rows") or []:
+        baseline_key = row.get("baseline_key")
+        if not baseline_key:
+            raise ValueError(
+                f"Registration row is missing baseline_key: {row.get('setting', '<unknown>')}"
+            )
+        row["default_value"] = registration_current_value(baseline_key, defaults)
+        for profile_key in profile_keys:
+            row[profile_key] = registration_current_value(
+                baseline_key,
+                profiles[profile_key]["merged"],
+            )
+    return registration
+
+
+def effective_registration_definition_fingerprints(source, defaults):
+    """Fingerprint the complete generated targets, including inherited defaults."""
+    effective_source = json.loads(json.dumps(source))
+    materialize_registration_values(effective_source.get("registration") or {}, defaults)
+    return registration_definition_fingerprints(effective_source)
+
+
 def remove_camera_setup_tracker(paths):
     for path in (
         paths.setup_tracker_file,
@@ -145,14 +180,18 @@ def remove_camera_setup_tracker(paths):
             path.unlink()
 
 
-def _registration_default_value(key, defaults):
-    """Render baseline values in the same row-level terms as the C1-C3 targets."""
-    fields = _flatten(defaults)
+def registration_current_value(key, settings):
+    """Render current merged settings in the Setup registration row's terms."""
+    fields = _flatten(settings)
     if key in {"shutter.target", "lens.aperture.target"} and not fields.get(key):
         return "Auto"
-    if key in {"exposure.iso.mode", "stabilization.ibis"}:
+    if key == "exposure.iso.mode":
+        if fields.get(key) == "Fixed":
+            return _display(fields.get("exposure.iso.value"))
         return _display(fields.get(key))
-    return _summary_value(key, defaults)
+    if key == "stabilization.ibis":
+        return _display(fields.get(key))
+    return _summary_value(key, settings)
 
 
 def _artifact_modules(paths):
