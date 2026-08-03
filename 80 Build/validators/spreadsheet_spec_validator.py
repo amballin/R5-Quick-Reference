@@ -216,7 +216,7 @@ def validate(root):
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Verification sequences must be consecutive and ordered."))
     my_menu = next((test for test in tests if test.get("test_id") == "SETUP-MM-01"), None)
     if not my_menu or my_menu.get("sequence", 999) > 4:
-        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The SWITCH My Menu setup must occur by sequence 4."))
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The SWITCH and AF Case My Menu setup must occur by sequence 4."))
     statuses = ((source.get("lists") or {}).get("main_status") or [])
     if "Backup-Settings" not in statuses:
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Main Status must include Backup-Settings."))

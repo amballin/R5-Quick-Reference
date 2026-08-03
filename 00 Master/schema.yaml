@@ -48,6 +48,8 @@ settings:
 
   af_operation: string
 
+  servo_af_case: string
+
   subject_detection: string
 
   eye_detection: string

@@ -27,6 +27,7 @@ Cards render required settings from fully merged baseline + profile data, includ
 - `exposure.iso.mode`
 - `exposure.auto_iso.maximum`
 - `autofocus.operation`
+- `autofocus.servo_af_case`
 - `autofocus.method`
 - `autofocus.subject_detection`
 - `autofocus.eye_detection`
@@ -44,10 +45,12 @@ The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type**
 - Render ISO as one quick-reference row. Auto ISO displays as `Auto - maximum`; fixed ISO displays the fixed value. Do not collapse the underlying fields.
 - When both are shown, render IBIS and Lens IS as one `IBIS/Lens IS` quick-reference row. Do not collapse the underlying fields.
 - When AF Operation is `Manual Focus`, omit AF Method, Subject Detection, and Eye Detection.
+- Show **Servo AF Case** immediately after **AF Operation** when AF Operation is `Servo AF`; omit it when AF Operation is One-Shot AF or Manual Focus because the stored Case is inactive.
 - When AF Method is `Not Used`, omit Subject Detection and Eye Detection.
 - Preserve existing card formats, filenames, proportions/behavior, output locations, and backward compatibility unless explicitly approved.
 - Card styling and conditional presentation are renderer concerns, not profile-data concerns.
 - When `card.field_setup` is present, render a compact route beneath the title containing the starting Cx followed by every named My Menu tab. Keep non-My-Menu values in the normal text color and color each My Menu value to match its labeled route token. `SWITCH` always uses the renderer-managed green treatment; other tabs use distinct renderer-managed colors in authored order. Do not store raw access colors in profile YAML or rely on color without the visible tab name.
+- On cards whose effective AF Operation is Servo AF, associate the displayed `autofocus.servo_af_case` value with **My Menu: AF Case** when that tab is part of the approved field route. The tab contains the on-camera shortcuts **Servo AF**, **Tracking Sensitivity**, and **Accel./Decel. tracking**; the latter two remain deep-dive controls rather than separate profile or card rows.
 - Prepend a generated Notes item explaining the full starting profile, the need to verify its Cx registration, and the distinction between colored My Menu values and white Quick Control, dial, or button values. Support multiple My Menu tabs without requiring them on current cards.
 - Normal profile-card rows follow `card_layout.display_order`, which mirrors the conceptual sequence of the R5 Quick Reference. Reference-card rows retain the explicit order of their authored `reference_settings` list.
 - Camera Buttons reference rows use stable control-name keys to display the corresponding official Canon physical-control SVG when one is mapped. Keep the authored project control name as text, preserve the existing row order, and do not substitute an assignment icon or fabricate a control icon. If an official SVG contains an opaque background that conflicts with the card's standard monochrome treatment, a geometry-preserving card derivative may remove only that background fill; preserve the official source asset for the icon reference and apply the normal card icon color to the derivative.

@@ -45,6 +45,7 @@ defaults:
       maximum: 12800
   autofocus:
     operation: Servo AF
+    servo_af_case: Case A (Auto)
     subject_detection: Animals
     eye_detection: Enable
     method: Face + Tracking

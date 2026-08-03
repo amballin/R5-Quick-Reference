@@ -6,6 +6,8 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
 
 ## Index
 
+- [Approved Control Layout](#approved-control-layout)
+- [Recommended Field Flow](#recommended-field-flow)
 - [What it Does](#what-it-does)
 - [How It Works](#how-it-works)
   - [M-Fn: custom-mode switching](#m-fn-custom-mode-switching)
@@ -18,7 +20,6 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
     - [Physical test: joystick straight press](#physical-test-joystick-straight-press)
   - [Multi-function Lock: when controls stop responding](#multi-function-lock-when-controls-stop-responding)
   - [AF Point Selection: exception methods](#af-point-selection-exception-methods)
-- [Approved Control Layout](#approved-control-layout)
 - [Design Philosophy](#design-philosophy)
 - [Subject Detection Workflow](#subject-detection-workflow)
 - [C1-C3 Registration Reference](#c1-c3-registration-reference)
@@ -27,7 +28,8 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
   - [C2 — Birds in Flight / Action](#c2-birds-in-flight-action)
   - [What C1 and C2 should normally keep the same](#what-c1-and-c2-should-normally-keep-the-same)
   - [C3 — Landscape](#c3-landscape)
-  - [Green-star My Menu: SWITCH](#green-star-my-menu-switch)
+  - [My Menu: SWITCH](#my-menu-switch)
+  - [My Menu: AF Case](#my-menu-af-case)
     - [Other My Menu tabs to consider](#other-my-menu-tabs-to-consider)
   - [Protect the registered modes: disable Auto update](#protect-the-registered-modes-disable-auto-update)
   - [Save alternate complete configurations to a card](#save-alternate-complete-configurations-to-a-card)
@@ -42,6 +44,46 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
 - [Tips](#tips)
 - [Common Mistakes](#common-mistakes)
 - [Cross References](#cross-references)
+
+## Approved Control Layout
+
+The physical layout is shared across the baseline and all subject profiles. The button and dial assignments below are owner-confirmed on the camera. M-Fn switching among C1-C3 has been physically tested. C1 contains registered settings, but its match to the Wildlife profile remains pending verification; C2 and C3 are not yet registered.
+
+### Controls
+
+| Physical control | Assignment | INFO details or operation |
+|---|---|---|
+| **Shutter half-press** | **Metering start** | Does not start autofocus. |
+| **AF-ON** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **Face + Tracking**; Servo AF characteristics: **Maintain current setting**. |
+| **AE Lock** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **1-Point AF**; Servo AF characteristics: **Maintain current setting**; uses the last 1-Point position. |
+| **AF Point Selection** | **AF point selection** | Use the **Main Dial** to change the selection; with Face + Tracking active, INFO toggles Eye detection. |
+| **Lens AF button** | **AF Off** | Stops AF while the lens button is used. |
+| **DOF button** | **One-Shot AF ↔ Servo AF** | Changes AF Operation. |
+| **SET** | **Eye detection** | Toggles the stored state when the active AF method supports Eye detection; no effect with 1-Point AF or Spot AF. |
+| **Joystick** | **Direct AF point selection** | Moves the AF point or starting position; during Face + Tracking adjustment, selects among detected faces or eyes. Straight press centers in Canon's documented AF-point workflow; additional observed Face Select behavior is pending the physical test. |
+| **Movie Record button** | **Leave default** | No custom assignment in this architecture. |
+| **MODE button** | **Leave default** | No custom assignment in this architecture. |
+| **LCD panel illumination button** | **Leave default** | No custom assignment in this architecture. |
+| **M-Fn** | **Switch to Custom shooting mode** | Press repeatedly to switch among C1, C2, and C3. |
+
+### Dials and Control Ring
+
+| Physical control | Assignment | Operation |
+|---|---|---|
+| **Main Dial** | **Shutter Speed** | Direct exposure control. |
+| **Rear Wheel** | **Aperture** | Direct exposure control. |
+| **Top Rear Dial** | **ISO Speed** | Direct exposure control. |
+| **Control Ring** | **Exposure Compensation** | In Manual exposure, compensation requires Auto ISO. |
+
+## Recommended Field Flow
+
+1. **Choose the shooting environment.** Press M-Fn to recall the appropriate registered C1, C2, or C3 profile, or select the applicable subject profile.
+2. **Confirm still versus moving focus.** Start with the profile's AF Operation and press the DOF button only when the subject needs the other One-Shot/Servo behavior.
+3. **Choose eye priority when available.** Use SET to enable or disable the stored Eye Detection state before starting autofocus.
+4. **Choose the focusing behavior.** Hold AF-ON for Face + Tracking acquisition or AE Lock for precise 1-Point AF; use one AF-start button at a time.
+5. **Place or recenter the focus point.** Move the joystick for deliberate positioning and use its straight press for the documented recentering workflow, subject to the Face Select test below.
+6. **Set exposure directly.** Use the Main Dial for shutter speed, Rear Wheel for aperture, Top Rear Dial for ISO, and Control Ring for exposure compensation.
+7. **Use exception controls only when needed.** Press AF Point Selection and turn the Main Dial for Spot AF, Expand AF Area, or another justified AF method.
 
 ## What it Does
 
@@ -150,29 +192,6 @@ If **LOCK** appears or the joystick or exposure dials stop responding, press the
 
 Press **AF Point Selection**, then use the **Main Dial** when Spot AF, Expand AF Area, or another method is demonstrably better than the standard AF-ON or AE Lock choices. With Face + Tracking active, INFO provides the slower alternative for changing Eye Detection.
 
-## Approved Control Layout
-
-The physical layout is shared across the baseline and all subject profiles. The button and dial assignments below are owner-confirmed on the camera. M-Fn switching among C1-C3 has been physically tested. C1 contains registered settings, but its match to the Wildlife profile remains pending verification; C2 and C3 are not yet registered.
-
-| Physical control | Assignment | INFO details or operation |
-|---|---|---|
-| **Shutter half-press** | **Metering start** | Does not start autofocus. |
-| **AF-ON** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **Face + Tracking**; Servo AF characteristics: **Maintain current setting**. |
-| **AE Lock** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **1-Point AF**; Servo AF characteristics: **Maintain current setting**; uses the last 1-Point position. |
-| **AF Point Selection** | **AF point selection** | Use the **Main Dial** to change the selection; with Face + Tracking active, INFO toggles Eye detection. |
-| **Lens AF button** | **AF Off** | Stops AF while the lens button is used. |
-| **DOF button** | **One-Shot AF ↔ Servo AF** | Changes AF Operation. |
-| **SET** | **Eye detection** | Toggles the stored state when the active AF method supports Eye detection; no effect with 1-Point AF or Spot AF. |
-| **Joystick** | **Direct AF point selection** | Moves the AF point or starting position; during Face + Tracking adjustment, selects among detected faces or eyes. Straight press centers in Canon's documented AF-point workflow; additional observed Face Select behavior is pending the physical test. |
-| **Main Dial** | **Shutter Speed** | Direct exposure control. |
-| **Rear Wheel** | **Aperture** | Direct exposure control. |
-| **Top Rear Dial** | **ISO Speed** | Direct exposure control. |
-| **Control Ring** | **Exposure Compensation** | In Manual exposure, compensation requires Auto ISO. |
-| **Movie Record button** | **Leave default** | No custom assignment in this architecture. |
-| **MODE button** | **Leave default** | No custom assignment in this architecture. |
-| **LCD panel illumination button** | **Leave default** | No custom assignment in this architecture. |
-| **M-Fn** | **Switch to Custom shooting mode** | Press repeatedly to switch among C1, C2, and C3. |
-
 ## Design Philosophy
 
 1. **Keep button behavior constant.** Muscle memory should not change when the subject changes.
@@ -202,7 +221,7 @@ Changing from the complete Wildlife card to the complete People card involves mo
 
 C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card. The cards remain concise field references; this matrix is the single registration reference for the profile-defining settings. Shared Set & Forget settings remain on Camera Setup Essentials and are intentionally not repeated here.
 
-Camera Defaults and the shared operational baseline intentionally match the complete C1 Wildlife target, including explicit Auto shutter and aperture values. This makes the documented reset state a practical wildlife starting point; it does not prove that a reset camera, loaded settings file, or existing C1 registration currently matches the target. Verify the shared setup, controls, Auto update setting, and every registered C mode after either recovery operation.
+Camera Defaults and the shared operational baseline intentionally match the complete C1 Wildlife target, including explicit Auto shutter and aperture values and Servo AF Case A (Auto). This makes the documented reset state a practical wildlife starting point; it does not prove that a reset camera, loaded settings file, or existing C1 registration currently matches the target. Verify the shared setup, controls, Auto update setting, and every registered C mode after either recovery operation.
 
 The exact starting values below convert card ranges and situational guidance into reproducible registrations. Settings not governed by this project remain unchanged and must not be guessed. The **Lens IS switch** is a physical pre-shoot check rather than a camera-registered menu value.
 
@@ -216,6 +235,7 @@ The exact starting values below convert card ranges and situational guidance int
 | **ISO** | Auto | Auto | 100 |
 | **Auto ISO Maximum** | 12800 | 12800 | 12800; inactive while ISO 100 is fixed |
 | **AF Operation** | Servo AF | Servo AF | One-Shot AF |
+| **Servo AF Case** | Case A (Auto) | **Case 4** | Case A (Auto); inactive in One-Shot AF |
 | **AF Method** | Face + Tracking | Face + Tracking | 1-Point AF |
 | **Subject Detection** | Animals | Animals | None |
 | **Eye Detection** | Enable | Enable | Disable |
@@ -240,7 +260,7 @@ The C2 starting shutter is **1/2500 sec**: fast enough for normal birds-in-fligh
 
 ### C1 — General Wildlife
 
-C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup.
+C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup. Case A automatically adapts the Servo AF response to varied movement.
 
 Examples include perched birds, deer, herons, eagles on a perch, and ducks on the water. Its priorities are deliberate composition, useful image quality, Animal Detection, Eye Detection, and a continuous drive appropriate for wildlife behavior.
 
@@ -254,7 +274,7 @@ The operating idea is: **the animal is already there**.
 
 C2 implements the Birds in Flight card for fast-moving wildlife: birds in flight, osprey diving, ducks taking off, swallows, or running animals.
 
-It retains the same button layout, Animal Detection, Eye Detection, metering philosophy, and tracking-versus-precision choice as C1. Its primary differences are the shooting environment: a 1/2500-sec registered starting shutter, High Speed Continuous+, Tv exposure, and Mode 3 stabilization.
+It retains the same button layout, Animal Detection, Eye Detection, metering philosophy, and tracking-versus-precision choice as C1. Its primary differences are the shooting environment: a 1/2500-sec registered starting shutter, High Speed Continuous+, Tv exposure, Servo AF Case 4 for abrupt speed changes, and Mode 3 stabilization.
 
 The operating idea is: **the animal is moving fast**.
 
@@ -301,9 +321,9 @@ In the normal `C3LANDSC` configuration, People does not use a C-mode slot. For a
 
 Keep AF-ON for face/eye acquisition and AE Lock for exact 1-Point placement. Do not start from C3 for people while the normal `C3LANDSC` configuration is loaded; in that set, C3 recalls the Landscape settings—ISO 100, One-Shot AF, Single Shot, and f/9.
 
-### Green-star My Menu: SWITCH
+### My Menu: SWITCH
 
-Use one green-star My Menu tab named **SWITCH** as the starting menu for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. My Menu items are shortcuts to the camera's real settings; selecting an item opens that setting, and it does not apply a complete profile automatically.
+Use one My Menu tab named **SWITCH** as the starting menu for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. The interface keeps its established green treatment as a visual cue. My Menu items are shortcuts to the camera's real settings; selecting an item opens that setting, and it does not apply a complete profile automatically.
 
 | Target | Best starting mode | Already close | Remaining changes | SWITCH items used |
 |---|---|---|---|---|
@@ -323,9 +343,23 @@ Leave the sixth position open until field testing identifies another menu-only n
 
 Use Q, the dials, or the AF-point controls for Drive Mode, ISO, shutter speed, aperture, and AF Method when those controls are faster. Keep lens AF/MF and IS switches as physical checks. With **Auto update set.: Disable**, these transition changes must not rewrite the registered C1-C3 starting environments.
 
+### My Menu: AF Case
+
+Use a separate My Menu tab named **AF Case** for Servo AF tracking behavior. Configure it in this order:
+
+1. **Servo AF**
+2. **Tracking Sensitivity**
+3. **Accel./Decel. tracking**
+
+On the EOS R5, **Servo AF** in this tab is the shortcut to the Case selector; it is not the AF Operation setting. Continue to use Q or the DOF button to change AF Operation between One-Shot AF and Servo AF.
+
+The Wildlife, Birds in Flight, Birds Perched, People, and Sports cards show **AF Case** in their field routes because they start in Servo AF. The colored **Servo AF Case** value identifies the tab used to reach the selected Case. Tracking Sensitivity and Accel./Decel. tracking remain parameter-level troubleshooting controls in the AF Cases deep dive rather than additional profile rows.
+
+Keep **Auto update set.: Disable** before making a temporary Case or parameter change inside C1–C3. Restore the profile's approved Case after testing unless the change is deliberately re-registered.
+
 #### Other My Menu tabs to consider
 
-The EOS R5 can hold up to five My Menu tabs, but additional tabs should be created only when repeated field use justifies them. The following are evaluation categories, not approved camera configurations:
+The EOS R5 can hold up to five My Menu tabs. Beyond the approved **SWITCH** and **AF Case** tabs, create another tab only when repeated field use justifies it. The following are evaluation categories, not approved camera configurations:
 
 | Candidate tab | Purpose | Items to consider |
 |---|---|---|
@@ -337,8 +371,8 @@ The EOS R5 can hold up to five My Menu tabs, but additional tabs should be creat
 
 Consider these cautions before creating another tab:
 
-- Do not fill all five tabs merely because they are available. More tabs increase navigation and make the important SWITCH tab less immediate.
-- Do not duplicate SWITCH items on another tab unless repeated use within that workflow clearly saves time.
+- Do not fill all five tabs merely because they are available. More tabs increase navigation and make the important SWITCH and AF Case tabs less immediate.
+- Do not duplicate SWITCH or AF Case items on another tab unless repeated use within that workflow clearly saves time.
 - Prefer Q, a dial, a customized button, the AF-point controls, or a physical lens switch whenever it is faster than opening My Menu.
 - Treat conditional items carefully. A menu item may move, disappear, or behave differently with another shooting mode, lens, flash, trigger, or firmware version.
 - Keep destructive or recovery operations such as **Format card**, **Reset camera**, **Clear settings**, and bulk-delete commands out of frequently used field tabs.

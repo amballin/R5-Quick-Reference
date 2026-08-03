@@ -27,6 +27,10 @@ setting_access:
     best_access: Q screen
     menu_location: AF1 > AF operation
     rapid_order: 130
+  autofocus.servo_af_case:
+    best_access: MM-AF Case; C1-C3 registered profile
+    menu_location: My Menu > AF Case > Servo AF; AF3 > Servo AF characteristics
+    rapid_order: 135
   autofocus.method:
     best_access: AF Point Selection button + Main Dial
     menu_location: AF1 > AF method; Q is the alternative

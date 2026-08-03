@@ -11,6 +11,7 @@ from urllib.parse import quote, unquote
 
 import yaml
 
+from appendix_renderer import QUICK_ACCESS_TOKEN_CSS
 from generated_output import clean_generated_tree, mirror_tree
 from html_renderer import shared_header_icon_path
 from spreadsheet_downloads import (
@@ -293,6 +294,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .guide-panel table{{border-collapse:collapse;width:100%;font-size:13px}}
 .guide-panel th,.guide-panel td{{border:1px solid #d7dee8;padding:6px;text-align:left;vertical-align:top}}
 .guide-panel .subtitle{{color:#5c6670;font-size:14px}}
+{QUICK_ACCESS_TOKEN_CSS}
 .guide-panel main{{padding:0}}
 .guide-panel .category{{margin:0 0 20px}}
 .guide-panel .grid{{display:grid;grid-template-columns:1fr;gap:9px}}

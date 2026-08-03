@@ -12,6 +12,7 @@ ICON_COLOR_FILTER = (
 FIELD_ALIASES = {
     "autofocus.method": "af_method",
     "autofocus.operation": "af_operation",
+    "autofocus.servo_af_case": "af_operation",
     "autofocus.subject_detection": "subject_detection",
     "drive.mode": "drive",
     "exposure.auto_iso.maximum": "iso",

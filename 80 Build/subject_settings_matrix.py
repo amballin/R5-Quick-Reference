@@ -317,6 +317,8 @@ def _set_nested(target, dotted_key, value):
 
 def _summary_value(key, merged):
     fields = _flatten(merged)
+    if key == "autofocus.servo_af_case" and fields.get("autofocus.operation") != "Servo AF":
+        return "Not Used"
     if manual_focus(fields) and key in {
         "autofocus.method",
         "autofocus.subject_detection",

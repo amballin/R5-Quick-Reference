@@ -30,7 +30,7 @@ Before changing the camera:
 
 ## Complete setup and registration in order
 
-1. Configure the SWITCH My Menu tab, the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
+1. Configure My Menu: SWITCH and My Menu: AF Case, the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
 2. Save the first checkpoint and mark that Checklist row Backup-Settings.
 3. In a normal mode, read back the complete C1-aligned default state, register it to C1, leave it, recall it, and read back every target setting again.
 4. Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.

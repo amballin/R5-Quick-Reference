@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
+  last_updated: 2026-08-03
   release: false
 title: Sports
 inherits: baseline
@@ -16,6 +16,9 @@ card:
       - name: SWITCH
         settings:
           - autofocus.subject_detection
+      - name: AF Case
+        settings:
+          - autofocus.servo_af_case
   colors:
     background:
     text:
@@ -24,6 +27,7 @@ overrides:
   exposure:
     mode: Tv
   autofocus:
+    servo_af_case: Case 4
     subject_detection: People
   drive:
     mode: High Speed Continuous+
@@ -49,5 +53,7 @@ notes:
   - Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
   - Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.
 appendix_links:
+  - id: af_cases_tracking
+    label: Servo AF Case selection and tracking adjustments
   - id: r5_quick_reference
     label: When to use 1.6× crop mode

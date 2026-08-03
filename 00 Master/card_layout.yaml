@@ -10,6 +10,7 @@ card_layout:
     - exposure.auto_iso.maximum
     - exposure.exposure_compensation
     - autofocus.operation
+    - autofocus.servo_af_case
     - autofocus.method
     - autofocus.subject_detection
     - autofocus.eye_detection
@@ -46,6 +47,8 @@ card_layout:
       label: Auto ISO Max
     - key: autofocus.operation
       label: AF Operation
+    - key: autofocus.servo_af_case
+      label: Servo AF Case
     - key: autofocus.method
       label: AF Method
     - key: autofocus.subject_detection

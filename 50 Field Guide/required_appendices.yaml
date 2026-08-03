@@ -7,6 +7,7 @@ appendices:
     release: true
     display_order: 40
     profiles:
+      - Birds Perched
       - Birds in Flight
       - People
       - Sports
@@ -16,6 +17,11 @@ appendices:
       - r5_quick_reference
     required_topics:
       - Servo AF behavior
+      - Case 1
+      - Case 2
+      - Case 3
+      - Case 4
+      - Case A Auto
       - Tracking sensitivity
       - Accel/Decel Tracking
       - Subject switching
@@ -23,6 +29,7 @@ appendices:
       - Animal detection
       - Vehicle detection
       - Recommended settings
+      - Quick field access
       - Subject examples
       - Decision tree
       - Cross references

@@ -42,7 +42,7 @@ checklist:
   - Practice back-button AF before a critical shoot.
   - Use SET to choose eye priority before AF-ON when Face + Tracking is active.
   - Verify the C1-C3 registrations on the camera.
-  - Use the linked deep dive for the green-star SWITCH My Menu starting tab.
+  - "Use the linked deep dive for My Menu: SWITCH and My Menu: AF Case."
   - Confirm Manual + Auto ISO before using exposure compensation.
   - Recheck assignments after a reset or firmware update.
 watch_for:
@@ -59,4 +59,4 @@ common_mistakes:
   - Assuming C1, C2, or C3 contains its documented profile without verifying the registration
 appendix_links:
   - id: back_button_af_custom_button_strategies
-    label: Button setup, SWITCH My Menu, and AF-ON / AE Lock INFO details
+    label: Button setup, My Menu tabs, and AF-ON / AE Lock INFO details

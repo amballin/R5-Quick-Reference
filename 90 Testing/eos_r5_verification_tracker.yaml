@@ -71,12 +71,12 @@ tests:
   - test_id: SETUP-MM-01
     sequence: 4
     phase: Camera Setup
-    expected_result: The approved SWITCH My Menu tab exists with the five approved shortcuts in the correct order and one open position.
-    task: Configure and verify the SWITCH My Menu tab before profile registration.
+    expected_result: The approved SWITCH and AF Case My Menu tabs exist with their shortcuts in the correct order; SWITCH retains one open position.
+    task: "Configure and verify My Menu: SWITCH and My Menu: AF Case before profile registration."
     best_access: My Menu
     menu_location: My Menu
-    menu_detail: "Create tab SWITCH; register in order: Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, Cropping/aspect ratio; leave position 6 open"
-    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    menu_detail: "Create tab SWITCH; register Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, Cropping/aspect ratio in order and leave position 6 open. Create tab AF Case; register Servo AF, Tracking Sensitivity, Accel./Decel. tracking in order; confirm Servo AF opens the Case selector."
+    next_action: Configure SWITCH and AF Case before shared defaults, controls, or C1–C3 registration.
     evidence_class: Approved target pending verification
     project_update: "Yes"
     target_project_files: 00 Master/setting_access.yaml; controls.md; Back-Button AF guide; project memory
@@ -84,10 +84,10 @@ tests:
     sequence: 5
     phase: Camera Setup
     expected_result: Shared operational defaults match the complete C1-aligned reference baseline.
-    task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF, Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering.
-    best_access: Q screen; direct exposure controls; AF Point Selection button; MM-SWITCH for Subject to detect, Shutter mode, and Cropping/aspect ratio
+    task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering.
+    best_access: Q screen; direct exposure controls; AF Point Selection button; MM-SWITCH for Subject to detect, Shutter mode, and Cropping/aspect ratio; MM-AF Case for Servo AF Case
     menu_location: Multiple
-    menu_detail: "Direct/Q: Fv, shutter Auto, aperture Auto, Auto ISO, Servo AF, High Speed Continuous, Evaluative metering; AF1: AF method, Subject to detect, Eye detection; Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Shooting 6: Shutter mode; Shooting menu: IS (Image Stabilizer) mode"
+    menu_detail: "Direct/Q: Fv, shutter Auto, aperture Auto, Auto ISO, Servo AF, High Speed Continuous, Evaluative metering; AF1: AF method, Subject to detect, Eye detection; My Menu AF Case > Servo AF or AF3 > Servo AF characteristics: Case A; Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Shooting 6: Shutter mode; Shooting menu: IS (Image Stabilizer) mode"
     next_action: Check Camera Setup Essentials and Camera Defaults.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -143,7 +143,7 @@ tests:
   - test_id: BACKUP-SET-01
     sequence: 10
     phase: Camera Setup
-    expected_result: A recoverable checkpoint exists after shared settings, SWITCH, and physical controls are configured.
+    expected_result: A recoverable checkpoint exists after shared settings, SWITCH, AF Case, and physical controls are configured.
     task: Save a checkpoint copy of the complete camera configuration and record it in Sessions.
     best_access: MENU
     menu_location: Set-up 5
@@ -157,9 +157,9 @@ tests:
     phase: C1 Wildlife
     expected_result: Every C1 target setting matches the C1–C3 Registration sheet.
     task: Build the complete C1 Wildlife environment in a normal shooting mode.
-    best_access: Q, dials, AF controls, MM-SWITCH, lens IS switch
+    best_access: Q, dials, AF controls, MM-SWITCH, MM-AF Case, lens IS switch
     menu_location: Multiple
-    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, AF Drive mode, and lens IS switch
+    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, My Menu AF Case or AF3 Servo AF characteristics, AF Drive mode, and lens IS switch
     next_action: Configure from a normal shooting mode, not recalled C1.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -181,7 +181,7 @@ tests:
     phase: C1 Wildlife
     expected_result: Every recalled value matches the validated C1 column.
     task: Leave the setup state, recall C1 with M-Fn, and read back every setting.
-    best_access: M-Fn recall; Q; MM-SWITCH; MENU
+    best_access: M-Fn recall; Q; MM-SWITCH; MM-AF Case; MENU
     menu_location: No single menu
     menu_detail: Recall C1 with M-Fn; verify the shooting screen, Quick Control screen, My Menu shortcuts, and applicable menu settings
     next_action: Record discrepancies before proceeding to C2.
@@ -205,9 +205,9 @@ tests:
     phase: C2 Birds in Flight
     expected_result: Every C2 target setting matches the C1–C3 Registration sheet.
     task: Return to a normal mode and build the complete C2 Birds in Flight environment.
-    best_access: Q, dials, AF controls, MM-SWITCH, lens IS switch
+    best_access: Q, dials, AF controls, MM-SWITCH, MM-AF Case, lens IS switch
     menu_location: Multiple
-    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, AF Drive mode, and lens IS switch
+    menu_detail: Shooting screen/Quick Control plus Shooting 1, Shooting 2, Shooting 5, Shooting 6, Shooting 7, AF1, My Menu AF Case or AF3 Servo AF characteristics, AF Drive mode, and lens IS switch
     next_action: Do not build C2 while working inside recalled C1.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -229,7 +229,7 @@ tests:
     phase: C2 Birds in Flight
     expected_result: Every recalled value matches the validated C2 column.
     task: Recall C2 and read back every setting.
-    best_access: M-Fn recall; Q; MM-SWITCH; MENU
+    best_access: M-Fn recall; Q; MM-SWITCH; MM-AF Case; MENU
     menu_location: No single menu
     menu_detail: Recall C2 with M-Fn; verify the shooting screen, Quick Control screen, My Menu shortcuts, and applicable menu settings
     next_action: Recheck C1 after the C2 read-back.
@@ -239,7 +239,7 @@ tests:
   - test_id: C2-OPS-01
     sequence: 18
     phase: C2 Birds in Flight
-    expected_result: C2 provides 1/2500 sec., Mechanical shutter, H+, animal tracking, and Mode 3.
+    expected_result: C2 provides 1/2500 sec., Mechanical shutter, H+, Servo AF Case 4, animal tracking, and Mode 3.
     task: Perform a short Birds in Flight operational test.
     best_access: Physical controls
     menu_location: No menu
@@ -431,11 +431,11 @@ tests:
   - test_id: FINAL-READ-01
     sequence: 34
     phase: Finalization
-    expected_result: All three custom modes, My Menu, and shared controls remain correct; Auto update remains disabled.
+    expected_result: All three custom modes, both approved My Menu tabs, and shared controls remain correct; Auto update remains disabled.
     task: Recall C1, C2, and C3 and complete a final read-back.
-    best_access: M-Fn; MM-SWITCH; Q; MENU
+    best_access: M-Fn; MM-SWITCH; MM-AF Case; Q; MENU
     menu_location: Multiple
-    menu_detail: Recall C1-C3 with M-Fn; verify SWITCH; Set-up 5 confirm Auto update is disabled; Custom Functions 3 confirm control assignments
+    menu_detail: Recall C1-C3 with M-Fn; verify SWITCH and AF Case; Set-up 5 confirm Auto update is disabled; Custom Functions 3 confirm control assignments
     next_action: Resolve every discrepancy before saving the final configuration.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -485,6 +485,7 @@ registration:
     - {setting: ISO, baseline_key: exposure.iso.mode, c3: "100"}
     - {setting: Auto ISO Maximum, baseline_key: exposure.auto_iso.maximum}
     - {setting: AF Operation, baseline_key: autofocus.operation, c3: One-Shot AF}
+    - {setting: Servo AF Case, baseline_key: autofocus.servo_af_case, c2: Case 4}
     - {setting: AF Method, baseline_key: autofocus.method, c3: 1-Point AF}
     - {setting: Subject Detection, baseline_key: autofocus.subject_detection, c3: None}
     - {setting: Eye Detection, baseline_key: autofocus.eye_detection, c3: Disable}

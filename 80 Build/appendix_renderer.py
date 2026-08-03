@@ -11,8 +11,22 @@ from urllib.parse import quote, unquote, urlparse
 
 from validators.common import load_yaml_checked
 from generated_output import clean_generated_tree, mirror_tree
-from html_renderer import shared_header_icon_path
+from html_renderer import FIELD_ACCESS_COLORS, shared_header_icon_path
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
+
+
+QUICK_ACCESS_MFN_COLOR = "#4f46e5"
+QUICK_ACCESS_TOKEN_CLASSES = {
+    "My Menu: SWITCH": "access-switch",
+    "My Menu: AF Case": "access-menu-2",
+    "M-Fn": "access-mfn",
+}
+QUICK_ACCESS_TOKEN_CSS = f"""
+.access-token{{display:inline-block;padding:1px 6px;border-radius:999px;font-size:.93em;line-height:1.35;white-space:nowrap;vertical-align:baseline;-webkit-box-decoration-break:clone;box-decoration-break:clone}}
+.access-token.access-switch{{background:{FIELD_ACCESS_COLORS["access-switch"]};color:#123047}}
+.access-token.access-menu-2{{background:{FIELD_ACCESS_COLORS["access-menu-2"]};color:#342400}}
+.access-token.access-mfn{{background:{QUICK_ACCESS_MFN_COLOR};color:#fff}}
+"""
 
 
 def render_appendices(paths, include_pdf=False):
@@ -56,7 +70,14 @@ def render_appendices(paths, include_pdf=False):
                     encoding="utf-8",
                 )
             else:
-                rendered_html = _html_document(title, markdown, site_home_url, navigation_enabled, paths)
+                rendered_html = _html_document(
+                    title,
+                    markdown,
+                    site_home_url,
+                    navigation_enabled,
+                    paths,
+                    highlight_quick_access=entry.get("id") == "r5_quick_reference",
+                )
                 rendered_html = _rewrite_appendix_id_links(rendered_html, appendix_targets, html_path.name)
                 rendered_html = _rewrite_local_image_sources(source, final_html_path, rendered_html)
                 rendered_html = _rewrite_local_link_sources(source, final_html_path, rendered_html, html_path.name)
@@ -140,9 +161,18 @@ def _site_home_url(output_path, site_root):
     return Path(os.path.relpath(site_root / "index.html", output_path.parent)).as_posix()
 
 
-def _html_document(title, markdown, site_home_url="../index.html", navigation_enabled=True, paths=None):
+def _html_document(
+    title,
+    markdown,
+    site_home_url="../index.html",
+    navigation_enabled=True,
+    paths=None,
+    highlight_quick_access=False,
+):
     navigation = _appendix_navigation(site_home_url, navigation_enabled, paths)
     content = _markdown_to_html(markdown)
+    if highlight_quick_access:
+        content = _highlight_quick_access_tokens(content)
     index_return = _index_return_control(markdown)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -162,6 +192,7 @@ table{{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;wid
 th,td{{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}}
 code{{background:#eef2f7;padding:2px 4px;border-radius:4px}}
 a{{color:#165d9c}}
+{QUICK_ACCESS_TOKEN_CSS}
 .appendix-index-return{{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}}
 .appendix-index-return__short{{display:none}}
 .appendix-index-return:focus-visible{{outline:2px solid #165d9c;outline-offset:2px}}
@@ -443,6 +474,15 @@ def _inline(text):
     escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
     escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
     return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", _link, escaped)
+
+
+def _highlight_quick_access_tokens(content):
+    for label, access_class in QUICK_ACCESS_TOKEN_CLASSES.items():
+        content = content.replace(
+            f"<strong>{label}</strong>",
+            f'<strong class="access-token {access_class}">{label}</strong>',
+        )
+    return content
 
 
 def _image(match):

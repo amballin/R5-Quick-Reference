@@ -585,7 +585,7 @@ function buildDashboard() {
   dashboard.getRange(`A${workflowStart + 1}:H${workflowStart + 5}`).merge();
   dashboard.getRange(`A${workflowStart + 1}`).values = [[
     "1. Save the starting camera configuration and document C1–C3.\n" +
-    "2. Disable Auto update, then configure and verify the SWITCH My Menu tab.\n" +
+    "2. Disable Auto update, then configure and verify the SWITCH and AF Case My Menu tabs.\n" +
     "3. Save Backup-Settings checkpoints after shared setup/controls and after C1–C3 read-back.\n" +
     "4. Work through Checklist in Sequence order and use one Session ID per camera session.\n" +
     "5. Filter Project Update? = Yes and Status = Verified before changing project evidence states.",

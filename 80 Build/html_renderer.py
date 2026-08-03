@@ -28,6 +28,7 @@ LABEL = {
     "exposure.mode": "Mode",
     "exposure.metering": "Metering",
     "autofocus.operation": "AF Operation",
+    "autofocus.servo_af_case": "Servo AF Case",
     "autofocus.subject_detection": "Subject Detection",
     "autofocus.eye_detection": "Eye Detection",
     "autofocus.method": "AF Method",
@@ -61,6 +62,7 @@ LABEL = {
 REQUIRED_CARD_SETTINGS = {
     "exposure.mode",
     "autofocus.operation",
+    "autofocus.servo_af_case",
     "autofocus.subject_detection",
     "autofocus.eye_detection",
     "autofocus.method",
@@ -123,6 +125,8 @@ def settings_rows(profile, merged, paths=None):
     for key in card_setting_order(paths):
         label = LABEL[key]
         if key in keys and key in merged_fields:
+            if key == "autofocus.servo_af_case" and not servo_af(merged_fields):
+                continue
             if manual_focus(merged_fields) and key in {
                 "autofocus.subject_detection",
                 "autofocus.eye_detection",
@@ -198,6 +202,10 @@ def is_camera_setup(profile):
 
 def manual_focus(merged_fields):
     return merged_fields.get("autofocus.operation") == "Manual Focus"
+
+
+def servo_af(merged_fields):
+    return merged_fields.get("autofocus.operation") == "Servo AF"
 
 
 def af_method_not_used(merged_fields):

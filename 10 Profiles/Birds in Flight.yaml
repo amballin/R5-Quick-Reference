@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
+  last_updated: 2026-08-03
   release: true
 
 title: Birds in Flight
@@ -11,8 +11,15 @@ card:
   field_setup:
     start: C2
     source_profile: Birds in Flight
+    my_menus:
+      - name: AF Case
+        settings:
+          - autofocus.servo_af_case
 inherits: baseline
 overrides:
+  autofocus:
+    servo_af_case: Case 4
+
   exposure:
     mode: Tv
     exposure_compensation: "Adjust for background"
@@ -51,5 +58,7 @@ notes:
   - Use Image Stabilization Mode 3 for erratic flight and action.
   - Switch to Mode 2 only for deliberate steady panning.
 appendix_links:
+  - id: af_cases_tracking
+    label: Servo AF Case selection and tracking adjustments
   - id: r5_quick_reference
     label: When to use 1.6× crop mode

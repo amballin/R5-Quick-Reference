@@ -14,7 +14,7 @@ This file records approved follow-up work and analysis candidates that should no
 
 ### My Menu Transition Verification and Expansion
 
-Verify the approved starting workflow from the registered C1-C3 profiles to every derived subject card, then evaluate whether another green-star My Menu item or tab is warranted.
+Verify the approved starting workflow from the registered C1-C3 profiles to every derived subject card, then evaluate whether another My Menu item or tab is warranted.
 
 | Target | Best starting mode | Already close | Remaining changes | Strong My Menu candidates |
 |---|---|---|---|---|
@@ -36,7 +36,15 @@ Verify the approved starting My Menu tab named **SWITCH**:
 4. IS (Image Stabilizer) mode
 5. Cropping/aspect ratio
 
-Leave the sixth position open until physical transition testing identifies another menu-only need. My Menu only shortens navigation to the real setting; it does not apply a complete derived subject configuration. Keep Drive Mode, ISO, shutter speed, aperture, and AF Method on Q, the dials, or the AF-point controls when those remain faster, and keep lens AF/MF and IS switches as physical checks. After verifying SWITCH, evaluate other My Menu tabs separately by field frequency, menu depth, risk of leaving a temporary setting active, and whether Q, a dial, a button, or a physical lens control is already faster.
+Leave the sixth position open until physical transition testing identifies another menu-only need. My Menu only shortens navigation to the real setting; it does not apply a complete derived subject configuration. Keep Drive Mode, ISO, shutter speed, aperture, and AF Method on Q, the dials, or the AF-point controls when those remain faster, and keep lens AF/MF and IS switches as physical checks. After verifying SWITCH and AF Case, evaluate other My Menu tabs separately by field frequency, menu depth, risk of leaving a temporary setting active, and whether Q, a dial, a button, or a physical lens control is already faster.
+
+Verify the approved My Menu tab named **AF Case**:
+
+1. Servo AF
+2. Tracking Sensitivity
+3. Accel./Decel. tracking
+
+Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does not change AF Operation. Verify the AF Case field route on Wildlife, Birds in Flight, Birds Perched, People, and Sports, and confirm that the colored value identifies the displayed Servo AF Case rather than the separate Tracking Sensitivity or Accel./Decel. tracking parameters.
 
 ## Exposure and Shutter Follow-Up
 

@@ -2,6 +2,28 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## My Menu: AF Case
+
+**Status:** Accepted
+**Date:** 2026-08-03
+
+Create a separate EOS R5 My Menu tab named **AF Case** with **Servo AF**, **Tracking Sensitivity**, and **Accel./Decel. tracking** in that order. In this tab, Servo AF is the Case-selection shortcut and does not replace the Q/DOF workflow for changing AF Operation.
+
+Add AF Case to the field routes for Wildlife, Birds in Flight, Birds Perched, People, and Sports, whose approved starting profiles use Servo AF. Associate the colored route with the existing **Servo AF Case** row. Keep Tracking Sensitivity and Accel./Decel. tracking as deep-dive troubleshooting controls rather than separate profile or card settings.
+
+This decision supersedes the temporary-access paragraph in **Servo AF Cases in Profiles and Cards** and the earlier approved-route list in **Compact Cx and My Menu Field Cues** only where those entries deferred an AF Case My Menu or omitted it from Servo AF card routes. It does not change the approved five-item **SWITCH** tab.
+
+## Servo AF Cases in Profiles and Cards
+
+**Status:** Accepted
+**Date:** 2026-08-03
+
+Treat Servo AF Case as a profile-owned camera setting under the baseline-plus-overrides architecture. Use **Case A (Auto)** as the shared C1 Wildlife baseline and use **Case 4** overrides for Birds in Flight and Sports. The Case remains stored but inactive when AF Operation is One-Shot AF or Manual Focus.
+
+Show **Servo AF Case** immediately after **AF Operation** on every merged card whose effective AF Operation is Servo AF. Omit it from One-Shot AF and Manual Focus cards. Keep only the selected Case on the concise card; keep Case definitions, parameters, subject recommendations, and troubleshooting in **AF Cases & Tracking Behavior**.
+
+Use registered C1-C3 profiles as the fastest normal field access and **AF3 > Servo AF characteristics** for a temporary change. Do not alter the approved five-item SWITCH My Menu configuration until physical testing confirms whether one registered item opens the complete Case selector. Retain the open sixth SWITCH position during that evaluation.
+
 ## Sticky Card Identity During Scrolling
 
 **Status:** Accepted
@@ -142,12 +164,12 @@ For reliable Excel-to-Numbers transfer, render the title, sorting instructions, 
 
 Publish stable download filenames under `downloads/` and show separate Excel and Apple Numbers links on the generated index only when the opt-in download flag is used. These files are generated release artifacts, not editable project sources, and publication remains subject to the existing explicit authorization, validation, commit, and push boundary.
 
-## Green-Star SWITCH My Menu Starting Tab
+## My Menu: SWITCH Starting Tab
 
 **Status:** Accepted
 **Date:** 2026-07-28
 
-Use one EOS R5 green-star My Menu tab named **SWITCH** as the approved starting recommendation for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. Register these five shortcuts in order: **Subject to detect**, **Shutter mode**, **Focus bracketing**, **IS (Image Stabilizer) mode**, and **Cropping/aspect ratio**. Leave the sixth position open until physical transition testing identifies another menu-only need.
+Use one EOS R5 My Menu tab named **SWITCH** as the approved starting recommendation for transitions from the registered C1-C3 profiles to People, Macro, and Waterdrops. Its formal project name is **My Menu: SWITCH**; the renderer keeps its established green treatment as a visual cue. Register these five shortcuts in order: **Subject to detect**, **Shutter mode**, **Focus bracketing**, **IS (Image Stabilizer) mode**, and **Cropping/aspect ratio**. Leave the sixth position open until physical transition testing identifies another menu-only need.
 
 My Menu provides shortcuts to the camera's real menu settings; it does not store or apply a complete subject profile. Start People from C1 Wildlife, and start Macro or Waterdrops from C3 Landscape, then make the remaining changes through SWITCH, Q, dials, AF-point controls, or physical lens switches as appropriate. Keep **Auto update set.: Disable** so field changes do not rewrite the registered C1-C3 starting environments.
 

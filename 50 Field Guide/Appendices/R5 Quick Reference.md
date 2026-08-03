@@ -20,6 +20,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
   - [Eye Detection](#eye-detection)
   - [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
   - [AF Tracking Behavior](#af-tracking-behavior)
+    - [Approved Servo AF Starting Settings](#approved-servo-af-starting-settings)
 - [Capture and Timing](#capture-and-timing)
   - [Cropping / Aspect Ratio](#cropping-aspect-ratio)
   - [Drive Mode](#drive-mode)
@@ -75,9 +76,9 @@ Use Bulb only for long manual exposures where you directly control how long the 
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C2** | Custom shooting mode 2 | Recalls registered camera settings. |
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C3** | Custom shooting mode 3 | Recalls registered camera settings. |
 
-**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3). The owner-confirmed M-Fn assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.
+**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3). The owner-confirmed **M-Fn** assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.
 
-**Quick Menu:** Exposure mode is normally changed with the MODE button, not the Q screen.
+**Quick Access:** MODE button + Main Dial. The owner-confirmed **M-Fn** assignment switches among C1-C3; exposure mode is not normally changed through the Q screen.
 
 #### Metering Mode
 
@@ -94,7 +95,7 @@ Partial and Spot meter only the center of the EOS R5 screen; Spot does not follo
 
 **Camera Menu:** Shooting menu > Metering mode.
 
-**Quick Menu:** Q screen. M-Fn is reserved for switching among C1-C3.
+**Quick Access:** Q screen. **M-Fn** is reserved for switching among C1-C3.
 
 #### Shutter Speed
 
@@ -108,7 +109,7 @@ Shutter speed controls motion. Action profiles use fast shutter speeds; long exp
 
 **Camera Menu:** Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.
 
-**Quick Menu:** Top dial / Q screen depending on exposure mode.
+**Quick Access:** Main Dial or the Fv exposure controls; the Q screen is mode-dependent.
 
 #### Shutter Type
 
@@ -130,7 +131,7 @@ For Canon's fuller explanation and example use cases, see [A Look at the Shutter
 
 **Camera Menu:** Shooting 6 > Shutter mode.
 
-**Quick Menu:** Menu only.
+**Quick Access:** **My Menu: SWITCH** > Shutter mode; otherwise Shooting 6 > Shutter mode.
 
 ### Autofocus and Manual Focus
 
@@ -145,7 +146,7 @@ AF lets the camera drive focus. MF leaves focus under manual control from the le
 
 **Camera Menu:** Lens AF/MF switch; AF1 > Focus mode when shown.
 
-**Quick Menu:** Lens switch; usually not a Q item.
+**Quick Access:** Lens AF/MF switch when fitted; otherwise AF1 > Focus mode when shown. This is not normally a Q item.
 
 #### AF Operation
 
@@ -159,7 +160,7 @@ Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus whe
 
 **Camera Menu:** AF1 > AF operation; for Manual Focus use the lens AF/MF switch or AF1 > Focus mode when shown.
 
-**Quick Menu:** Q screen for AF Operation. Manual Focus is usually the lens switch, not Q; M-Fn is reserved for switching among C1-C3.
+**Quick Access:** Q screen for AF Operation. Manual Focus is usually the lens AF/MF switch; **M-Fn** is reserved for switching among C1-C3.
 
 #### AF Method
 
@@ -175,7 +176,7 @@ Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predict
 
 **Camera Menu:** AF1 > AF method.
 
-**Quick Menu:** AF point selection button, then Main Dial; the Q screen is the alternative. M-Fn is reserved for switching among C1-C3.
+**Quick Access:** AF Point Selection button + Main Dial; the Q screen is the alternative. **M-Fn** is reserved for switching among C1-C3.
 
 #### Subject Detection
 
@@ -190,7 +191,7 @@ Use People, Animals, or Vehicles when one category should receive priority. Use 
 
 **Camera Menu:** AF1 > Subject to detect.
 
-**Quick Menu:** Menu only.
+**Quick Access:** **My Menu: SWITCH** > Subject to detect; otherwise AF1 > Subject to detect.
 
 #### Eye Detection
 
@@ -204,7 +205,7 @@ Enable it when Face + Tracking and subject detection are useful. It is not usefu
 
 **Camera Menu:** AF1 > Eye detection.
 
-**Quick Menu:** With Face + Tracking active, press the AF point selection button and then INFO to toggle Eye detection. This shortcut is unavailable when the active AF method cannot use Eye detection.
+**Quick Access:** SET button when the active AF method supports Eye Detection. With Face + Tracking active, AF Point Selection button + INFO is the alternative. These shortcuts are unavailable when the active AF method cannot use Eye Detection.
 
 Assigning **Eye Detection AF** to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the **Eye detection: Enable/Disable** menu setting.
 
@@ -223,23 +224,41 @@ Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF 
 
 **Camera Menu:** AF1 > AF method; AF1 > Subject to detect; lens AF/MF switch or AF1 > Focus mode when shown.
 
-**Quick Menu:** AF method via the AF point selection button and Main Dial. Subject Detection is menu only. Manual Focus is usually the lens switch. M-Fn is reserved for switching among C1-C3.
+**Quick Access:** AF Method via the AF Point Selection button + Main Dial; the Q screen is the alternative. Subject Detection via **My Menu: SWITCH**. Manual Focus via the lens AF/MF switch when fitted. **M-Fn** is reserved for switching among C1-C3.
 
 #### AF Tracking Behavior
 
-Start with Canon's default Servo AF tracking behavior and change only the response that is causing a problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.
+Start with the profile's selected Servo AF Case: Case A (Auto) is the Wildlife baseline, while Birds in Flight and Sports use Case 4. Change only the response that is causing a repeatable problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.
+
+##### Approved Servo AF Starting Settings
+
+These are approved targets pending physical camera verification:
+
+| Profile | AF Operation | Servo AF Case | Tracking Sensitivity | Accel./Decel. tracking |
+|---|---|---|---|---|
+| Wildlife / C1 | Servo AF | Case A (Auto) | Auto | Auto |
+| Birds Perched | Servo AF | Case A (Auto) | Auto | Auto |
+| People | Servo AF | Case A (Auto) | Auto | Auto |
+| Birds in Flight / C2 | Servo AF | Case 4 | 0 | +1 |
+| Sports | Servo AF | Case 4 | 0 | +1 |
+
+Case A controls both parameters automatically. Case 4 starts at Tracking Sensitivity 0 and Accel./Decel. tracking +1 for abrupt speed changes. Profiles that start in One-Shot AF or Manual Focus retain a stored Case but do not actively use it.
+
+Use **My Menu: AF Case** > Servo AF to reach the Case selector. Use Tracking Sensitivity or Accel./Decel. tracking only when correcting a repeatable response problem, and change one control at a time. For Cases 1–4, Case A, subject-specific alternatives, and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
 
 | Control | What it Changes | Field Use |
 |---|---|---|
+| Servo AF Case | A starting combination of Tracking Sensitivity and Accel./Decel. Tracking | Use Case A for varied movement and Case 4 for the documented Birds in Flight and Sports starting profiles; see the deep dive before choosing Cases 1–3. |
 | Tracking Sensitivity | How readily focus leaves the tracked subject when an obstacle or another subject enters the AF area | Move toward locked-on when brief obstructions steal focus; move toward responsive when intentional target changes feel slow. |
 | Accel./Decel. Tracking | How strongly Servo AF anticipates abrupt speed changes | Increase for subjects that start, stop, or change speed unpredictably; leave near default for steady motion. |
-| Subject switching | How readily subject detection transfers priority to another recognized subject | Reduce when the camera abandons the intended subject; increase when rapid handoffs are intentional. |
+
+Switching tracked subjects is a separate subject-detection control: reduce switching when the camera abandons the intended recognized subject, or increase it when rapid handoffs are intentional.
 
 Change one control at a time and test it against the actual background and subject motion. For scenarios and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
 
-**Camera Menu:** AF menu > Servo AF characteristics / Case settings and subject-tracking options.
+**Camera Menu:** **My Menu: AF Case** > Servo AF; direct route AF3 > Servo AF characteristics. Subject-tracking options are separate AF-menu controls.
 
-**Quick Menu:** Menu only.
+**Quick Access:** **My Menu: AF Case** > Servo AF opens the Case selector; otherwise AF3 > Servo AF characteristics.
 
 ### Capture and Timing
 
@@ -260,7 +279,7 @@ With **RF-S or adapted EF-S lenses**, the R5 automatically selects 1.6× crop an
 
 **Camera Menu:** Shooting 1 > Cropping/aspect ratio.
 
-**Quick Menu:** Menu only.
+**Quick Access:** **My Menu: SWITCH** > Cropping/aspect ratio; otherwise Shooting 1 > Cropping/aspect ratio.
 
 See Canon's [Still Photo Cropping/Aspect Ratio](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html) instructions and [EOS R5 recorded pixel counts](https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0100.html).
 
@@ -279,7 +298,7 @@ Single Shot is deliberate. Low or High Speed Continuous helps with expression, m
 
 **Camera Menu:** Shooting menu > Drive mode.
 
-**Quick Menu:** Q screen. M-Fn is reserved for switching among C1-C3.
+**Quick Access:** Q screen. **M-Fn** is reserved for switching among C1-C3.
 
 Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.
 
@@ -301,7 +320,7 @@ EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mec
 
 **Camera Menu:** Shooting menu > External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.
 
-**Quick Menu:** Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.
+**Quick Access:** Flash Exposure Compensation may be available through the Q screen or an assigned control; other choices depend on the attached flash.
 
 ### Stabilization
 
@@ -335,6 +354,10 @@ With a compatible lens switched On, lens optical IS and the R5's in-body stabili
 
 **Solid tripod:** Follow the selected profile and lens-specific Canon guidance; turn stabilization Off for locked tripod or Bulb work when directed.
 
+**Camera Menu:** Shooting menu > IS (Image Stabilizer) mode; the page varies with equipment and camera state. Lens IS Mode 1 / 2 / 3 uses the physical lens selector when fitted.
+
+**Quick Access:** Lens IS switch when fitted; otherwise **My Menu: SWITCH** > IS (Image Stabilizer) mode when the camera setting is available. Use the physical lens selector for lens IS Mode 1 / 2 / 3.
+
 ### Specialized Focus and Long-Exposure Tools
 
 #### Focus Features
@@ -349,7 +372,7 @@ These features support manual focus precision and depth-of-field workflows. Keep
 
 **Camera Menu:** Shooting menu > Focus bracketing; AF menu > Focus guide; AF menu > MF peaking settings.
 
-**Quick Menu:** Menu only.
+**Quick Access:** Focus Bracketing via **My Menu: SWITCH**. Focus Guide and MF Peaking remain menu-only.
 
 **Recommended MF Peaking setup:** **On**, **Level: Low**, **Color: Red**. Leave it enabled as a Set & Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon's [Manual Focus](https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html) instructions.
 
@@ -368,7 +391,7 @@ Recommended: create a new folder for each subject or stack so bracket sequences 
 
 **Camera Menu:** Shooting 5 > Focus bracketing.
 
-**Quick Menu:** Menu only.
+**Quick Access:** **My Menu: SWITCH** > Focus bracketing; otherwise Shooting 5 > Focus bracketing.
 
 #### Long Exposure Noise Reduction
 
@@ -382,22 +405,22 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 **Camera Menu:** Shooting 4 > Long exp. noise reduction.
 
-**Quick Menu:** Menu only.
+**Quick Access:** Full camera menu only; no approved Q, button, dial, or My Menu shortcut.
 
 ## Recommended Settings by Profile
 
-**Default/reset state:** Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera's current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.
+**Default/reset state:** Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera's current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.
 
-- Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
+- Birds in Flight: Mechanical; Servo AF Case 4, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
 - Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
 - Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.
 - Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
 - Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.
 - People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Mechanical; Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
+- Sports: Mechanical; Servo AF Case 4, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
 - Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.
 - Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
-- Wildlife: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
+- Wildlife: EFCS; Servo AF Case A (Auto), Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
 
 ## Canon-Specific Notes
 

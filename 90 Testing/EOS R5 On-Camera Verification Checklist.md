@@ -34,6 +34,7 @@ Use this checklist for one deliberate camera-setup session. Complete the steps i
 ### Confirm shared Camera Setup Essentials
 
 - [ ] Configure the approved **SWITCH** My Menu tab with Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, and Cropping/aspect ratio in that order; leave position 6 open.
+- [ ] Configure the approved **AF Case** My Menu tab with Servo AF, Tracking Sensitivity, and Accel./Decel. tracking in that order; confirm Servo AF opens the Case selector.
 
 - [ ] Mode: Fv.
 - [ ] Shutter Speed: Auto.
@@ -86,7 +87,7 @@ Do not continue to C1 registration until the shared setup and control assignment
 
 ### Save the shared-setup checkpoint
 
-- [ ] Use **Set-up 5 > Save/load cam settings on card > Save to card** after SWITCH, shared settings, and physical controls are complete.
+- [ ] Use **Set-up 5 > Save/load cam settings on card > Save to card** after SWITCH, AF Case, shared settings, and physical controls are complete.
 - [ ] Record the checkpoint in the Sessions sheet and set its Checklist status to **Backup-Settings**.
 
 ## 2. Configure, Validate, and Register C1 — Wildlife

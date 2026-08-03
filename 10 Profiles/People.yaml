@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
+  last_updated: 2026-08-03
   release: true
 title: People
 card:
@@ -15,6 +15,9 @@ card:
         settings:
           - shutter.type
           - autofocus.subject_detection
+      - name: AF Case
+        settings:
+          - autofocus.servo_af_case
 inherits: baseline
 overrides:
   autofocus:
@@ -38,3 +41,6 @@ common_mistakes:
 notes:
   - Use short bursts to capture expressions without filling the buffer unnecessarily.
   - Consider Av for intentional portraits; use Fv for casual family and event people photography.
+appendix_links:
+  - id: af_cases_tracking
+    label: Servo AF Case selection and tracking adjustments
