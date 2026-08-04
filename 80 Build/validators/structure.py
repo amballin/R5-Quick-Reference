@@ -50,4 +50,14 @@ def validate(root):
         path = root / file_path
         if not path.is_file():
             issues.append(error("project_structure", path, "Required file is missing."))
+    testing_dir = root / "90 Testing"
+    for pattern in ("*.xlsx", "*.numbers"):
+        for path in sorted(testing_dir.glob(pattern)):
+            issues.append(
+                error(
+                    "project_structure",
+                    path,
+                    "Verification workbooks must remain machine-local; Git-tracked YAML is canonical.",
+                )
+            )
     return issues

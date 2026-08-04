@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Definition-Aware Verification Tracker Integrity
+
+**Status:** Accepted
+**Date:** 2026-08-03
+
+Treat a machine-local verification tracker as current only when its file hashes, canonical YAML-status hash, workbook revision, and source fingerprint all match its synchronization marker and the current project definitions. A tracker whose definitions or YAML status changed but whose workbook files remain unchanged may be rebuilt automatically from canonical YAML. If the workbook also contains unimported edits, block rebuilding and opening through the helper until those edits are imported; preserve evidence and mark changed definitions for retest through the existing fingerprint-aware importer.
+
+Enforce this state in the open-tracker helper, Preflight, source validation, and Finish Day. Finish Day must run source validation, the normal development build, and full validation before staging; it may not continue to a commit after validation is declined or postponed. Keep working Excel and Numbers files exclusively in the machine-local Verification folder, reject them under `90 Testing`, and retain Git-tracked YAML as the portable canonical record.
+
+Represent **My Menu: SWITCH** and **My Menu: AF Case** as distinct checklist tests with independent status and evidence. Require SWITCH at sequence 4 and AF Case immediately afterward, including the approved shortcut order and confirmation that Servo AF opens the complete Case selector.
+
 ## My Menu: AF Case
 
 **Status:** Accepted

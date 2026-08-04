@@ -214,9 +214,26 @@ def validate(root):
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Verification Test IDs must be unique."))
     if sequences != list(range(1, len(tests) + 1)):
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Verification sequences must be consecutive and ordered."))
-    my_menu = next((test for test in tests if test.get("test_id") == "SETUP-MM-01"), None)
-    if not my_menu or my_menu.get("sequence", 999) > 4:
-        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The SWITCH and AF Case My Menu setup must occur by sequence 4."))
+    switch_menu = next((test for test in tests if test.get("test_id") == "SETUP-MM-01"), None)
+    af_case_menu = next((test for test in tests if test.get("test_id") == "SETUP-MM-AF-01"), None)
+    if not switch_menu or switch_menu.get("sequence") != 4:
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The dedicated SWITCH My Menu test must be sequence 4."))
+    if not af_case_menu or af_case_menu.get("sequence") != 5:
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The dedicated AF Case My Menu test must immediately follow SWITCH at sequence 5."))
+    switch_items = [
+        "Subject to detect",
+        "Shutter mode",
+        "Focus bracketing",
+        "IS (Image Stabilizer) mode",
+        "Cropping/aspect ratio",
+    ]
+    if switch_menu and not _contains_in_order(switch_menu.get("menu_detail", ""), switch_items):
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The SWITCH My Menu test must list all five approved shortcuts in order."))
+    af_case_items = ["Servo AF", "Tracking Sensitivity", "Accel./Decel. tracking"]
+    if af_case_menu and not _contains_in_order(af_case_menu.get("menu_detail", ""), af_case_items):
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The AF Case My Menu test must list all three approved shortcuts in order."))
+    if af_case_menu and "complete Case 1–4 / Case A selector" not in af_case_menu.get("menu_detail", ""):
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The AF Case test must confirm that Servo AF opens the complete Case selector."))
     statuses = ((source.get("lists") or {}).get("main_status") or [])
     if "Backup-Settings" not in statuses:
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "Main Status must include Backup-Settings."))
@@ -228,3 +245,12 @@ def validate(root):
             if test.get(key) in (None, ""):
                 issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"{test.get('test_id', '<unknown>')} is missing {key}."))
     return issues
+
+
+def _contains_in_order(text, phrases):
+    position = -1
+    for phrase in phrases:
+        position = text.find(phrase, position + 1)
+        if position < 0:
+            return False
+    return True

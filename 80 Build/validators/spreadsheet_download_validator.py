@@ -1,3 +1,5 @@
+import json
+
 from asset_manager import ProjectPaths
 from spreadsheet_downloads import (
     SUPPORTED_TARGETS,
@@ -6,6 +8,7 @@ from spreadsheet_downloads import (
     validate_download_manifest,
     validate_published_release,
 )
+from spreadsheet_revisions import source_fingerprint
 from .common import error, warning
 
 
@@ -44,14 +47,32 @@ def validate(root):
                                 f"Published {target} download is missing or empty.",
                             )
                         )
-        try:
-            validate_published_release(paths)
-        except SpreadsheetDownloadError as exc:
-            issues.append(error("spreadsheet_downloads", downloads_dir, str(exc)))
+        issues.extend(_validate_release(paths, downloads_dir, downloads_dir / "spreadsheet-releases.json"))
     docs_manifest = paths.published_spreadsheet_manifest_file
     if docs_manifest.exists():
-        try:
-            validate_published_release(paths, root=paths.pages_output_dir)
-        except SpreadsheetDownloadError as exc:
-            issues.append(error("spreadsheet_downloads", docs_manifest, str(exc)))
+        issues.extend(_validate_release(paths, paths.pages_output_dir, docs_manifest))
     return issues
+
+
+def _validate_release(paths, root, manifest_path):
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        payload = {}
+    fingerprint_issues = []
+    for target, entry in (payload.get("targets") or {}).items():
+        if target in SUPPORTED_TARGETS and entry.get("source_fingerprint") != source_fingerprint(paths, target):
+            fingerprint_issues.append(
+                error(
+                    "spreadsheet_downloads",
+                    manifest_path,
+                    f"Published {target} release has a stale source fingerprint.",
+                )
+            )
+    if fingerprint_issues:
+        return fingerprint_issues
+    try:
+        validate_published_release(paths, root=root)
+    except SpreadsheetDownloadError as exc:
+        return [error("spreadsheet_downloads", manifest_path, str(exc))]
+    return []

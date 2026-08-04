@@ -4,7 +4,7 @@ Use this workflow for EOS R5 setup checks, C1–C3 registration and read-back, p
 
 ## Open the correct working tracker
 
-The preferred command safely creates the machine-local tracker only when no working copy exists, reports whether it matches the last YAML import, and opens the newest Numbers or Excel copy:
+The preferred command creates the machine-local tracker when needed and verifies its file hashes, YAML-status hash, workbook revision, and source fingerprint before opening it. An unchanged stale tracker is rebuilt automatically from canonical YAML. If stale definitions or status coexist with unimported workbook edits, the helper blocks until those edits are imported:
 
 ```bash
 ./80\ Build/scripts/open-verification-working-copy.sh
@@ -30,14 +30,16 @@ Before changing the camera:
 
 ## Complete setup and registration in order
 
-1. Configure My Menu: SWITCH and My Menu: AF Case, the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
-2. Save the first checkpoint and mark that Checklist row Backup-Settings.
-3. In a normal mode, read back the complete C1-aligned default state, register it to C1, leave it, recall it, and read back every target setting again.
-4. Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.
-5. Do not begin C3 until C1 and C2 both recall correctly. Then complete C3 Landscape.
-6. Save the second Backup-Settings checkpoint after all three registrations have been read back.
-7. Perform the operational control, transition, joystick, shutter, burst, lighting, bokeh, and flash or trigger tests required by the Checklist.
-8. Complete the final C1–C3 and control read-back, confirm Auto update remains disabled, and save the verified final camera configuration to the card.
+1. Complete the dedicated My Menu: SWITCH checklist row.
+2. Complete the separate My Menu: AF Case row, including shortcut order and confirmation that Servo AF opens the complete Case selector without changing AF Operation.
+3. Configure the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
+4. Save the first checkpoint and mark that Checklist row Backup-Settings.
+5. In a normal mode, read back the complete C1-aligned default state, register it to C1, leave it, recall it, and read back every target setting again.
+6. Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.
+7. Do not begin C3 until C1 and C2 both recall correctly. Then complete C3 Landscape.
+8. Save the second Backup-Settings checkpoint after all three registrations have been read back.
+9. Perform the operational control, transition, joystick, shutter, burst, lighting, bokeh, and flash or trigger tests required by the Checklist.
+10. Complete the final C1–C3 and control read-back, confirm Auto update remains disabled, and save the verified final camera configuration to the card.
 
 Do not register a custom mode until every setting in that mode's complete target column has been checked. C1–C3 registration rows require separate Configure and Read Back results; both must pass against the current target.
 
@@ -55,7 +57,7 @@ Use the status that describes the observed result:
 
 Evidence files remain machine-local or in an owner-controlled evidence location; the tracker and YAML store filenames or references. Preserve the completed tracker and supporting images until applicable project evidence states have been updated.
 
-The importer validates allowed statuses and current definition fingerprints, but it cannot judge whether an observation is genuinely sufficient. Selecting Verified is the tester's confirmation that the current Expected Result passed. If a test definition or C1–C3 target later changes, its earlier pass is preserved in history and changed to Inconclusive—needs retest or Needs retest.
+The importer validates allowed statuses and current definition fingerprints, but it cannot judge whether an observation is genuinely sufficient. Selecting Verified is the tester's confirmation that the current Expected Result passed. If a test definition or C1–C3 target later changes, its earlier pass is preserved in history and changed to Inconclusive—needs retest or Needs retest. After importing an older tracker, rerun the open helper; it will rebuild the unchanged working copy from current definitions and the newly imported YAML status.
 
 ## Understand completion and project updates
 

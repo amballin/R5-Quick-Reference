@@ -9,3 +9,7 @@ npm-debug.log*
 80 Build/.debug_render_payload.json
 80 Build/Backups/
 output/
+
+# Verification workbooks are machine-local; YAML under 90 Testing is canonical.
+90 Testing/*.xlsx
+90 Testing/*.numbers

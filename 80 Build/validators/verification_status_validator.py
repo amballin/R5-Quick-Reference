@@ -1,7 +1,13 @@
 from asset_manager import ProjectPaths
 from camera_setup_tracker import effective_registration_definition_fingerprints
 from spreadsheet_revisions import tracker_definition_fingerprints
-from verification_status import STATUS_VERSION, load_status
+from verification_status import (
+    STATUS_VERSION,
+    WORKING_COPY_CONFLICT,
+    WORKING_COPY_STALE,
+    load_status,
+    working_copy_state,
+)
 
 from .common import error, load_yaml_checked
 
@@ -14,6 +20,15 @@ def validate(root):
     except Exception as exc:
         return [error("verification_status", paths.verification_status_file, str(exc))]
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
+    working_state, working_message = working_copy_state(paths)
+    if working_state in (WORKING_COPY_STALE, WORKING_COPY_CONFLICT):
+        issues.append(
+            error(
+                "verification_status",
+                paths.verification_import_marker_file,
+                working_message,
+            )
+        )
     if status.get("version") != STATUS_VERSION:
         issues.append(error("verification_status", paths.verification_status_file, "Unsupported status version."))
         return issues

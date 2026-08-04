@@ -17,13 +17,20 @@ import yaml
 
 from asset_manager import ProjectPaths
 from spreadsheet_revisions import (
+    source_fingerprint,
     tracker_definition_fingerprints,
+    workbook_revision,
 )
 from camera_setup_tracker import effective_registration_definition_fingerprints
 from validators.common import load_yaml_checked
 
 
 STATUS_VERSION = 1
+WORKING_MARKER_VERSION = 2
+WORKING_COPY_CURRENT = 0
+WORKING_COPY_PENDING = 1
+WORKING_COPY_STALE = 2
+WORKING_COPY_CONFLICT = 3
 NEEDS_RETEST = "Inconclusive—needs retest"
 MUTABLE_CHECKLIST_FIELDS = (
     "status",
@@ -238,7 +245,7 @@ def import_workbook_status(paths, source_path=None):
     ]
     status["updated"] = now
     write_status(paths, status)
-    mark_working_synced(paths)
+    mark_working_synced(paths, extracted.get("metadata") or {})
     print(f"Verification status imported from: {selected_source}")
     print(f"Git-tracked status updated: {paths.verification_status_file}")
     return status
@@ -248,6 +255,11 @@ def build_working_copy(paths):
     from camera_setup_tracker import generate_camera_setup_tracker
     from spreadsheet_downloads import convert_numbers_automatically, finalize_numbers_conversion
 
+    state, message = working_copy_state(paths)
+    if state in (WORKING_COPY_PENDING, WORKING_COPY_CONFLICT):
+        raise VerificationStatusError(
+            message + " Import the existing tracker before rebuilding it."
+        )
     status, changed = reconcile_status(paths, write=True)
     paths.verification_working_dir.mkdir(parents=True, exist_ok=True)
     generate_camera_setup_tracker(
@@ -272,38 +284,102 @@ def build_working_copy(paths):
     print(f"Verification working copy generated: {paths.setup_tracker_working_numbers_file}")
 
 
-def working_copy_pending(paths):
+def working_copy_state(paths):
     files = [
         path
         for path in (paths.setup_tracker_working_file, paths.setup_tracker_working_numbers_file)
         if path.exists()
     ]
     if not files:
-        return False, "No local verification working copy exists."
+        return WORKING_COPY_CURRENT, "No local verification working copy exists."
     marker_path = paths.verification_import_marker_file
     if not marker_path.is_file():
-        return True, "The verification working copy has never been synchronized with YAML status."
+        return (
+            WORKING_COPY_CONFLICT,
+            "The verification working copy has no synchronization marker. Import it before rebuilding or opening it.",
+        )
     try:
         marker = json.loads(marker_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        return True, "The verification import marker is unreadable."
+        return (
+            WORKING_COPY_CONFLICT,
+            "The verification import marker is unreadable. Import the working tracker before rebuilding it.",
+        )
+
+    changed_files = []
     for path in files:
         recorded = (marker.get("files") or {}).get(path.name)
         if recorded != _sha256(path):
-            return True, f"Verification workbook changed after the last YAML synchronization: {path.name}"
-    return False, "Verification working copy matches the last YAML synchronization."
+            changed_files.append(path.name)
+
+    current_source = source_fingerprint(paths, "setup")
+    current_revision = workbook_revision(paths, "setup")
+    recorded_source = marker.get("source_fingerprint")
+    try:
+        recorded_revision = int(marker.get("workbook_revision"))
+    except (TypeError, ValueError):
+        recorded_revision = None
+    definitions_changed = (
+        recorded_source != current_source
+        or recorded_revision != current_revision
+    )
+    recorded_status = marker.get("status_sha256")
+    status_changed = (
+        not paths.verification_status_file.is_file()
+        or recorded_status != _sha256(paths.verification_status_file)
+    )
+
+    if changed_files and (definitions_changed or status_changed):
+        reasons = []
+        if definitions_changed:
+            reasons.append("project definitions changed")
+        if status_changed:
+            reasons.append("canonical YAML status changed")
+        return (
+            WORKING_COPY_CONFLICT,
+            "Verification workbook has unimported edits and "
+            + " and ".join(reasons)
+            + ". Import it before rebuilding; the importer will preserve evidence and mark changed definitions for retest.",
+        )
+    if changed_files:
+        return (
+            WORKING_COPY_PENDING,
+            "Verification workbook changed after the last YAML synchronization: "
+            + ", ".join(changed_files),
+        )
+    if definitions_changed or status_changed:
+        reasons = []
+        if definitions_changed:
+            reasons.append("its embedded project definitions are stale")
+        if status_changed:
+            reasons.append("canonical YAML status changed")
+        return (
+            WORKING_COPY_STALE,
+            "Verification working copy is safely rebuildable because "
+            + " and ".join(reasons)
+            + " and it has no unimported edits.",
+        )
+    return WORKING_COPY_CURRENT, "Verification working copy matches current definitions and YAML status."
 
 
-def mark_working_synced(paths):
+def working_copy_pending(paths):
+    state, message = working_copy_state(paths)
+    return state != WORKING_COPY_CURRENT, message
+
+
+def mark_working_synced(paths, workbook_metadata=None):
     paths.verification_working_dir.mkdir(parents=True, exist_ok=True)
     files = {}
     for path in (paths.setup_tracker_working_file, paths.setup_tracker_working_numbers_file):
         if path.exists():
             files[path.name] = _sha256(path)
+    metadata = workbook_metadata or {}
     payload = {
-        "version": 1,
+        "version": WORKING_MARKER_VERSION,
         "synchronized": datetime.now().astimezone().isoformat(),
         "status_sha256": _sha256(paths.verification_status_file),
+        "workbook_revision": metadata.get("workbook_revision") or workbook_revision(paths, "setup"),
+        "source_fingerprint": metadata.get("source_fingerprint") or source_fingerprint(paths, "setup"),
         "files": files,
     }
     paths.verification_import_marker_file.write_text(
@@ -527,9 +603,9 @@ def main():
             _, changed = reconcile_status(paths, write=True)
             print("Verification status reconciled." if changed else "Verification definitions are current.")
         elif args.action == "check":
-            pending, message = working_copy_pending(paths)
+            state, message = working_copy_state(paths)
             print(message)
-            return 1 if pending else 0
+            return state
     except VerificationStatusError as exc:
         print(f"Verification status failed: {exc}", file=sys.stderr)
         return 1

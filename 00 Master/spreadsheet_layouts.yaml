@@ -126,7 +126,7 @@ workbooks:
         alignment: center
 
   setup:
-    revision: 1
+    revision: 2
     title: EOS R5 Setup & Verification Tracker
     web_title: EOS R5 Setup & Verification Tracker
     xlsx_name: EOS R5 Setup & Verification Tracker.xlsx

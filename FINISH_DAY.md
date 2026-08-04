@@ -10,7 +10,7 @@ If you updated the local Excel or Numbers verification tracker, close it and run
 ./80\ Build/scripts/import-verification-status.sh
 ```
 
-This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` will stop if the local tracker changed after its last successful import.
+This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` stops if the local tracker changed after its last successful import, if its definitions are stale, or if canonical YAML changed without rebuilding the tracker. When the unchanged tracker is merely stale, run the open-tracker helper to refresh it safely.
 
 ## 1. Finish the source work and synchronize Git
 
@@ -20,13 +20,12 @@ From the repository root, run:
 ./80\ Build/scripts/finish-day.sh
 ```
 
-At the prompts:
+The script first runs source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then, at the prompts:
 
-1. Approve the validator and normal development build.
-2. Review the complete source-file list.
-3. Approve staging every listed source change.
-4. Approve the commit and enter a clear commit message.
-5. Approve the push.
+1. Review the complete source-file list.
+2. Approve staging every listed source change.
+3. Approve the commit and enter a clear commit message.
+4. Approve the push.
 
 Do not continue until the script prints:
 

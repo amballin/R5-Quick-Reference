@@ -114,8 +114,8 @@ clean_generated_metadata || {
 
 if ! python3 "80 Build/verification_status.py" check; then
     echo
-    echo "NOT FINISHED: Verification tracker changes have not been imported into Git-tracked YAML status."
-    echo "Run ./80\\ Build/scripts/import-verification-status.sh, then rerun finish-day."
+    echo "NOT FINISHED: The verification tracker is not current and synchronized."
+    echo "Follow the tracker message above, then rerun finish-day."
     exit 1
 fi
 
@@ -149,34 +149,30 @@ esac
 
 if [[ -n "$(git status --porcelain)" ]]; then
     echo
-    if ask_yes_no "Run source validation, the normal development build, and final validation now?"; then
+    echo "Running the mandatory source validation, normal development build, and final validation..."
+    echo
+    clean_generated_metadata || {
+        echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
+        exit 1
+    }
+    python3 "80 Build/validator.py" --source-only || {
         echo
-        clean_generated_metadata || {
-            echo "Could not remove Finder metadata from generated output. Nothing was committed or pushed."
-            exit 1
-        }
-        python3 "80 Build/validator.py" --source-only || {
-            echo
-            echo "Source validation failed. Nothing was committed or pushed."
-            exit 1
-        }
-        python3 "80 Build/build.py" || {
-            echo
-            echo "Build failed. Nothing was committed or pushed."
-            exit 1
-        }
-        python3 "80 Build/validator.py" || {
-            echo
-            echo "Post-build validation failed. Nothing was committed or pushed."
-            exit 1
-        }
+        echo "Source validation failed. Nothing was committed or pushed."
+        exit 1
+    }
+    python3 "80 Build/build.py" || {
         echo
-        echo "Source validation, normal development build, and final validation completed."
-        echo "A normal build may refresh docs/. finish-day will separate those files before staging source changes."
-    else
+        echo "Build failed. Nothing was committed or pushed."
+        exit 1
+    }
+    python3 "80 Build/validator.py" || {
         echo
-        echo "Validation/build postponed."
-    fi
+        echo "Post-build validation failed. Nothing was committed or pushed."
+        exit 1
+    }
+    echo
+    echo "Source validation, normal development build, and final validation completed."
+    echo "A normal build may refresh docs/. finish-day will separate those files before staging source changes."
 
     prepare_development_docs_for_handoff || exit 1
     if [[ -z "$(git status --porcelain)" ]]; then

@@ -71,17 +71,29 @@ tests:
   - test_id: SETUP-MM-01
     sequence: 4
     phase: Camera Setup
-    expected_result: The approved SWITCH and AF Case My Menu tabs exist with their shortcuts in the correct order; SWITCH retains one open position.
-    task: "Configure and verify My Menu: SWITCH and My Menu: AF Case before profile registration."
+    expected_result: The approved SWITCH My Menu tab exists with its five shortcuts in the correct order and retains one open position.
+    task: "Configure and verify My Menu: SWITCH before profile registration."
     best_access: My Menu
     menu_location: My Menu
-    menu_detail: "Create tab SWITCH; register Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, Cropping/aspect ratio in order and leave position 6 open. Create tab AF Case; register Servo AF, Tracking Sensitivity, Accel./Decel. tracking in order; confirm Servo AF opens the Case selector."
-    next_action: Configure SWITCH and AF Case before shared defaults, controls, or C1–C3 registration.
+    menu_detail: "Create tab SWITCH; register Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, and Cropping/aspect ratio in order; leave position 6 open."
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    project_update: "Yes"
+    target_project_files: 00 Master/setting_access.yaml; controls.md; Back-Button AF guide; project memory
+  - test_id: SETUP-MM-AF-01
+    sequence: 5
+    phase: Camera Setup
+    expected_result: The approved AF Case My Menu tab exists with all three shortcuts in the correct order, and Servo AF opens the complete Case selector without changing AF Operation.
+    task: "Configure and verify My Menu: AF Case before shared setup or profile registration."
+    best_access: My Menu
+    menu_location: My Menu
+    menu_detail: "Create tab AF Case; register Servo AF, Tracking Sensitivity, and Accel./Decel. tracking in order; confirm Servo AF opens the complete Case 1–4 / Case A selector and does not change AF Operation."
+    next_action: Configure AF Case immediately after SWITCH and before shared defaults, controls, or C1–C3 registration.
     evidence_class: Approved target pending verification
     project_update: "Yes"
     target_project_files: 00 Master/setting_access.yaml; controls.md; Back-Button AF guide; project memory
   - test_id: SETUP-04
-    sequence: 5
+    sequence: 6
     phase: Camera Setup
     expected_result: Shared operational defaults match the complete C1-aligned reference baseline.
     task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering.
@@ -93,7 +105,7 @@ tests:
     project_update: "Yes"
     target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
   - test_id: SETUP-05
-    sequence: 6
+    sequence: 7
     phase: Camera Setup
     expected_result: Exposure review tools are available in every profile.
     task: Confirm RGB histogram and highlight alert are enabled.
@@ -105,7 +117,7 @@ tests:
     project_update: "Yes"
     target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
   - test_id: SETUP-06
-    sequence: 7
+    sequence: 8
     phase: Camera Setup
     expected_result: Specialty functions do not interfere with the verification session.
     task: Confirm High ISO NR, Long Exposure NR, Continuous AF, Electronic full-time MF, and IBIS High Resolution Shot are Off.
@@ -117,7 +129,7 @@ tests:
     project_update: "Yes"
     target_project_files: 00 Master/baseline.yaml; Camera Setup Essentials
   - test_id: SETUP-07
-    sequence: 8
+    sequence: 9
     phase: Camera Setup
     expected_result: Manual-focus aid matches the approved setup.
     task: Confirm MF Peaking is On, Low, Red.
@@ -129,7 +141,7 @@ tests:
     project_update: "Yes"
     target_project_files: Camera Setup Essentials; R5 Quick Reference
   - test_id: CTRL-CONFIG-01
-    sequence: 9
+    sequence: 10
     phase: Controls
     expected_result: Every shared physical control matches the approved assignment and INFO details.
     task: Configure shutter half-press, AF-ON, AE Lock, AF Point Selection, Lens AF, DOF, SET, joystick, dials, Control Ring, and M-Fn.
@@ -141,7 +153,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; Back-Button AF guide
   - test_id: BACKUP-SET-01
-    sequence: 10
+    sequence: 11
     phase: Camera Setup
     expected_result: A recoverable checkpoint exists after shared settings, SWITCH, AF Case, and physical controls are configured.
     task: Save a checkpoint copy of the complete camera configuration and record it in Sessions.
@@ -153,7 +165,7 @@ tests:
     project_update: "No"
     target_project_files: ""
   - test_id: C1-CONFIG-01
-    sequence: 11
+    sequence: 12
     phase: C1 Wildlife
     expected_result: Every C1 target setting matches the C1–C3 Registration sheet.
     task: Build the complete C1 Wildlife environment in a normal shooting mode.
@@ -165,7 +177,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; Wildlife profile
   - test_id: C1-REG-01
-    sequence: 12
+    sequence: 13
     phase: C1 Wildlife
     expected_result: C1 registration completes without overwriting C2 or C3.
     task: Register the validated Wildlife environment to C1.
@@ -177,7 +189,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; Back-Button AF guide
   - test_id: C1-READ-01
-    sequence: 13
+    sequence: 14
     phase: C1 Wildlife
     expected_result: Every recalled value matches the validated C1 column.
     task: Leave the setup state, recall C1 with M-Fn, and read back every setting.
@@ -189,7 +201,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory
   - test_id: C1-OPS-01
-    sequence: 14
+    sequence: 15
     phase: C1 Wildlife
     expected_result: C1 recalls a usable Wildlife environment and controls behave as intended.
     task: Perform a short Wildlife operational test.
@@ -201,7 +213,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; Wildlife profile
   - test_id: C2-CONFIG-01
-    sequence: 15
+    sequence: 16
     phase: C2 Birds in Flight
     expected_result: Every C2 target setting matches the C1–C3 Registration sheet.
     task: Return to a normal mode and build the complete C2 Birds in Flight environment.
@@ -213,7 +225,7 @@ tests:
     project_update: "Yes"
     target_project_files: Birds in Flight profile; Back-Button AF guide
   - test_id: C2-REG-01
-    sequence: 16
+    sequence: 17
     phase: C2 Birds in Flight
     expected_result: C2 registration completes without changing C1.
     task: Register the validated Birds in Flight environment to C2.
@@ -225,7 +237,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; Back-Button AF guide
   - test_id: C2-READ-01
-    sequence: 17
+    sequence: 18
     phase: C2 Birds in Flight
     expected_result: Every recalled value matches the validated C2 column.
     task: Recall C2 and read back every setting.
@@ -237,7 +249,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory
   - test_id: C2-OPS-01
-    sequence: 18
+    sequence: 19
     phase: C2 Birds in Flight
     expected_result: C2 provides 1/2500 sec., Mechanical shutter, H+, Servo AF Case 4, animal tracking, and Mode 3.
     task: Perform a short Birds in Flight operational test.
@@ -249,7 +261,7 @@ tests:
     project_update: "Yes"
     target_project_files: Birds in Flight profile
   - test_id: C3-CONFIG-01
-    sequence: 19
+    sequence: 20
     phase: C3 Landscape
     expected_result: Every C3 target setting matches the C1–C3 Registration sheet.
     task: Return to a normal mode and build the complete C3 Landscape environment.
@@ -261,7 +273,7 @@ tests:
     project_update: "Yes"
     target_project_files: Landscape profile; Back-Button AF guide
   - test_id: C3-REG-01
-    sequence: 20
+    sequence: 21
     phase: C3 Landscape
     expected_result: C3 registration completes without changing C1 or C2.
     task: Register the validated Landscape environment to C3.
@@ -273,7 +285,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; Back-Button AF guide
   - test_id: C3-READ-01
-    sequence: 21
+    sequence: 22
     phase: C3 Landscape
     expected_result: Every recalled value matches the validated C3 column.
     task: Recall C3 and read back every setting.
@@ -285,7 +297,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory
   - test_id: BACKUP-SET-02
-    sequence: 22
+    sequence: 23
     phase: Camera Setup
     expected_result: A recoverable checkpoint exists after C1, C2, and C3 are registered and read back.
     task: Save a checkpoint copy of the complete camera configuration and record it in Sessions.
@@ -297,7 +309,7 @@ tests:
     project_update: "No"
     target_project_files: ""
   - test_id: C3-OPS-01
-    sequence: 23
+    sequence: 24
     phase: C3 Landscape
     expected_result: C3 provides Av, f/9, ISO 100, One-Shot, 1-Point, Single Shot, and EFCS.
     task: Perform a short Landscape operational test.
@@ -309,7 +321,7 @@ tests:
     project_update: "Yes"
     target_project_files: Landscape profile
   - test_id: CTRL-AFON-01
-    sequence: 24
+    sequence: 25
     phase: Controls
     expected_result: AF-ON invokes Face + Tracking while maintaining the current AF Operation and Servo characteristics.
     task: Verify AF-ON in Servo and One-Shot environments.
@@ -321,7 +333,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
   - test_id: CTRL-AELOCK-01
-    sequence: 25
+    sequence: 26
     phase: Controls
     expected_result: AE Lock invokes 1-Point AF while maintaining the current AF Operation and last point position.
     task: Verify AE Lock in Servo and One-Shot environments.
@@ -333,7 +345,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
   - test_id: CTRL-DOF-01
-    sequence: 26
+    sequence: 27
     phase: Controls
     expected_result: DOF changes AF Operation and both AF-start buttons respect the changed state.
     task: Verify the DOF One-Shot ↔ Servo switch.
@@ -345,7 +357,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory
   - test_id: CTRL-SET-01
-    sequence: 27
+    sequence: 28
     phase: Controls
     expected_result: SET toggles Eye Detection with Face + Tracking and does not imply active eye detection with deliberate-point AF.
     task: Verify SET Eye Detection behavior.
@@ -357,7 +369,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; data/canon_r5_custom_controls_current.yaml; project memory
   - test_id: CTRL-JOY-01
-    sequence: 28
+    sequence: 29
     phase: Controls
     expected_result: Movement selects the intended point or subject; observed recenter and Face Select behavior are recorded.
     task: Verify joystick movement and straight-press behavior.
@@ -369,7 +381,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory; Back-Button AF guide
   - test_id: EFCS-SHOCK-01
-    sequence: 29
+    sequence: 30
     phase: EFCS Tests
     expected_result: At least five matched frames per shutter speed and mode are available for comparison.
     task: Compare EFCS and Mechanical tripod sharpness at 1/8–1/60 sec.
@@ -381,7 +393,7 @@ tests:
     project_update: "Yes"
     target_project_files: 00 Master/baseline.yaml; EFCS decision; R5 Quick Reference
   - test_id: EFCS-BOKEH-01
-    sequence: 30
+    sequence: 31
     phase: EFCS Tests
     expected_result: Matched frames show whether EFCS clips out-of-focus highlights at fast shutter speeds.
     task: Compare EFCS and Mechanical bokeh with the EF 50mm f/1.4 at 1/1000–1/8000 sec.
@@ -393,7 +405,7 @@ tests:
     project_update: "Yes"
     target_project_files: People profile; EFCS decision; R5 Quick Reference
   - test_id: EFCS-LIGHT-01
-    sequence: 31
+    sequence: 32
     phase: EFCS Tests
     expected_result: Exposure and color consistency are assessed at Sports shutter speeds with Anti-flicker Off and On.
     task: Compare EFCS and Mechanical under representative LED or fluorescent lighting.
@@ -405,7 +417,7 @@ tests:
     project_update: "Yes"
     target_project_files: Sports profile; EFCS decision; R5 Quick Reference
   - test_id: EFCS-BURST-01
-    sequence: 32
+    sequence: 33
     phase: EFCS Tests
     expected_result: Burst cadence, tracking, and viewfinder behavior are recorded for EFCS and Mechanical.
     task: Compare High and High Speed Continuous+ burst behavior.
@@ -417,7 +429,7 @@ tests:
     project_update: "Yes"
     target_project_files: EFCS decision; R5 Quick Reference
   - test_id: FLASH-PLUTO-01
-    sequence: 33
+    sequence: 34
     phase: EFCS Tests
     expected_result: Trigger timing, sync, exposure consistency, flash duration, and recycle behavior pass.
     task: Verify the Mechanical 1/200-sec. Pluto/manual-flash Waterdrops setup.
@@ -429,7 +441,7 @@ tests:
     project_update: "Yes"
     target_project_files: Waterdrops profile; Flash Photography; EFCS decision
   - test_id: FINAL-READ-01
-    sequence: 34
+    sequence: 35
     phase: Finalization
     expected_result: All three custom modes, both approved My Menu tabs, and shared controls remain correct; Auto update remains disabled.
     task: Recall C1, C2, and C3 and complete a final read-back.
@@ -441,7 +453,7 @@ tests:
     project_update: "Yes"
     target_project_files: controls.md; project memory
   - test_id: FINAL-SAVE-01
-    sequence: 35
+    sequence: 36
     phase: Finalization
     expected_result: A named post-verification settings file exists and is recorded in the Sessions sheet.
     task: Save the verified complete camera configuration to the card.
@@ -453,7 +465,7 @@ tests:
     project_update: "No"
     target_project_files: ""
   - test_id: PROJECT-UPDATE-01
-    sequence: 36
+    sequence: 37
     phase: Project Update
     expected_result: Only completed, unambiguous evidence is promoted to owner-confirmed status.
     task: Review Verified rows that require a project update.

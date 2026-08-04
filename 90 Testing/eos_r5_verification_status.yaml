@@ -1,5 +1,5 @@
 version: 1
-updated: '2026-08-03T19:27:03.446195-04:00'
+updated: '2026-08-03T20:54:18.730838-04:00'
 tests:
   SETUP-01:
     status: Verified
@@ -40,9 +40,6 @@ tests:
     next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:10c1951c74b44263db5ff6b5725ac0017ef930c909beb4e4acb1fb7b0d6a1e37
-    current_definition: sha256:8db101ddb273a45f6331297cc644cc7f1e9daa70a6b06941fd9eec19846aba15
-    retest_reason: The workbook test definition is older than the current project definition.
   SETUP-04:
     status: Inconclusive—needs retest
     test_date: 46235
@@ -53,7 +50,7 @@ tests:
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
   SETUP-05:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -61,9 +58,8 @@ tests:
     next_action: Check display settings.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
   SETUP-06:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -71,9 +67,8 @@ tests:
     next_action: Review Set & Forget settings.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
   SETUP-07:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -81,9 +76,8 @@ tests:
     next_action: Review MF Peaking settings.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
   CTRL-CONFIG-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -91,7 +85,6 @@ tests:
     next_action: Configure each control before registering C1.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
   BACKUP-SET-01:
     status: Backup-Settings
     test_date: 46235
@@ -110,11 +103,8 @@ tests:
     next_action: Configure from a normal shooting mode, not recalled C1.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:bb51b8b1302bce99686d64b8b0cbf269285b79f05cdb854749bd64aea89b1012
-    current_definition: sha256:3106412ca5b5a6958f9cb988c22aa42c9c57f6699362dc8c99d35dbd4a15df3e
-    retest_reason: The workbook test definition is older than the current project definition.
   C1-REG-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 2
     evidence_files: []
@@ -122,7 +112,6 @@ tests:
     next_action: Register only after every C1 setting is checked.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:f461ea2e61ae1e9b6979dce7f6745b9816601528fb68a6618d8eadcbdd17a502
   C1-READ-01:
     status: Inconclusive—needs retest
     test_date: 46235
@@ -132,9 +121,6 @@ tests:
     next_action: Record discrepancies before proceeding to C2.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:10a6be7db7226c276100bc1736c6201418a5cd05438549f1159ce0ce561d47bd
-    current_definition: sha256:deac94ababfd24189cc96c5608ac4c08e0638d13a584ded471b4352b5688dac7
-    retest_reason: The workbook test definition is older than the current project definition.
   C2-CONFIG-01:
     status: Inconclusive—needs retest
     test_date: 46235
@@ -144,11 +130,8 @@ tests:
     next_action: Do not build C2 while working inside recalled C1.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:f6bd4b38d09cefcd6ef7d79d6df02a5f7d08811ad471c4c65c5dba1acede5797
-    current_definition: sha256:5e095e58ef84cd93e6ea85dbaf503bf620710e0f3b950b9b24b33c8d4f4ed361
-    retest_reason: The workbook test definition is older than the current project definition.
   C2-REG-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 2
     evidence_files: []
@@ -156,7 +139,6 @@ tests:
     next_action: Register only after every C2 setting is checked.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:63fb5022c877bccd92feb9c02cb90b74feda63d1eb9993f889d0fe1420a6485e
   C2-READ-01:
     status: Inconclusive—needs retest
     test_date: 46235
@@ -166,11 +148,8 @@ tests:
     next_action: Recheck C1 after the C2 read-back.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:ff4e52f0766604bfc924d274273adb0fecb5f24fa22997163f0ff7ca62568e84
-    current_definition: sha256:196eb14ca3ac93254404fdaba2b5cb7ad8c93c950b930a6231ead2519835874a
-    retest_reason: The workbook test definition is older than the current project definition.
   C3-CONFIG-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 2
     evidence_files: []
@@ -178,9 +157,8 @@ tests:
     next_action: Do not build C3 while working inside C1 or C2.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:45e2ad8ae739d2475bad363b56afd793dbfeacf56f7a9c09cfe62d4d90d73b76
   C3-REG-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 2
     evidence_files: []
@@ -188,9 +166,8 @@ tests:
     next_action: Register only after every C3 setting is checked.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:9f5660b058d96ef2a52760a2323d545f63f41f2a651403cd58fde27e840fe894
   C3-READ-01:
-    status: Verified
+    status: Inconclusive—needs retest
     test_date: 46235
     session_id: 2
     evidence_files: []
@@ -198,7 +175,6 @@ tests:
     next_action: Recall C1, C2, and C3 in sequence afterward.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
-    verified_against: sha256:778742d0d1c3d1effa3c73595a59bb77f362c9568e066b27aa362f9b7ce7d860
   BACKUP-SET-02:
     status: Backup-Settings
     test_date: 46235
@@ -842,3 +818,564 @@ history:
     verified_against: sha256:ff4e52f0766604bfc924d274273adb0fecb5f24fa22997163f0ff7ca62568e84
     current_definition: sha256:196eb14ca3ac93254404fdaba2b5cb7ad8c93c950b930a6231ead2519835874a
     retest_reason: The workbook test definition is older than the current project definition.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: SETUP-05
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
+    current_definition: sha256:67ea99e7324822765d73c9e1a978991ba090dd1fcb01bc4f819eb693e2018f1b
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: SETUP-06
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
+    current_definition: sha256:50a7bb1d684b76be2ecaf5dd70540adcc5036481c265a2d6e4348a13c0d3f061
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: SETUP-07
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
+    current_definition: sha256:4465ab573d202c4fbb497291b08a1c5ffffad91c48872e300991471bef2567f4
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: CTRL-CONFIG-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
+    current_definition: sha256:bf207e6d54b48768207e423d534c48709f88f234d55bdcb9613e260a68c411f2
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: C1-REG-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C1 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:f461ea2e61ae1e9b6979dce7f6745b9816601528fb68a6618d8eadcbdd17a502
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C1 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:f461ea2e61ae1e9b6979dce7f6745b9816601528fb68a6618d8eadcbdd17a502
+    current_definition: sha256:04a561cd1850599049f01a2ec97355afe25fe8c5fc4c4c81d52f639897d63b03
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: C2-REG-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C2 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:63fb5022c877bccd92feb9c02cb90b74feda63d1eb9993f889d0fe1420a6485e
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C2 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:63fb5022c877bccd92feb9c02cb90b74feda63d1eb9993f889d0fe1420a6485e
+    current_definition: sha256:f4b28c92d9a20605b591f5721dd3ad3beff4e7b5105c8c15a65d23398e8e2d56
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: C3-CONFIG-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C3 while working inside C1 or C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:45e2ad8ae739d2475bad363b56afd793dbfeacf56f7a9c09cfe62d4d90d73b76
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C3 while working inside C1 or C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:45e2ad8ae739d2475bad363b56afd793dbfeacf56f7a9c09cfe62d4d90d73b76
+    current_definition: sha256:633063511fb285503511b318ef26bf092ac48be8afda4df5ef008ab645d4f712
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: C3-REG-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C3 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:9f5660b058d96ef2a52760a2323d545f63f41f2a651403cd58fde27e840fe894
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C3 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:9f5660b058d96ef2a52760a2323d545f63f41f2a651403cd58fde27e840fe894
+    current_definition: sha256:f692886e78e72d84e31a5ef91aa281938d0529b8b7ea1a220bbf200993144e29
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:33:48.132604-04:00'
+  event: definition_changed
+  id: C3-READ-01
+  previous:
+    status: Verified
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recall C1, C2, and C3 in sequence afterward.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:778742d0d1c3d1effa3c73595a59bb77f362c9568e066b27aa362f9b7ce7d860
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recall C1, C2, and C3 in sequence afterward.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:778742d0d1c3d1effa3c73595a59bb77f362c9568e066b27aa362f9b7ce7d860
+    current_definition: sha256:44b63514e2b1f8af98d36c6a4a25a22b7d554a7055c63b717a390b5801f4f72f
+    retest_reason: The test definition changed after this result was recorded.
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: SETUP-MM-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:10c1951c74b44263db5ff6b5725ac0017ef930c909beb4e4acb1fb7b0d6a1e37
+    current_definition: sha256:8db101ddb273a45f6331297cc644cc7f1e9daa70a6b06941fd9eec19846aba15
+    retest_reason: The workbook test definition is older than the current project definition.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure SWITCH before shared defaults, controls, or C1–C3 registration.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: SETUP-05
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:fe40d0591ea5bb918a95096896c88e57973a17e604de841f7b2e42718910d160
+    current_definition: sha256:67ea99e7324822765d73c9e1a978991ba090dd1fcb01bc4f819eb693e2018f1b
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Check display settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: SETUP-06
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:beaf13d7430d2d3162636f073285172d26c909da7a8d59e4fa99be242e35555d
+    current_definition: sha256:50a7bb1d684b76be2ecaf5dd70540adcc5036481c265a2d6e4348a13c0d3f061
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review Set & Forget settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: SETUP-07
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ae9a5f9d945a50c4ccc176c38f7c0029989fda3f1c58b5a69600eafb1b80cb79
+    current_definition: sha256:4465ab573d202c4fbb497291b08a1c5ffffad91c48872e300991471bef2567f4
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Review MF Peaking settings.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: CTRL-CONFIG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:5255a806565847c3cb210c1f8d9507d27ff69d5f711fbcaebfc48b18d08d9ffd
+    current_definition: sha256:bf207e6d54b48768207e423d534c48709f88f234d55bdcb9613e260a68c411f2
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C1-CONFIG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Configure from a normal shooting mode, not recalled C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:bb51b8b1302bce99686d64b8b0cbf269285b79f05cdb854749bd64aea89b1012
+    current_definition: sha256:3106412ca5b5a6958f9cb988c22aa42c9c57f6699362dc8c99d35dbd4a15df3e
+    retest_reason: The workbook test definition is older than the current project definition.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Configure from a normal shooting mode, not recalled C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C1-REG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C1 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:f461ea2e61ae1e9b6979dce7f6745b9816601528fb68a6618d8eadcbdd17a502
+    current_definition: sha256:04a561cd1850599049f01a2ec97355afe25fe8c5fc4c4c81d52f639897d63b03
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C1 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C1-READ-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Record discrepancies before proceeding to C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:10a6be7db7226c276100bc1736c6201418a5cd05438549f1159ce0ce561d47bd
+    current_definition: sha256:deac94ababfd24189cc96c5608ac4c08e0638d13a584ded471b4352b5688dac7
+    retest_reason: The workbook test definition is older than the current project definition.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Record discrepancies before proceeding to C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C2-CONFIG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C2 while working inside recalled C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:f6bd4b38d09cefcd6ef7d79d6df02a5f7d08811ad471c4c65c5dba1acede5797
+    current_definition: sha256:5e095e58ef84cd93e6ea85dbaf503bf620710e0f3b950b9b24b33c8d4f4ed361
+    retest_reason: The workbook test definition is older than the current project definition.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C2 while working inside recalled C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C2-REG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C2 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:63fb5022c877bccd92feb9c02cb90b74feda63d1eb9993f889d0fe1420a6485e
+    current_definition: sha256:f4b28c92d9a20605b591f5721dd3ad3beff4e7b5105c8c15a65d23398e8e2d56
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C2 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C2-READ-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recheck C1 after the C2 read-back.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:ff4e52f0766604bfc924d274273adb0fecb5f24fa22997163f0ff7ca62568e84
+    current_definition: sha256:196eb14ca3ac93254404fdaba2b5cb7ad8c93c950b930a6231ead2519835874a
+    retest_reason: The workbook test definition is older than the current project definition.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recheck C1 after the C2 read-back.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C3-CONFIG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C3 while working inside C1 or C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:45e2ad8ae739d2475bad363b56afd793dbfeacf56f7a9c09cfe62d4d90d73b76
+    current_definition: sha256:633063511fb285503511b318ef26bf092ac48be8afda4df5ef008ab645d4f712
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Do not build C3 while working inside C1 or C2.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C3-REG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C3 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:9f5660b058d96ef2a52760a2323d545f63f41f2a651403cd58fde27e840fe894
+    current_definition: sha256:f692886e78e72d84e31a5ef91aa281938d0529b8b7ea1a220bbf200993144e29
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Register only after every C3 setting is checked.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+- timestamp: '2026-08-03T20:54:18.730838-04:00'
+  event: spreadsheet_import
+  id: C3-READ-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recall C1, C2, and C3 in sequence afterward.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:778742d0d1c3d1effa3c73595a59bb77f362c9568e066b27aa362f9b7ce7d860
+    current_definition: sha256:44b63514e2b1f8af98d36c6a4a25a22b7d554a7055c63b717a390b5801f4f72f
+    retest_reason: The test definition changed after this result was recorded.
+  current:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 2
+    evidence_files: []
+    observation: ''
+    next_action: Recall C1, C2, and C3 in sequence afterward.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
