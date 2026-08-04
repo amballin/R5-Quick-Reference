@@ -16,6 +16,12 @@ table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;widt
 th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
 code{background:#eef2f7;padding:2px 4px;border-radius:4px}
 a{color:#165d9c}
+
+.access-token{display:inline-block;padding:1px 6px;border-radius:999px;font-size:.93em;line-height:1.35;white-space:nowrap;vertical-align:baseline;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.access-token.access-switch{background:#72dda8;color:#123047}
+.access-token.access-menu-2{background:#f0bf69;color:#342400}
+.access-token.access-mfn{background:#4f46e5;color:#fff}
+
 .appendix-index-return{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}
 .appendix-index-return__short{display:none}
 .appendix-index-return:focus-visible{outline:2px solid #165d9c;outline-offset:2px}
@@ -72,6 +78,7 @@ a{color:#165d9c}
 <li><a href="#eye-detection">Eye Detection</a></li>
 <li><a href="#subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</a></li>
 <li><a href="#af-tracking-behavior">AF Tracking Behavior</a></li>
+<li><a href="#approved-servo-af-starting-settings">Approved Servo AF Starting Settings</a></li>
 <li><a href="#capture-and-timing">Capture and Timing</a></li>
 <li><a href="#cropping-aspect-ratio">Cropping / Aspect Ratio</a></li>
 <li><a href="#drive-mode">Drive Mode</a></li>
@@ -112,8 +119,8 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDMyIDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1vZGUgc2VsZWN0aW9uIGRpYWw8L3RpdGxlPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTIiIHI9IjEwLjYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjEyIiByPSIzLjIiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwvZz4KICA8ZyBmaWxsPSIjMDAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzLjkiIGZvbnQtd2VpZ2h0PSI3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPgogICAgPHRleHQgeD0iMTYiIHk9IjUuMSI+QXY8L3RleHQ+CiAgICA8dGV4dCB4PSIyMi42IiB5PSI5LjkiPlR2PC90ZXh0PgogICAgPHRleHQgeD0iMjAuMSIgeT0iMTcuNiI+QjwvdGV4dD4KICAgIDx0ZXh0IHg9IjExLjkiIHk9IjE3LjYiPk08L3RleHQ+CiAgICA8dGV4dCB4PSI5LjQiIHk9IjkuOSI+RnY8L3RleHQ+CiAgPC9nPgo8L3N2Zz4K" alt="Mode selector" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td><strong>C2</strong></td><td>Custom shooting mode 2</td><td>Recalls registered camera settings.</td></tr>
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDMyIDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1vZGUgc2VsZWN0aW9uIGRpYWw8L3RpdGxlPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTIiIHI9IjEwLjYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjEyIiByPSIzLjIiIHN0cm9rZS13aWR0aD0iMSIvPgogIDwvZz4KICA8ZyBmaWxsPSIjMDAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzLjkiIGZvbnQtd2VpZ2h0PSI3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPgogICAgPHRleHQgeD0iMTYiIHk9IjUuMSI+QXY8L3RleHQ+CiAgICA8dGV4dCB4PSIyMi42IiB5PSI5LjkiPlR2PC90ZXh0PgogICAgPHRleHQgeD0iMjAuMSIgeT0iMTcuNiI+QjwvdGV4dD4KICAgIDx0ZXh0IHg9IjExLjkiIHk9IjE3LjYiPk08L3RleHQ+CiAgICA8dGV4dCB4PSI5LjQiIHk9IjkuOSI+RnY8L3RleHQ+CiAgPC9nPgo8L3N2Zz4K" alt="Mode selector" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td><strong>C3</strong></td><td>Custom shooting mode 3</td><td>Recalls registered camera settings.</td></tr>
 </table>
-<p><strong>Camera Menu:</strong> MODE button, then Main dial. Custom modes are registered under Set-up &gt; Custom shooting mode (C1-C3). The owner-confirmed M-Fn assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.</p>
-<p><strong>Quick Menu:</strong> Exposure mode is normally changed with the MODE button, not the Q screen.</p>
+<p><strong>Camera Menu:</strong> MODE button, then Main dial. Custom modes are registered under Set-up &gt; Custom shooting mode (C1-C3). The owner-confirmed <strong class="access-token access-mfn">M-Fn</strong> assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.</p>
+<p><strong>Quick Access:</strong> MODE button + Main Dial. The owner-confirmed <strong class="access-token access-mfn">M-Fn</strong> assignment switches among C1-C3; exposure mode is not normally changed through the Q screen.</p>
 <h4 id="metering-mode">Metering Mode</h4>
 <p>Use Evaluative as the general default, including for backlit subjects. For bright sky, snow, dark backgrounds, and other difficult scenes, normally keep Evaluative and adjust exposure compensation while checking the RGB histogram and highlight alert.</p>
 <p>Partial and Spot meter only the center of the EOS R5 screen; Spot does not follow the active AF point. Use them only when you deliberately place the tone to measure under the center metering area. Partial is the more forgiving choice when a centered subject is surrounded by much brighter light. Spot is for precise measurement of a specific tone and may require compensation when that tone is lighter or darker than a middle tone. Center-weighted is most useful when the important subject stays near the center and you want the rest of the frame to retain some influence.</p>
@@ -125,7 +132,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjE5IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTkgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbWV0ZXJpbmctY2VudGVyPC90aXRsZT4NCiAgPHBhdGggZD0iTTguMzgsMTUuNUgyYTEuNCwxLjQsMCwwLDEtMS0uNDNBMS40NSwxLjQ1LDAsMCwxLC41NywxNFYyQTEuNDUsMS40NSwwLDAsMSwxLC45MywxLjQsMS40LDAsMCwxLDIsLjVIOC4zOFYxLjM4SDJhMC42LDAuNiwwLDAsMC0uNi42VjE0YTAuNiwwLjYsMCwwLDAsLjYuNkg4LjM4VjE1LjVabTEwLTEuNDlBMS40NCwxLjQ0LDAsMCwxLDE4LDE1LjA3YTEuNDEsMS40MSwwLDAsMS0xLC40M0gxMC42MlYxNC42MUgxN2EwLjYsMC42LDAsMCwwLC42LTAuNlYyYTAuNiwwLjYsMCwwLDAtLjYtMC42SDEwLjYyVjAuNUgxN2ExLjQsMS40LDAsMCwxLDEsLjQzQTEuNDQsMS40NCwwLDAsMSwxOC40MywyVjE0WiIvPg0KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHdpZHRoPSIxOSIgaGVpZ2h0PSIxNiIvPg0KPC9zdmc+DQo=" alt="Center-weighted average metering" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Center-weighted</td><td>Averages the whole screen while weighting its center more heavily.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Metering mode.</p>
-<p><strong>Quick Menu:</strong> Q screen. M-Fn is reserved for switching among C1-C3.</p>
+<p><strong>Quick Access:</strong> Q screen. <strong class="access-token access-mfn">M-Fn</strong> is reserved for switching among C1-C3.</p>
 <h4 id="shutter-speed">Shutter Speed</h4>
 <p>Shutter speed controls motion. Action profiles use fast shutter speeds; long exposure profiles use slow shutter speeds.</p>
 <table>
@@ -135,7 +142,7 @@ a{color:#165d9c}
 <tr><td>Camera-selected shutter speed</td><td>Lets the camera choose shutter speed from the exposure mode.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Tv or Manual exposure shutter speed control; Av/P/Fv allow the camera to choose shutter speed.</p>
-<p><strong>Quick Menu:</strong> Top dial / Q screen depending on exposure mode.</p>
+<p><strong>Quick Access:</strong> Main Dial or the Fv exposure controls; the Q screen is mode-dependent.</p>
 <h4 id="shutter-type">Shutter Type</h4>
 <p>EFCS is the approved EOS R5 baseline pending physical verification. It starts the exposure electronically and ends it with the mechanical second curtain, which removes first-curtain shutter shock without taking on the major motion-distortion and flash restrictions of fully Electronic shutter. It is not silent.</p>
 <table>
@@ -149,7 +156,7 @@ a{color:#165d9c}
 <p>On the R5, Mechanical and EFCS both reach approximately 12 fps in High Speed Continuous+. In regular High Speed Continuous, Canon specifies approximately 6 fps with Mechanical and 8 fps with EFCS. Normal flash sync is up to 1/200 sec. with Mechanical and 1/250 sec. with EFCS; attached flashes, triggers, and other conditions may impose lower limits.</p>
 <p>For Canon&#x27;s fuller explanation and example use cases, see <a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/a-look-at-the-shutter-modes-in-canon-eos-cameras" target="_blank" rel="noopener noreferrer">A Look at the Shutter Modes in Canon EOS Cameras</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting 6 &gt; Shutter mode.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> <strong class="access-token access-switch">My Menu: SWITCH</strong> &gt; Shutter mode; otherwise Shooting 6 &gt; Shutter mode.</p>
 <h3 id="autofocus-and-manual-focus">Autofocus and Manual Focus</h3>
 <h4 id="focus-mode">Focus Mode</h4>
 <p>AF lets the camera drive focus. MF leaves focus under manual control from the lens or camera setting. When Focus Mode is MF, AF Method, Subject Detection, and Eye Detection do not help focusing.</p>
@@ -159,7 +166,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1tZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi44NCwxNS41SDExLjIzbDAtMTNoMGwtMy43MywxM0g1LjlsLTMuNzMtMTNoMHYxM0gwLjUzVjAuNUgzLjE4TDYuNzEsMTMsMTAuMTcsMC41aDIuNjd2MTVabTcuNjMtMTVWMi4zOUgxNi4xMXY0LjRoNC4xN1Y4LjY4SDE2LjExVjE1LjVIMTQuNDhWMC41aDZaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="MF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>MF</td><td>Leaves focus under manual control from the lens or camera setting.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Lens AF/MF switch; AF1 &gt; Focus mode when shown.</p>
-<p><strong>Quick Menu:</strong> Lens switch; usually not a Q item.</p>
+<p><strong>Quick Access:</strong> Lens AF/MF switch when fitted; otherwise AF1 &gt; Focus mode when shown. This is not normally a Q item.</p>
 <h4 id="af-operation">AF Operation</h4>
 <p>Use Servo AF for movement, One-Shot AF for static subjects, and Manual Focus when focus must stay locked or autofocus would hunt.</p>
 <table>
@@ -169,7 +176,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1tZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi44NCwxNS41SDExLjIzbDAtMTNoMGwtMy43MywxM0g1LjlsLTMuNzMtMTNoMHYxM0gwLjUzVjAuNUgzLjE4TDYuNzEsMTMsMTAuMTcsMC41aDIuNjd2MTVabTcuNjMtMTVWMi4zOUgxNi4xMXY0LjRoNC4xN1Y4LjY4SDE2LjExVjE1LjVIMTQuNDhWMC41aDZaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="MF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Manual Focus</td><td>Stops autofocus hunting and keeps focus under manual control.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF operation; for Manual Focus use the lens AF/MF switch or AF1 &gt; Focus mode when shown.</p>
-<p><strong>Quick Menu:</strong> Q screen for AF Operation. Manual Focus is usually the lens switch, not Q; M-Fn is reserved for switching among C1-C3.</p>
+<p><strong>Quick Access:</strong> Q screen for AF Operation. Manual Focus is usually the lens AF/MF switch; <strong class="access-token access-mfn">M-Fn</strong> is reserved for switching among C1-C3.</p>
 <h4 id="af-method">AF Method</h4>
 <p>Face + Tracking is for subject-aware tracking. 1-Point AF is precise and predictable. Spot AF is smaller and more exact. Expand AF Area helps with action when tracking may lose the subject.</p>
 <table>
@@ -181,7 +188,7 @@ a{color:#165d9c}
 <tr><td>screen-only</td><td>Not Used</td><td>AF method does not matter because autofocus is not controlling focus.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method.</p>
-<p><strong>Quick Menu:</strong> AF point selection button, then Main Dial; the Q screen is the alternative. M-Fn is reserved for switching among C1-C3.</p>
+<p><strong>Quick Access:</strong> AF Point Selection button + Main Dial; the Q screen is the alternative. <strong class="access-token access-mfn">M-Fn</strong> is reserved for switching among C1-C3.</p>
 <h4 id="subject-detection">Subject Detection</h4>
 <p>Use People, Animals, or Vehicles when one category should receive priority. Use None when no category should receive priority; it does not disable automatic main-subject selection. AF Method, not Subject to Detect, determines whether a smaller manually positioned AF area controls focus.</p>
 <table>
@@ -192,7 +199,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAASCAYAAAAzI3woAAABJUlEQVR42mNgGAWjgLZAdrA4ZDIQ/0fCU9Dk84H4G5qaNKjcESD+jCanR4ljNkINaYXy26D8TUhquqBiE4HYEYjDkOR+QuUSgdgHiMMpcYwg1LA9aOI7oeL8UH4zlI8NfIdiqoA0qEXeaOIeUPEUKL8JymeltYOmQC1SQhPXhYr3Q/mVUP45IF4PxNuAmBEqdw+I/0JDeTMQ76DEQXOhFsmgiauhJe4KKP89ED8F4nfQ6AaB21C5F1D8jBIHlUMNs0ATt4aKV0D5DVC+GBYzvkITNlWACdSiCWji/VBxA7Q0JENrBzFAgx9kmQKUrwnlv0FS0woVU8GRqP9Su2B8jVawvUOTn46nwPuPp0igCAQAcQ8Q+2OR44YWetiAORBbjda6tAIA0CZdd2fDQzoAAAAASUVORK5CYII=" alt="None" class="setting-icon subject-detection-icon" style="width:40px;height:24px;object-fit:contain;vertical-align:middle;"></td><td>None</td><td>Applies no People, Animals, or Vehicles priority; the camera still determines a main subject automatically from detected subject information.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; Subject to detect.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> <strong class="access-token access-switch">My Menu: SWITCH</strong> &gt; Subject to detect; otherwise AF1 &gt; Subject to detect.</p>
 <h4 id="eye-detection">Eye Detection</h4>
 <p>Enable it when Face + Tracking and subject detection are useful. It is not useful when AF is manual or when the selected AF method cannot use eye tracking.</p>
 <table>
@@ -202,7 +209,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0i44Os44Kk44Ok44O8XzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCINCgkgeT0iMHB4IiB3aWR0aD0iMjQuMXB4IiBoZWlnaHQ9IjE2cHgiIHZpZXdCb3g9IjAgMCAyNC4xIDE2IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyNC4xIDE2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPg0KCS5zdDB7ZmlsbDpub25lO30NCjwvc3R5bGU+DQo8dGl0bGU+aWNvbl9vbmVzaG90LWFpLXNlcnZvPC90aXRsZT4NCjxyZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIyNC4xIiBoZWlnaHQ9IjE2Ii8+DQo8Zz4NCgk8cGF0aCBkPSJNMjIuNyw3LjFjLTAuMS0wLjMtMy41LTYuNi0xMS4xLTYuNkM0LjksMC41LDEuNSw3LjIsMS40LDcuNEwxLjIsNy44bDAuMSwwLjRjMC4xLDAuMywzLDcuMiwxMC43LDcuM2wwLjIsMA0KCQljNy42LDAsMTAuNS03LjYsMTAuNS03LjdsMC4xLTAuNEwyMi43LDcuMXogTTEyLjIsMTMuN2wtMC4yLDBjLTUuNy0wLjEtOC4zLTQuNS04LjktNS44YzAuNy0xLjMsMy42LTUuNiw4LjUtNS42DQoJCWM1LjYsMCw4LjUsNC4xLDkuMyw1LjNDMjAuMyw5LDE3LjgsMTMuNywxMi4yLDEzLjd6Ii8+DQoJPGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0LjMiLz4NCjwvZz4NCjwvc3ZnPg0K" alt="Eye detection" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Not shown</td><td>Usually means AF is manual or the AF method cannot use eye tracking.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; Eye detection.</p>
-<p><strong>Quick Menu:</strong> With Face + Tracking active, press the AF point selection button and then INFO to toggle Eye detection. This shortcut is unavailable when the active AF method cannot use Eye detection.</p>
+<p><strong>Quick Access:</strong> SET button when the active AF method supports Eye Detection. With Face + Tracking active, AF Point Selection button + INFO is the alternative. These shortcuts are unavailable when the active AF method cannot use Eye Detection.</p>
 <p>Assigning <strong>Eye Detection AF</strong> to a custom button provides direct eye-detection autofocus while that button is used. It is not the same as persistently toggling the <strong>Eye detection: Enable/Disable</strong> menu setting.</p>
 <p>In the owner-confirmed control layout, <strong>SET</strong> is assigned to <strong>Eye detection</strong>. It toggles the stored Enable/Disable state when the active AF method supports Eye detection and has no effect with 1-Point AF or Spot AF. The state persists when switching AF methods, and AF-ON honors it when AF-ON temporarily selects Face + Tracking.</p>
 <h4 id="subject-detection-and-af-method-combinations">Subject Detection and AF Method Combinations</h4>
@@ -215,18 +222,31 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyBpZD0i44Os44Kk44Ok44O8XzEiIGRhdGEtbmFtZT0i44Os44Kk44Ok44O8IDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMjEgMTYiPg0KICA8ZGVmcz4NCiAgICA8c3R5bGU+DQogICAgICAuY2xzLTEgew0KICAgICAgICBmaWxsOiBub25lOw0KICAgICAgfQ0KICAgIDwvc3R5bGU+DQogIDwvZGVmcz4NCiAgPHRpdGxlPmljb25fbGVucy1tZjwvdGl0bGU+DQogIDxwYXRoIGQ9Ik0xMi44NCwxNS41SDExLjIzbDAtMTNoMGwtMy43MywxM0g1LjlsLTMuNzMtMTNoMHYxM0gwLjUzVjAuNUgzLjE4TDYuNzEsMTMsMTAuMTcsMC41aDIuNjd2MTVabTcuNjMtMTVWMi4zOUgxNi4xMXY0LjRoNC4xN1Y4LjY4SDE2LjExVjE1LjVIMTQuNDhWMC41aDZaIi8+DQogIDxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjIxIiBoZWlnaHQ9IjE2Ii8+DQo8L3N2Zz4NCg==" alt="MF" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Manual Focus</td><td>Makes Subject Detection, Eye Detection, and AF Method irrelevant on the card.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> AF1 &gt; AF method; AF1 &gt; Subject to detect; lens AF/MF switch or AF1 &gt; Focus mode when shown.</p>
-<p><strong>Quick Menu:</strong> AF method via the AF point selection button and Main Dial. Subject Detection is menu only. Manual Focus is usually the lens switch. M-Fn is reserved for switching among C1-C3.</p>
+<p><strong>Quick Access:</strong> AF Method via the AF Point Selection button + Main Dial; the Q screen is the alternative. Subject Detection via <strong class="access-token access-switch">My Menu: SWITCH</strong>. Manual Focus via the lens AF/MF switch when fitted. <strong class="access-token access-mfn">M-Fn</strong> is reserved for switching among C1-C3.</p>
 <h4 id="af-tracking-behavior">AF Tracking Behavior</h4>
-<p>Start with Canon&#x27;s default Servo AF tracking behavior and change only the response that is causing a problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.</p>
+<p>Start with the profile&#x27;s selected Servo AF Case: Case A (Auto) is the Wildlife baseline, while Birds in Flight and Sports use Case 4. Change only the response that is causing a repeatable problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.</p>
+<h5 id="approved-servo-af-starting-settings">Approved Servo AF Starting Settings</h5>
+<p>These are approved targets pending physical camera verification:</p>
+<table>
+<tr><th>Profile</th><th>AF Operation</th><th>Servo AF Case</th><th>Tracking Sensitivity</th><th>Accel./Decel. tracking</th></tr>
+<tr><td>Wildlife / C1</td><td>Servo AF</td><td>Case A (Auto)</td><td>Auto</td><td>Auto</td></tr>
+<tr><td>Birds Perched</td><td>Servo AF</td><td>Case A (Auto)</td><td>Auto</td><td>Auto</td></tr>
+<tr><td>People</td><td>Servo AF</td><td>Case A (Auto)</td><td>Auto</td><td>Auto</td></tr>
+<tr><td>Birds in Flight / C2</td><td>Servo AF</td><td>Case 4</td><td>0</td><td>+1</td></tr>
+<tr><td>Sports</td><td>Servo AF</td><td>Case 4</td><td>0</td><td>+1</td></tr>
+</table>
+<p>Case A controls both parameters automatically. Case 4 starts at Tracking Sensitivity 0 and Accel./Decel. tracking +1 for abrupt speed changes. Profiles that start in One-Shot AF or Manual Focus retain a stored Case but do not actively use it.</p>
+<p>Use <strong class="access-token access-menu-2">My Menu: AF Case</strong> &gt; Servo AF to reach the Case selector. Use Tracking Sensitivity or Accel./Decel. tracking only when correcting a repeatable response problem, and change one control at a time. For Cases 1–4, Case A, subject-specific alternatives, and troubleshooting, see <a href="AF%20Cases%20%26%20Tracking%20Behavior.html?return=R5%20Quick%20Reference.html">AF Cases &amp; Tracking Behavior</a>.</p>
 <table>
 <tr><th>Control</th><th>What it Changes</th><th>Field Use</th></tr>
+<tr><td>Servo AF Case</td><td>A starting combination of Tracking Sensitivity and Accel./Decel. Tracking</td><td>Use Case A for varied movement and Case 4 for the documented Birds in Flight and Sports starting profiles; see the deep dive before choosing Cases 1–3.</td></tr>
 <tr><td>Tracking Sensitivity</td><td>How readily focus leaves the tracked subject when an obstacle or another subject enters the AF area</td><td>Move toward locked-on when brief obstructions steal focus; move toward responsive when intentional target changes feel slow.</td></tr>
 <tr><td>Accel./Decel. Tracking</td><td>How strongly Servo AF anticipates abrupt speed changes</td><td>Increase for subjects that start, stop, or change speed unpredictably; leave near default for steady motion.</td></tr>
-<tr><td>Subject switching</td><td>How readily subject detection transfers priority to another recognized subject</td><td>Reduce when the camera abandons the intended subject; increase when rapid handoffs are intentional.</td></tr>
 </table>
+<p>Switching tracked subjects is a separate subject-detection control: reduce switching when the camera abandons the intended recognized subject, or increase it when rapid handoffs are intentional.</p>
 <p>Change one control at a time and test it against the actual background and subject motion. For scenarios and troubleshooting, see <a href="AF%20Cases%20%26%20Tracking%20Behavior.html?return=R5%20Quick%20Reference.html">AF Cases &amp; Tracking Behavior</a>.</p>
-<p><strong>Camera Menu:</strong> AF menu &gt; Servo AF characteristics / Case settings and subject-tracking options.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Camera Menu:</strong> <strong class="access-token access-menu-2">My Menu: AF Case</strong> &gt; Servo AF; direct route AF3 &gt; Servo AF characteristics. Subject-tracking options are separate AF-menu controls.</p>
+<p><strong>Quick Access:</strong> <strong class="access-token access-menu-2">My Menu: AF Case</strong> &gt; Servo AF opens the Case selector; otherwise AF3 &gt; Servo AF characteristics.</p>
 <h3 id="capture-and-timing">Capture and Timing</h3>
 <h4 id="cropping-aspect-ratio">Cropping / Aspect Ratio</h4>
 <p>Keep <strong>Full-frame</strong> as the Set &amp; Forget starting point. Select <strong>1.6× (crop)</strong> temporarily when a distant bird, animal, or field-sports subject will remain predictably inside the smaller capture area and the enlarged view makes framing easier. Return to Full-frame after the session. This is a framing and file-workflow choice, not extra optical reach.</p>
@@ -239,7 +259,7 @@ a{color:#165d9c}
 <p>With <strong>RF-S or adapted EF-S lenses</strong>, the R5 automatically selects 1.6× crop and no Full-frame option is available while the lens is attached. RF and adapted EF lenses do not force crop mode.</p>
 <p><strong>Temporary override process:</strong> begin with Full-frame, select 1.6× only for the specific distant-subject situation, and restore Full-frame afterward. When working in C1-C3, keep <strong>Auto update: Disable</strong> so a temporary crop choice does not silently replace the registered subject setup.</p>
 <p><strong>Camera Menu:</strong> Shooting 1 &gt; Cropping/aspect ratio.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> <strong class="access-token access-switch">My Menu: SWITCH</strong> &gt; Cropping/aspect ratio; otherwise Shooting 1 &gt; Cropping/aspect ratio.</p>
 <p>See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html" target="_blank" rel="noopener noreferrer">Still Photo Cropping/Aspect Ratio</a> instructions and <a href="https://cam.start.canon/en/C003/manual/html/UG-09_Reference_0100.html" target="_blank" rel="noopener noreferrer">EOS R5 recorded pixel counts</a>.</p>
 <h4 id="drive-mode">Drive Mode</h4>
 <p>Single Shot is deliberate. Low or High Speed Continuous helps with expression, motion, and timing. High Speed Continuous+ maximizes capture rate but creates more files.</p>
@@ -253,7 +273,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4wLjMsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0i44Os44Kk44Ok44O8XzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCINCgkgeT0iMHB4IiB3aWR0aD0iMjIuNjhweCIgaGVpZ2h0PSIxNS44N3B4IiB2aWV3Qm94PSIwIDAgMjIuNjggMTUuODciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDIyLjY4IDE1Ljg3Ig0KCSB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwb2x5Z29uIHBvaW50cz0iMTkuNTgsNS4zMSAxOS45NSw1LjM2IDIwLjI3LDUuNDUgMjAuNTksNS41OCAyMC44Niw1Ljc0IDIxLjEsNS45NCAyMS4zMiw2LjE2IDIxLjUsNi40MyAyMS42Myw2Ljc0IDIxLjc0LDcuMDcgDQoJMjEuOCw3LjQ2IDIxLjgyLDcuODggMjEuNzksOC4zNCAyMS42Nyw4LjgxIDIxLjUxLDkuMjUgMjEuMzEsOS42OSAyMS4wNSwxMC4xMiAyMC43NSwxMC41NSAyMC40MywxMC45NyAyMC4wOSwxMS4zNyAxOS43MiwxMS43NyANCgkxOS4zNywxMi4xMiAxOS4wMiwxMi40OSAxOC42NSwxMi44NiAyMi4wOSwxMi44NiAyMi4wOSwxNC4yMiAxNi41MSwxNC4yMiAxNi41MSwxMi43NSAxNi43MywxMi41MyAxNy4wNSwxMi4yMiAxNy40LDExLjg3IA0KCTE3LjgsMTEuNTIgMTguMiwxMS4wOSAxOC42MiwxMC42NCAxOSwxMC4xNiAxOS4zNyw5LjY5IDE5LjY3LDkuMjEgMTkuOTEsOC43MyAyMC4wNyw4LjI5IDIwLjE0LDcuODcgMjAuMTIsNy42OCAyMC4wNyw3LjUgDQoJMjAuMDEsNy4zNCAxOS45Myw3LjIgMTkuODIsNy4wNyAxOS43MSw2Ljk3IDE5LjU2LDYuODggMTkuNDMsNi44MSAxOS4yNyw2Ljc1IDE5LjExLDYuNzIgMTguOTQsNi42OSAxOC43Niw2LjY5IDE4LjU5LDYuNjkgDQoJMTguNDEsNi43IDE4LjI1LDYuNzMgMTguMDcsNi43OCAxNy45MSw2LjgzIDE3Ljc0LDYuODkgMTcuNTgsNi45NiAxNy40Miw3LjA0IDE3LjI2LDcuMTIgMTcuMTEsNy4yIDE2Ljk3LDcuMjkgMTYuODMsNy4zOSANCgkxNi43LDUuOTIgMTYuODksNS44MiAxNy4wOCw1Ljc0IDE3LjI5LDUuNjYgMTcuNDgsNS41OCAxNy42OSw1LjUyIDE3LjkxLDUuNDUgMTguMTIsNS40MSAxOC4zMyw1LjM3IDE4LjU1LDUuMzQgMTguNzYsNS4zMSANCgkxOC45Nyw1LjI5IDE5LjE5LDUuMjkgIi8+DQo8cGF0aCBkPSJNMi40LDEuNzVjMC4zLDAsMC42LDAuMDEsMC45LDAuMDNjMC4zLDAuMDIsMC42LDAuMDUsMC45LDAuMUw0LjA3LDMuMTRDMy44LDMuMSwzLjUyLDMuMDgsMy4yNCwzLjA1DQoJQzIuOTYsMy4wMywyLjY4LDMuMDIsMi40LDMuMDJjLTAuMjksMC0wLjU3LDAuMDEtMC44NSwwLjAzQzEuMjcsMy4wOCwwLjk5LDMuMSwwLjcyLDMuMTRMMC41OSwxLjg4YzAuMy0wLjA0LDAuNi0wLjA4LDAuOTEtMC4xDQoJQzEuOCwxLjc2LDIuMSwxLjc1LDIuNCwxLjc1eiBNNC4wMSwzLjg5Yy0wLjI4LTAuMDQtMC41NS0wLjA4LTAuODItMC4xQzIuOTIsMy43NiwyLjY2LDMuNzUsMi40LDMuNzVjLTAuMjgsMC0wLjU1LDAuMDEtMC44MSwwLjA0DQoJYy0wLjI2LDAuMDMtMC41MywwLjA2LTAuODEsMC4xbDAuMTMsMS4yNEMxLjQsNS4wNiwxLjksNS4wMiwyLjQsNS4wMmMwLjQ5LDAsMC45OCwwLjA0LDEuNDgsMC4xMkw0LjAxLDMuODl6IE0zLjcyLDYuNzcNCglDMy4zNCw2LjY4LDIuOSw2LjY0LDIuNCw2LjY0Yy0wLjUzLDAtMC45NywwLjA0LTEuMzIsMC4xM0wwLjk5LDUuODljMC4yMy0wLjA0LDAuNDctMC4wOCwwLjctMC4xQzEuOTIsNS43NiwyLjE2LDUuNzQsMi40LDUuNzQNCgljMC4yMywwLDAuNDcsMC4wMSwwLjcxLDAuMDRjMC4yNCwwLjAzLDAuNDcsMC4wNiwwLjcxLDAuMUwzLjcyLDYuNzd6IE0xLjU1LDEzLjc5Yy0wLjEsMC0wLjE4LTAuMDMtMC4yNS0wLjFzLTAuMS0wLjE2LTAuMS0wLjI2DQoJVjguMjdjMC0wLjA5LDAuMDMtMC4xOCwwLjEtMC4yNWMwLjA3LTAuMDcsMC4xNS0wLjExLDAuMjUtMC4xMWgxLjdjMC4wOSwwLDAuMTgsMC4wNCwwLjI1LDAuMTFjMC4wNywwLjA3LDAuMTEsMC4xNiwwLjExLDAuMjV2NS4xNg0KCWMwLDAuMS0wLjA0LDAuMTktMC4xMSwwLjI2Yy0wLjA3LDAuMDctMC4xNiwwLjEtMC4yNSwwLjFIMS41NXogTTIuNCw4Ljg4Yy0wLjIsMC0wLjM3LDAuMDctMC41MSwwLjIxDQoJQzEuNzYsOS4yMywxLjY5LDkuMzksMS42OSw5LjU5YzAsMC4yMSwwLjA3LDAuMzgsMC4yMSwwLjUyYzAuMTQsMC4xNCwwLjMxLDAuMjEsMC41MSwwLjIxYzAuMjEsMCwwLjM4LTAuMDcsMC41Mi0wLjIxDQoJQzMsMTAuMDMsMy4wNSw5Ljk1LDMuMDgsOS44NmMwLjAzLTAuMDksMC4wNS0wLjE4LDAuMDUtMC4yN2MwLTAuMi0wLjA3LTAuMzctMC4yMS0wLjUxQzIuNzgsOC45NSwyLjYxLDguODgsMi40LDguODh6Ii8+DQo8cGF0aCBkPSJNNC44Nyw2LjgyYzAuMDUtMC4yMiwwLjE4LTAuMzgsMC4zNy0wLjQ5YzAuMTktMC4xMSwwLjQtMC4xMywwLjYxLTAuMDhjMC4yMiwwLjA1LDAuMzcsMC4xOCwwLjQ4LDAuMzYNCgljMC4xLDAuMTksMC4xMywwLjM5LDAuMDcsMC42MUM2LjI0LDcuODIsNi4yLDguNDEsNi4yOCw4Ljk5YzAuMDgsMC41OCwwLjI2LDEuMTIsMC41NCwxLjYxYzAuMjgsMC40OSwwLjY1LDAuOTIsMS4xMSwxLjI5DQoJYzAuNDYsMC4zNywwLjk4LDAuNjMsMS41OCwwLjc5YzAuNTksMC4xNiwxLjE4LDAuMiwxLjc2LDAuMTJjMC41OC0wLjA4LDEuMTEtMC4yNiwxLjYxLTAuNTRjMC41LTAuMjgsMC45My0wLjY1LDEuMjktMS4xMQ0KCWMwLjM3LTAuNDYsMC42My0wLjk4LDAuNzktMS41OGMwLjIyLTAuODIsMC4yLTEuNjMtMC4wMy0yLjQzYy0wLjI0LTAuOC0wLjY3LTEuNDgtMS4yOS0yLjA0Yy0wLjE2LTAuMTUtMC4yNS0wLjMzLTAuMjYtMC41NQ0KCWMtMC4wMS0wLjIyLDAuMDYtMC40LDAuMjEtMC41N2MwLjE1LTAuMTcsMC4zMy0wLjI2LDAuNTUtMC4yOGMwLjIyLTAuMDEsMC40LDAuMDYsMC41NywwLjIxYzAuODUsMC43OSwxLjQzLDEuNzEsMS43NSwyLjc4DQoJYzAuMzEsMS4wNiwwLjMyLDIuMTYsMC4wMywzLjI5Yy0wLjIyLDAuODEtMC41NywxLjUyLTEuMDcsMi4xNGMtMC41LDAuNjItMS4wOCwxLjEyLTEuNzUsMS41Yy0wLjY3LDAuMzgtMS40LDAuNjItMi4xOSwwLjcyDQoJYy0wLjc5LDAuMS0xLjU5LDAuMDUtMi4zOS0wLjE3Yy0wLjgtMC4yLTEuNTEtMC41Ni0yLjEzLTEuMDVjLTAuNjItMC41LTEuMTItMS4wOC0xLjUtMS43NWMtMC4zOC0wLjY3LTAuNjMtMS40LTAuNzQtMi4xOA0KCUM0LjYsOC40Miw0LjY1LDcuNjIsNC44Nyw2LjgyeiBNOS40Miw4LjkxQzkuMjQsOC43NCw5LjA4LDguNTcsOC45Myw4LjRjLTAuMTUtMC4xNy0wLjMtMC4zNS0wLjQ1LTAuNTZMNi40Miw1LjA5DQoJQzYuMjksNC45Niw2LjIzLDQuODEsNi4yMyw0LjYyYzAtMC4xOCwwLjA3LTAuMzQsMC4xOS0wLjQ3YzAuMTMtMC4xMywwLjI5LTAuMTksMC40Ny0wLjE5YzAuMTgsMCwwLjM0LDAuMDYsMC40NywwLjE5bDIuNzUsMi4wNQ0KCWMwLjE4LDAuMTQsMC4zNywwLjI5LDAuNTYsMC40NGMwLjE5LDAuMTUsMC4zNiwwLjMxLDAuNTMsMC40OWwxLjk3LDEuOTlsLTAuMSwwLjE2Yy0wLjEsMC4xMy0wLjM0LDAuMzktMC43MywwLjc4bC0wLjgzLDAuODMNCgljLTAuMDQtMC4wMS0wLjE1LTAuMDktMC4zMS0wLjI0Yy0wLjE0LTAuMTItMC4zNS0wLjMxLTAuNjMtMC41OFM5LjkxLDkuNDEsOS40Miw4LjkxeiBNMTIuNDQsMy4yMmMwLDAuMjQtMC4wNSwwLjQ2LTAuMTQsMC42Nw0KCWMtMC4wOSwwLjIxLTAuMjIsMC40LTAuMzgsMC41N2MtMC4xNiwwLjE2LTAuMzUsMC4yOS0wLjU3LDAuMzhjLTAuMjIsMC4wOS0wLjQ0LDAuMTQtMC42OCwwLjE0Yy0wLjQ4LDAtMC44OC0wLjE3LTEuMjMtMC41Mg0KCUM5LjI3LDQuMyw5LjE1LDQuMTEsOS4wNiwzLjg5QzguOTcsMy42OCw4LjkzLDMuNDUsOC45MywzLjIyYzAtMC40NywwLjE3LTAuODgsMC41Mi0xLjIzYzAuMzUtMC4zNSwwLjc2LTAuNTIsMS4yMy0wLjUyDQoJYzAuNDksMCwwLjksMC4xNywxLjI1LDAuNTJDMTIuMjcsMi4zMywxMi40NCwyLjc0LDEyLjQ0LDMuMjJ6Ii8+DQo8L3N2Zz4NCg==" alt="2 sec. self-timer" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>Self-timer: 2 sec.</td><td>Delays capture briefly to let tripod shake settle after pressing the shutter.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Drive mode.</p>
-<p><strong>Quick Menu:</strong> Q screen. M-Fn is reserved for switching among C1-C3.</p>
+<p><strong>Quick Access:</strong> Q screen. <strong class="access-token access-mfn">M-Fn</strong> is reserved for switching among C1-C3.</p>
 <p>Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.</p>
 <h3 id="flash">Flash</h3>
 <h4 id="flash-modes-and-compatibility">Flash Modes and Compatibility</h4>
@@ -268,7 +288,7 @@ a{color:#165d9c}
 </table>
 <p>EFCS supports normal flash synchronization up to 1/250 sec. on the R5, while Mechanical supports up to 1/200 sec. Use Mechanical as the conservative starting point for unverified third-party flashes or triggers, including the documented Waterdrops setup, and test the complete combination before critical work. Flash is useful for nearby subjects; it will not illuminate distant fireworks or distant scenery. For lighting setups, wireless control, macro, and trigger guidance, see <a href="Flash%20Photography.html?return=R5%20Quick%20Reference.html">Flash Photography</a>.</p>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; External Speedlite control; compatible Speedlite or trigger controls may also set flash behavior.</p>
-<p><strong>Quick Menu:</strong> Flash Exposure Compensation may be available through Q or an assigned control; other choices depend on the attached flash.</p>
+<p><strong>Quick Access:</strong> Flash Exposure Compensation may be available through the Q screen or an assigned control; other choices depend on the attached flash.</p>
 <h3 id="stabilization">Stabilization</h3>
 <h4 id="image-stabilization-mode">Image Stabilization Mode</h4>
 <p>This is the normal shake-reduction control, not IBIS High Resolution Shot. Stabilization reduces camera shake; it does not freeze subject movement.</p>
@@ -288,6 +308,8 @@ a{color:#165d9c}
 <p><strong>Interaction</strong></p>
 <p>With a compatible lens switched On, lens optical IS and the R5&#x27;s in-body stabilization coordinate automatically. Treat them as one coordinated system rather than two independent controls. For lens-specific switches, modes, and exceptions, see <a href="Lens%20Capabilities.html?return=R5%20Quick%20Reference.html">Lens Capabilities</a>.</p>
 <p><strong>Solid tripod:</strong> Follow the selected profile and lens-specific Canon guidance; turn stabilization Off for locked tripod or Bulb work when directed.</p>
+<p><strong>Camera Menu:</strong> Shooting menu &gt; IS (Image Stabilizer) mode; the page varies with equipment and camera state. Lens IS Mode 1 / 2 / 3 uses the physical lens selector when fitted.</p>
+<p><strong>Quick Access:</strong> Lens IS switch when fitted; otherwise <strong class="access-token access-switch">My Menu: SWITCH</strong> &gt; IS (Image Stabilizer) mode when the camera setting is available. Use the physical lens selector for lens IS Mode 1 / 2 / 3.</p>
 <h3 id="specialized-focus-and-long-exposure-tools">Specialized Focus and Long-Exposure Tools</h3>
 <h4 id="focus-features">Focus Features</h4>
 <p>These features support manual focus precision and depth-of-field workflows. Keep the detailed setup in the focus appendix; cards should only show the setting when it matters.</p>
@@ -298,7 +320,7 @@ a{color:#165d9c}
 <tr><td><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDMyIDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1GIFBlYWtpbmc8L3RpdGxlPgogIDxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik01IDE2YzMtNyA2LTcgOSAwczYgNyAxMyAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iMS43IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNSA4YzMgNCA2IDQgOSAwczYtNCAxMyAwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iMS4xIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1kYXNoYXJyYXk9IjEuNSAyLjIiLz4KPC9zdmc+Cg==" alt="MF Peaking" class="setting-icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></td><td>MF Peaking</td><td>MF Peaking (Outline Emphasis)</td><td>Displays in-focus edges in color to make manual focusing easier.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Shooting menu &gt; Focus bracketing; AF menu &gt; Focus guide; AF menu &gt; MF peaking settings.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> Focus Bracketing via <strong class="access-token access-switch">My Menu: SWITCH</strong>. Focus Guide and MF Peaking remain menu-only.</p>
 <p><strong>Recommended MF Peaking setup:</strong> <strong>On</strong>, <strong>Level: Low</strong>, <strong>Color: Red</strong>. Leave it enabled as a Set &amp; Forget manual-focus aid. Peaking is not recorded in the image and does not change autofocus behavior. It is not shown during magnified viewing, and highlighted contrast edges do not guarantee exact focus, so use magnification as the final check for critical macro or landscape focus. See Canon&#x27;s <a href="https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html" target="_blank" rel="noopener noreferrer">Manual Focus</a> instructions.</p>
 <h4 id="focus-bracketing">Focus Bracketing</h4>
 <p>Focus Bracketing captures a sequence while shifting focus through the subject. Use it when one frame cannot hold enough depth of field. For full setup guidance, see <a href="Focus%20Bracketing%20%26%20In-Camera%20Depth%20Compositing.html?return=R5%20Quick%20Reference.html">Focus Bracketing &amp; In-Camera Depth Compositing</a>.</p>
@@ -311,7 +333,7 @@ a{color:#165d9c}
 </table>
 <p>Recommended: create a new folder for each subject or stack so bracket sequences stay organized.</p>
 <p><strong>Camera Menu:</strong> Shooting 5 &gt; Focus bracketing.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> <strong class="access-token access-switch">My Menu: SWITCH</strong> &gt; Focus bracketing; otherwise Shooting 5 &gt; Focus bracketing.</p>
 <h4 id="long-exposure-noise-reduction">Long Exposure Noise Reduction</h4>
 <p>LENR takes a dark frame after a long exposure. It can clean hot pixels but doubles wait time and is usually poor for repeated captures, stacking, or fireworks sequences.</p>
 <table>
@@ -321,20 +343,20 @@ a{color:#165d9c}
 <tr><td>On</td><td>Takes a dark frame after long exposures to reduce hot pixels, but doubles wait time.</td></tr>
 </table>
 <p><strong>Camera Menu:</strong> Shooting 4 &gt; Long exp. noise reduction.</p>
-<p><strong>Quick Menu:</strong> Menu only.</p>
+<p><strong>Quick Access:</strong> Full camera menu only; no approved Q, button, dial, or My Menu shortcut.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
-<p><strong>Default/reset state:</strong> Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera&#x27;s current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.</p>
+<p><strong>Default/reset state:</strong> Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera&#x27;s current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.</p>
 <ul>
-<li>Birds in Flight: Mechanical; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
+<li>Birds in Flight: Mechanical; Servo AF Case 4, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.</li>
 <li>Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.</li>
 <li>Fireworks: EFCS; Manual Focus, Single Shot, tripod stabilization off, long shutter target.</li>
 <li>Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.</li>
 <li>Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.</li>
 <li>People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.</li>
-<li>Sports: Mechanical; Servo AF, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
+<li>Sports: Mechanical; Servo AF Case 4, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.</li>
 <li>Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.</li>
 <li>Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.</li>
-<li>Wildlife: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
+<li>Wildlife: EFCS; Servo AF Case A (Auto), Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.</li>
 </ul>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <p>Canon R5 Eye Detection is tied to subject-aware AF behavior. It is most meaningful with Face + Tracking and a suitable subject type. Manual Focus bypasses AF selection behavior, so AF Method, Subject Detection, and Eye Detection are hidden from cards when AF Operation is Manual Focus.</p>
