@@ -1,5 +1,5 @@
 version: 1
-updated: '2026-08-03T20:54:18.730838-04:00'
+updated: '2026-08-03T21:19:26.365381-04:00'
 tests:
   SETUP-01:
     status: Verified
@@ -77,7 +77,7 @@ tests:
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
   CTRL-CONFIG-01:
-    status: Inconclusive—needs retest
+    status: Verified
     test_date: 46235
     session_id: 1
     evidence_files: []
@@ -85,6 +85,7 @@ tests:
     next_action: Configure each control before registering C1.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
+    verified_against: sha256:bf207e6d54b48768207e423d534c48709f88f234d55bdcb9613e260a68c411f2
   BACKUP-SET-01:
     status: Backup-Settings
     test_date: 46235
@@ -1379,3 +1380,25 @@ history:
     next_action: Recall C1, C2, and C3 in sequence afterward.
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
+- timestamp: '2026-08-03T21:19:26.365381-04:00'
+  event: spreadsheet_import
+  id: CTRL-CONFIG-01
+  previous:
+    status: Inconclusive—needs retest
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+  current:
+    status: Verified
+    test_date: 46235
+    session_id: 1
+    evidence_files: []
+    observation: ''
+    next_action: Configure each control before registering C1.
+    evidence_class: Approved target pending verification
+    updated_in_project: 'No'
+    verified_against: sha256:bf207e6d54b48768207e423d534c48709f88f234d55bdcb9613e260a68c411f2

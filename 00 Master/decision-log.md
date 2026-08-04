@@ -2,6 +2,13 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Local Pre-Release Version Indicator
+
+**Status:** Accepted
+**Date:** 2026-08-03
+
+Prepend **Pre-Release •** to the version line only when the generated index is opened from the documented machine-local `Build Output/merged-build/` review location. Keep the generated site identical between the canonical merged build and `docs/`; determine the local-review context at runtime. The same index opened from `docs/` or served by GitHub Pages must retain the published version and date without the indicator.
+
 ## Definition-Aware Verification Tracker Integrity
 
 **Status:** Accepted

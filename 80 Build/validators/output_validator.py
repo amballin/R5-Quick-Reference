@@ -60,6 +60,39 @@ def validate(root):
         else:
             pdf_text = appendix_pdf.read_bytes().decode("latin-1", errors="replace")
             issues.extend(_focus_bracketing_output_issues(appendix_pdf, pdf_text))
+    for index_path in (
+        paths.merged_build_output_dir / "index.html",
+        paths.pages_output_dir / "index.html",
+    ):
+        if index_path.exists():
+            issues.extend(_pre_release_indicator_issues(index_path))
+    return issues
+
+
+def _pre_release_indicator_issues(path):
+    issues = []
+    text = path.read_text(encoding="utf-8", errors="replace")
+    required = [
+        'window.location.protocol !== "file:"',
+        r'/\/Build Output\/merged-build(?:\/|$)/',
+        'meta.insertAdjacentText("afterbegin", "Pre-Release • ")',
+    ]
+    if not all(fragment in text for fragment in required):
+        issues.append(
+            error(
+                "build_output",
+                path,
+                "Version header is missing the path-scoped local Pre-Release indicator.",
+            )
+        )
+    if re.search(r'<p class="site-nav__meta">\s*Pre-Release', text):
+        issues.append(
+            error(
+                "build_output",
+                path,
+                "Pre-Release must not be rendered statically in published output.",
+            )
+        )
     return issues
 
 

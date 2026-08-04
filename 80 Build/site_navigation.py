@@ -36,13 +36,30 @@ def site_navigation(home_url, back_url=None, metadata=None, dynamic_return=False
     )
     meta = f'<p class="site-nav__meta">{html.escape(metadata)}</p>' if metadata else ""
     right = f'<span class="site-nav__brand">{right_html}</span>' if right_html else '<span class="site-nav__spacer" aria-hidden="true"></span>'
-    script = _dynamic_return_script(home_url) if dynamic_return else ""
+    scripts = []
+    if metadata:
+        scripts.append(_local_build_indicator_script())
+    if dynamic_return:
+        scripts.append(_dynamic_return_script(home_url))
+    script = "".join(scripts)
     return (
         '<header class="site-nav" data-site-navigation>'
         f'{back}<a class="site-nav__home" href="{safe_home}">Camera Settings</a>'
         f'{right}'
         f'{meta}</header>{script}'
     )
+
+
+def _local_build_indicator_script():
+    return """<script>
+(function () {
+  const meta = document.querySelector(".site-nav__meta");
+  if (!meta || window.location.protocol !== "file:") return;
+  const path = decodeURIComponent(window.location.pathname).replace(/\\\\/g, "/");
+  if (!/\/Build Output\/merged-build(?:\/|$)/.test(path)) return;
+  meta.insertAdjacentText("afterbegin", "Pre-Release • ");
+})();
+</script>"""
 
 
 def _dynamic_return_script(home_url):
