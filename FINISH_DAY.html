@@ -112,8 +112,8 @@
 <body>
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="WORKFLOWS/index.html">Workflow Index</a></nav>
-<h1>Finish Day: Sync, Spreadsheets, Publish</h1>
-<p>Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–4 only when you also intend to prepare both spreadsheet downloads and publish the complete website.</p>
+<h1>Finish Day: Sync, Release Notes, Spreadsheets, Publish</h1>
+<p>Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–5 only when you also intend to prepare release notes, build both spreadsheet downloads, and publish the complete website.</p>
 <section class="step"><h2>0. Import testing status when the working tracker changed</h2>
 <p>If you updated the local Excel or Numbers verification tracker, close it and run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/import-verification-status.sh</code></pre></div>
@@ -132,31 +132,39 @@
 <p>Do not continue until the script prints:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>FINISHED FOR TODAY: Safe to switch Macs.</code></pre></div>
 <p>This first commit and push synchronize the editable project source. The script excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
-<aside class="warning">If you are only finishing for the day or switching Macs, stop here. Steps 2–4 are a separate spreadsheet-publication workflow.</aside>
+<aside class="warning">If you are only finishing for the day or switching Macs, stop here. Steps 2–5 are a separate release workflow.</aside>
 </section>
-<section class="step"><h2>2. Build and verify both spreadsheet families</h2>
+<section class="step"><h2>2. Prepare and synchronize the release notes</h2>
+<p>Choose the upcoming website version before publishing. Read the current version in <code>80 Build/publish_metadata.yaml</code>; for an ordinary release, the upcoming version keeps the same major number and adds one to the minor number. For a new major series, the upcoming version is <code>N.00</code>, where <code>N</code> is greater than the current major version. Do not edit the publish metadata manually.</p>
+<p>Add concise reader-facing highlights for that exact version to:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>00 Master/release_notes.yaml</code></pre></div>
+<p>Then rerun:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/finish-day.sh</code></pre></div>
+<p>Do not continue until the release-note change is validated, committed, pushed, and the script again prints <code>FINISHED FOR TODAY: Safe to switch Macs.</code> The publish script checks for the selected version and stops before building or pushing when its curated notes are missing.</p>
+</section>
+<section class="step"><h2>3. Build and verify both spreadsheet families</h2>
 <p>Run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
 <p>This prepares and verifies the Subject Settings Matrix and the EOS R5 Setup &amp; Verification Tracker in both Excel and Apple Numbers formats. The workbook files are machine-local release artifacts; they are not committed to Git.</p>
 </section>
-<section class="step"><h2>3. Choose the website version and publish</h2>
+<section class="step"><h2>4. Choose the website version and publish</h2>
 <p>To start a new major website version, replace <code>N</code> with an integer greater than the current major version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
 <p>Otherwise, publish the next minor website version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
 <p>This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.</p>
-<p>The selected version must already have curated highlights in <code>00 Master/release_notes.yaml</code>. Publication stops before building or pushing when they are missing. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.</p>
+<p>The selected version must exactly match the curated highlights synchronized in Step 2. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.</p>
 <p>The command is successful only when it prints <code>PUBLICATION COMPLETE AND VERIFIED</code>. It also records a timestamped diagnostic log under the machine-local <code>Logs/</code> folder. If publication stops, it prints <code>PUBLICATION DID NOT COMPLETE</code> and the exact log location.</p>
 <p>Later plain <code>publish.sh</code> releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.</p>
 </section>
-<section class="step"><h2>4. Verify the final Git state</h2>
+<section class="step"><h2>5. Verify the final Git state</h2>
 <p>First verify the publication itself:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
 <p>The required result begins with:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>PUBLICATION VERIFIED</code></pre></div>
 <p>Then run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/git-status-report.sh</code></pre></div>
-<p>Both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code> are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.</p>
+<p>Both <code>PUBLICATION VERIFIED</code> and <code>STATUS: CLEAN AND SYNCHRONIZED</code> are required. If either result does not appear, use the publish log reported by Step 4 and do not treat the website as published.</p>
 </section>
     <footer>Generated from FINISH_DAY.md. Run the normal build after editing the source.</footer>
   </main>

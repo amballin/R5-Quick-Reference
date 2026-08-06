@@ -1,6 +1,6 @@
-# Finish Day: Sync, Spreadsheets, Publish
+# Finish Day: Sync, Release Notes, Spreadsheets, Publish
 
-Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–4 only when you also intend to prepare both spreadsheet downloads and publish the complete website.
+Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–5 only when you also intend to prepare release notes, build both spreadsheet downloads, and publish the complete website.
 
 ## 0. Import testing status when the working tracker changed
 
@@ -35,9 +35,27 @@ FINISHED FOR TODAY: Safe to switch Macs.
 
 This first commit and push synchronize the editable project source. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
 
-> If you are only finishing for the day or switching Macs, stop here. Steps 2–4 are a separate spreadsheet-publication workflow.
+> If you are only finishing for the day or switching Macs, stop here. Steps 2–5 are a separate release workflow.
 
-## 2. Build and verify both spreadsheet families
+## 2. Prepare and synchronize the release notes
+
+Choose the upcoming website version before publishing. Read the current version in `80 Build/publish_metadata.yaml`; for an ordinary release, the upcoming version keeps the same major number and adds one to the minor number. For a new major series, the upcoming version is `N.00`, where `N` is greater than the current major version. Do not edit the publish metadata manually.
+
+Add concise reader-facing highlights for that exact version to:
+
+```text
+00 Master/release_notes.yaml
+```
+
+Then rerun:
+
+```bash
+./80\ Build/scripts/finish-day.sh
+```
+
+Do not continue until the release-note change is validated, committed, pushed, and the script again prints `FINISHED FOR TODAY: Safe to switch Macs.` The publish script checks for the selected version and stops before building or pushing when its curated notes are missing.
+
+## 3. Build and verify both spreadsheet families
 
 Run:
 
@@ -47,7 +65,7 @@ Run:
 
 This prepares and verifies the Subject Settings Matrix and the EOS R5 Setup & Verification Tracker in both Excel and Apple Numbers formats. The workbook files are machine-local release artifacts; they are not committed to Git.
 
-## 3. Choose the website version and publish
+## 4. Choose the website version and publish
 
 To start a new major website version, replace `N` with an integer greater than the current major version:
 
@@ -63,13 +81,13 @@ Otherwise, publish the next minor website version:
 
 This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.
 
-The selected version must already have curated highlights in `00 Master/release_notes.yaml`. Publication stops before building or pushing when they are missing. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.
+The selected version must exactly match the curated highlights synchronized in Step 2. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.
 
 The command is successful only when it prints `PUBLICATION COMPLETE AND VERIFIED`. It also records a timestamped diagnostic log under the machine-local `Logs/` folder. If publication stops, it prints `PUBLICATION DID NOT COMPLETE` and the exact log location.
 
 Later plain `publish.sh` releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.
 
-## 4. Verify the final Git state
+## 5. Verify the final Git state
 
 First verify the publication itself:
 
@@ -89,4 +107,4 @@ Then run:
 ./80\ Build/scripts/git-status-report.sh
 ```
 
-Both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` are required. If either result does not appear, use the publish log reported by Step 3 and do not treat the website as published.
+Both `PUBLICATION VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` are required. If either result does not appear, use the publish log reported by Step 4 and do not treat the website as published.
