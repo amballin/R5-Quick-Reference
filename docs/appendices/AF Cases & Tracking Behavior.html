@@ -81,8 +81,16 @@ a{color:#165d9c}
 <tr><td><strong>Case A (Auto)</strong></td><td>Automatically adapt to subject movement</td><td>Both parameters controlled automatically</td><td>Broad starting point for varied or dynamic movement when no repeatable failure calls for a specialized Case</td></tr>
 </table>
 <p>Cases 1–4 may be tuned manually. Case A controls both parameters automatically. Treat every Case as a starting behavior, then diagnose the observed failure before adjusting an individual parameter or choosing a specialized Case.</p>
+<p>&gt; <strong>Project customization—not the Canon default:</strong> This reference configures Case 1 once with Tracking Sensitivity <strong>-1</strong> and Accel./Decel. Tracking <strong>+1</strong>. Canon&#x27;s factory Case 1 is <strong>0 / 0</strong>. The project therefore labels the selected preset <strong>Case 1 (Custom)</strong>. Resetting Case 1 to its Canon defaults removes the project customization.</p>
+<p>The project preset combines a more locked-on response through branches, players, and brief foreground crossings with stronger response to abrupt speed changes. The tradeoff is slower intentional handoff after the camera acquires the wrong subject and possible instability for slight, steady movement. Accel./Decel. +1 changes Servo AF prediction and response; it does not make the lens motor intrinsically faster.</p>
 <p>Subject Detection identifies People, Animals, or Vehicles. Eye Detection can refine priority to an eye when the subject and AF method support it. The AF area still controls where the camera can begin or continue looking.</p>
-<p><strong>Switching tracked subjects is separate from the AF Case.</strong> It controls whether compatible subject-aware AF methods retain the initially chosen subject or transfer detection priority to another recognized subject. Changing it does not change Tracking Sensitivity or Accel./Decel. Tracking.</p>
+<p><strong>Switching tracked subjects is separate from the AF Case.</strong> It controls whether Face + Tracking, Zone AF, or Large Zone AF retains the initially chosen recognized subject or transfers detection priority to another recognized subject. Changing it does not change Tracking Sensitivity or Accel./Decel. Tracking.</p>
+<table>
+<tr><th>Switching tracked subjects</th><th>Behavior</th><th>Practical use</th></tr>
+<tr><td><strong>Initial priority</strong></td><td>Retains the subject initially selected for AF as long as possible</td><td>Use when keeping one specific subject matters more than automatic recovery or handoffs</td></tr>
+<tr><td><strong>On subject</strong></td><td>Retains the initial main subject but can transfer when the camera can no longer identify it as the main subject</td><td>Shared balanced starting point for Wildlife, Birds, People, and Sports</td></tr>
+<tr><td><strong>Switch subject</strong></td><td>Transfers among recognized subjects more readily as conditions change</td><td>Use for intentional handoffs or successive subjects; watch for unwanted switching</td></tr>
+</table>
 <h2 id="advantages">Advantages</h2>
 <ul>
 <li>A locked-on response can hold focus through branches, players, or momentary obstructions.</li>
@@ -100,12 +108,12 @@ a{color:#165d9c}
 </ul>
 <h2 id="recommended-uses">Recommended Uses</h2>
 <p>Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.</p>
-<p>Start with the profile&#x27;s documented Case. Leave its parameters at the Canon defaults until a repeatable failure appears. Tune the failure, not the subject label alone.</p>
+<p>Start with the profile&#x27;s documented Case. For Case 1 (Custom), use the documented project -1 / +1 preset rather than Canon&#x27;s factory Case 1 values. Tune later departures to the observed failure, not the subject label alone.</p>
 <h3 id="quick-field-access">Quick Field Access</h3>
 <ul>
-<li>The fastest normal route is to recall the complete registered profile: <strong>C1 Wildlife uses Case A</strong>, <strong>C2 Birds in Flight uses Case 4</strong>, and <strong>C3 Landscape stores Case A but does not actively use it while C3 remains in One-Shot AF</strong>.</li>
+<li>The fastest normal route is to recall the complete registered profile: <strong>C1 Wildlife uses Case 1 (Custom) at -1 / +1</strong>, <strong>C2 Birds in Flight uses Case 4 at 0 / +1</strong>, and <strong>C3 Landscape stores Case A but does not actively use it while C3 remains in One-Shot AF</strong>.</li>
 <li>For a temporary change, open <strong>My Menu: AF Case &gt; Servo AF</strong>, select the Case, and press SET. The direct route remains <strong>AF3 &gt; Servo AF characteristics</strong>.</li>
-<li><strong>My Menu: AF Case</strong> contains <strong>Servo AF</strong>, <strong>Tracking Sensitivity</strong>, and <strong>Accel./Decel. tracking</strong> in that order. Here, Servo AF opens the Case selector; it does not change AF Operation.</li>
+<li><strong>My Menu: AF Case</strong> contains <strong>Servo AF</strong>, <strong>Tracking Sensitivity</strong>, <strong>Accel./Decel. tracking</strong>, and <strong>Switching tracked subjects</strong> in that order. Here, Servo AF opens the Case selector; it does not change AF Operation. Switching tracked subjects opens the separate AF4 subject-selection control.</li>
 <li>Use Tracking Sensitivity or Accel./Decel. tracking only to correct a repeatable response problem. Change one parameter at a time and restore the profile&#x27;s starting Case if the experiment does not help.</li>
 <li>Keep <strong>Auto update set.: Disable</strong> so a temporary Case change inside C1–C3 does not silently rewrite the registered starting profile.</li>
 </ul>
@@ -117,28 +125,30 @@ a{color:#165d9c}
 <tr><td>Focus jumps to a branch, player, or foreground obstacle</td><td>Try Case 2 or move Tracking Sensitivity toward locked-on</td><td>AF area may be too broad</td></tr>
 <tr><td>Camera is slow to accept an intentional new subject</td><td>Try Case 3 or move Tracking Sensitivity toward responsive</td><td>Release and reacquire AF if needed</td></tr>
 <tr><td>Focus lags abrupt starts, stops, or speed changes</td><td>Try Case 4 or increase Accel./Decel. Tracking one step</td><td>Shutter speed and initial AF acquisition</td></tr>
-<tr><td>Camera abandons the intended detected subject</td><td>Reduce subject switching</td><td>Confirm correct subject type and AF area</td></tr>
-<tr><td>Camera will not transfer to a new recognized subject</td><td>Increase subject switching cautiously</td><td>Confirm the new subject is recognizable</td></tr>
-<tr><td>Eye Detection chooses the wrong person or animal</td><td>Reduce switching or use a controlled AF area</td><td>Initial point placement and subject size</td></tr>
+<tr><td>Camera abandons the intended detected subject</td><td>Change Switch subject to On subject, or On subject to Initial priority</td><td>Confirm correct subject type and AF area</td></tr>
+<tr><td>Camera will not transfer to a new recognized subject</td><td>Change Initial priority to On subject, or On subject to Switch subject</td><td>Confirm the new subject is recognizable</td></tr>
+<tr><td>Eye Detection chooses the wrong person or animal</td><td>Move toward On subject or Initial priority, or use a controlled AF area</td><td>Initial point placement and subject size</td></tr>
 <tr><td>Background is selected before the subject</td><td>Start with 1-Point or Expand AF Area</td><td>Reacquire on visible subject detail</td></tr>
 </table>
 <p>After each adjustment, test the same kind of pass or movement again. If the result does not improve, return that control to its prior value before changing another.</p>
 <h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
 <table>
-<tr><th>Profile</th><th>Recommended Case</th><th>Adjustment trigger</th></tr>
-<tr><td>Wildlife / C1</td><td><strong>Case A (Auto)</strong></td><td>Try Case 2 through vegetation; Case 4 for repeatable abrupt movement</td></tr>
-<tr><td>Birds Perched</td><td><strong>Case A (Auto)</strong></td><td>Try Case 2 when branches or brief framing errors steal focus</td></tr>
-<tr><td>Birds in Flight / C2</td><td><strong>Case 4</strong></td><td>Try Case 2 with obstructions; Case 3 only when intentionally acquiring successive birds at different distances</td></tr>
-<tr><td>People</td><td><strong>Case A (Auto)</strong></td><td>Try Case 2 through crossings; when the camera changes faces, adjust Switching tracked subjects rather than blaming the Case alone</td></tr>
-<tr><td>Sports</td><td><strong>Case 4</strong></td><td>Try Case 2 through player crossings; Case 3 when deliberately transferring among successive players or vehicles</td></tr>
-<tr><td>Travel</td><td><strong>Inactive in the One-Shot starting profile</strong></td><td>Use Case A if Travel is temporarily changed to Servo AF</td></tr>
-<tr><td>Landscape, Macro, Fireworks, Waterdrops</td><td><strong>Inactive</strong></td><td>Retain the documented One-Shot AF or Manual Focus approach</td></tr>
+<tr><th>Profile</th><th>Recommended Case</th><th>Switching tracked subjects</th><th>Adjustment trigger</th></tr>
+<tr><td>Wildlife / C1</td><td><strong>Case 1 (Custom), -1 / +1</strong></td><td><strong>On subject</strong></td><td>Return to Case A if the custom preset is unstable for slight, steady movement; use Initial priority if detection abandons the selected animal</td></tr>
+<tr><td>Birds Perched</td><td><strong>Case 1 (Custom), -1 / +1</strong></td><td><strong>On subject</strong></td><td>Return to Case A if +1 produces instability while the bird remains still</td></tr>
+<tr><td>Birds in Flight / C2</td><td><strong>Case 4</strong></td><td><strong>On subject</strong></td><td>Try Case 2 with obstructions; use Switch subject only for intentional handoffs among birds</td></tr>
+<tr><td>People</td><td><strong>Case A (Auto)</strong></td><td><strong>On subject</strong></td><td>When starting from C1, select Case A through My Menu: AF Case; use Initial priority when the camera changes faces</td></tr>
+<tr><td>Sports</td><td><strong>Case 1 (Custom), -1 / +1</strong></td><td><strong>On subject</strong></td><td>When starting from C2, select the custom Case 1 preset; use Switch subject for deliberate handoffs among successive players or vehicles</td></tr>
+<tr><td>Travel</td><td><strong>Inactive in the One-Shot starting profile</strong></td><td>Inactive with 1-Point AF</td><td>Use Case A if Travel is temporarily changed to Servo AF</td></tr>
+<tr><td>Landscape, Macro, Fireworks, Waterdrops</td><td><strong>Inactive</strong></td><td>Inactive with their starting AF methods</td><td>Retain the documented One-Shot AF or Manual Focus approach</td></tr>
 </table>
 <h2 id="canon-specific-notes">Canon-Specific Notes</h2>
 <ul>
 <li>AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.</li>
 <li>Canon calls the automatic option <strong>Case A</strong> and displays <strong>AUTO</strong> for it; this guide labels it <strong>Case A (Auto)</strong> for clarity.</li>
 <li>Cases 1–4 combine editable Tracking Sensitivity and Accel./Decel. Tracking values. Case A sets both automatically.</li>
+<li>Canon&#x27;s Case 1 default is 0 / 0; this project&#x27;s Case 1 (Custom) preset is -1 / +1 and must be configured before relying on the Wildlife, Birds Perched, or Sports targets.</li>
+<li>On concise cards, a non-Auto Case shows the two effective parameters together as <strong>Track / Accel</strong>. Switching Tracked Subjects remains a separate row because it controls recognized-subject selection rather than Servo response.</li>
 <li>On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.</li>
 <li>Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.</li>
 <li>Eye Detection requires Face + Tracking and works best when the eye is large and distinct enough to recognize.</li>

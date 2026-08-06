@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1785805424";
+const CACHE_NAME = "photography-reference-1786057932";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -24,6 +24,7 @@ const CACHE_URLS = [
   "appendices/Lens%20Capabilities.html",
   "appendices/Long%20Exposure%20%26%20Night%20Photography.html",
   "appendices/R5%20Quick%20Reference.html",
+  "appendices/Water%20Drop%20Collision%20Photography.html",
   "downloads/EOS%20R5%20Setup%20%26%20Verification%20Tracker.numbers",
   "downloads/EOS%20R5%20Setup%20%26%20Verification%20Tracker.xlsx",
   "downloads/Subject%20Settings%20Matrix.numbers",
@@ -48,6 +49,7 @@ const CACHE_URLS = [
   "web-assets/icons/canon_r5_official/face_tracking.svg",
   "web-assets/icons/canon_r5_official/high_speed_continuous_shooting.svg",
   "web-assets/icons/canon_r5_official/high_speed_continuous_shooting_plus.svg",
+  "web-assets/icons/canon_r5_official/high_speed_display.svg",
   "web-assets/icons/canon_r5_official/icon_btn-ae-lock.svg",
   "web-assets/icons/canon_r5_official/icon_btn-af-on.svg",
   "web-assets/icons/canon_r5_official/icon_btn-lens.svg",
@@ -66,6 +68,7 @@ const CACHE_URLS = [
   "web-assets/icons/canon_r5_official/mode-select.svg",
   "web-assets/icons/canon_r5_official/one_point_af.svg",
   "web-assets/icons/canon_r5_official/single_shooting.svg",
+  "web-assets/icons/canon_r5_official/tracking_subject.svg",
   "web-assets/icons/card_icons/SVG/af_operation.svg",
   "web-assets/icons/card_icons/SVG/af_point_button.svg",
   "web-assets/icons/card_icons/SVG/aperture.svg",

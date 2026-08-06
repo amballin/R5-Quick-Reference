@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Water Drop Collision Photography</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;color:#172033;--site-nav-bg:#132742;--site-nav-text:#f7fbff;--site-nav-muted:#b9d5ec}
+main{max-width:860px;margin:0 auto;padding:24px 24px 40px}
+h1{font-size:34px}
+h2{border-bottom:1px solid #d7dee8;padding-bottom:4px;margin-top:32px}
+h3{margin-top:24px}
+:where(h1,h2,h3,h4,h5,h6)[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 76px)}
+table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;width:100%;margin:16px 0;-webkit-overflow-scrolling:touch}
+th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
+code{background:#eef2f7;padding:2px 4px;border-radius:4px}
+a{color:#165d9c}
+
+.access-token{display:inline-block;padding:1px 6px;border-radius:999px;font-size:.93em;line-height:1.35;white-space:nowrap;vertical-align:baseline;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.access-token.access-switch{background:#72dda8;color:#123047}
+.access-token.access-menu-2{background:#f0bf69;color:#342400}
+.access-token.access-mfn{background:#4f46e5;color:#fff}
+
+.appendix-index-return{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}
+.appendix-index-return__short{display:none}
+.appendix-index-return:focus-visible{outline:2px solid #165d9c;outline-offset:2px}
+.output-mode .appendix-index-return{display:none!important}
+@media print{.appendix-index-return{display:none!important}}
+@media (max-width:480px){.appendix-index-return__full{display:none}.appendix-index-return__short{display:inline}}
+
+.site-nav{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:minmax(52px,1fr) minmax(0,auto) minmax(52px,1fr);align-items:center;gap:8px;width:100%;padding:calc(env(safe-area-inset-top,0px) + 12px) max(12px,env(safe-area-inset-right,0px)) 11px max(12px,env(safe-area-inset-left,0px));background:var(--site-nav-bg,#132742);color:var(--site-nav-text,#f7fbff);border-bottom:1px solid var(--site-nav-rule,rgba(155,210,255,.22));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.site-nav__back,.site-nav__home{color:inherit;text-decoration:none;min-height:44px;display:flex;align-items:center}
+.site-nav__back{justify-self:start;font-size:15px;font-weight:600}
+.site-nav__home{justify-self:center;text-align:center;font-size:20px;font-weight:750;white-space:nowrap}
+.site-nav__spacer{min-width:0}
+.site-nav__brand{justify-self:end;width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.site-nav__brand img{display:block;max-width:38px;max-height:38px;width:auto;height:auto;object-fit:contain}
+.site-nav__meta{grid-column:1/-1;text-align:center;color:var(--site-nav-muted,#b9d5ec);font-size:13px;margin:-5px 0 0}
+.site-nav__back:focus-visible,.site-nav__home:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:4px}
+.output-mode .site-nav{display:none!important}
+@media print{.site-nav{display:none!important}}
+@media (max-width:340px){.site-nav__home{font-size:18px}.site-nav__back{font-size:14px}}
+
+</style>
+</head>
+<body>
+<header class="site-nav" data-site-navigation><a class="site-nav__back" href="../index.html"><span aria-hidden="true">←</span>&nbsp;Back</a><a class="site-nav__home" href="../index.html">Camera Settings</a><span class="site-nav__brand"><img src="data:image/png;base64,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" alt="" aria-hidden="true" onerror="this.hidden=true"></span></header><script>
+(function () {
+  const back = document.querySelector(".site-nav__back");
+  if (!back) return;
+  const candidate = new URLSearchParams(window.location.search).get("return");
+  const cardReturn = /^\.\.\/Cards\/[^/?#]+\.html$/;
+  const appendixReturn = /^[^/?#]+\.html$/;
+  if (candidate && (cardReturn.test(candidate) || appendixReturn.test(candidate))) {
+    back.setAttribute("href", candidate);
+  } else {
+    back.setAttribute("href", "../index.html");
+  }
+})();
+</script>
+<main><h1 id="water-drop-collision-photography">Water Drop Collision Photography</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Provide a repeatable method for photographing water-drop collisions with the Pluto Trigger, including measured drop sizes, useful timing calculations, multiple-flash placement, reflection control, and manual focus when a soap bubble crosses the optical path.</p>
+<p>This guide separates values that can be calculated from values that must be measured. The calculations are starting estimates. Real collisions remain sensitive to valve behavior, liquid pressure, viscosity, surface tension, temperature, pool depth, and small alignment changes.</p>
+<h2 id="what-it-does">What it Does</h2>
+<p>The working setup uses the Pluto Trigger to control the valve-open duration and the timing between drops. In the owner&#x27;s current connection, Pluto fires the camera and the camera fires the flashes. The short flash burst, rather than the 1/200-second shutter speed by itself, freezes the collision.</p>
+<p>Pluto also documents a dark-room arrangement in which it opens the camera exposure by infrared, releases two drops, and fires a flash directly through its camera/flash port. That arrangement normally uses an exposure around 1–2 seconds. These two connection methods are not interchangeable timing models: camera shutter latency matters much more when the camera must open at the collision instant.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="measurements-and-symbols">Measurements and symbols</h3>
+<p>Use one unit system throughout a calculation.</p>
+<table>
+<tr><th>Symbol</th><th>Meaning</th></tr>
+<tr><td><code>H</code></td><td>Vertical distance from the detached drop to the undisturbed pool surface</td></tr>
+<tr><td><code>D</code></td><td>Pool depth</td></tr>
+<tr><td><code>P1</code>, <code>P2</code>, <code>P3</code></td><td>Valve-open command for drops 1, 2, and 3, in milliseconds</td></tr>
+<tr><td><code>V1</code>, <code>V2</code>, <code>V3</code></td><td>Measured volume of drops 1, 2, and 3</td></tr>
+<tr><td><code>L1</code>, <code>L2</code>, <code>L3</code></td><td>Delay between a valve command and actual drop detachment</td></tr>
+<tr><td><code>g</code></td><td>Gravitational acceleration, approximately <code>9.81 m/s²</code></td></tr>
+<tr><td><code>u</code></td><td>Effective upward speed of the first rebound jet or column</td></tr>
+<tr><td><code>y</code></td><td>Height above the undisturbed pool surface</td></tr>
+<tr><td><code>t</code></td><td>Time measured from the first valve command</td></tr>
+</table>
+<p>Measure <code>H</code> to the liquid surface, not to the bottom of the tray. Keep the valve height, nozzle, liquid level, temperature, camera position, and pool fill constant while calibrating.</p>
+<h3 id="free-fall-estimate">Free-fall estimate</h3>
+<p>Ignoring air resistance, a detached drop released from height <code>H</code> reaches the surface after:</p>
+<p><code>t_fall = sqrt(2H / g)</code></p>
+<p>Its estimated impact speed is:</p>
+<p><code>v_impact = sqrt(2gH)</code></p>
+<p>Example: with <code>H = 0.50 m</code>, <code>t_fall</code> is about <code>0.319 s</code> and impact speed is about <code>3.13 m/s</code>. Add the measured valve-to-detachment delay <code>L1</code> when comparing this with a Pluto command or flash delay.</p>
+<h3 id="peak-rebound-height">Peak rebound height</h3>
+<p>Pool depth, pool width, drop size, and fall distance do <strong>not</strong> uniquely determine the maximum rebound height. Energy is lost to the crater, crown, waves, satellite drops, viscosity, and air. Surface tension and the shape of the collapsing cavity redirect only part of the impact energy upward. A shallow bottom or nearby wall can also alter that collapse.</p>
+<p>The dependable measurement is a timing sweep or a calibrated scale placed in the collision plane:</p>
+<ol>
+<li>Disable drops 2 and 3.</li>
+<li>Keep drop 1 size fixed.</li>
+<li>Sweep the flash delay in 5 ms steps until the rising column nears its top.</li>
+<li>Repeat that range in 1 ms steps.</li>
+<li>Read peak height from a ruler or grid placed at the collision plane, correcting for image magnification if the ruler is offset from that plane.</li>
+</ol>
+<p>If the first-drop impact time and peak time have been measured, a simple ballistic approximation can estimate height. Let <code>tau</code> be the time from impact to the top of the rebound:</p>
+<p><code>u ≈ g × tau</code></p>
+<p><code>y_max ≈ 0.5 × g × tau²</code></p>
+<p>This treats the top of the jet like a freely moving particle. It is useful for planning but is not a fluid-dynamics prediction. The jet continues changing shape and may pinch off, so direct measurement from the image is more trustworthy.</p>
+<p>Test pool depth empirically. Increase <code>D</code> while holding everything else fixed; once peak height and shape stop changing meaningfully, the bottom is no longer an important variable for that setup. Do the same with tray width if reflected waves or wall proximity may be influencing the crown.</p>
+<h3 id="calibrating-drop-size-for-drops-1-2-and-3">Calibrating drop size for drops 1, 2, and 3</h3>
+<p>Valve-open milliseconds are a control setting, not a volume. Flow may be nonlinear near the valve&#x27;s opening threshold, and pressure changes with liquid level. Calibrate each requested pulse width.</p>
+<ol>
+<li>Prime the valve and establish the normal working liquid level and pressure.</li>
+<li>Put a tared cup on a scale with at least 0.01 g resolution.</li>
+<li>Release <code>N</code> identical drops at one pulse width; use 50–100 drops when practical.</li>
+<li>Weigh the collected liquid.</li>
+<li>Repeat at least three times and record the mean and range.</li>
+</ol>
+<p>For collected mass <code>m</code>, liquid density <code>rho</code>, and <code>N</code> drops:</p>
+<p><code>V_drop = m / (rho × N)</code></p>
+<p>For water near room temperature, <code>rho</code> is close to <code>1.00 g/mL</code>, so grams collected are approximately milliliters collected. For a water/glycerin or soap mixture, measure or look up the mixture density rather than assuming pure water.</p>
+<p>To express the measured volume as an equivalent spherical diameter:</p>
+<p><code>d = cube_root(6V / pi)</code></p>
+<p>Use <code>V</code> in cubic millimeters to obtain <code>d</code> in millimeters. One microliter equals one cubic millimeter.</p>
+<p>Example: 50 drops with a total mass of 2.00 g give approximately <code>0.040 mL</code>, <code>40 microliters</code>, or <code>40 mm³</code> per drop. The equivalent spherical diameter is about <code>4.24 mm</code>.</p>
+<p>Build a calibration table for each liquid:</p>
+<table>
+<tr><th>Command</th><th>Drop role</th><th>Repeats</th><th>Mean mass per drop</th><th>Volume</th><th>Equivalent diameter</th><th>Range/notes</th></tr>
+<tr><td><code>P1</code></td><td>Drop 1</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>P2</code></td><td>Drop 2</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><code>P3</code></td><td>Drop 3</td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p>Calibrate drop 1, drop 2, and drop 3 settings independently by disabling the other drops when the controller permits. Then run the complete sequence and weigh its total output as a consistency check. Closely spaced commands can behave differently from isolated commands because the valve and fluid column have not completely settled.</p>
+<p>The current official Pluto Droplet guide documents two drops. If the installed app, firmware, or a separate valve controller offers a third drop, apply the same measurement method to it and verify how that controller defines the third delay—absolute from drop 1 or relative to drop 2.</p>
+<h3 id="calculating-the-delay-for-a-collision">Calculating the delay for a collision</h3>
+<p>The following model provides a first estimate. It does not replace a timing sweep.</p>
+<p>The first drop detaches at <code>L1</code> and impacts at approximately:</p>
+<p><code>t_impact1 = L1 + sqrt(2H / g)</code></p>
+<p>After impact, approximate the rising first column as:</p>
+<p><code>y1(t) = u(t - t_impact1) - 0.5g(t - t_impact1)²</code></p>
+<p>For a chosen collision height <code>y_c</code> below the measured <code>y_max</code>, the time on the rising branch is:</p>
+<p><code>t_collision = t_impact1 + [u - sqrt(u² - 2g y_c)] / g</code></p>
+<p>A later falling drop needs approximately this much time to travel from the nozzle to <code>y_c</code>:</p>
+<p><code>t_flight_to_y = sqrt[2(H - y_c) / g]</code></p>
+<p>Therefore the starting command delay for drop 2 is:</p>
+<p><code>Delay2 ≈ t_collision - L2 - t_flight_to_y</code></p>
+<p>For a third drop intended to reach a chosen later collision at time <code>t_collision3</code> and height <code>y_c3</code>:</p>
+<p><code>Delay3_absolute ≈ t_collision3 - L3 - sqrt[2(H - y_c3) / g]</code></p>
+<p>If the controller defines the third setting as an interval after drop 2 rather than an absolute delay from drop 1:</p>
+<p><code>Delay3_relative = Delay3_absolute - Delay2</code></p>
+<p>The square root in the rebound equation requires <code>u² ≥ 2g y_c</code>; otherwise the selected height exceeds the estimated peak. In practice, use the measured first-drop peak and choose a collision slightly below it, where the rising column has enough width and repeatability.</p>
+<h3 id="practical-pluto-calibration-sequence">Practical Pluto calibration sequence</h3>
+<ol>
+<li>Stabilize valve pressure, liquid temperature, nozzle height, pool depth, and framing.</li>
+<li>Enable only drop 1 and choose its measured volume.</li>
+<li>Find first impact and peak rebound with Pluto&#x27;s flash-delay calibration. The official guide suggests beginning with 5 ms increments and then refining.</li>
+<li>Estimate drop 2 delay with the equations or begin near the observed peak timing.</li>
+<li>Sweep drop 2 delay in 2–5 ms steps; after a collision appears, refine in 1 ms steps.</li>
+<li>Change only one variable at a time. A change to drop volume changes impact energy and usually changes the correct delay.</li>
+<li>Add drop 3 only after the drop 1/drop 2 collision is stable. Decide whether it should thicken the column, strike the umbrella, or create a later secondary collision, then sweep its delay separately.</li>
+<li>Calibrate the final flash delay last, because the desired photographed shape may occur after the physical collision begins.</li>
+</ol>
+<p>Record successful trials rather than relying on app values alone:</p>
+<table>
+<tr><th>Trial</th><th>Liquid/temperature</th><th><code>H</code> / <code>D</code></th><th><code>P1</code> / <code>P2</code> / <code>P3</code></th><th>Delays</th><th>Flash delay</th><th>Flash powers</th><th>Result</th></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+<h2 id="advantages">Advantages</h2>
+<ul>
+<li>Measured drop volumes make different pulse widths and liquids comparable.</li>
+<li>A calculated delay narrows the search range before fine calibration.</li>
+<li>Low-power manual flashes provide short, repeatable bursts and fast recycling.</li>
+<li>A fixed manual-focus plane avoids autofocus latency and focus hunting.</li>
+<li>A separate candidate card and detailed guide keep field instructions concise.</li>
+</ul>
+<h2 id="disadvantages">Disadvantages</h2>
+<ul>
+<li>The rebound is a fluid interaction, so a simple ballistic model cannot predict its complete shape.</li>
+<li>Valve detachment latency and drop volume can change with pressure, temperature, liquid level, and viscosity.</li>
+<li>Multiple flashes add reflections, radio/optical synchronization issues, and exposure variables.</li>
+<li>A curved soap film is a variable optical element and can make the collision appear shifted or distorted.</li>
+<li>Very small timing changes can produce substantially different shapes.</li>
+</ul>
+<h2 id="recommended-uses">Recommended Uses</h2>
+<ul>
+<li>Repeatable two-drop crowns, columns, mushrooms, and umbrellas.</li>
+<li>Three-drop experiments when the installed controller explicitly supports a third timed release.</li>
+<li>Comparison of liquid recipes after each recipe has its own volume and timing calibration.</li>
+<li>Multiple-light setups where key, rim, and background illumination need independent placement.</li>
+</ul>
+<h2 id="when-not-to-use">When Not to Use</h2>
+<p>Do not rely on the equations alone when the valve is sputtering, the reservoir pressure is changing, the tray is visibly affected by earlier waves, or the soap bubble shape changes between frames. Do not use autofocus during the sequence. Do not use a long camera-controlled shutter exposure in a bright room where ambient light will record unwanted motion or background detail.</p>
+<h2 id="decision-guide">Decision Guide</h2>
+<table>
+<tr><th>Observation</th><th>Best next action</th></tr>
+<tr><td>First rebound height varies</td><td>Stabilize valve pressure and pool; verify drop 1 mass before changing timing</td></tr>
+<tr><td>Column is repeatable but drop 2 misses</td><td>Sweep only drop 2 delay, first coarsely and then in 1 ms steps</td></tr>
+<tr><td>Collision occurs too low</td><td>Release drop 2 slightly earlier, or reduce the intended collision height calculation</td></tr>
+<tr><td>Collision occurs after the column collapses</td><td>Release drop 2 earlier; confirm drop 1 peak timing again</td></tr>
+<tr><td>Frame is sharp without a bubble but soft through it</td><td>Treat the bubble as the cause; reform it, refocus after forming it, or remove it from the optical path</td></tr>
+<tr><td>Reflections show the flash head or diffuser</td><td>Move the reflected angle away from the lens and flag the source; do not begin by reducing exposure</td></tr>
+<tr><td>Motion has a bright trail</td><td>Reduce ambient light or shorten the effective flash duration with lower manual power</td></tr>
+<tr><td>Image is dark at low flash power</td><td>Move lights closer, improve diffusion efficiency, add a flash, open toward f/8, then raise ISO modestly</td></tr>
+</table>
+<h2 id="recommended-settings-by-profile">Recommended Settings by Profile</h2>
+<table>
+<tr><th>Profile</th><th>Starting values</th><th>Notes</th></tr>
+<tr><td>Waterdrops</td><td>Manual, 1/200, f/8–f/11, ISO 100, Mechanical shutter, Manual Focus, Single Shot, stabilization Off</td><td>Use when Pluto fires the camera and the camera fires synchronized flashes</td></tr>
+<tr><td>Waterdrops—direct-flash dark-room method</td><td>Manual exposure around 1–2 seconds, low ambient light, Manual Focus</td><td>Pluto opens the exposure and directly fires the flash; confirm EOS R5 remote compatibility and exact wiring</td></tr>
+</table>
+<p>Begin each flash around 1/32 power when using two or three nearby flashes. Adjust distance and modifier efficiency first. Use 1/16 when more exposure is needed; use 1/64 when shorter duration or faster recycle matters more. These are project starting recommendations, not verified duration specifications for every flash model.</p>
+<h2 id="canon-specific-notes">Canon-Specific Notes</h2>
+<ul>
+<li>The current Waterdrops profile uses Mechanical shutter at 1/200 as a conservative camera-triggered flash-sync starting point.</li>
+<li>Disable High Speed Sync for this setup unless a separately tested connection requires it; ordinary manual flash is more power-efficient.</li>
+<li>Manual Focus, Single Shot, and disabled stabilization remove avoidable timing and framing variation on a fixed support.</li>
+<li>At close distances, f/22 increases depth of field but also adds diffraction. ISO 3200 adds noise and reduces highlight headroom. Start near f/8–f/11 and ISO 100, then solve exposure with flash distance, diffusion efficiency, the number of flashes, and modest ISO increases.</li>
+<li>Confirm that every flash fires after the shutter is fully open. A dark band indicates a sync or timing problem, not a drop-delay problem.</li>
+</ul>
+<h2 id="tips">Tips</h2>
+<h3 id="multiple-flash-placement">Multiple-flash placement</h3>
+<ul>
+<li>Use manual power on every flash so output does not change with framing or liquid highlights.</li>
+<li>Start with a diffused key light 30–45 degrees behind and to one side of the collision.</li>
+<li>Put a weaker fill on the opposite side, or use a white reflector before adding another powered light.</li>
+<li>Light a translucent background from behind with a separate flash when a clean colored field is wanted.</li>
+<li>Keep all flashes at power levels that recycle completely before the next Pluto sequence.</li>
+<li>Trigger secondary flashes with a tested radio receiver or manual optical slave. Confirm that no E-TTL preflash fires a slave early.</li>
+</ul>
+<h3 id="avoiding-reflections">Avoiding reflections</h3>
+<p>Water and soap films are specular: they reflect the source at the mirror angle. Move the light or diffuser until that reflected angle misses the lens. A larger diffuser makes a broader, smoother highlight but does not remove it.</p>
+<p>Use black flags beside and above the set to block views of flash heads, room lights, bright walls, and the camera. Keep the lens shaded. Place flashes behind side diffusion panels rather than aiming bare heads toward the water. Small controlled highlights often help define the curved drop; the goal is to shape them, not necessarily eliminate every highlight.</p>
+<p>A circular polarizer on the lens may reduce some glare but cannot remove reflections from every curved surface orientation. For stronger control, place linear polarizing film over every flash in the same orientation and rotate the lens polarizer toward cross-polarization. Expect substantial light loss and test for uneven color or stress patterns in plastic trays and acrylic panels.</p>
+<h3 id="focus-through-a-soap-bubble">Focus through a soap bubble</h3>
+<p>A soap film is thin, but a curved bubble behaves as a changing lens. If the lens focus ring has not moved but the collision looks shifted after the bubble is formed, the apparent focus change is refraction through the bubble, not autofocus.</p>
+<p>For the most repeatable result:</p>
+<ol>
+<li>Mount the camera and lock composition.</li>
+<li>Form the bubble in its final position and shape.</li>
+<li>Put a thin rod, needle tip, printed edge, or spare drop exactly at the intended collision plane inside or behind the bubble.</li>
+<li>Use magnified Live View to focus on that target.</li>
+<li>Switch the lens to manual focus if needed and tape the focus ring.</li>
+<li>Remove the target without touching the camera, tray, bubble support, or focus ring.</li>
+<li>Recheck after every re-formed bubble because its curvature may differ.</li>
+</ol>
+<p>Depth of field can hide a small apparent shift, but f/22 is not the first solution. Increase working distance or reduce magnification slightly, keep the sensor plane parallel to the desired collision plane, and begin near f/8–f/11. If the changing bubble must remain between lens and subject, perfect repeatability is not physically guaranteed; reform and refocus, or redesign the angle so the collision is not photographed through the curved film.</p>
+<h2 id="common-mistakes">Common Mistakes</h2>
+<ul>
+<li>Assuming <code>10 ms</code> produces a known or universally repeatable drop volume.</li>
+<li>Measuring nozzle height to the tray bottom instead of the liquid surface.</li>
+<li>Changing several variables between trials.</li>
+<li>Calculating rebound height as if all impact energy becomes vertical motion.</li>
+<li>Ignoring valve-to-detachment latency.</li>
+<li>Confusing an absolute third-drop delay with an interval measured from drop 2.</li>
+<li>Letting earlier waves remain in the tray before the next sequence.</li>
+<li>Using E-TTL or a preflash that triggers optical slaves prematurely.</li>
+<li>Pointing bare flashes toward the camera-facing side of the water.</li>
+<li>Focusing before forming a curved soap bubble, then expecting the apparent plane to stay fixed.</li>
+<li>Using f/22 and ISO 3200 when flash placement, power, and working distance have not been optimized.</li>
+</ul>
+<h2 id="cross-references">Cross References</h2>
+<ul>
+<li>Profile: Waterdrops.</li>
+<li>Related guides:</li>
+<li><a href="Flash%20Photography.html?return=Water%20Drop%20Collision%20Photography.html">Flash Photography</a></li>
+<li><a href="R5%20Quick%20Reference.html?return=Water%20Drop%20Collision%20Photography.html">R5 Quick Reference</a></li>
+<li>Authoritative Pluto references:</li>
+<li><a href="https://plutotrigger.com/pages/manuals" target="_blank" rel="noopener noreferrer">Pluto Trigger manual—Droplet mode</a></li>
+<li><a href="https://plutotrigger.com/pages/valve-guide" target="_blank" rel="noopener noreferrer">Pluto Valve user guide</a></li>
+</ul></main>
+
+</body>
+</html>

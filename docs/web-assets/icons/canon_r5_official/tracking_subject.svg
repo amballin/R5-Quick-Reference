@@ -1,0 +1,17 @@
+<svg id="レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <title>icon_frame-tracking</title>
+  <rect class="cls-1" width="16" height="16"/>
+  <g>
+    <path d="M5.09,0.5V1.21H1.24V5.05H0.53V0.5H5.09Zm0,1.86V3.07h-2V5H2.4V2.36H5.1Z"/>
+    <path d="M15.11,0.5h0.36V5.05H14.76V1.21H10.91V0.5h4.2ZM13.24,2.36H13.6V5H12.89v-2h-2V2.36h2.34Z"/>
+    <path d="M0.89,15.5H0.53V10.95H1.24v3.84H5.09V15.5H0.89Zm1.86-1.86H2.4V11H3.11v2h2v0.71H2.76Z"/>
+    <path d="M10.91,15.5V14.79h3.84V10.95h0.71V15.5H10.91Zm0-1.86V12.93h2V11H13.6v2.68H10.9Z"/>
+  </g>
+</svg>
