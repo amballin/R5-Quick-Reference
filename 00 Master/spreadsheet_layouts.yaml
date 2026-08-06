@@ -80,7 +80,7 @@ workbooks:
       row: 5
       label_column: A
       label: "Card starts from:"
-      default_value: Camera defaults
+      default_value: Camera Defaults + SWITCH + AF Case
       empty_value: "—"
       fill: pale_blue
       font_color: "#17324D"

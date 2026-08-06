@@ -2,6 +2,48 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Camera Defaults My Menu Access Route
+
+**Status:** Accepted
+**Date:** 2026-08-06
+
+Give Camera Defaults an access-only field route containing **SWITCH** and **AF Case**, without a C1–C3 token because Camera Defaults is not a registered-mode target. Color Shutter Type, Subject Detection, and Image Stabilization with SWITCH; color Servo AF Case and Switching Tracked Subjects with AF Case. Keep values reached fastest through Q, dials, buttons, or ordinary menu navigation white. Render a visible token for every color and explain the access-only meaning in the generated Notes.
+
+Permit baseline-driven profile cards displayed in the reference category to declare an access-only My Menu route without a starting C-mode. Keep permanent authored reference cards ineligible for `card.field_setup`.
+
+## Project-Customized Case 1 Preset
+
+**Status:** Accepted
+**Date:** 2026-08-06
+
+Keep **Case A (Auto)** with automatic parameters as the general operational baseline, Camera Defaults state, and People target. Configure **Case 1** once as the project preset with **Tracking Sensitivity -1** and **Accel./Decel. tracking +1**. Label it **Case 1 (Custom)** and state wherever the values are taught that Canon's factory Case 1 is 0 / 0. Selecting or resetting Canon's Case 1 defaults can therefore remove the project customization.
+
+Use the custom Case 1 preset for Wildlife, Birds Perched, and Sports. Keep Birds in Flight on Case 4 at 0 / +1. Register C1 Wildlife with the custom Case 1 preset, retain C2 Birds in Flight and C3 Landscape, and explicitly include the Case 1 to Case A change in the People-from-C1 field transition. Treat the values and registrations as approved targets pending physical verification.
+
+This decision supersedes **AF Subject Switching, Case Parameters, and High Speed Display**, **Servo AF Cases in Profiles and Cards**, and **C1-Aligned Operational Baseline** only where they assign Case A to C1 Wildlife, assign Case 4 to Sports, or require Camera Defaults to match every C1 setting. Baseline-plus-overrides remains authoritative.
+
+## AF Subject Switching, Case Parameters, and High Speed Display
+
+**Status:** Accepted
+**Date:** 2026-08-06
+
+Use **On subject** as the shared approved target for **Switching tracked subjects**. Treat it as a separate subject-selection control that applies with Face + Tracking, Zone AF, and Large Zone AF, not as a third Servo AF Case parameter. Add it as the fourth shortcut in **My Menu: AF Case**, after Servo AF, Tracking Sensitivity, and Accel./Decel. tracking. Show the merged value on Camera Defaults and cards whose effective AF Method supports it, including inherited baseline matches.
+
+Store Tracking Sensitivity and Accel./Decel. tracking as separate profile settings. Case A uses Auto for both. Birds in Flight uses the Canon Case 4 starting values of Tracking Sensitivity 0 and Accel./Decel. tracking +1; the later **Project-Customized Case 1 Preset** decision governs Wildlife, Birds Perched, and Sports. When the effective Servo AF Case is 1–4, show both values in one compact **Track / Accel** row immediately below Servo AF Case; omit that row for Case A and when Servo AF is inactive.
+
+Use **High speed display: Enable** as a shared approved target pending physical verification. Show it on Camera Defaults, Camera Setup Essentials, and subject cards where the effective starting configuration uses regular High Speed Continuous or Electronic shutter. Omit it when the starting configuration cannot use the selectable setting, including High Speed Continuous+, Low Speed Continuous, and Single Shot. Keep it out of My Menu because it is a set-and-forget display preference rather than a routine field transition.
+
+This decision supersedes **My Menu: AF Case** where that entry specifies only three shortcuts or excludes Case parameters from cards, and **Servo AF Cases in Profiles and Cards** where that entry requires cards to show only the selected Case.
+
+## Machine-Local Unreleased Card Candidates
+
+**Status:** Accepted
+**Date:** 2026-08-04
+
+Generate a disposable machine-local review mini-site at `Build Output/Card Candidates/` during every normal full build. Its index contains each card profile whose `metadata.release` is not `true`, with working card navigation and links to locally generated appendices. Keep these candidates out of `Build Output/merged-build/`, `docs/`, and every publishable PWA or website mirror. Continue generating intermediate HTML for all profiles as before.
+
+Validate that every unreleased profile has exactly one candidate card, that released or stale cards are absent from the candidate set, and that the candidate index and card links resolve. Single-profile builds preserve their existing behavior and do not regenerate the complete candidate index; use the normal full build for candidate review.
+
 ## Local Pre-Release Version Indicator
 
 **Status:** Accepted

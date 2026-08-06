@@ -10,6 +10,18 @@ display_order: 20
 card:
   icons:
     left: camera_default
+  field_setup:
+    access_only: true
+    my_menus:
+      - name: SWITCH
+        settings:
+          - shutter.type
+          - autofocus.subject_detection
+          - stabilization.image_stabilization.mode
+      - name: AF Case
+        settings:
+          - autofocus.servo_af_case
+          - autofocus.switching_tracked_subjects
 inherits: baseline
 overrides: {}
 checklist:
@@ -25,4 +37,4 @@ common_mistakes:
   - Wrong shooting mode
   - Forgetting exposure compensation
 notes:
-  - Standard starting configuration; intentionally matches the approved C1 Wildlife target pending physical verification.
+  - Standard general-purpose starting configuration uses Case A (Auto); C1 Wildlife intentionally overrides it with the project-customized Case 1 preset.

@@ -29,9 +29,19 @@ Canon AF Cases combine starting values for those two parameters:
 
 Cases 1–4 may be tuned manually. Case A controls both parameters automatically. Treat every Case as a starting behavior, then diagnose the observed failure before adjusting an individual parameter or choosing a specialized Case.
 
+> **Project customization—not the Canon default:** This reference configures Case 1 once with Tracking Sensitivity **-1** and Accel./Decel. Tracking **+1**. Canon's factory Case 1 is **0 / 0**. The project therefore labels the selected preset **Case 1 (Custom)**. Resetting Case 1 to its Canon defaults removes the project customization.
+
+The project preset combines a more locked-on response through branches, players, and brief foreground crossings with stronger response to abrupt speed changes. The tradeoff is slower intentional handoff after the camera acquires the wrong subject and possible instability for slight, steady movement. Accel./Decel. +1 changes Servo AF prediction and response; it does not make the lens motor intrinsically faster.
+
 Subject Detection identifies People, Animals, or Vehicles. Eye Detection can refine priority to an eye when the subject and AF method support it. The AF area still controls where the camera can begin or continue looking.
 
-**Switching tracked subjects is separate from the AF Case.** It controls whether compatible subject-aware AF methods retain the initially chosen subject or transfer detection priority to another recognized subject. Changing it does not change Tracking Sensitivity or Accel./Decel. Tracking.
+**Switching tracked subjects is separate from the AF Case.** It controls whether Face + Tracking, Zone AF, or Large Zone AF retains the initially chosen recognized subject or transfers detection priority to another recognized subject. Changing it does not change Tracking Sensitivity or Accel./Decel. Tracking.
+
+| Switching tracked subjects | Behavior | Practical use |
+|---|---|---|
+| **Initial priority** | Retains the subject initially selected for AF as long as possible | Use when keeping one specific subject matters more than automatic recovery or handoffs |
+| **On subject** | Retains the initial main subject but can transfer when the camera can no longer identify it as the main subject | Shared balanced starting point for Wildlife, Birds, People, and Sports |
+| **Switch subject** | Transfers among recognized subjects more readily as conditions change | Use for intentional handoffs or successive subjects; watch for unwanted switching |
 
 ## Advantages
 
@@ -52,13 +62,13 @@ Subject Detection identifies People, Animals, or Vehicles. Eye Detection can ref
 
 Use Servo AF for subjects moving toward, away from, or across the camera. Enable the appropriate subject type when recognition is reliable. Use Face + Tracking when the camera should follow a recognized subject across the frame; use a smaller or expanded area when you need more control over initial acquisition.
 
-Start with the profile's documented Case. Leave its parameters at the Canon defaults until a repeatable failure appears. Tune the failure, not the subject label alone.
+Start with the profile's documented Case. For Case 1 (Custom), use the documented project -1 / +1 preset rather than Canon's factory Case 1 values. Tune later departures to the observed failure, not the subject label alone.
 
 ### Quick Field Access
 
-- The fastest normal route is to recall the complete registered profile: **C1 Wildlife uses Case A**, **C2 Birds in Flight uses Case 4**, and **C3 Landscape stores Case A but does not actively use it while C3 remains in One-Shot AF**.
+- The fastest normal route is to recall the complete registered profile: **C1 Wildlife uses Case 1 (Custom) at -1 / +1**, **C2 Birds in Flight uses Case 4 at 0 / +1**, and **C3 Landscape stores Case A but does not actively use it while C3 remains in One-Shot AF**.
 - For a temporary change, open **My Menu: AF Case > Servo AF**, select the Case, and press SET. The direct route remains **AF3 > Servo AF characteristics**.
-- **My Menu: AF Case** contains **Servo AF**, **Tracking Sensitivity**, and **Accel./Decel. tracking** in that order. Here, Servo AF opens the Case selector; it does not change AF Operation.
+- **My Menu: AF Case** contains **Servo AF**, **Tracking Sensitivity**, **Accel./Decel. tracking**, and **Switching tracked subjects** in that order. Here, Servo AF opens the Case selector; it does not change AF Operation. Switching tracked subjects opens the separate AF4 subject-selection control.
 - Use Tracking Sensitivity or Accel./Decel. tracking only to correct a repeatable response problem. Change one parameter at a time and restore the profile's starting Case if the experiment does not help.
 - Keep **Auto update set.: Disable** so a temporary Case change inside C1–C3 does not silently rewrite the registered starting profile.
 
@@ -73,30 +83,32 @@ Use One-Shot AF or Manual Focus for static subjects when focus should not contin
 | Focus jumps to a branch, player, or foreground obstacle | Try Case 2 or move Tracking Sensitivity toward locked-on | AF area may be too broad |
 | Camera is slow to accept an intentional new subject | Try Case 3 or move Tracking Sensitivity toward responsive | Release and reacquire AF if needed |
 | Focus lags abrupt starts, stops, or speed changes | Try Case 4 or increase Accel./Decel. Tracking one step | Shutter speed and initial AF acquisition |
-| Camera abandons the intended detected subject | Reduce subject switching | Confirm correct subject type and AF area |
-| Camera will not transfer to a new recognized subject | Increase subject switching cautiously | Confirm the new subject is recognizable |
-| Eye Detection chooses the wrong person or animal | Reduce switching or use a controlled AF area | Initial point placement and subject size |
+| Camera abandons the intended detected subject | Change Switch subject to On subject, or On subject to Initial priority | Confirm correct subject type and AF area |
+| Camera will not transfer to a new recognized subject | Change Initial priority to On subject, or On subject to Switch subject | Confirm the new subject is recognizable |
+| Eye Detection chooses the wrong person or animal | Move toward On subject or Initial priority, or use a controlled AF area | Initial point placement and subject size |
 | Background is selected before the subject | Start with 1-Point or Expand AF Area | Reacquire on visible subject detail |
 
 After each adjustment, test the same kind of pass or movement again. If the result does not improve, return that control to its prior value before changing another.
 
 ## Recommended Settings by Profile
 
-| Profile | Recommended Case | Adjustment trigger |
-|---|---|---|
-| Wildlife / C1 | **Case A (Auto)** | Try Case 2 through vegetation; Case 4 for repeatable abrupt movement |
-| Birds Perched | **Case A (Auto)** | Try Case 2 when branches or brief framing errors steal focus |
-| Birds in Flight / C2 | **Case 4** | Try Case 2 with obstructions; Case 3 only when intentionally acquiring successive birds at different distances |
-| People | **Case A (Auto)** | Try Case 2 through crossings; when the camera changes faces, adjust Switching tracked subjects rather than blaming the Case alone |
-| Sports | **Case 4** | Try Case 2 through player crossings; Case 3 when deliberately transferring among successive players or vehicles |
-| Travel | **Inactive in the One-Shot starting profile** | Use Case A if Travel is temporarily changed to Servo AF |
-| Landscape, Macro, Fireworks, Waterdrops | **Inactive** | Retain the documented One-Shot AF or Manual Focus approach |
+| Profile | Recommended Case | Switching tracked subjects | Adjustment trigger |
+|---|---|---|---|
+| Wildlife / C1 | **Case 1 (Custom), -1 / +1** | **On subject** | Return to Case A if the custom preset is unstable for slight, steady movement; use Initial priority if detection abandons the selected animal |
+| Birds Perched | **Case 1 (Custom), -1 / +1** | **On subject** | Return to Case A if +1 produces instability while the bird remains still |
+| Birds in Flight / C2 | **Case 4** | **On subject** | Try Case 2 with obstructions; use Switch subject only for intentional handoffs among birds |
+| People | **Case A (Auto)** | **On subject** | When starting from C1, select Case A through My Menu: AF Case; use Initial priority when the camera changes faces |
+| Sports | **Case 1 (Custom), -1 / +1** | **On subject** | When starting from C2, select the custom Case 1 preset; use Switch subject for deliberate handoffs among successive players or vehicles |
+| Travel | **Inactive in the One-Shot starting profile** | Inactive with 1-Point AF | Use Case A if Travel is temporarily changed to Servo AF |
+| Landscape, Macro, Fireworks, Waterdrops | **Inactive** | Inactive with their starting AF methods | Retain the documented One-Shot AF or Manual Focus approach |
 
 ## Canon-Specific Notes
 
 - AF Cases and subject detection affect different parts of the focusing decision: Cases tune response over time; detection helps identify what to prioritize.
 - Canon calls the automatic option **Case A** and displays **AUTO** for it; this guide labels it **Case A (Auto)** for clarity.
 - Cases 1–4 combine editable Tracking Sensitivity and Accel./Decel. Tracking values. Case A sets both automatically.
+- Canon's Case 1 default is 0 / 0; this project's Case 1 (Custom) preset is -1 / +1 and must be configured before relying on the Wildlife, Birds Perched, or Sports targets.
+- On concise cards, a non-Auto Case shows the two effective parameters together as **Track / Accel**. Switching Tracked Subjects remains a separate row because it controls recognized-subject selection rather than Servo response.
 - On the original EOS R5, Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF. Spot AF, 1-Point AF, and Expand AF Area use deliberately positioned AF points instead.
 - Face + Tracking gives detection broad freedom. 1-Point and Expand AF Area provide more control over where acquisition begins.
 - Eye Detection requires Face + Tracking and works best when the eye is large and distinct enough to recognize.

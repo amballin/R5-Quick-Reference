@@ -18,6 +18,7 @@ card:
       - name: AF Case
         settings:
           - autofocus.servo_af_case
+          - autofocus.switching_tracked_subjects
 inherits: baseline
 overrides:
   autofocus:
@@ -39,6 +40,7 @@ watch_for:
 common_mistakes:
   - Focus on nose instead of eye
 notes:
+  - When starting from C1 Wildlife, use My Menu AF Case to change the project-customized Case 1 back to Case A (Auto).
   - Use short bursts to capture expressions without filling the buffer unnecessarily.
   - Consider Av for intentional portraits; use Fv for casual family and event people photography.
 appendix_links:

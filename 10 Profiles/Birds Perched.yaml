@@ -17,11 +17,19 @@ card:
       - name: AF Case
         settings:
           - autofocus.servo_af_case
+          - autofocus.tracking_sensitivity
+          - autofocus.accel_decel_tracking
+          - autofocus.switching_tracked_subjects
   colors:
     background:
     text:
 
 overrides:
+  autofocus:
+    servo_af_case: Case 1 (Custom)
+    tracking_sensitivity: "-1"
+    accel_decel_tracking: "+1"
+
   shutter:
     target: "1/500–1/1000"
 
@@ -47,6 +55,7 @@ common_mistakes:
   - Too much depth of field
 
 notes:
+  - Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
   - Use Spot AF or 1-Point AF when branches interfere; use Expand AF Area when movement is difficult to follow.
   - Image Stabilization Mode 1 is correct for handheld perched birds; turn IS off on a solid tripod.
 appendix_links:

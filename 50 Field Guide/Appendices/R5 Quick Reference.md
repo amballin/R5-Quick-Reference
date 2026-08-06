@@ -228,37 +228,36 @@ Subject to Detect takes effect with Face + Tracking, Zone AF, and Large Zone AF 
 
 #### AF Tracking Behavior
 
-Start with the profile's selected Servo AF Case: Case A (Auto) is the Wildlife baseline, while Birds in Flight and Sports use Case 4. Change only the response that is causing a repeatable problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.
+Start with the profile's selected Servo AF Case. Case A (Auto) is the general baseline and People target. Wildlife, Birds Perched, and Sports use the project-customized Case 1 preset at -1 / +1; Birds in Flight uses Case 4 at 0 / +1. Change only the response that is causing a repeatable problem. These controls tune how Servo AF reacts; they do not replace AF Method, subject detection, or good subject acquisition.
 
 ##### Approved Servo AF Starting Settings
 
 These are approved targets pending physical camera verification:
 
-| Profile | AF Operation | Servo AF Case | Tracking Sensitivity | Accel./Decel. tracking |
-|---|---|---|---|---|
-| Wildlife / C1 | Servo AF | Case A (Auto) | Auto | Auto |
-| Birds Perched | Servo AF | Case A (Auto) | Auto | Auto |
-| People | Servo AF | Case A (Auto) | Auto | Auto |
-| Birds in Flight / C2 | Servo AF | Case 4 | 0 | +1 |
-| Sports | Servo AF | Case 4 | 0 | +1 |
+| Profile | AF Operation | Servo AF Case | Tracking | Accel./Decel. | Subject switching |
+|---|---|---|---|---|---|
+| Wildlife / C1 | Servo AF | Case 1 (Custom) | -1 | +1 | On subject |
+| Birds Perched | Servo AF | Case 1 (Custom) | -1 | +1 | On subject |
+| People | Servo AF | Case A (Auto) | Auto | Auto | On subject |
+| Birds in Flight / C2 | Servo AF | Case 4 | 0 | +1 | On subject |
+| Sports | Servo AF | Case 1 (Custom) | -1 | +1 | On subject |
 
-Case A controls both parameters automatically. Case 4 starts at Tracking Sensitivity 0 and Accel./Decel. tracking +1 for abrupt speed changes. Profiles that start in One-Shot AF or Manual Focus retain a stored Case but do not actively use it.
+Case A controls both parameters automatically. **Case 1 (Custom) is a project preset, not Canon's default:** configure it once at Tracking Sensitivity -1 and Accel./Decel. tracking +1. Canon's factory Case 1 is 0 / 0, and resetting it removes the project customization. Case 4 starts at 0 / +1 for abrupt speed changes. Profiles that start in One-Shot AF or Manual Focus retain a stored Case but do not actively use it.
 
-Use **My Menu: AF Case** > Servo AF to reach the Case selector. Use Tracking Sensitivity or Accel./Decel. tracking only when correcting a repeatable response problem, and change one control at a time. For Cases 1–4, Case A, subject-specific alternatives, and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
+Use **My Menu: AF Case** > Servo AF to reach the Case selector. Use Tracking Sensitivity or Accel./Decel. tracking only when correcting a repeatable response problem, and change one control at a time. Use Switching tracked subjects for recognized-subject retention or intentional handoffs, not for acceleration response. For Cases 1–4, Case A, subject-specific alternatives, and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
 
 | Control | What it Changes | Field Use |
 |---|---|---|
-| Servo AF Case | A starting combination of Tracking Sensitivity and Accel./Decel. Tracking | Use Case A for varied movement and Case 4 for the documented Birds in Flight and Sports starting profiles; see the deep dive before choosing Cases 1–3. |
+| Servo AF Case | A starting combination of Tracking Sensitivity and Accel./Decel. Tracking | Use Case A for the general baseline and People, project-customized Case 1 for Wildlife, Birds Perched, and Sports, and Case 4 for Birds in Flight. |
 | Tracking Sensitivity | How readily focus leaves the tracked subject when an obstacle or another subject enters the AF area | Move toward locked-on when brief obstructions steal focus; move toward responsive when intentional target changes feel slow. |
 | Accel./Decel. Tracking | How strongly Servo AF anticipates abrupt speed changes | Increase for subjects that start, stop, or change speed unpredictably; leave near default for steady motion. |
-
-Switching tracked subjects is a separate subject-detection control: reduce switching when the camera abandons the intended recognized subject, or increase it when rapid handoffs are intentional.
+| Switching tracked subjects | Whether compatible subject-aware AF methods retain the initially recognized subject or transfer to another | Start with On subject. Use Initial priority for stronger retention or Switch subject for intentional faster handoffs. |
 
 Change one control at a time and test it against the actual background and subject motion. For scenarios and troubleshooting, see [AF Cases & Tracking Behavior](appendix:af_cases_tracking).
 
-**Camera Menu:** **My Menu: AF Case** > Servo AF; direct route AF3 > Servo AF characteristics. Subject-tracking options are separate AF-menu controls.
+**Camera Menu:** **My Menu: AF Case**; direct Case route AF3 > Servo AF characteristics; direct subject-switching route AF4 > Switching tracked subjects.
 
-**Quick Access:** **My Menu: AF Case** > Servo AF opens the Case selector; otherwise AF3 > Servo AF characteristics.
+**Quick Access:** **My Menu: AF Case** contains Servo AF, Tracking Sensitivity, Accel./Decel. tracking, and Switching tracked subjects in that order.
 
 ### Capture and Timing
 
@@ -301,6 +300,16 @@ Single Shot is deliberate. Low or High Speed Continuous helps with expression, m
 **Quick Access:** Q screen. **M-Fn** is reserved for switching among C1-C3.
 
 Burst rate is conditional: shutter type, shutter speed, aperture, battery state, card speed, buffer state, flash recycle, and other camera conditions can prevent the advertised maximum rate. Silent capture uses Electronic shutter behavior, so its rolling-shutter, banding, and flash limitations still apply.
+
+#### High Speed Display
+
+Keep **High speed display: Enable** as the shared starting point. With regular High Speed Continuous, it alternates captured frames with the live image between shots, making fast subjects easier to follow. It changes only the shooting display; it does not increase burst rate, autofocus speed, or image quality. Electronic shutter always uses high-speed display behavior.
+
+The selectable setting may not operate below 1/30 sec., beyond f/11, with flash, at expanded ISO, or when autofocus conditions are difficult, and it may stop during a burst. Visible wavering or flicker can occur, especially at high shutter speeds, without affecting the photographs. High Speed Continuous+ is not the documented selectable use case, so the setting is omitted from those profile cards.
+
+**Camera Menu:** Shooting 7 > High speed display.
+
+**Quick Access:** Set once; no My Menu shortcut is recommended. See Canon's [High-Speed Display](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0340.html) documentation.
 
 ### Flash
 
@@ -409,7 +418,7 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 
 ## Recommended Settings by Profile
 
-**Default/reset state:** Camera Defaults intentionally matches the approved C1 Wildlife target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. This is a target pending physical verification, not proof of the camera's current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, controls, Auto update setting, and C1–C3 registrations.
+**Default/reset state:** Camera Defaults is the general-purpose target: Fv, shutter and aperture on Auto, Auto ISO, Servo AF with Case A (Auto), Switching tracked subjects On subject, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous with High speed display enabled, EFCS, and Mode 1 stabilization. C1 Wildlife intentionally differs by selecting Case 1 (Custom) at -1 / +1. These are targets pending physical verification, not proof of the camera's current state. After a reset or loading a saved camera-settings file, verify the complete shared setup, custom Case 1 values, controls, Auto update setting, and C1–C3 registrations.
 
 - Birds in Flight: Mechanical; Servo AF Case 4, Animals, Eye Detection, Face + Tracking, High Speed Continuous+. If tracking repeatedly selects the wrong target, use Expand AF Area without changing Subject to Detect. Stay Full-frame for erratic flight; consider 1.6× only when a distant bird remains predictably framed.
 - Birds Perched: EFCS; Servo AF, Animals, Eye Detection, Face + Tracking, High Speed Continuous. Use Spot AF or 1-Point AF through branches; use Expand AF Area when movement is difficult to follow. Consider 1.6× for a distant, relatively stationary bird when the final image would clearly be cropped.
@@ -417,10 +426,10 @@ LENR takes a dark frame after a long exposure. It can clean hot pixels but doubl
 - Landscape: EFCS; One-Shot AF, 1-Point AF, handheld stabilization by default, ISO 100 unless handheld shutter speed needs help.
 - Macro: EFCS for ambient light and focus bracketing; One-Shot AF or Manual Focus depending on subject, Spot AF when autofocus is useful. Use Mechanical for a separate, non-bracketed third-party flash setup until verified.
 - People: Mechanical; Servo AF, People, Eye Detection, Face + Tracking.
-- Sports: Mechanical; Servo AF Case 4, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
+- Sports: Mechanical; project-customized Servo AF Case 1 at -1 / +1, People, Eye Detection, Face + Tracking, High Speed Continuous+, fast shutter target. When starting from C2, change Case 4 to the custom Case 1 preset. For vehicle-based sports, change Subject Detection situationally from People to Vehicles. Use Expand AF Area if detection is unreliable. Consider 1.6× for distant field action; keep Full-frame when action approaches quickly or framing is uncertain.
 - Travel: EFCS baseline unless the subject demands a specialized profile; use Mechanical for fast, wide-open EF 50mm f/1.4 work.
 - Waterdrops: Mechanical; Manual Focus, Single Shot, fixed ISO, flash/trigger workflow.
-- Wildlife: EFCS; Servo AF Case A (Auto), Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
+- Wildlife: EFCS; project-customized Servo AF Case 1 at -1 / +1, Animals, Eye Detection, Face + Tracking, continuous drive. Use 1-Point AF through grass or brush when deliberate acquisition is more reliable. Consider 1.6× for distant, predictably moving animals; keep Full-frame when movement or composition may change quickly.
 
 ## Canon-Specific Notes
 
@@ -464,7 +473,7 @@ This quick reference turns compact card labels into short practical meaning. It 
 
 ### How it Works
 
-The cards show merged baseline and profile settings. The baseline is the C1-aligned operational reset state; neutral, deliberate-point, static, and manual-focus profiles show their intentional differences as overrides. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space.
+The cards show merged baseline and profile settings. The baseline is the general-purpose operational reset state; C1 Wildlife and other specialized, deliberate-point, static, and manual-focus profiles show their intentional differences as overrides. Some settings are always shown because they define the profile; others appear only when a profile changes them from the baseline. Card display may combine related settings, such as IBIS and Lens IS, to save space.
 
 ### Advantages
 

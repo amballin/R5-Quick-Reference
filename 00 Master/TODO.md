@@ -7,7 +7,7 @@ This file records approved follow-up work and analysis candidates that should no
 - Run the non-published [EOS R5 On-Camera Verification Checklist](../90%20Testing/EOS%20R5%20On-Camera%20Verification%20Checklist.md), record progress and evidence in its [Excel tracker](../90%20Testing/EOS%20R5%20On-Camera%20Verification%20Tracker.xlsx), and promote only completed, unambiguous results to owner-confirmed status.
 - Physically configure and verify AF-ON with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to Face + Tracking.
 - Physically configure and verify AE Lock with AF Operation and Servo AF characteristics set to Maintain current setting and AF Method set to 1-Point AF.
-- Verify that C1's present registration matches the Wildlife profile; register and verify C2 as Birds in Flight / Action and C3 as Landscape.
+- Configure Case 1 as the project -1 / +1 preset, verify that C1 recalls Wildlife with that custom Case, register and verify C2 as Birds in Flight / Action, and retain C3 as Landscape.
 - Verify that the DOF button changes One-Shot AF ↔ Servo AF and that both AF-start buttons respect the resulting state.
 - Physically test the joystick straight press with Face + Tracking, including face/eye selection, tracking release, the single- and double-border displays, and the Face Select: Off indication; do not make the behavior definitive until verified.
 - Decide whether Spot AF needs another immediate control for serious macro work.
@@ -18,9 +18,9 @@ Verify the approved starting workflow from the registered C1-C3 profiles to ever
 
 | Target | Best starting mode | Already close | Remaining changes | Strong My Menu candidates |
 |---|---|---|---|---|
-| People | C1 Wildlife | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | Subject to detect; Shutter mode |
+| People | C1 Wildlife | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Custom Case 1 to Case A, Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | AF Case; Subject to detect; Shutter mode |
 | Birds Perched | C1 Wildlife | Fv, Auto ISO, Servo AF, Face + Tracking, Animals, Eye Detection, High Speed Continuous, EFCS, Mode 1 | Set perched-bird shutter/aperture targets and exposure compensation | None; use dials |
-| Sports | C2 Birds in Flight | Tv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, High Speed Continuous+, Mechanical, Mode 3 | Animals to People, sports shutter target, reset exposure compensation | Subject to detect |
+| Sports | C2 Birds in Flight | Tv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, High Speed Continuous+, Mechanical, Mode 3 | Case 4 to project-customized Case 1, Animals to People, sports shutter target, reset exposure compensation | AF Case; Subject to detect |
 | Travel | C3 Landscape | 1-Point AF, no subject detection, Eye Detection disabled, Single Shot, EFCS, Mode 1 | Av to Fv, ISO 100 to Auto, One-Shot to Servo AF, clear the landscape aperture target | None; use MODE, Q, DOF button, and dials |
 | Macro | C3 Landscape | Av, One-Shot AF, Single Shot, EFCS, Mode 1, suitable aperture range | ISO 100 to Auto, 1-Point to Spot AF, enable Focus Bracketing, set f/8 | Focus bracketing |
 | Waterdrops | C3 Landscape | ISO 100, Single Shot, aperture near f/8-f/11 | Av to Manual, 1/200 sec., Mechanical, Manual Focus, stabilization Off | Shutter mode; IS (Image Stabilizer) mode |
@@ -43,12 +43,13 @@ Verify the approved My Menu tab named **AF Case**:
 1. Servo AF
 2. Tracking Sensitivity
 3. Accel./Decel. tracking
+4. Switching tracked subjects
 
-Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does not change AF Operation. Verify the AF Case field route on Wildlife, Birds in Flight, Birds Perched, People, and Sports, and confirm that the colored value identifies the displayed Servo AF Case rather than the separate Tracking Sensitivity or Accel./Decel. tracking parameters.
+Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does not change AF Operation. Configure Case 1 to the project -1 / +1 values and verify that selecting Case A does not erase them; separately confirm what the camera's Case reset command restores. Confirm that Switching tracked subjects opens the AF4 control with Initial priority, On subject, and Switch subject. Verify the AF Case field route on Wildlife, Birds in Flight, Birds Perched, People, and Sports, including the combined Track / Accel row on custom Case 1 and Case 4 cards and the separate Switching Tracked Subjects value on compatible AF-method cards.
 
 ## Exposure and Shutter Follow-Up
 
-- Physically verify the approved EFCS baseline on the owner’s EOS R5: compare tripod sharpness at approximately 1/8–1/60 sec.; inspect EF 50mm f/1.4 bokeh at 1/1000–1/8000 sec.; test indoor LED lighting at Sports shutter speeds; confirm High and High Speed Continuous+ burst behavior; and verify the Mechanical 1/200-sec. Pluto/manual-flash Waterdrops setup. Keep the documentation classified as an approved target pending physical verification until these checks are complete.
+- Physically verify the approved EFCS baseline on the owner’s EOS R5: compare tripod sharpness at approximately 1/8–1/60 sec.; inspect EF 50mm f/1.4 bokeh at 1/1000–1/8000 sec.; test indoor LED lighting at Sports shutter speeds; confirm High and High Speed Continuous+ burst behavior; confirm High speed display is enabled and improves regular High Speed Continuous subject-following under supported conditions; and verify the Mechanical 1/200-sec. Pluto/manual-flash Waterdrops setup. Keep the documentation classified as an approved target pending physical verification until these checks are complete.
 
 ## Architecture and Validation Improvements
 

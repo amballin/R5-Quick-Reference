@@ -26,7 +26,7 @@ common_mistakes:
   - Treating 1.6× crop as added optical reach
   - Letting temporary C1-C3 changes overwrite registered settings
 notes:
-  - The shared operational defaults intentionally match the approved C1 Wildlife starting state; verify them after a reset or loading a saved camera-settings file.
+  - Shared operational defaults use Case A (Auto). C1 Wildlife is a separate registered target using the project-customized Case 1 preset; verify both after a reset or loading a saved camera-settings file.
   - "Keep Screen info. settings modes 1–5 enabled. Mode 5 provides the full Quick Control screen for reviewing and changing camera settings quickly with Q; INFO cycles through the enabled displays. Camera menu: Shooting 7 > Shooting info. disp. > Screen info. settings."
   - Highlight tools stay on because exposure warnings are useful in the field.
   - Keep Cropping/aspect ratio at Full-frame. Temporarily use 1.6× for a distant, predictably framed subject when the tighter view helps, then restore Full-frame. RF-S and adapted EF-S lenses force 1.6× while attached.
@@ -36,6 +36,7 @@ notes:
   - High ISO Noise Reduction stays off because Lightroom/Topaz handles RAW cleanup better.
   - Long Exposure NR can reduce hot pixels and fixed-pattern noise in selected multi-second exposures, but its additional dark-frame wait interrupts shooting; leave it off when cadence matters.
   - Continuous AF is off because it can drain battery by focusing when you are not shooting.
+  - High speed display is enabled to make regular High Speed Continuous bursts easier to follow. It does not increase the burst rate and may pause under unsupported shooting conditions.
   - Electronic full-time MF is off because it is not useful for your lens.
   - IBIS High Resolution Shot is off because it is a static-scene specialty mode with very large JPEG output.
 appendix_links:

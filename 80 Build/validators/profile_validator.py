@@ -77,6 +77,7 @@ def validate(root):
                 profile_titles,
                 card_setting_paths,
                 card_type,
+                display_category,
             )
         )
         issues.extend(_validate_appendix_links(path, data.get("appendix_links"), appendix_ids))
@@ -106,7 +107,7 @@ def _validate_card_icons(path, card):
     return issues
 
 
-def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_type):
+def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_type, display_category):
     if card is None or not isinstance(card, dict) or "field_setup" not in card:
         return []
     if card_type == "reference":
@@ -115,22 +116,34 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
     if not isinstance(setup, dict):
         return [error("profiles", path, "card.field_setup must be a mapping.")]
     issues = []
-    unknown = sorted(set(setup) - {"start", "source_profile", "my_menus"})
+    unknown = sorted(set(setup) - {"start", "source_profile", "access_only", "my_menus"})
     if unknown:
         issues.append(error("profiles", path, f"Unknown card.field_setup keys: {', '.join(unknown)}."))
-    if setup.get("start") not in FIELD_SETUP_STARTS:
-        issues.append(error("profiles", path, "card.field_setup.start must be C1, C2, or C3."))
-    source_profile = setup.get("source_profile")
-    if not isinstance(source_profile, str) or not source_profile.strip():
-        issues.append(error("profiles", path, "card.field_setup.source_profile must be a non-empty string."))
-    elif source_profile not in profile_titles:
-        issues.append(error("profiles", path, f"card.field_setup.source_profile does not match a profile title: {source_profile}"))
+    access_only = setup.get("access_only", False)
+    if not isinstance(access_only, bool):
+        issues.append(error("profiles", path, "card.field_setup.access_only must be true or false."))
+        access_only = False
+    if access_only:
+        if display_category != "reference":
+            issues.append(error("profiles", path, "Access-only field setup requires display_category: reference."))
+        if "start" in setup or "source_profile" in setup:
+            issues.append(error("profiles", path, "Access-only field setup must omit start and source_profile."))
+    else:
+        if setup.get("start") not in FIELD_SETUP_STARTS:
+            issues.append(error("profiles", path, "card.field_setup.start must be C1, C2, or C3."))
+        source_profile = setup.get("source_profile")
+        if not isinstance(source_profile, str) or not source_profile.strip():
+            issues.append(error("profiles", path, "card.field_setup.source_profile must be a non-empty string."))
+        elif source_profile not in profile_titles:
+            issues.append(error("profiles", path, f"card.field_setup.source_profile does not match a profile title: {source_profile}"))
     menus = setup.get("my_menus", [])
     if not isinstance(menus, list):
         issues.append(error("profiles", path, "card.field_setup.my_menus must be a list."))
         return issues
     if len(menus) > 5:
         issues.append(error("profiles", path, "card.field_setup.my_menus supports at most five tabs."))
+    if access_only and not menus:
+        issues.append(error("profiles", path, "Access-only field setup requires at least one My Menu tab."))
     names = []
     assigned_settings = []
     for index, menu in enumerate(menus, start=1):

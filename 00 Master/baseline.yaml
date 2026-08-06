@@ -46,6 +46,9 @@ defaults:
   autofocus:
     operation: Servo AF
     servo_af_case: Case A (Auto)
+    tracking_sensitivity: Auto
+    accel_decel_tracking: Auto
+    switching_tracked_subjects: On subject
     subject_detection: Animals
     eye_detection: Enable
     method: Face + Tracking
@@ -67,6 +70,7 @@ defaults:
     ibis: "On"
     lens_is: "On"
   display:
+    high_speed_display: Enable
     screen_info_settings: "Modes 1–5 enabled"
     histogram: RGB
     highlight_alert: Enabled

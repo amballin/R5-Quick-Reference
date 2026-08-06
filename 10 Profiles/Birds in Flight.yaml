@@ -15,10 +15,15 @@ card:
       - name: AF Case
         settings:
           - autofocus.servo_af_case
+          - autofocus.tracking_sensitivity
+          - autofocus.accel_decel_tracking
+          - autofocus.switching_tracked_subjects
 inherits: baseline
 overrides:
   autofocus:
     servo_af_case: Case 4
+    tracking_sensitivity: "0"
+    accel_decel_tracking: "+1"
 
   exposure:
     mode: Tv

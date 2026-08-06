@@ -136,7 +136,7 @@ function cardContent(data) {
     y += 48;
   }
   if (data.field_setup) {
-    let route = `<tspan>${esc(data.field_setup.start)}</tspan>`;
+    let route = data.field_setup.start ? `<tspan>${esc(data.field_setup.start)}</tspan>` : "";
     for (const menu of data.field_setup.menus || []) {
       route += `<tspan>   ·   </tspan><tspan fill="${esc(menu.color)}">★ ${esc(menu.name)}</tspan>`;
     }

@@ -75,6 +75,10 @@ class ProjectPaths:
         return self.output_dir / "merged-build"
 
     @property
+    def card_candidates_output_dir(self):
+        return self.output_dir / "Card Candidates"
+
+    @property
     def website_output_dir(self):
         return self.output_dir / "website"
 

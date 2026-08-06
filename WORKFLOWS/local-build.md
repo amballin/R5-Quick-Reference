@@ -23,6 +23,7 @@ If spreadsheet definitions or layout changed and no valid prepared replacement e
 ## Which website copy to open
 
 - For routine local review, open `Canon Camera Reference Local/Build Output/merged-build/index.html`. This is the complete disposable local website, and its version line begins with **Pre-Release •** so it is easy to distinguish from published output.
+- To review cards that are not released, open `Canon Camera Reference Local/Build Output/Card Candidates/index.html`. The normal full build refreshes this separate candidate list; these cards never enter `docs/` or the publishable PWA.
 - Use `Canon Camera Reference/docs/index.html` only to inspect the Git-tracked GitHub Pages mirror. Its version line does not show the local indicator. Changes under `docs/` can reach the live website if committed and pushed.
 - Do not open `Build Output/cards/html/` for normal review. Those card pages are intermediate build files, so their links are written for later assembly into the complete website.
 

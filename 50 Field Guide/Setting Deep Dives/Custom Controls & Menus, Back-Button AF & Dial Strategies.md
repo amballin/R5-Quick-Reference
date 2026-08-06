@@ -221,7 +221,7 @@ Changing from the complete Wildlife card to the complete People card involves mo
 
 C1-C3 are not alternate AF buttons or AF-only presets. Each recalls a complete shooting environment derived from an established subject card. The cards remain concise field references; this matrix is the single registration reference for the profile-defining settings. Shared Set & Forget settings remain on Camera Setup Essentials and are intentionally not repeated here.
 
-Camera Defaults and the shared operational baseline intentionally match the complete C1 Wildlife target, including explicit Auto shutter and aperture values and Servo AF Case A (Auto). This makes the documented reset state a practical wildlife starting point; it does not prove that a reset camera, loaded settings file, or existing C1 registration currently matches the target. Verify the shared setup, controls, Auto update setting, and every registered C mode after either recovery operation.
+Camera Defaults and the shared operational baseline provide the general-purpose Case A (Auto) state. C1 Wildlife intentionally differs by selecting **Case 1 (Custom)**, configured once at Tracking Sensitivity -1 and Accel./Decel. tracking +1. Canon's factory Case 1 is 0 / 0, so verify the custom values in addition to the shared setup, controls, Auto update setting, and every registered C mode after a reset or recovery operation.
 
 The exact starting values below convert card ranges and situational guidance into reproducible registrations. Settings not governed by this project remain unchanged and must not be guessed. The **Lens IS switch** is a physical pre-shoot check rather than a camera-registered menu value.
 
@@ -235,11 +235,14 @@ The exact starting values below convert card ranges and situational guidance int
 | **ISO** | Auto | Auto | 100 |
 | **Auto ISO Maximum** | 12800 | 12800 | 12800; inactive while ISO 100 is fixed |
 | **AF Operation** | Servo AF | Servo AF | One-Shot AF |
-| **Servo AF Case** | Case A (Auto) | **Case 4** | Case A (Auto); inactive in One-Shot AF |
+| **Servo AF Case** | **Case 1 (Custom)** | **Case 4** | Case A (Auto); inactive in One-Shot AF |
+| **Tracking / Accel.-Decel.** | **-1 / +1** | **0 / +1** | Auto / Auto; inactive in One-Shot AF |
+| **Switching tracked subjects** | On subject | On subject | On subject; inactive with 1-Point AF |
 | **AF Method** | Face + Tracking | Face + Tracking | 1-Point AF |
 | **Subject Detection** | Animals | Animals | None |
 | **Eye Detection** | Enable | Enable | Disable |
 | **Drive Mode** | High Speed Continuous | High Speed Continuous+ | Single Shot |
+| **High speed display** | Enable | Enable; stored but inactive with High Speed Continuous+ | Enable; stored but inactive with Single Shot |
 | **Shutter Type** | EFCS | Mechanical | EFCS |
 | **Image Stabilizer Mode** | Mode 1 | Mode 3 | Mode 1 |
 | **IBIS** | On | On | On |
@@ -260,7 +263,7 @@ The C2 starting shutter is **1/2500 sec**: fast enough for normal birds-in-fligh
 
 ### C1 — General Wildlife
 
-C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup. Case A automatically adapts the Servo AF response to varied movement.
+C1 implements the Wildlife card for animals that are stationary, moderately active, or moving unpredictably without requiring the full action setup. It selects the project-customized Case 1 preset at -1 / +1 so brief foreground obstacles are less likely to steal focus while Servo AF remains responsive to abrupt speed changes. This is not Canon's factory 0 / 0 Case 1.
 
 Examples include perched birds, deer, herons, eagles on a perch, and ducks on the water. Its priorities are deliberate composition, useful image quality, Animal Detection, Eye Detection, and a continuous drive appropriate for wildlife behavior.
 
@@ -314,6 +317,7 @@ In the normal `C3LANDSC` configuration, People does not use a C-mode slot. For a
 
 | Setting | Change for people |
 |---|---|
+| Servo AF Case | Change Case 1 (Custom) to Case A (Auto) through My Menu: AF Case |
 | Subject Detection | Change Animals to People |
 | Drive | Change High Speed Continuous to Low Speed Continuous |
 | Shutter target | Use 1/200-1/320 for portraits or 1/500+ for active people |
@@ -327,7 +331,7 @@ Use one My Menu tab named **SWITCH** as the starting menu for transitions from t
 
 | Target | Best starting mode | Already close | Remaining changes | SWITCH items used |
 |---|---|---|---|---|
-| **People** | **C1 Wildlife** | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | Subject to detect; Shutter mode |
+| **People** | **C1 Wildlife** | Fv, Auto ISO, Servo AF, Face + Tracking, Eye Detection, Mode 1 | Case 1 (Custom) to Case A, Animals to People, High to Low Speed Continuous, EFCS to Mechanical, portrait shutter/aperture targets | Subject to detect; Shutter mode; use AF Case separately |
 | **Macro** | **C3 Landscape** | Av, One-Shot AF, Single Shot, EFCS, Mode 1, suitable aperture range | ISO 100 to Auto, 1-Point to Spot AF, enable Focus Bracketing, set f/8 | Focus bracketing |
 | **Waterdrops** | **C3 Landscape** | ISO 100, Single Shot, aperture near f/8-f/11 | Av to Manual, 1/200 sec., Mechanical, Manual Focus, stabilization Off | Shutter mode; IS (Image Stabilizer) mode |
 
@@ -350,10 +354,11 @@ Use a separate My Menu tab named **AF Case** for Servo AF tracking behavior. Con
 1. **Servo AF**
 2. **Tracking Sensitivity**
 3. **Accel./Decel. tracking**
+4. **Switching tracked subjects**
 
 On the EOS R5, **Servo AF** in this tab is the shortcut to the Case selector; it is not the AF Operation setting. Continue to use Q or the DOF button to change AF Operation between One-Shot AF and Servo AF.
 
-The Wildlife, Birds in Flight, Birds Perched, People, and Sports cards show **AF Case** in their field routes because they start in Servo AF. The colored **Servo AF Case** value identifies the tab used to reach the selected Case. Tracking Sensitivity and Accel./Decel. tracking remain parameter-level troubleshooting controls in the AF Cases deep dive rather than additional profile rows.
+The Wildlife, Birds in Flight, Birds Perched, People, and Sports cards show **AF Case** in their field routes because they use its applicable controls. The colored **Servo AF Case** value identifies the Case shortcut. Case 1 (Custom) and Case 4 cards also show the effective Tracking Sensitivity and Accel./Decel. tracking values together on one **Track / Accel** row. Compatible Face + Tracking, Zone AF, and Large Zone AF cards show **Switching Tracked Subjects** separately because it changes recognized-subject selection rather than Servo response.
 
 Keep **Auto update set.: Disable** before making a temporary Case or parameter change inside C1–C3. Restore the profile's approved Case after testing unless the change is deliberately re-registered.
 

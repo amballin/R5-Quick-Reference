@@ -130,6 +130,7 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <section class="step"><h2>Which website copy to open</h2>
 <ul>
 <li>For routine local review, open <code>Canon Camera Reference Local/Build Output/merged-build/index.html</code>. This is the complete disposable local website, and its version line begins with <strong>Pre-Release •</strong> so it is easy to distinguish from published output.</li>
+<li>To review cards that are not released, open <code>Canon Camera Reference Local/Build Output/Card Candidates/index.html</code>. The normal full build refreshes this separate candidate list; these cards never enter <code>docs/</code> or the publishable PWA.</li>
 <li>Use <code>Canon Camera Reference/docs/index.html</code> only to inspect the Git-tracked GitHub Pages mirror. Its version line does not show the local indicator. Changes under <code>docs/</code> can reach the live website if committed and pushed.</li>
 <li>Do not open <code>Build Output/cards/html/</code> for normal review. Those card pages are intermediate build files, so their links are written for later assembly into the complete website.</li>
 </ul>

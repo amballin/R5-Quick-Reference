@@ -19,6 +19,9 @@ card:
       - name: AF Case
         settings:
           - autofocus.servo_af_case
+          - autofocus.tracking_sensitivity
+          - autofocus.accel_decel_tracking
+          - autofocus.switching_tracked_subjects
   colors:
     background:
     text:
@@ -27,7 +30,9 @@ overrides:
   exposure:
     mode: Tv
   autofocus:
-    servo_af_case: Case 4
+    servo_af_case: Case 1 (Custom)
+    tracking_sensitivity: "-1"
+    accel_decel_tracking: "+1"
     subject_detection: People
   drive:
     mode: High Speed Continuous+
@@ -47,6 +52,7 @@ watch_for:
 common_mistakes:
   - Shutter too slow
 notes:
+  - Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
   - Use People detection and Face + Tracking for people sports.
   - For motorsports or other vehicle-based sports, change Subject Detection situationally from People to Vehicles; this is a field change within Sports, not a separate profile.
   - Switch to Expand AF Area if detection is unreliable.

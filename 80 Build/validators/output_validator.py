@@ -2,7 +2,7 @@ import re
 from urllib.parse import unquote, urlparse
 
 from asset_manager import ProjectPaths
-from .common import error
+from .common import error, load_yaml_checked
 
 
 def validate(root):
@@ -15,6 +15,7 @@ def validate(root):
         paths.merged_output_dir,
         paths.merged_build_output_dir,
         paths.field_guide_html_output_dir,
+        paths.card_candidates_output_dir,
         paths.pages_output_dir,
     ]
     for path in output_folders:
@@ -48,6 +49,7 @@ def validate(root):
         html_path = paths.html_output_file(name)
         if html_path.exists():
             issues.extend(_html_issues(html_path))
+    issues.extend(_card_candidate_issues(paths, profiles))
     appendix_html = paths.field_guide_html_output_dir / "Focus Bracketing & In-Camera Depth Compositing.html"
     if appendix_html.exists():
         appendix_text = appendix_html.read_text(encoding="utf-8", errors="replace")
@@ -66,6 +68,40 @@ def validate(root):
     ):
         if index_path.exists():
             issues.extend(_pre_release_indicator_issues(index_path))
+    return issues
+
+
+def _card_candidate_issues(paths, profiles):
+    issues = []
+    index_path = paths.card_candidates_output_dir / "index.html"
+    if not index_path.exists():
+        issues.append(error("build_output", index_path, "Card Candidates review index is missing."))
+    else:
+        issues.extend(_html_issues(index_path))
+
+    cards_dir = paths.card_candidates_output_dir / "Cards"
+    expected = set()
+    for profile_path in profiles:
+        try:
+            profile = load_yaml_checked(profile_path) or {}
+        except Exception:
+            continue
+        if (profile.get("metadata") or {}).get("release") is True:
+            continue
+        profile_name = profile.get("title") or profile_path.stem
+        candidate_path = cards_dir / f"{profile_name}.html"
+        expected.add(candidate_path.name)
+        if not candidate_path.exists():
+            issues.append(error("build_output", candidate_path, "Expected unreleased card candidate is missing."))
+        else:
+            issues.extend(_html_issues(candidate_path))
+            text = candidate_path.read_text(encoding="utf-8", errors="replace")
+            if 'href="../index.html"' not in text:
+                issues.append(error("build_output", candidate_path, "Card candidate does not return to its review index."))
+
+    actual = {path.name for path in cards_dir.glob("*.html")} if cards_dir.exists() else set()
+    for extra in sorted(actual - expected):
+        issues.append(error("build_output", cards_dir / extra, "Released or stale card is present in Card Candidates."))
     return issues
 
 

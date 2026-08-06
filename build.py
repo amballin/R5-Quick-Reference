@@ -38,6 +38,7 @@ from release_notes import (
 )
 from subject_settings_matrix import generate_subject_settings_matrix, remove_subject_settings_matrix
 from camera_setup_tracker import remove_camera_setup_tracker
+from card_candidates import render_card_candidates
 from spreadsheet_downloads import (
     SUPPORTED_TARGETS,
     SpreadsheetDownloadError,
@@ -419,6 +420,8 @@ def build_site(
         include_pdf=include_pdf,
     )
     generated.update(appendix_generated)
+    if requested_profile is None:
+        generated.update(render_card_candidates(paths))
     generated.update(
         render_offline_index(
             paths,

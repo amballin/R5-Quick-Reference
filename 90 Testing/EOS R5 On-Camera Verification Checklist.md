@@ -34,17 +34,21 @@ Use this checklist for one deliberate camera-setup session. Complete the steps i
 ### Confirm shared Camera Setup Essentials
 
 - [ ] Configure the approved **SWITCH** My Menu tab with Subject to detect, Shutter mode, Focus bracketing, IS (Image Stabilizer) mode, and Cropping/aspect ratio in that order; leave position 6 open.
-- [ ] Configure the approved **AF Case** My Menu tab with Servo AF, Tracking Sensitivity, and Accel./Decel. tracking in that order; confirm Servo AF opens the Case selector.
+- [ ] Configure the approved **AF Case** My Menu tab with Servo AF, Tracking Sensitivity, Accel./Decel. tracking, and Switching tracked subjects in that order; confirm Servo AF opens the Case selector and Switching tracked subjects opens the AF4 control.
 
 - [ ] Mode: Fv.
 - [ ] Shutter Speed: Auto.
 - [ ] Aperture: Auto.
 - [ ] ISO: Auto.
 - [ ] AF Operation: Servo AF.
+- [ ] General baseline: Servo AF Case A (Auto); Tracking Sensitivity: Auto; Accel./Decel. tracking: Auto.
+- [ ] Project preset: configure Case 1 to Tracking Sensitivity -1 and Accel./Decel. tracking +1; confirm this differs from Canon's factory 0 / 0 Case 1.
+- [ ] Switching tracked subjects: On subject.
 - [ ] AF Method: Face + Tracking.
 - [ ] Subject Detection: Animals.
 - [ ] Eye Detection: Enable.
 - [ ] Drive Mode: High Speed Continuous.
+- [ ] High speed display: Enable.
 - [ ] Shutter Type: EFCS.
 - [ ] Image Stabilizer Mode: Mode 1.
 - [ ] IBIS: On.
@@ -92,7 +96,7 @@ Do not continue to C1 registration until the shared setup and control assignment
 
 ## 2. Configure, Validate, and Register C1 — Wildlife
 
-Remain in a normal shooting mode and read back the complete C1-aligned default state below before registering it.
+Remain in a normal shooting mode and build the complete C1 Wildlife state below, including selecting the separately configured Case 1 preset, before registering it.
 
 | Setting | Required C1 value | Checked |
 |---|---|---|
@@ -104,10 +108,15 @@ Remain in a normal shooting mode and read back the complete C1-aligned default s
 | ISO | Auto | [ ] |
 | Auto ISO Maximum | 12800 | [ ] |
 | AF Operation | Servo AF | [ ] |
+| Servo AF Case | Case 1 (Custom); Canon factory Case 1 is 0 / 0 | [ ] |
+| Tracking Sensitivity | -1 | [ ] |
+| Accel./Decel. Tracking | +1 | [ ] |
+| Switching Tracked Subjects | On subject | [ ] |
 | AF Method | Face + Tracking | [ ] |
 | Subject Detection | Animals | [ ] |
 | Eye Detection | Enable | [ ] |
 | Drive Mode | High Speed Continuous | [ ] |
+| High Speed Display | Enable | [ ] |
 | Shutter Type | EFCS | [ ] |
 | Image Stabilizer Mode | Mode 1 | [ ] |
 | IBIS | On | [ ] |
@@ -141,10 +150,15 @@ Return to a normal shooting mode rather than modifying the recalled C1 slot. Con
 | ISO | Auto | [ ] |
 | Auto ISO Maximum | 12800 | [ ] |
 | AF Operation | Servo AF | [ ] |
+| Servo AF Case | Case 4 | [ ] |
+| Tracking Sensitivity | 0 | [ ] |
+| Accel./Decel. Tracking | +1 | [ ] |
+| Switching Tracked Subjects | On subject | [ ] |
 | AF Method | Face + Tracking | [ ] |
 | Subject Detection | Animals | [ ] |
 | Eye Detection | Enable | [ ] |
 | Drive Mode | High Speed Continuous+ | [ ] |
+| High Speed Display | Enable; stored but inactive with High Speed Continuous+ | [ ] |
 | Shutter Type | Mechanical | [ ] |
 | Image Stabilizer Mode | Mode 3 | [ ] |
 | IBIS | On | [ ] |
@@ -178,10 +192,15 @@ Return to a normal shooting mode rather than modifying C1 or C2. Configure the c
 | ISO | 100 | [ ] |
 | Auto ISO Maximum | 12800; inactive while ISO 100 is fixed | [ ] |
 | AF Operation | One-Shot AF | [ ] |
+| Servo AF Case | Case A (Auto); stored but inactive in One-Shot AF | [ ] |
+| Tracking Sensitivity | Auto; stored but inactive in One-Shot AF | [ ] |
+| Accel./Decel. Tracking | Auto; stored but inactive in One-Shot AF | [ ] |
+| Switching Tracked Subjects | On subject; stored but inactive with 1-Point AF | [ ] |
 | AF Method | 1-Point AF | [ ] |
 | Subject Detection | None | [ ] |
 | Eye Detection | Disable | [ ] |
 | Drive Mode | Single Shot | [ ] |
+| High Speed Display | Enable; stored but inactive with Single Shot | [ ] |
 | Shutter Type | EFCS | [ ] |
 | Image Stabilizer Mode | Mode 1 | [ ] |
 | IBIS | On | [ ] |
@@ -277,6 +296,7 @@ Keep exposure, focus, support, framing, and lighting constant within each compar
 
 - [ ] Compare EFCS and Mechanical in High Speed Continuous.
 - [ ] Compare EFCS and Mechanical in High Speed Continuous+.
+- [ ] With regular High Speed Continuous, confirm High speed display is enabled and compare subject-following with it disabled and enabled under supported conditions.
 - [ ] Record battery, lens, shutter speed, aperture, card, and Anti-flicker state.
 - [ ] Confirm subject tracking and viewfinder behavior remain usable.
 - [ ] Evidence filenames:

@@ -11,10 +11,14 @@ card_layout:
     - exposure.exposure_compensation
     - autofocus.operation
     - autofocus.servo_af_case
+    - autofocus.tracking_sensitivity
+    - autofocus.accel_decel_tracking
+    - autofocus.switching_tracked_subjects
     - autofocus.method
     - autofocus.subject_detection
     - autofocus.eye_detection
     - drive.mode
+    - display.high_speed_display
     - stabilization.image_stabilization.mode
     - stabilization.ibis
     - stabilization.lens_is
@@ -49,6 +53,12 @@ card_layout:
       label: AF Operation
     - key: autofocus.servo_af_case
       label: Servo AF Case
+    - key: autofocus.tracking_sensitivity
+      label: Track / Accel
+    - key: autofocus.accel_decel_tracking
+      label: Accel./Decel. Tracking
+    - key: autofocus.switching_tracked_subjects
+      label: Switching Tracked Subjects
     - key: autofocus.method
       label: AF Method
     - key: autofocus.subject_detection
@@ -57,5 +67,7 @@ card_layout:
       label: Eye Detection
     - key: drive.mode
       label: Drive
+    - key: display.high_speed_display
+      label: High Speed Display
     - key: stabilization.image_stabilization.mode
       label: Image Stabilization

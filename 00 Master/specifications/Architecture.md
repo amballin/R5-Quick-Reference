@@ -13,7 +13,7 @@ This specification defines the system boundaries and ownership of data, content,
 - Present proposed changes and affected files for review before modifying the reference.
 - For each new change task, present a clear recommendation, rationale, and affected files, then request approval as a separate explicit question. Once approved, treat that recommended scope as authorized without requiring the project owner to repeat it. Read-only questions and status checks do not require change approval.
 - Shared behavior and shared camera settings belong in `00 Master/baseline.yaml`.
-- The operational baseline and Camera Defaults card match the approved C1 Wildlife starting state: Fv with shutter and aperture on Auto, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, EFCS, and Mode 1 stabilization. Neutral, deliberate-point, static, manual-focus, or specialized Servo profiles express their differences as overrides.
+- The operational baseline and Camera Defaults card are the general-purpose starting state: Fv with shutter and aperture on Auto, Servo AF with Case A (Auto), Tracking Sensitivity and Accel./Decel. tracking on Auto, Switching tracked subjects set to On subject, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, High speed display enabled, EFCS, and Mode 1 stabilization. Registered C1 Wildlife intentionally overrides only its specialized Servo Case values; neutral, deliberate-point, static, manual-focus, or other specialized profiles express their differences as overrides.
 - Subject profiles inherit the baseline and contain only necessary overrides.
 - The build resolves baseline and profile data before rendering.
 - Presentation and rendering decisions belong in build code and templates, not profile YAML.
@@ -25,7 +25,9 @@ This specification defines the system boundaries and ownership of data, content,
 - AF-ON and AE Lock keep constant focusing roles across profiles. AF-ON temporarily selects Face + Tracking for intelligent acquisition; AE Lock temporarily selects 1-Point AF for precise placement. Both maintain the current AF Operation and Servo AF characteristics.
 - The DOF button remains the One-Shot AF ↔ Servo AF control. AF-ON and AE Lock must not force an AF Operation that would defeat the selected profile state or a DOF-button change.
 - Subject Detection belongs to the profile, not to either AF-start button. A deliberate-point AF method may make Subject Detection or Eye Detection inapplicable without changing their stored profile values.
-- Servo AF Case belongs to the shooting profile. Case A (Auto) is the shared baseline; Birds in Flight and Sports override it with Case 4. The stored Case is inactive in One-Shot AF and Manual Focus and is omitted from those cards.
+- Servo AF Case, Tracking Sensitivity, and Accel./Decel. tracking belong to the shooting profile. Case A (Auto) with both parameters on Auto is the shared baseline. Case 1 is configured once as the project preset at Tracking Sensitivity -1 and Accel./Decel. tracking +1; Wildlife, Birds Perched, and Sports select it. This is not Canon's factory Case 1 default of 0 / 0. Birds in Flight uses Case 4 at 0 / +1. The stored Case and parameters are inactive in One-Shot AF and Manual Focus.
+- Switching tracked subjects is a separate profile-owned subject-selection setting. On subject is the shared baseline. It is meaningful with Face + Tracking, Zone AF, and Large Zone AF and is omitted from cards whose effective AF Method does not support it.
+- High speed display is a shared set-and-forget display preference. Enable is the approved baseline target; cards show it only when the effective starting configuration uses regular High Speed Continuous or Electronic shutter.
 - Preserve the established build workflow, output locations, release behavior, rendering behavior, and backward compatibility unless an explicitly Accepted decision changes them.
 
 ## System Flow

@@ -83,11 +83,11 @@ tests:
   - test_id: SETUP-MM-AF-01
     sequence: 5
     phase: Camera Setup
-    expected_result: The approved AF Case My Menu tab exists with all three shortcuts in the correct order, and Servo AF opens the complete Case selector without changing AF Operation.
+    expected_result: The approved AF Case My Menu tab exists with all four shortcuts in the correct order, Servo AF opens the complete Case selector without changing AF Operation, and Switching tracked subjects opens the AF4 control.
     task: "Configure and verify My Menu: AF Case before shared setup or profile registration."
     best_access: My Menu
     menu_location: My Menu
-    menu_detail: "Create tab AF Case; register Servo AF, Tracking Sensitivity, and Accel./Decel. tracking in order; confirm Servo AF opens the complete Case 1–4 / Case A selector and does not change AF Operation."
+    menu_detail: "Create tab AF Case; register Servo AF, Tracking Sensitivity, Accel./Decel. tracking, and Switching tracked subjects in order; confirm Servo AF opens the complete Case 1–4 / Case A selector without changing AF Operation and Switching tracked subjects opens the AF4 Initial priority / On subject / Switch subject control."
     next_action: Configure AF Case immediately after SWITCH and before shared defaults, controls, or C1–C3 registration.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -95,11 +95,11 @@ tests:
   - test_id: SETUP-04
     sequence: 6
     phase: Camera Setup
-    expected_result: Shared operational defaults match the complete C1-aligned reference baseline.
-    task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF with Case A (Auto), Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering.
-    best_access: Q screen; direct exposure controls; AF Point Selection button; MM-SWITCH for Subject to detect, Shutter mode, and Cropping/aspect ratio; MM-AF Case for Servo AF Case
+    expected_result: Shared operational defaults match the general-purpose reference baseline; the separate custom Case 1 preset is ready for C1 registration.
+    task: Confirm Fv, shutter and aperture Auto, Auto ISO maximum 12800, Servo AF with Case A (Auto) and automatic parameters, Switching tracked subjects On subject, Face + Tracking, Animals, Eye Detection Enable, High Speed Continuous, High speed display Enable, EFCS, Mode 1, cRAW, Full-frame, and Evaluative metering. Configure Case 1 separately to Tracking Sensitivity -1 and Accel./Decel. tracking +1, noting that Canon's factory Case 1 is 0 / 0.
+    best_access: Q screen; direct exposure controls; AF Point Selection button; MM-SWITCH for Subject to detect, Shutter mode, and Cropping/aspect ratio; MM-AF Case for Servo AF Case, parameters, and subject switching; Shooting 7 for High speed display
     menu_location: Multiple
-    menu_detail: "Direct/Q: Fv, shutter Auto, aperture Auto, Auto ISO, Servo AF, High Speed Continuous, Evaluative metering; AF1: AF method, Subject to detect, Eye detection; My Menu AF Case > Servo AF or AF3 > Servo AF characteristics: Case A; Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Shooting 6: Shutter mode; Shooting menu: IS (Image Stabilizer) mode"
+    menu_detail: "Direct/Q: Fv, shutter Auto, aperture Auto, Auto ISO, Servo AF, High Speed Continuous, Evaluative metering; AF1: AF method, Subject to detect, Eye detection; My Menu AF Case or AF3: baseline Case A with automatic parameters, plus configure Case 1 to -1 / +1 without leaving it selected for the baseline; My Menu AF Case or AF4: Switching tracked subjects On subject; Shooting 1: Image quality and Cropping/aspect ratio; Shooting 2: ISO speed settings; Shooting 6: Shutter mode; Shooting 7: High speed display Enable; Shooting menu: IS (Image Stabilizer) mode"
     next_action: Check Camera Setup Essentials and Camera Defaults.
     evidence_class: Approved target pending verification
     project_update: "Yes"
@@ -203,7 +203,7 @@ tests:
   - test_id: C1-OPS-01
     sequence: 15
     phase: C1 Wildlife
-    expected_result: C1 recalls a usable Wildlife environment and controls behave as intended.
+    expected_result: C1 recalls a usable Wildlife environment with Case 1 (Custom) at -1 / +1 and controls behave as intended.
     task: Perform a short Wildlife operational test.
     best_access: Physical controls
     menu_location: No menu
@@ -497,11 +497,15 @@ registration:
     - {setting: ISO, baseline_key: exposure.iso.mode, c3: "100"}
     - {setting: Auto ISO Maximum, baseline_key: exposure.auto_iso.maximum}
     - {setting: AF Operation, baseline_key: autofocus.operation, c3: One-Shot AF}
-    - {setting: Servo AF Case, baseline_key: autofocus.servo_af_case, c2: Case 4}
+    - {setting: Servo AF Case, baseline_key: autofocus.servo_af_case, c1: Case 1 (Custom), c2: Case 4}
+    - {setting: Tracking Sensitivity, baseline_key: autofocus.tracking_sensitivity, c1: "-1", c2: "0"}
+    - {setting: Accel./Decel. Tracking, baseline_key: autofocus.accel_decel_tracking, c1: "+1", c2: "+1"}
+    - {setting: Switching Tracked Subjects, baseline_key: autofocus.switching_tracked_subjects}
     - {setting: AF Method, baseline_key: autofocus.method, c3: 1-Point AF}
     - {setting: Subject Detection, baseline_key: autofocus.subject_detection, c3: None}
     - {setting: Eye Detection, baseline_key: autofocus.eye_detection, c3: Disable}
     - {setting: Drive Mode, baseline_key: drive.mode, c2: High Speed Continuous+, c3: Single Shot}
+    - {setting: High Speed Display, baseline_key: display.high_speed_display}
     - {setting: Shutter Type, baseline_key: shutter.type, c2: Mechanical}
     - {setting: Image Stabilizer Mode, baseline_key: stabilization.image_stabilization.mode, c2: Mode 3}
     - {setting: IBIS, baseline_key: stabilization.ibis}

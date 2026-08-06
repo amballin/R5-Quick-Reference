@@ -167,8 +167,10 @@ appendices:
       - Macro
       - People
       - Travel
+      - Waterdrops
     related_appendices:
       - r5_quick_reference
+      - water_drop_collision_photography
     required_topics:
       - E-TTL
       - Manual flash
@@ -183,6 +185,29 @@ appendices:
       - Pluto trigger notes
       - Canon Speedlite notes
       - Decision tree
+  - id: water_drop_collision_photography
+    title: "Water Drop Collision Photography"
+    file: "Appendices/Water Drop Collision Photography.md"
+    release: false
+    display_order: 70
+    profiles:
+      - Waterdrops
+    related_appendices:
+      - flash_photography
+      - r5_quick_reference
+    required_topics:
+      - Pluto Trigger timing
+      - Drop size calibration
+      - Drop 1
+      - Drop 2
+      - Drop 3
+      - Peak rebound height
+      - Collision delay calculation
+      - Multiple flashes
+      - Reflection control
+      - Soap bubble focus shift
+      - Manual focus workflow
+      - Recommended starting values
   - id: back_button_af_custom_button_strategies
     title: "Custom Controls & Menus, Back-Button AF & Dial Strategies"
     file: "Setting Deep Dives/Custom Controls & Menus, Back-Button AF & Dial Strategies.md"
@@ -315,6 +340,7 @@ appendices:
       - Tracking Sensitivity
       - Accel/Decel Tracking
       - Subject switching
+      - High speed display
       - Flash modes
   - id: fv_flexible_priority
     title: "Fv (Flexible Priority)"

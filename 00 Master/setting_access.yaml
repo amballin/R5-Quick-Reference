@@ -31,6 +31,18 @@ setting_access:
     best_access: MM-AF Case; C1-C3 registered profile
     menu_location: My Menu > AF Case > Servo AF; AF3 > Servo AF characteristics
     rapid_order: 135
+  autofocus.tracking_sensitivity:
+    best_access: MM-AF Case; C1-C3 registered profile
+    menu_location: My Menu > AF Case > Tracking Sensitivity; AF3 > Servo AF characteristics
+    rapid_order: 136
+  autofocus.accel_decel_tracking:
+    best_access: MM-AF Case; C1-C3 registered profile
+    menu_location: My Menu > AF Case > Accel./Decel. tracking; AF3 > Servo AF characteristics
+    rapid_order: 137
+  autofocus.switching_tracked_subjects:
+    best_access: MM-AF Case; C1-C3 registered profile
+    menu_location: My Menu > AF Case > Switching tracked subjects; AF4 > Switching tracked subjects
+    rapid_order: 138
   autofocus.method:
     best_access: AF Point Selection button + Main Dial
     menu_location: AF1 > AF method; Q is the alternative
@@ -43,6 +55,10 @@ setting_access:
     best_access: Q screen
     menu_location: Shooting menu > Drive mode
     rapid_order: 160
+  display.high_speed_display:
+    best_access: Set once; C1-C3 registered profile
+    menu_location: Shooting 7 > High speed display
+    rapid_order: 165
   shutter.type:
     best_access: MM-SWITCH; MM-FLASH*/MM-LONG*
     menu_location: Shooting 6 > Shutter mode

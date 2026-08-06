@@ -21,7 +21,7 @@ overrides:
     mode: Manual
     iso:
       mode: Fixed
-      value: 100
+      value: 100-400
   autofocus:
     operation: Manual Focus
     method: Not Used
@@ -41,16 +41,25 @@ overrides:
     ibis: "Off"
     lens_is: "Off"
 checklist:
-  - Pluto armed
-  - Flash ready
-  - Manual flash about 1/16–1/64 power
-  - Trigger and flash sync verified
+  - Pluto valve primed; liquid level and pressure stable
+  - Manual focus locked on a stand-in at the collision plane
+  - Multiple diffused flashes ready at about 1/16–1/64 power
+  - Pluto drop timing and camera-to-flash sync verified
 watch_for:
   - Ambient light
   - Flash recycle consistency
-  - Depth of field
+  - Reflections from each light or modifier
+  - Soap film refracting the collision plane
 common_mistakes:
-  - Incorrect trigger timing
+  - Treating valve-open milliseconds as a measured drop volume
+  - Changing drop size, liquid depth, or viscosity without recalibrating timing
+  - Using f/22 and high ISO before optimizing flash distance and power
 notes:
-  - Use manual flash; its short duration freezes the drop, while 1/200 controls ambient light and stays within the trigger/flash synchronization setup.
-  - Lower flash power usually gives a shorter flash duration; start around 1/16–1/64 and adjust exposure, recycle performance, and motion freezing.
+  - In the current setup, Pluto controls the valve timing and fires the camera; the camera then fires the flashes. Recheck timing after changing any trigger or shutter connection.
+  - At 1/200, the short manual-flash duration freezes the collision. Start at ISO 100, f/8–f/11, and about 1/16–1/64 power; raise ISO only when flash placement and distance cannot supply enough exposure.
+  - Form any soap bubble first, place a temporary target at the collision plane, focus with magnified Live View, then lock manual focus. A changing curved soap film can still shift or distort the apparent plane.
+appendix_links:
+  - id: water_drop_collision_photography
+    label: Water Drop Collision Photography guide
+  - id: flash_photography
+    label: Flash Photography deep dive

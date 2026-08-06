@@ -16,7 +16,7 @@ Cards may define `appendix_links` as a list of manifest appendix IDs with option
 
 Card icon configuration has three independent positions under `card.icons`: `header` controls the right side of the shared Camera Settings header, `left` controls the left side of the card-title row, and `right` controls the right side of the card-title row. All positions inherit baseline defaults and may be overridden by a card. The baseline `header` is the Silver logo; baseline `left` and `right` are empty. An empty card-title position remains reserved so the title stays centered.
 
-Profile cards may define `card.field_setup` to identify an intended C1–C3 starting configuration and the My Menu tabs used for field changes. `start` is `C1`, `C2`, or `C3`; `source_profile` is the exact profile title represented by that registered mode; optional `my_menus` contains at most five named tabs, each with a non-empty list of unique card-setting paths. A setting may belong to only one displayed My Menu tab on a card.
+Profile cards may define `card.field_setup` to identify an intended C1–C3 starting configuration and the My Menu tabs used for field changes. `start` is `C1`, `C2`, or `C3`; `source_profile` is the exact profile title represented by that registered mode; optional `my_menus` contains at most five named tabs, each with a non-empty list of unique card-setting paths. A baseline-driven profile displayed in the reference category may instead set `access_only: true`, omit `start` and `source_profile`, and use the route solely to identify My Menu access without implying a registered C-mode. Access-only routes require at least one My Menu tab. A setting may belong to only one displayed My Menu tab on a card.
 
 Cards render required settings from fully merged baseline + profile data, including inherited values:
 
@@ -28,10 +28,14 @@ Cards render required settings from fully merged baseline + profile data, includ
 - `exposure.auto_iso.maximum`
 - `autofocus.operation`
 - `autofocus.servo_af_case`
+- `autofocus.tracking_sensitivity`
+- `autofocus.accel_decel_tracking`
+- `autofocus.switching_tracked_subjects`
 - `autofocus.method`
 - `autofocus.subject_detection`
 - `autofocus.eye_detection`
 - `drive.mode`
+- `display.high_speed_display`
 - `stabilization.image_stabilization.mode`
 
 If a required merged value is unset, render the row with `—` rather than omitting it or inventing a camera setting.
@@ -46,12 +50,15 @@ The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type**
 - When both are shown, render IBIS and Lens IS as one `IBIS/Lens IS` quick-reference row. Do not collapse the underlying fields.
 - When AF Operation is `Manual Focus`, omit AF Method, Subject Detection, and Eye Detection.
 - Show **Servo AF Case** immediately after **AF Operation** when AF Operation is `Servo AF`; omit it when AF Operation is One-Shot AF or Manual Focus because the stored Case is inactive.
+- When the effective Servo AF Case is Case 1–4, combine the merged Tracking Sensitivity and Accel./Decel. tracking values into one compact **Track / Accel** row immediately below Servo AF Case. Show inherited values as well as explicit overrides. Omit the row for Case A and whenever Servo AF Case is inactive.
+- Show **Switching Tracked Subjects** when the effective AF Method is Face + Tracking, Zone AF, or Large Zone AF. Omit it for AF methods that do not support subject switching. Its value remains separate from the Servo AF Case parameters.
+- Show **High Speed Display** on Camera Defaults, Camera Setup Essentials, and profile cards whose effective starting configuration uses regular High Speed Continuous or Electronic shutter. Omit it for High Speed Continuous+, Low Speed Continuous, Single Shot, and other starting configurations where the selectable setting is inactive.
 - When AF Method is `Not Used`, omit Subject Detection and Eye Detection.
 - Preserve existing card formats, filenames, proportions/behavior, output locations, and backward compatibility unless explicitly approved.
 - Card styling and conditional presentation are renderer concerns, not profile-data concerns.
-- When `card.field_setup` is present, render a compact route beneath the title containing the starting Cx followed by every named My Menu tab. Keep non-My-Menu values in the normal text color and color each My Menu value to match its labeled route token. `SWITCH` always uses the renderer-managed green treatment; other tabs use distinct renderer-managed colors in authored order. Do not store raw access colors in profile YAML or rely on color without the visible tab name.
-- On cards whose effective AF Operation is Servo AF, associate the displayed `autofocus.servo_af_case` value with **My Menu: AF Case** when that tab is part of the approved field route. The tab contains the on-camera shortcuts **Servo AF**, **Tracking Sensitivity**, and **Accel./Decel. tracking**; the latter two remain deep-dive controls rather than separate profile or card rows.
-- Prepend a generated Notes item explaining the full starting profile, the need to verify its Cx registration, and the distinction between colored My Menu values and white Quick Control, dial, or button values. Support multiple My Menu tabs without requiring them on current cards.
+- When `card.field_setup` is present, render a compact route beneath the title containing the starting Cx, when applicable, followed by every named My Menu tab. An access-only route renders the My Menu tokens without a Cx token. Keep non-My-Menu values in the normal text color and color each My Menu value to match its labeled route token. `SWITCH` always uses the renderer-managed green treatment; other tabs use distinct renderer-managed colors in authored order. Do not store raw access colors in profile YAML or rely on color without the visible tab name.
+- On applicable cards, associate the displayed Servo AF Case, Track / Accel, and Switching Tracked Subjects values with **My Menu: AF Case** when their underlying setting paths are assigned to that tab. The tab contains **Servo AF**, **Tracking Sensitivity**, **Accel./Decel. tracking**, and **Switching tracked subjects** in that order. Switching tracked subjects remains separate in camera behavior even though the shared tab provides fast access.
+- Prepend a generated Notes item explaining the full starting profile, the need to verify its Cx registration when applicable, and the distinction between colored My Menu values and white Quick Control, dial, button, or normal-menu values. Access-only routes explain the color distinction without claiming a C-mode starting profile. Support multiple My Menu tabs without requiring them on current cards.
 - Normal profile-card rows follow `card_layout.display_order`, which mirrors the conceptual sequence of the R5 Quick Reference. Reference-card rows retain the explicit order of their authored `reference_settings` list.
 - Camera Buttons reference rows use stable control-name keys to display the corresponding official Canon physical-control SVG when one is mapped. Keep the authored project control name as text, preserve the existing row order, and do not substitute an assignment icon or fabricate a control icon. If an official SVG contains an opaque background that conflicts with the card's standard monochrome treatment, a geometry-preserving card derivative may remove only that background fill; preserve the official source asset for the icon reference and apply the normal card icon color to the derivative.
 - Responsive HTML is the primary published phone format. It uses the full phone width, a centered maximum width on larger screens, safe-area padding, and browser-rendered text without horizontal scrolling or pinch-to-zoom.
@@ -62,7 +69,7 @@ The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type**
 
 ## Release Requirement
 
-Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the index action. Other generated development outputs may still exist.
+Only profiles with `metadata.release: true` are included as cards in the published iPhone/PWA bundle. Their responsive HTML card is the index action. During a normal full build, every profile whose release flag is not `true` is instead listed in the separate machine-local `Build Output/Card Candidates/` review mini-site. Candidate cards must not enter the publishable bundle, `docs/`, or website staging.
 
 Released cards with `display_category: subject` appear under **Subjects**. Cards with `display_category: reference` appear under **Camera Setup & Controls**, regardless of whether their rendering behavior is profile-based or permanent-reference-based.
 
@@ -72,6 +79,7 @@ Released cards with `display_category: subject` appear under **Subjects**. Cards
 - `00 Master/baseline.yaml` and profile YAML supply merged values.
 - Card renderers and templates under `80 Build/` and `20 Templates/` implement formatting and conditional rows.
 - `80 Build/validators/output_validator.py` checks expected generated card artifacts.
+- Candidate validation checks that all and only unreleased profiles appear in the machine-local Card Candidates review set and that their local navigation resolves.
 - `80 Build/validators/pwa_validator.py` checks the merged offline bundle.
 - `80 Build/validators/profile_validator.py` checks field-setup structure, starting modes, source-profile references, My Menu count and names, displayed setting paths, and duplicate setting assignments.
 - Profile validation checks that every `appendix_links` ID exists in the appendix manifest.

@@ -10,9 +10,12 @@ from baseline import merge
 from html_renderer import (
     LABEL,
     af_method_not_used,
+    automatic_servo_af_case,
+    high_speed_display_relevant,
     iso_display_value,
     manual_focus,
     stabilization_system_row,
+    subject_switching_supported,
 )
 from validators.common import flatten_paths, load_yaml_checked
 from spreadsheet_ooxml import enable_automatic_row_heights, ensure_freeze_panes, hide_columns
@@ -76,7 +79,7 @@ def generate_subject_settings_matrix(paths):
             {
                 "title": profile["title"],
                 "release": profile["release"],
-                "card_start": _card_start_label(profile.get("field_setup") or {}),
+                "card_start": _card_start_label(profile.get("field_setup") or {}, profile["title"]),
             }
             for profile in profiles
         ],
@@ -198,16 +201,18 @@ def _subject_profiles(paths):
     return sorted(profiles, key=lambda item: (item["display_order"], item["title"].lower()))
 
 
-def _card_start_label(field_setup):
+def _card_start_label(field_setup, profile_title=""):
     start = field_setup.get("start")
     source_profile = field_setup.get("source_profile")
-    if not start or not source_profile:
-        return ""
     menu_names = [
         menu.get("name")
         for menu in field_setup.get("my_menus") or []
         if isinstance(menu, dict) and menu.get("name")
     ]
+    if field_setup.get("access_only") is True:
+        return f"{profile_title} + " + " + ".join(menu_names) if menu_names else profile_title
+    if not start or not source_profile:
+        return ""
     route = f"{start} {source_profile}"
     if menu_names:
         route += " + " + " + ".join(menu_names)
@@ -319,6 +324,15 @@ def _summary_value(key, merged):
     fields = _flatten(merged)
     if key == "autofocus.servo_af_case" and fields.get("autofocus.operation") != "Servo AF":
         return "Not Used"
+    if key in {"autofocus.tracking_sensitivity", "autofocus.accel_decel_tracking"}:
+        if fields.get("autofocus.operation") != "Servo AF":
+            return "Not Used"
+        if automatic_servo_af_case(fields):
+            return "Auto"
+    if key == "autofocus.switching_tracked_subjects" and not subject_switching_supported(fields):
+        return "Not Used"
+    if key == "display.high_speed_display" and not high_speed_display_relevant(fields):
+        return "Not Used"
     if manual_focus(fields) and key in {
         "autofocus.method",
         "autofocus.subject_detection",
@@ -342,6 +356,8 @@ def _summary_value(key, merged):
 
 
 def _setting_label(key):
+    if key == "autofocus.tracking_sensitivity":
+        return "Tracking Sensitivity"
     if key == "stabilization.ibis":
         return "IBIS / Lens IS"
     return LABEL[key]

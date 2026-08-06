@@ -29,10 +29,14 @@ LABEL = {
     "exposure.metering": "Metering",
     "autofocus.operation": "AF Operation",
     "autofocus.servo_af_case": "Servo AF Case",
+    "autofocus.tracking_sensitivity": "Track / Accel",
+    "autofocus.accel_decel_tracking": "Accel./Decel. Tracking",
+    "autofocus.switching_tracked_subjects": "Switching Tracked Subjects",
     "autofocus.subject_detection": "Subject Detection",
     "autofocus.eye_detection": "Eye Detection",
     "autofocus.method": "AF Method",
     "drive.mode": "Drive",
+    "display.high_speed_display": "High Speed Display",
     "shutter.target": "Shutter",
     "shutter.type": "Shutter Type",
     "lens.aperture.target": "Aperture",
@@ -63,10 +67,14 @@ REQUIRED_CARD_SETTINGS = {
     "exposure.mode",
     "autofocus.operation",
     "autofocus.servo_af_case",
+    "autofocus.tracking_sensitivity",
+    "autofocus.accel_decel_tracking",
+    "autofocus.switching_tracked_subjects",
     "autofocus.subject_detection",
     "autofocus.eye_detection",
     "autofocus.method",
     "drive.mode",
+    "display.high_speed_display",
     "shutter.target",
     "shutter.type",
     "lens.aperture.target",
@@ -91,6 +99,7 @@ CAMERA_SETUP_SETTINGS = {
     "display.screen_info_settings",
     "display.histogram",
     "display.highlight_alert",
+    "display.high_speed_display",
     "image.highlight_tone_priority",
     "image.high_iso_noise_reduction",
     "image.long_exposure_noise_reduction.value",
@@ -126,6 +135,21 @@ def settings_rows(profile, merged, paths=None):
         label = LABEL[key]
         if key in keys and key in merged_fields:
             if key == "autofocus.servo_af_case" and not servo_af(merged_fields):
+                continue
+            if key == "autofocus.tracking_sensitivity":
+                if not servo_af(merged_fields) or automatic_servo_af_case(merged_fields):
+                    continue
+                value = (
+                    f"{display_value(merged_fields.get('autofocus.tracking_sensitivity'))} / "
+                    f"{display_value(merged_fields.get('autofocus.accel_decel_tracking'))}"
+                )
+                rows.append({"key": key, "label": label, "value": value})
+                continue
+            if key == "autofocus.accel_decel_tracking":
+                continue
+            if key == "autofocus.switching_tracked_subjects" and not subject_switching_supported(merged_fields):
+                continue
+            if key == "display.high_speed_display" and not high_speed_display_relevant(merged_fields):
                 continue
             if manual_focus(merged_fields) and key in {
                 "autofocus.subject_detection",
@@ -206,6 +230,33 @@ def manual_focus(merged_fields):
 
 def servo_af(merged_fields):
     return merged_fields.get("autofocus.operation") == "Servo AF"
+
+
+def automatic_servo_af_case(merged_fields):
+    value = str(merged_fields.get("autofocus.servo_af_case") or "").casefold()
+    return value in {"case a", "case a (auto)", "auto"}
+
+
+def subject_switching_supported(merged_fields):
+    method = re.sub(r"\s+", " ", str(merged_fields.get("autofocus.method") or "").casefold().replace("+", " ")).strip()
+    return method in {
+        "face tracking",
+        "zone af",
+        "large zone af",
+        "large zone af (horizontal)",
+        "large zone af (vertical)",
+    }
+
+
+def high_speed_display_relevant(merged_fields):
+    return (
+        merged_fields.get("drive.mode") == "High Speed Continuous"
+        or merged_fields.get("shutter.type") == "Electronic"
+    )
+
+
+def display_value(value):
+    return "—" if value is None else str(value)
 
 
 def af_method_not_used(merged_fields):
@@ -382,6 +433,7 @@ def field_setup_summary(profile):
     return {
         "start": setup.get("start", ""),
         "source_profile": setup.get("source_profile", ""),
+        "access_only": setup.get("access_only") is True,
         "menus": field_setup_menus(profile),
     }
 
@@ -390,19 +442,27 @@ def field_setup_strip(profile):
     summary = field_setup_summary(profile)
     if not summary:
         return ""
-    parts = [f'<span class="field-route-start">{escape(str(summary["start"]))}</span>']
+    parts = []
+    if summary["start"]:
+        parts.append(f'<span class="field-route-start">{escape(str(summary["start"]))}</span>')
     for menu in summary["menus"]:
         parts.append(
             f'<span class="field-route-menu {menu["access_class"]}">'
             f'★ {escape(menu["name"])}</span>'
         )
-    return '<div class="field-route" aria-label="Field setup shortcuts">' + "".join(parts) + "</div>"
+    aria_label = "Field access shortcuts" if summary["access_only"] else "Field setup shortcuts"
+    return f'<div class="field-route" aria-label="{aria_label}">' + "".join(parts) + "</div>"
 
 
 def field_setup_note(profile):
     summary = field_setup_summary(profile)
     if not summary:
         return ""
+    if summary["access_only"]:
+        return (
+            "Colored setting values use the matching My Menu tab; white values use "
+            "Quick Control, dials, buttons, or normal menu access."
+        )
     start = escape(str(summary["start"]))
     source = escape(str(summary["source_profile"]))
     prefix = f"Start from {start} {source} after verifying its registration."

@@ -9,7 +9,7 @@ This specification governs subject/profile YAML under `10 Profiles/`.
 - Every profile inherits `baseline`.
 - A profile contains only values that differ from `00 Master/baseline.yaml`; it must not repeat baseline values.
 - Overrides must use paths present in `baseline.defaults` and compatible value types.
-- Profile data retains camera concepts as separate fields, including ISO mode, fixed ISO value, Auto ISO maximum, stabilization mode, IBIS, and Lens IS.
+- Profile data retains camera concepts as separate fields, including ISO mode, fixed ISO value, Auto ISO maximum, Servo AF Case, Tracking Sensitivity, Accel./Decel. tracking, Switching tracked subjects, stabilization mode, IBIS, Lens IS, and High speed display.
 - Profiles contain shooting settings and concise field-use content, not duplicated educational explanations. Reference applicable appendices instead.
 - Preserve existing profile filenames, titles, YAML structure, data, and backward compatibility unless explicitly approved.
 - `metadata.release: true` selects the profile/card for the offline iPhone/PWA bundle. Absence or false does not select it.

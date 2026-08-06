@@ -47,7 +47,7 @@ def validate(root):
         "row": 5,
         "label_column": "A",
         "label": "Card starts from:",
-        "default_value": "Camera defaults",
+        "default_value": "Camera Defaults + SWITCH + AF Case",
         "empty_value": "—",
         "fill": "pale_blue",
         "font_color": "#17324D",
@@ -229,9 +229,14 @@ def validate(root):
     ]
     if switch_menu and not _contains_in_order(switch_menu.get("menu_detail", ""), switch_items):
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The SWITCH My Menu test must list all five approved shortcuts in order."))
-    af_case_items = ["Servo AF", "Tracking Sensitivity", "Accel./Decel. tracking"]
+    af_case_items = [
+        "Servo AF",
+        "Tracking Sensitivity",
+        "Accel./Decel. tracking",
+        "Switching tracked subjects",
+    ]
     if af_case_menu and not _contains_in_order(af_case_menu.get("menu_detail", ""), af_case_items):
-        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The AF Case My Menu test must list all three approved shortcuts in order."))
+        issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The AF Case My Menu test must list all four approved shortcuts in order."))
     if af_case_menu and "complete Case 1–4 / Case A selector" not in af_case_menu.get("menu_detail", ""):
         issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, "The AF Case test must confirm that Servo AF opens the complete Case selector."))
     statuses = ((source.get("lists") or {}).get("main_status") or [])

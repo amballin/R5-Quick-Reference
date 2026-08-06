@@ -14,8 +14,15 @@ card:
       - name: AF Case
         settings:
           - autofocus.servo_af_case
+          - autofocus.tracking_sensitivity
+          - autofocus.accel_decel_tracking
+          - autofocus.switching_tracked_subjects
 inherits: baseline
-overrides: {}
+overrides:
+  autofocus:
+    servo_af_case: Case 1 (Custom)
+    tracking_sensitivity: "-1"
+    accel_decel_tracking: "+1"
 checklist:
   - Eye detected
   - Histogram
@@ -26,6 +33,7 @@ watch_for:
 common_mistakes:
   - Focus on body instead of eye
 notes:
+  - Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
   - Use Expand AF if Face + Tracking struggles through branches.
   - Use Tv for active wildlife when shutter speed must dominate; Fv may be better for mixed safari or walkaround wildlife.
   - Switch to Mode 3 for active wildlife

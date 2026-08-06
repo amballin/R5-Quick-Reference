@@ -47,6 +47,9 @@ fields:
     label: "AF Operation"
     svg: "icons/card_icons/SVG/af_operation.svg"
     png: "icons/card_icons/PNG/af_operation.png"
+  subject_switching:
+    label: "Switching Tracked Subjects"
+    svg: "icons/canon_r5_official/tracking_subject.svg"
   af_method:
     label: "AF Method"
     svg: "icons/card_icons/SVG/af_method.svg"
@@ -63,6 +66,9 @@ fields:
     label: "Drive Mode"
     svg: "icons/card_icons/SVG/drive.svg"
     png: "icons/card_icons/PNG/drive.png"
+  high_speed_display:
+    label: "High Speed Display"
+    svg: "icons/canon_r5_official/high_speed_display.svg"
   shutter:
     label: "Shutter Speed"
     svg: "icons/card_icons/SVG/shutter.svg"

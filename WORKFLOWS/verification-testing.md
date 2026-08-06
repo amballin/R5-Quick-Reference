@@ -31,10 +31,10 @@ Before changing the camera:
 ## Complete setup and registration in order
 
 1. Complete the dedicated My Menu: SWITCH checklist row.
-2. Complete the separate My Menu: AF Case row, including shortcut order and confirmation that Servo AF opens the complete Case selector without changing AF Operation.
-3. Configure the complete C1-aligned operational baseline shown by Camera Defaults and Camera Setup Essentials, and the physical controls.
+2. Complete the separate My Menu: AF Case row, including the four-item shortcut order, confirmation that Servo AF opens the complete Case selector without changing AF Operation, and confirmation that Switching tracked subjects opens the AF4 control.
+3. Configure the general Case A operational baseline shown by Camera Defaults and Camera Setup Essentials, configure the separate Case 1 project preset to -1 / +1, and configure the physical controls.
 4. Save the first checkpoint and mark that Checklist row Backup-Settings.
-5. In a normal mode, read back the complete C1-aligned default state, register it to C1, leave it, recall it, and read back every target setting again.
+5. In a normal mode, build the complete C1 Wildlife target by selecting the configured Case 1 preset, register it to C1, leave it, recall it, and read back every target setting again.
 6. Repeat the complete configure, register, and read-back cycle for C2 Birds in Flight.
 7. Do not begin C3 until C1 and C2 both recall correctly. Then complete C3 Landscape.
 8. Save the second Backup-Settings checkpoint after all three registrations have been read back.
