@@ -1,6 +1,9 @@
-# Finish Day: Sync, Release Notes, Spreadsheets, Publish
+# Finish Day: Release Notes, Sync, Spreadsheets, Publish
 
-Always use Step 1 to finish source work and synchronize Git. Continue through Steps 2–5 only when you also intend to prepare release notes, build both spreadsheet downloads, and publish the complete website.
+Choose one path:
+
+- **Finish for the day or switch Macs:** complete Step 0 when applicable, then Step 2, and stop.
+- **Publish the complete website:** complete Step 0 when applicable, then Steps 1–5 in order. Prepare the release notes before the single `finish-day.sh` run so all source work is synchronized together.
 
 ## 0. Import testing status when the working tracker changed
 
@@ -12,7 +15,17 @@ If you updated the local Excel or Numbers verification tracker, close it and run
 
 This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` stops if the local tracker changed after its last successful import, if its definitions are stale, or if canonical YAML changed without rebuilding the tracker. When the unchanged tracker is merely stale, run the open-tracker helper to refresh it safely.
 
-## 1. Finish the source work and synchronize Git
+## 1. Prepare the release notes when publishing
+
+Skip this step when you are only finishing for the day or switching Macs.
+
+Ask Codex to prepare curated release notes for the upcoming website version. Codex should review the reader-facing changes since the previous publication, propose concise highlights for your approval, create the required backup, add the approved entry to `00 Master/release_notes.yaml`, and validate it.
+
+For an ordinary release, the upcoming version keeps the current major number from `80 Build/publish_metadata.yaml` and adds one to its minor number. For a new major series, the upcoming version is `N.00`, where `N` is greater than the current major version. Do not edit the publish metadata manually.
+
+Review and approve the highlights as reader-facing release notes. Do not continue until the exact upcoming version exists in `00 Master/release_notes.yaml`.
+
+## 2. Finish the source work and synchronize Git
 
 From the repository root, run:
 
@@ -33,27 +46,9 @@ Do not continue until the script prints:
 FINISHED FOR TODAY: Safe to switch Macs.
 ```
 
-This first commit and push synchronize the editable project source. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
+This commit and push synchronize all editable project source, including the release notes when publishing. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
 
-> If you are only finishing for the day or switching Macs, stop here. Steps 2–5 are a separate release workflow.
-
-## 2. Prepare and synchronize the release notes
-
-Choose the upcoming website version before publishing. Read the current version in `80 Build/publish_metadata.yaml`; for an ordinary release, the upcoming version keeps the same major number and adds one to the minor number. For a new major series, the upcoming version is `N.00`, where `N` is greater than the current major version. Do not edit the publish metadata manually.
-
-Add concise reader-facing highlights for that exact version to:
-
-```text
-00 Master/release_notes.yaml
-```
-
-Then rerun:
-
-```bash
-./80\ Build/scripts/finish-day.sh
-```
-
-Do not continue until the release-note change is validated, committed, pushed, and the script again prints `FINISHED FOR TODAY: Safe to switch Macs.` The publish script checks for the selected version and stops before building or pushing when its curated notes are missing.
+> If you are only finishing for the day or switching Macs, stop here. If publishing, continue directly to Step 3; do not run `finish-day.sh` again.
 
 ## 3. Build and verify both spreadsheet families
 
@@ -81,7 +76,7 @@ Otherwise, publish the next minor website version:
 
 This performs the release build, includes both verified spreadsheet families, increments the site version, updates the publication date, creates the publication commit, and pushes it.
 
-The selected version must exactly match the curated highlights synchronized in Step 2. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.
+The selected version must exactly match the curated highlights prepared in Step 1 and synchronized in Step 2. Major website versions do not change spreadsheet revisions, and later ordinary publications continue with minor increments in the selected major series.
 
 The command is successful only when it prints `PUBLICATION COMPLETE AND VERIFIED`. It also records a timestamped diagnostic log under the machine-local `Logs/` folder. If publication stops, it prints `PUBLICATION DID NOT COMPLETE` and the exact log location.
 
