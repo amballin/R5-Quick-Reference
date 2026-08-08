@@ -58,6 +58,9 @@ fields:
     label: "Subject Detection"
     svg: "icons/card_icons/SVG/subject_detection.svg"
     png: "icons/card_icons/PNG/subject_detection.png"
+  touch_drag_af:
+    label: "Touch & Drag AF settings"
+    svg: "icons/canon_r5_official/autofocus_tab.svg"
   af_area:
     label: "AF Area"
     svg: "icons/card_icons/SVG/af_area.svg"

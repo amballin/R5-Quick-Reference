@@ -42,7 +42,7 @@ If a required merged value is unset, render the row with `—` rather than omitt
 
 `00 Master/card_layout.yaml` may define additional always-shown settings; those remain part of current card behavior.
 
-The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type** and `image.cropping_aspect_ratio` as **Crop / Aspect**. The shared shutter baseline and any explicit profile override remain visible without duplicating them in profile YAML. The shared cropping baseline is **Full-frame**; subject cards inherit it, and a temporary 1.6× field change does not require a permanent profile override.
+The Camera Setup Essentials card also renders `shutter.type` as **Shutter Type**, `image.cropping_aspect_ratio` as **Crop / Aspect**, and the three shared Touch & Drag AF controls as separate rows: `autofocus.touch_drag_af`, `autofocus.touch_drag_positioning_method`, and `autofocus.touch_drag_active_area`. The shared shutter and Touch & Drag AF baseline values and any explicit profile overrides remain visible without duplicating them in profile YAML. The shared cropping baseline is **Full-frame**; subject cards inherit it, and a temporary 1.6× field change does not require a permanent profile override.
 
 ## Rendering Requirements
 

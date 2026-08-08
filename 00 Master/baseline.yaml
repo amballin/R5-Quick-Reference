@@ -52,6 +52,9 @@ defaults:
     subject_detection: Animals
     eye_detection: Enable
     method: Face + Tracking
+    touch_drag_af: Enable
+    touch_drag_positioning_method: Relative
+    touch_drag_active_area: Right
   drive:
     mode: "High Speed Continuous"
   shutter:

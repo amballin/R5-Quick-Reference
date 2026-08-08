@@ -63,6 +63,12 @@ settings:
 
   af_method: string
 
+  touch_drag_af: string
+
+  touch_drag_positioning_method: string
+
+  touch_drag_active_area: string
+
   drive: string
 
   shutter:

@@ -17,6 +17,9 @@ card_layout:
     - autofocus.method
     - autofocus.subject_detection
     - autofocus.eye_detection
+    - autofocus.touch_drag_af
+    - autofocus.touch_drag_positioning_method
+    - autofocus.touch_drag_active_area
     - drive.mode
     - display.high_speed_display
     - stabilization.image_stabilization.mode

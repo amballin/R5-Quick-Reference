@@ -2,7 +2,7 @@
 
 ## Overview
 
-Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
+Use this quick reference when a card setting is not obvious, especially AF Operation, AF tracking behavior, Subject Detection, Eye Detection, AF Method, Touch & Drag AF, Focus Mode, Drive Mode, Metering Mode, Shutter Speed, Cropping/aspect ratio, Image Stabilization Mode, IBIS, Lens IS, Shutter Type, flash behavior, Focus Bracketing, or Long Exposure Noise Reduction. Basic exposure terms such as Mode, Aperture, ISO, and Auto ISO Max are intentionally kept out of the main quick reference.
 
 ## Topic Index
 
@@ -21,6 +21,7 @@ Use this quick reference when a card setting is not obvious, especially AF Opera
   - [Subject Detection and AF Method Combinations](#subject-detection-and-af-method-combinations)
   - [AF Tracking Behavior](#af-tracking-behavior)
     - [Approved Servo AF Starting Settings](#approved-servo-af-starting-settings)
+  - [Touch & Drag AF](#touch-drag-af)
 - [Capture and Timing](#capture-and-timing)
   - [Cropping / Aspect Ratio](#cropping-aspect-ratio)
   - [Drive Mode](#drive-mode)
@@ -258,6 +259,22 @@ Change one control at a time and test it against the actual background and subje
 **Camera Menu:** **My Menu: AF Case**; direct Case route AF3 > Servo AF characteristics; direct subject-switching route AF4 > Switching tracked subjects.
 
 **Quick Access:** **My Menu: AF Case** contains Servo AF, Tracking Sensitivity, Accel./Decel. tracking, and Switching tracked subjects in that order.
+
+#### Touch & Drag AF
+
+Touch & Drag AF lets you move the AF point or Zone AF frame by tapping or dragging on the rear screen while looking through the viewfinder. Use these shared Set Once values:
+
+| Icon | Setting | Value | What it Does |
+|---|---|---|---|
+| ![Autofocus](../../60 Assets/icons/canon_r5_official/autofocus_tab.svg) | Touch & Drag AF | Enable | Turns on AF-point movement from the rear screen while using the viewfinder. |
+| ![Autofocus](../../60 Assets/icons/canon_r5_official/autofocus_tab.svg) | Positioning method | Relative | Moves the AF point in the direction and by the amount you drag, regardless of where your finger first touches the screen. |
+| ![Autofocus](../../60 Assets/icons/canon_r5_official/autofocus_tab.svg) | Active touch area | Right | Limits tap-and-drag input to the right side of the screen, reducing accidental contact while leaving a thumb-accessible control area. |
+
+**Camera Menu:** AF menu > Touch & drag AF settings.
+
+**Quick Menu:** Menu only.
+
+See Canon's [Touch & Drag AF Settings](https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html) instructions.
 
 ### Capture and Timing
 

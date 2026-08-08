@@ -35,6 +35,9 @@ LABEL = {
     "autofocus.subject_detection": "Subject Detection",
     "autofocus.eye_detection": "Eye Detection",
     "autofocus.method": "AF Method",
+    "autofocus.touch_drag_af": "Touch & Drag AF",
+    "autofocus.touch_drag_positioning_method": "Positioning method",
+    "autofocus.touch_drag_active_area": "Active touch area",
     "drive.mode": "Drive",
     "display.high_speed_display": "High Speed Display",
     "shutter.target": "Shutter",
@@ -96,6 +99,9 @@ CAMERA_DEFAULT_EXTRA_SETTINGS = {
 
 CAMERA_SETUP_SETTINGS = {
     "shutter.type",
+    "autofocus.touch_drag_af",
+    "autofocus.touch_drag_positioning_method",
+    "autofocus.touch_drag_active_area",
     "display.screen_info_settings",
     "display.histogram",
     "display.highlight_alert",
