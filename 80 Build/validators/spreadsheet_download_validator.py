@@ -4,6 +4,7 @@ from asset_manager import ProjectPaths
 from spreadsheet_downloads import (
     SUPPORTED_TARGETS,
     SpreadsheetDownloadError,
+    REFRESH_COMMAND,
     target_spec,
     validate_download_manifest,
     validate_published_release,
@@ -26,7 +27,7 @@ def validate(root):
                     warning(
                         "spreadsheet_downloads",
                         manifest,
-                        f"{exc} Rebuild before replacement publication.",
+                        f"{exc} Run: {REFRESH_COMMAND}",
                     )
                 )
 

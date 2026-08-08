@@ -13,7 +13,13 @@ If you updated the local Excel or Numbers verification tracker, close it and run
 ./80\ Build/scripts/import-verification-status.sh
 ```
 
-This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` stops if the local tracker changed after its last successful import, if its definitions are stale, or if canonical YAML changed without rebuilding the tracker. When the unchanged tracker is merely stale, run the open-tracker helper to refresh it safely.
+This transfers approved mutable fields into the non-published, Git-tracked YAML status. `finish-day.sh` stops if the local tracker changed after its last successful import, if its definitions are stale, or if canonical YAML changed without rebuilding the tracker. When the unchanged tracker is merely stale, run the consolidated recovery command:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh
+```
+
+The command diagnoses every spreadsheet-derived artifact first and will not overwrite unimported tracker edits.
 
 ## 1. Prepare the release notes when publishing
 
@@ -58,7 +64,7 @@ Run:
 ./80\ Build/scripts/build-all-spreadsheet-downloads.sh
 ```
 
-This prepares and verifies the Subject Settings Matrix and the EOS R5 Setup & Verification Tracker in both Excel and Apple Numbers formats. The workbook files are machine-local release artifacts; they are not committed to Git.
+This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup & Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.
 
 ## 4. Choose the website version and publish
 

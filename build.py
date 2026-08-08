@@ -40,8 +40,11 @@ from subject_settings_matrix import generate_subject_settings_matrix, remove_sub
 from camera_setup_tracker import remove_camera_setup_tracker
 from card_candidates import render_card_candidates
 from spreadsheet_downloads import (
+    REFRESH_COMMAND,
     SUPPORTED_TARGETS,
     SpreadsheetDownloadError,
+    derived_download_issues,
+    format_refresh_issues,
     validate_download_manifest,
     validate_download_manifests,
 )
@@ -283,6 +286,10 @@ def main():
         spreadsheet_download_targets.append("setup")
     paths = ProjectPaths(args.root)
     if not args.publish and not args.settings_summary and not spreadsheet_download_targets:
+        stale_downloads = derived_download_issues(paths)
+        if stale_downloads:
+            print(format_refresh_issues(stale_downloads), file=sys.stderr)
+            return 1
         spreadsheet_download_targets = prepared_spreadsheet_download_targets(paths)
         if spreadsheet_download_targets:
             print(
@@ -403,6 +410,7 @@ def build_site(
             validate_download_manifests(paths, spreadsheet_download_targets)
         except SpreadsheetDownloadError as exc:
             print(f"Spreadsheet downloads are not ready: {exc}", file=sys.stderr)
+            print(f"Run: {REFRESH_COMMAND}", file=sys.stderr)
             return 1
     clean_generated_leftovers(
         paths,

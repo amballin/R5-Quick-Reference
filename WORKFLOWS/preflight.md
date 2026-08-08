@@ -17,13 +17,13 @@ Run preflight before editing on any Mac:
 - **Behind:** if the working tree is clean, run `git pull --ff-only`, then rerun preflight.
 - **Diverged:** stop for manual review. Do not pull, merge, or reset automatically.
 - **Wrong branch, no upstream, or fetch failure:** resolve that condition before editing.
-- **Stale verification tracker:** use the open helper to rebuild an unchanged copy, or import its edits before rebuilding when both the workbook and its definitions changed.
+- **Stale derived artifacts:** run `./80\ Build/scripts/build-all-spreadsheet-downloads.sh`; if the verification tracker contains manual edits, import them first as directed.
 
 ## What preflight does
 
-It refreshes the remote comparison, checks the branch and upstream, reports whether this Mac is ahead or behind, and checks whether the local verification tracker matches its synchronized file hashes, YAML-status hash, workbook revision, and source fingerprint. It distinguishes unimported edits, a safely rebuildable stale tracker, and a stale tracker whose edits must be imported before rebuilding.
+It refreshes the remote comparison, checks the branch and upstream, reports whether this Mac is ahead or behind, and diagnoses verification, Matrix/settings, and Setup derived-artifact freshness. It distinguishes unimported edits, safely rebuildable generated state, and current state.
 
-Preflight does not modify source files, pull changes, merge branches, build the project, or publish the website.
+Preflight does not refresh derived artifacts, modify source files, pull changes, merge branches, build the project, or publish the website.
 
 ## Next
 

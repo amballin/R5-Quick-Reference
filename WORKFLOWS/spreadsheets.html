@@ -115,10 +115,11 @@
 <h1>Spreadsheet Workflows</h1>
 <p>Choose the outcome you need. Release workbooks and the testing working copy serve different purposes.</p>
 <p>Routine local website builds include valid workbook families already prepared on this Mac and preserve compatible committed spreadsheet downloads for the rest. You do not need an extra website-build flag to keep the <strong>Downloads</strong> section on the local main index. Use the release-workbook commands below only when workbook inputs changed or you intentionally want replacement files; the next normal local build detects and includes them automatically.</p>
-<section class="step"><h2>Build both local release workbook families</h2>
-<p>Use this after spreadsheet definitions, layout, or generator code changes, or before publishing replacement spreadsheet downloads:</p>
+<section class="step"><h2>Refresh stale spreadsheet-derived artifacts</h2>
+<p>This is the normal recovery command after spreadsheet definitions, layout, generator code, or canonical verification status changes:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
-<p>It prepares and verifies Matrix and Setup workbooks in Excel and Apple Numbers. These files are machine-local and are not committed.</p>
+<p>It first reports the verification working copy, Matrix/settings, and Setup states. If the verification copy may contain unimported edits, it stops before changing anything and directs you to import them. Otherwise it rebuilds only stale artifacts in the safe order and skips current files. It does not publish, commit, or push.</p>
+<p>Numbers is launched automatically before conversion and finalization; you do not need to open it manually.</p>
 </section>
 <section class="step"><h2>Build one release workbook family</h2>
 <ul>
@@ -129,7 +130,7 @@
 <li>Blank Setup master only:</li>
 </ul>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-setup-downloads.sh</code></pre></div>
-<p>The <code>prepare-*</code> scripts are manual conversion fallbacks. Use them only when automatic Numbers conversion fails.</p>
+<p>The <code>prepare-*</code> scripts are manual conversion fallbacks. Use them only if the automatic workflow reports that neither supported Numbers application can complete the operation.</p>
 </section>
 <section class="step"><h2>Create the testing working copy</h2>
 <p>The testing workbook contains private working status and is never published. Follow <a href="verification-testing.html">On-Camera Verification Testing</a> for opening the correct workbook, recording evidence, importing results, and changing Macs safely.</p>

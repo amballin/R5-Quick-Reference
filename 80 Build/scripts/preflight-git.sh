@@ -13,6 +13,15 @@ spreadsheet_notice() {
     echo "Spreadsheet note: Release files stay on this Mac and are not required for ordinary development or Git synchronization."
     echo "Rebuild them only when publishing replacement spreadsheet downloads."
     echo "If spreadsheet source or layout changed, website publication will stop until the affected workbook is rebuilt or its downloads are deliberately removed."
+    local spreadsheet_message spreadsheet_result
+    spreadsheet_message="$(python3 "$SCRIPT_DIR/../spreadsheet_downloads.py" all diagnose --root "$SCRIPT_DIR/../.." 2>&1)"
+    spreadsheet_result=$?
+    if [[ "$spreadsheet_result" -eq 2 ]]; then
+        echo "PREFLIGHT NOTICE: $spreadsheet_message"
+    elif [[ "$spreadsheet_result" -ne 0 ]]; then
+        echo "PREFLIGHT BLOCK: Spreadsheet-derived state could not be verified."
+        return 1
+    fi
     local verification_message verification_result
     verification_message="$(python3 "$SCRIPT_DIR/../verification_status.py" check --root "$SCRIPT_DIR/../.." 2>&1)"
     verification_result=$?
@@ -28,12 +37,12 @@ spreadsheet_notice() {
             ;;
         2)
             echo "PREFLIGHT BLOCK: $verification_message"
-            echo "Run the open-tracker helper to rebuild it safely before testing or Finish Day."
+            echo 'Run: ./80\ Build/scripts/build-all-spreadsheet-downloads.sh'
             return 1
             ;;
         3)
             echo "PREFLIGHT BLOCK: $verification_message"
-            echo "Import the working tracker before rebuilding, testing, or switching computers."
+            echo 'Run: ./80\ Build/scripts/import-verification-status.sh'
             return 1
             ;;
         *)

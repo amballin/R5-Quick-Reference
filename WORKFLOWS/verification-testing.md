@@ -10,6 +10,14 @@ The preferred command creates the machine-local tracker when needed and verifies
 ./80\ Build/scripts/open-verification-working-copy.sh
 ```
 
+When a build or Preflight reports a safely rebuildable stale copy together with spreadsheet downloads, use the consolidated recovery command:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh
+```
+
+It never overwrites a tracker that may contain unimported edits.
+
 With the default local-workspace location, use either direct link:
 
 - [Open the Numbers testing tracker](../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.numbers)

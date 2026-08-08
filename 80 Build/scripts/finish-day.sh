@@ -115,7 +115,9 @@ clean_generated_metadata || {
 if ! python3 "80 Build/verification_status.py" check; then
     echo
     echo "NOT FINISHED: The verification tracker is not current and synchronized."
-    echo "Follow the tracker message above, then rerun finish-day."
+    echo 'For a safely rebuildable stale copy, run: ./80\ Build/scripts/build-all-spreadsheet-downloads.sh'
+    echo 'For unimported/manual edits, run: ./80\ Build/scripts/import-verification-status.sh'
+    echo "Then rerun finish-day."
     exit 1
 fi
 

@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Consolidated Spreadsheet-Derived Artifact Recovery
+
+**Status:** Accepted
+**Date:** 2026-08-08
+
+Use `build-all-spreadsheet-downloads.sh` as the single non-publishing recovery command for stale verification, Matrix/settings, and Setup spreadsheet-derived artifacts. Diagnose all three states before rebuilding, stop without modifying files when the verification tracker may contain unimported edits, rebuild a safely stale verification copy before release workbook families, and skip artifacts that are already current. Preflight remains diagnostic and must never invoke the refresh automatically.
+
+Centralize Apple Numbers automation behind both supported bundle IDs. Explicitly launch and wait for the selected application before open, conversion, finalization, or export operations; preserve actionable per-candidate errors when neither application can complete the operation. Machine-local runtime fallbacks must derive from the current user's home directory rather than a username-specific absolute path.
+
 ## Machine-Verifiable Authoritative Project Identity
 
 **Status:** Accepted

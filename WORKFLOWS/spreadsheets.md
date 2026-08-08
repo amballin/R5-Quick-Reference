@@ -4,15 +4,17 @@ Choose the outcome you need. Release workbooks and the testing working copy serv
 
 Routine local website builds include valid workbook families already prepared on this Mac and preserve compatible committed spreadsheet downloads for the rest. You do not need an extra website-build flag to keep the **Downloads** section on the local main index. Use the release-workbook commands below only when workbook inputs changed or you intentionally want replacement files; the next normal local build detects and includes them automatically.
 
-## Build both local release workbook families
+## Refresh stale spreadsheet-derived artifacts
 
-Use this after spreadsheet definitions, layout, or generator code changes, or before publishing replacement spreadsheet downloads:
+This is the normal recovery command after spreadsheet definitions, layout, generator code, or canonical verification status changes:
 
 ```bash
 ./80\ Build/scripts/build-all-spreadsheet-downloads.sh
 ```
 
-It prepares and verifies Matrix and Setup workbooks in Excel and Apple Numbers. These files are machine-local and are not committed.
+It first reports the verification working copy, Matrix/settings, and Setup states. If the verification copy may contain unimported edits, it stops before changing anything and directs you to import them. Otherwise it rebuilds only stale artifacts in the safe order and skips current files. It does not publish, commit, or push.
+
+Numbers is launched automatically before conversion and finalization; you do not need to open it manually.
 
 ## Build one release workbook family
 
@@ -28,7 +30,7 @@ It prepares and verifies Matrix and Setup workbooks in Excel and Apple Numbers. 
 ./80\ Build/scripts/build-setup-downloads.sh
 ```
 
-The `prepare-*` scripts are manual conversion fallbacks. Use them only when automatic Numbers conversion fails.
+The `prepare-*` scripts are manual conversion fallbacks. Use them only if the automatic workflow reports that neither supported Numbers application can complete the operation.
 
 ## Create the testing working copy
 

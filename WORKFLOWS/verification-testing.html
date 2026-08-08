@@ -117,6 +117,9 @@
 <section class="step"><h2>Open the correct working tracker</h2>
 <p>The preferred command creates the machine-local tracker when needed and verifies its file hashes, YAML-status hash, workbook revision, and source fingerprint before opening it. An unchanged stale tracker is rebuilt automatically from canonical YAML. If stale definitions or status coexist with unimported workbook edits, the helper blocks until those edits are imported:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/open-verification-working-copy.sh</code></pre></div>
+<p>When a build or Preflight reports a safely rebuildable stale copy together with spreadsheet downloads, use the consolidated recovery command:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
+<p>It never overwrites a tracker that may contain unimported edits.</p>
 <p>With the default local-workspace location, use either direct link:</p>
 <ul>
 <li><a href="../../Canon%20Camera%20Reference%20Local/Verification/EOS%20R5%20On-Camera%20Verification%20Tracker.numbers">Open the Numbers testing tracker</a></li>

@@ -85,8 +85,7 @@ if (( ${#spreadsheet_args[@]} )); then
       python3 "80 Build/spreadsheet_downloads.py" setup validate
       ;;
     --spreadsheet-downloads)
-      python3 "80 Build/spreadsheet_downloads.py" matrix validate
-      python3 "80 Build/spreadsheet_downloads.py" setup validate
+      python3 "80 Build/spreadsheet_downloads.py" all validate
       ;;
   esac
   build_args+=("${spreadsheet_args[0]}")

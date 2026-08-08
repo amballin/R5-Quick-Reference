@@ -42,9 +42,9 @@ MUTABLE_CHECKLIST_FIELDS = (
     "evidence_class",
     "updated_in_project",
 )
-DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
-DEFAULT_NODE_MODULES = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"
-NUMBERS_BUNDLE_IDS = ("com.apple.Numbers", "com.apple.iWork.Numbers")
+DEFAULT_RUNTIME_ROOT = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node"
+REFRESH_COMMAND = r"./80\ Build/scripts/build-all-spreadsheet-downloads.sh"
+IMPORT_COMMAND = r"./80\ Build/scripts/import-verification-status.sh"
 
 
 class VerificationStatusError(RuntimeError):
@@ -258,7 +258,7 @@ def build_working_copy(paths):
     state, message = working_copy_state(paths)
     if state in (WORKING_COPY_PENDING, WORKING_COPY_CONFLICT):
         raise VerificationStatusError(
-            message + " Import the existing tracker before rebuilding it."
+            message + f" Run: {IMPORT_COMMAND}"
         )
     status, changed = reconcile_status(paths, write=True)
     paths.verification_working_dir.mkdir(parents=True, exist_ok=True)
@@ -357,7 +357,7 @@ def working_copy_state(paths):
             WORKING_COPY_STALE,
             "Verification working copy is safely rebuildable because "
             + " and ".join(reasons)
-            + " and it has no unimported edits.",
+            + f" and it has no unimported edits. Run: {REFRESH_COMMAND}",
         )
     return WORKING_COPY_CURRENT, "Verification working copy matches current definitions and YAML status."
 
@@ -483,6 +483,8 @@ def _select_import_source(paths, requested):
 
 
 def _export_numbers_to_xlsx(numbers_path, output_path):
+    from numbers_automation import NumbersAutomationError, run_numbers_applescript
+
     output_path.unlink(missing_ok=True)
     source = json.dumps(str(numbers_path))
     destination = json.dumps(str(output_path))
@@ -493,18 +495,15 @@ tell application id "__BUNDLE_ID__"
     close targetDocument saving yes
 end tell
 """
-    errors = []
-    for bundle_id in NUMBERS_BUNDLE_IDS:
-        result = subprocess.run(
-            ["osascript", "-e", script.replace("__BUNDLE_ID__", bundle_id)],
-            capture_output=True,
-            text=True,
+    try:
+        run_numbers_applescript(
+            script,
+            "export the verification tracker for status import",
+            success=lambda _result: output_path.is_file() and output_path.stat().st_size > 0,
         )
-        if result.returncode == 0 and output_path.is_file() and output_path.stat().st_size:
-            return output_path
-        errors.append(result.stderr.strip())
-    detail = next((item for item in errors if item), "Apple Numbers was not found.")
-    raise VerificationStatusError(f"Could not export Numbers for status import: {detail}")
+    except NumbersAutomationError as exc:
+        raise VerificationStatusError(str(exc)) from exc
+    return output_path
 
 
 def _extract_workbook(paths, source_path):
@@ -539,7 +538,7 @@ def _artifact_modules(paths):
     configured = os.environ.get("PRS_ARTIFACT_TOOL_NODE_MODULES")
     candidates = [
         Path(configured).expanduser() if configured else None,
-        Path(DEFAULT_NODE_MODULES),
+        DEFAULT_RUNTIME_ROOT / "node_modules",
     ]
     for candidate in candidates:
         if candidate and (candidate / "@oai" / "artifact-tool").is_dir():
@@ -550,7 +549,13 @@ def _artifact_modules(paths):
 
 
 def _node_binary():
-    return os.environ.get("NODE") or DEFAULT_NODE
+    configured = os.environ.get("NODE")
+    if configured:
+        return configured
+    discovered = shutil.which("node")
+    if discovered:
+        return discovered
+    return str(DEFAULT_RUNTIME_ROOT / "bin" / "node")
 
 
 def _evidence_list(value):

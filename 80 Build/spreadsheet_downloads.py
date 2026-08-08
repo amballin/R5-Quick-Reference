@@ -11,6 +11,11 @@ import subprocess
 import sys
 
 from asset_manager import ProjectPaths
+from numbers_automation import (
+    NumbersAutomationError,
+    open_numbers_document,
+    run_numbers_applescript,
+)
 from spreadsheet_ooxml import (
     border_color_attributes,
     excel_column,
@@ -22,8 +27,8 @@ from validators.common import load_yaml_checked
 
 MANIFEST_VERSION = 2
 PUBLISHED_MANIFEST_VERSION = 1
-NUMBERS_BUNDLE_IDS = ("com.apple.Numbers", "com.apple.iWork.Numbers")
 SUPPORTED_TARGETS = ("matrix", "setup")
+REFRESH_COMMAND = r"./80\ Build/scripts/build-all-spreadsheet-downloads.sh"
 
 
 class SpreadsheetDownloadError(RuntimeError):
@@ -139,22 +144,19 @@ tell application id "__BUNDLE_ID__"
     close sourceDocument saving yes
 end tell
 """
-    errors = []
-    for bundle_id in NUMBERS_BUNDLE_IDS:
-        result = subprocess.run(
-            ["osascript", "-e", apple_script.replace("__BUNDLE_ID__", bundle_id)],
-            capture_output=True,
-            text=True,
+    try:
+        run_numbers_applescript(
+            apple_script,
+            f"convert the {target} workbook",
+            success=lambda _result: temporary.is_file() and temporary.stat().st_size > 0,
         )
-        if result.returncode == 0 and temporary.is_file() and temporary.stat().st_size:
-            numbers.unlink(missing_ok=True)
-            temporary.replace(numbers)
-            print(f"Excel {target} workbook converted automatically: {numbers}")
-            return numbers
-        errors.append(result.stderr.strip())
-    temporary.unlink(missing_ok=True)
-    detail = next((item for item in errors if item), "Apple Numbers was not found.")
-    raise SpreadsheetDownloadError(f"Could not convert the {target} workbook: {detail}")
+    except NumbersAutomationError as exc:
+        temporary.unlink(missing_ok=True)
+        raise SpreadsheetDownloadError(str(exc)) from exc
+    numbers.unlink(missing_ok=True)
+    temporary.replace(numbers)
+    print(f"Excel {target} workbook converted automatically: {numbers}")
+    return numbers
 
 
 def finalize_numbers_conversion(paths, target, numbers_path=None):
@@ -195,24 +197,21 @@ def finalize_numbers_conversion(paths, target, numbers_path=None):
         )
         script = _setup_finalize_script(paths, numbers)
         expected = f"{expected_rows}, 18, 1, true, 1, true, Dashboard"
-    errors = []
-    for bundle_id in NUMBERS_BUNDLE_IDS:
-        result = subprocess.run(
-            ["osascript", "-e", script.replace("__BUNDLE_ID__", bundle_id)],
-            capture_output=True,
-            text=True,
+    try:
+        result, _application = run_numbers_applescript(
+            script,
+            f"finalize the {target} conversion",
+            success=lambda candidate: candidate.stdout.strip() == expected,
         )
-        if result.returncode == 0:
-            if result.stdout.strip() != expected:
-                raise SpreadsheetDownloadError(
-                    f"Numbers returned unexpected finalized {target} properties: "
-                    f"{result.stdout.strip()}"
-                )
-            print(f"Numbers {target} conversion finalized with native frozen headers.")
-            return numbers
-        errors.append(result.stderr.strip())
-    detail = next((item for item in errors if item), "Apple Numbers was not found.")
-    raise SpreadsheetDownloadError(f"Could not finalize the {target} conversion: {detail}")
+    except NumbersAutomationError as exc:
+        raise SpreadsheetDownloadError(str(exc)) from exc
+    if result.stdout.strip() != expected:
+        raise SpreadsheetDownloadError(
+            f"Numbers returned unexpected finalized {target} properties: "
+            f"{result.stdout.strip()}"
+        )
+    print(f"Numbers {target} conversion finalized with native frozen headers.")
+    return numbers
 
 
 def verify_prepared_download(paths, target, write_manifest=True):
@@ -298,7 +297,58 @@ def validate_download_manifest(paths, target="matrix"):
 
 
 def validate_download_manifests(paths, targets):
-    return {target: validate_download_manifest(paths, target) for target in targets}
+    payloads = {}
+    issues = {}
+    for target in targets:
+        try:
+            payloads[target] = validate_download_manifest(paths, target)
+        except SpreadsheetDownloadError as exc:
+            issues[target] = str(exc)
+    if issues:
+        raise SpreadsheetDownloadError(format_refresh_issues(issues))
+    return payloads
+
+
+def derived_download_issues(paths, targets=SUPPORTED_TARGETS):
+    """Return every stale local or published spreadsheet family requiring refresh."""
+    issues = {}
+    try:
+        published = _published_release_from_head(paths)
+    except SpreadsheetDownloadError as exc:
+        published = {"targets": {}}
+        published_error = str(exc)
+    else:
+        published_error = None
+    published_targets = published.get("targets") or {}
+
+    for target in targets:
+        spec = target_spec(paths, target)
+        local_artifacts = (spec["manifest"], spec["xlsx"], spec["numbers"])
+        if any(path.exists() for path in local_artifacts):
+            try:
+                validate_download_manifest(paths, target)
+            except SpreadsheetDownloadError as exc:
+                issues[target] = str(exc)
+            continue
+        prior = published_targets.get(target)
+        if prior:
+            if prior.get("source_fingerprint") != source_fingerprint(paths, target):
+                issues[target] = "Published downloads no longer match current source inputs."
+            elif prior.get("workbook_revision") != workbook_revision(paths, target):
+                issues[target] = "Published workbook revision is outdated."
+        elif published_error:
+            issues[target] = published_error
+    return issues
+
+
+def format_refresh_issues(issues):
+    lines = ["Stale spreadsheet-derived artifacts were detected:"]
+    for target in SUPPORTED_TARGETS:
+        if target in issues:
+            label = "Matrix/settings" if target == "matrix" else "Setup"
+            lines.append(f"  - {label}: {issues[target]}")
+    lines.append(f"Run: {REFRESH_COMMAND}")
+    return "\n".join(lines)
 
 
 def copy_prepared_downloads(paths, target_dir, targets=("matrix",)):
@@ -667,19 +717,11 @@ end tell
 
 
 def _open_in_numbers(xlsx):
-    errors = []
-    for bundle_id in NUMBERS_BUNDLE_IDS:
-        result = subprocess.run(
-            ["open", "-b", bundle_id, str(xlsx)],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode == 0:
-            print("Numbers was opened with the current Excel workbook.")
-            return
-        errors.append(result.stderr.strip())
-    detail = next((item for item in errors if item), "Apple Numbers was not found.")
-    raise SpreadsheetDownloadError(f"Could not open Numbers: {detail}")
+    try:
+        open_numbers_document(xlsx)
+    except NumbersAutomationError as exc:
+        raise SpreadsheetDownloadError(str(exc)) from exc
+    print("Numbers was opened with the current Excel workbook.")
 
 
 def _sha256(path):
@@ -692,10 +734,10 @@ def _sha256(path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Prepare spreadsheet downloads.")
-    parser.add_argument("target", choices=SUPPORTED_TARGETS)
+    parser.add_argument("target", choices=SUPPORTED_TARGETS + ("all",))
     parser.add_argument(
         "action",
-        choices=("build", "generate", "prepare", "convert", "finalize", "verify", "validate", "migrate"),
+        choices=("build", "generate", "prepare", "convert", "finalize", "verify", "validate", "migrate", "diagnose"),
     )
     parser.add_argument("--root", default=".")
     parser.add_argument("--no-launch", action="store_true")
@@ -707,6 +749,19 @@ def main():
     args = parse_args()
     paths = ProjectPaths(args.root)
     try:
+        if args.target == "all":
+            if args.action == "diagnose":
+                issues = derived_download_issues(paths)
+                if issues:
+                    print(format_refresh_issues(issues))
+                    return 2
+                print("Matrix/settings and Setup spreadsheet-derived artifacts are current.")
+                return 0
+            if args.action == "validate":
+                validate_download_manifests(paths, SUPPORTED_TARGETS)
+                print("Prepared Matrix/settings and Setup manifests are valid.")
+                return 0
+            raise SpreadsheetDownloadError("The all target supports only diagnose or validate.")
         if args.action == "build":
             build_spreadsheet_download(paths, args.target)
         elif args.action == "generate":
@@ -730,6 +785,8 @@ def main():
             migrate_setup_working_copy(paths, args.source)
     except SpreadsheetDownloadError as exc:
         print(f"Spreadsheet preparation failed: {exc}", file=sys.stderr)
+        if args.action == "validate" and REFRESH_COMMAND not in str(exc):
+            print(f"Run: {REFRESH_COMMAND}", file=sys.stderr)
         return 1
     return 0
 
