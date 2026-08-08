@@ -1,0 +1,8 @@
+schema_version: 1
+project_id: canon-eos-r5-camera-reference
+project_name: Canon EOS R5 Camera Reference
+repository_role: authoritative-source
+artifact_type: source-repository
+camera:
+  manufacturer: Canon
+  model: EOS R5

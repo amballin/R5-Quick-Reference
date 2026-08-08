@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Machine-Verifiable Authoritative Project Identity
+
+**Status:** Accepted
+**Date:** 2026-08-07
+
+Identify this repository with `00 Master/project_identity.yaml` as the authoritative Canon EOS R5 source project. Before edits, resolve and report the Git root, require the working directory to remain inside it, reject old, backup, archive, generated-output, build-output, and native-wrapper locations, and confirm the required source components and baseline camera identity.
+
+Do not search sibling directories or select another repository automatically when identity checks fail. Stop for project-owner direction instead. Enforce the same checks at the start of source-only and full validation so prose rules and machine behavior cannot silently diverge.
+
 ## Camera Defaults My Menu Access Route
 
 **Status:** Accepted

@@ -19,6 +19,7 @@ from validators import (  # noqa: E402
     link_validator,
     output_validator,
     pwa_validator,
+    project_identity_validator,
     profile_validator,
     release_notes_validator,
     setting_access_validator,
@@ -33,6 +34,7 @@ from validators import (  # noqa: E402
 
 
 VALIDATORS = [
+    ("Project Identity", project_identity_validator.validate),
     ("Project Structure", structure.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
@@ -57,6 +59,7 @@ VALIDATORS = [
 ]
 
 SOURCE_ONLY_VALIDATORS = [
+    ("Project Identity", project_identity_validator.validate),
     ("Project Structure", structure.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),

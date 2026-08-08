@@ -13,6 +13,7 @@ REQUIRED_FOLDERS = [
 
 REQUIRED_FILES = [
     "PROJECT_RULES.md",
+    "00 Master/project_identity.yaml",
     "00 Master/project_memory.md",
     "00 Master/decision-log.md",
     "00 Master/baseline.yaml",
@@ -29,6 +30,7 @@ REQUIRED_FILES = [
     "80 Build/verify_publication.py",
     "80 Build/release_notes.py",
     "80 Build/validators/release_notes_validator.py",
+    "80 Build/validators/project_identity_validator.py",
     "80 Build/workflow_guides.py",
     "WORKFLOWS/index.md",
     "00 Master/specifications/Architecture.md",

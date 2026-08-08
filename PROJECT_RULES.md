@@ -16,6 +16,28 @@ When sources disagree, apply this order:
 
 Proposed, Rejected, and Superseded decisions are non-binding. Conversation history is not a permanent authority. If two binding sources still conflict, stop, preserve current behavior, and ask the project owner to resolve the conflict.
 
+## Project Identity and Workspace Safety
+
+Before reading project source beyond the governing and identity files, creating a backup, running a build, or modifying any file:
+
+1. Resolve the current Git repository root with `git rev-parse --show-toplevel`. Treat that resolved path as the only project root for the task.
+2. Display the resolved project root to the project owner before editing.
+3. Confirm the current working directory is inside that Git root.
+4. Do not locate, select, or switch to another repository automatically.
+5. Do not search sibling directories to find a better, newer, or similarly named copy.
+6. Reject the repository if its root or any parent folder is named or clearly marked `OLD`, `Backup`, `Backups`, `Archive`, `Archives`, `Build Output`, `Generated`, `Generated Output`, or `Native Wrapper`.
+7. Confirm `00 Master/project_identity.yaml` identifies the project as **Canon EOS R5 Camera Reference**, with repository role **authoritative-source** and artifact type **source-repository**.
+8. Confirm these authoritative components exist inside the resolved root: `PROJECT_RULES.md`, `00 Master/baseline.yaml`, `00 Master/schema.yaml`, `00 Master/card_layout.yaml`, `00 Master/setting_access.yaml`, `10 Profiles/`, `20 Templates/`, `50 Field Guide/required_appendices.yaml`, `50 Field Guide/Appendices/R5 Quick Reference.md`, `80 Build/build.py`, and `80 Build/validator.py`.
+9. Confirm the baseline camera manufacturer and model are Canon and EOS R5 and agree with the project identity file.
+10. Reject a repository that is empty, incomplete, generated-only, ambiguously identified, or missing any required authoritative component.
+11. If any identity or authority check fails, stop and ask the project owner to open or identify the correct project. Never choose another project automatically.
+12. After verification passes, restrict all source inspection and modification to the resolved Git root.
+13. Inspect generated previews only in the output location derived by this repository's build system. Never treat generated output as source.
+14. The only permitted write outside the source root is an in-scope machine-local artifact in a location required by this repository, including a recovery backup in the designated local-workspace `Backups/` directory.
+15. Repeat project-identity verification whenever the working directory, repository, computer, worktree, or task context changes.
+
+Before editing, report the resolved Git project root, project identity, camera model, prohibited-name result, authoritative-source result, and required-component result. No source file may be modified until every check passes.
+
 ## Non-Negotiable Working Rules
 
 - Preserve the existing repository structure and improve it incrementally; do not redesign or change established architecture, YAML structure, naming, or workflow without first explaining the rationale and receiving explicit project-owner approval.

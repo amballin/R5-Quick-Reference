@@ -6,6 +6,10 @@ This specification defines the system boundaries and ownership of data, content,
 
 ## Requirements
 
+- The Git root is the only authoritative source root for a task. Resolve it at runtime; do not select another repository or sibling copy automatically.
+- `00 Master/project_identity.yaml` identifies this repository as the authoritative Canon EOS R5 source project. Its camera identity must agree with `00 Master/baseline.yaml`.
+- Reject roots or parent folders marked as old, backup, archive, build output, generated output, or native wrapper locations. Reject incomplete or generated-only roots and stop for project-owner direction rather than searching for a substitute.
+- Required source components, Git-root identity, current-working-directory containment, prohibited path markers, and camera identity are source-validation requirements.
 - Preserve the established baseline + overrides architecture and existing YAML structure.
 - Distinguish five evidence classes in camera-control documentation: verified Canon capability, owner-confirmed current configuration, approved target pending physical verification, project recommendation, and unresolved item.
 - Do not treat approved targets, historical screenshots, inferred icon meanings, or recommendations as proof of the current camera configuration.
@@ -42,6 +46,8 @@ baseline.yaml + profile overrides
 
 ## Enforcement and Evidence
 
+- `00 Master/project_identity.yaml` is the machine-readable repository identity.
+- `80 Build/validators/project_identity_validator.py` checks the Git root, current working directory, prohibited path markers, required authoritative components, identity fields, and baseline camera agreement.
 - `00 Master/baseline.yaml` is the shared-default source.
 - `00 Master/schema.yaml` documents the intended YAML fields and value shapes.
 - `80 Build/validators/baseline_validator.py` checks baseline shape.
