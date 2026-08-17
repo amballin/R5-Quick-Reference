@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Editor Prototype</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Profile Editor Prototype</h1>
+<p>This Stage 1 prototype is a safe way to work through camera setup, My Menu organization, and existing camera profiles. It provides a Canon-sourced EOS R5 still-photo settings dictionary, keeps a temporary My Menu draft, lets you make temporary profile choices, and renders an isolated card preview with the existing card renderer.</p>
+<p>It cannot create, update, or delete profile YAML. It does not run the normal website build, change <code>docs/</code>, publish, commit, push, or merge anything.</p>
+<section class="step"><h2>Start the prototype</h2>
+<p>Use the Project Terminal panel on the <a href="index.html">Workflow Index</a> to open the prototype worktree in Terminal. Then run:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/profile_editor.py&quot;</code></pre></div>
+<p>Open the local address shown in Terminal, normally:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>http://127.0.0.1:8765</code></pre></div>
+<p>The editor is available only on this Mac while that command is running. Press <strong>Control-C</strong> in Terminal to stop it.</p>
+</section>
+<section class="step"><h2>Work through camera setup</h2>
+<p>The prototype opens on <strong>Camera setup</strong>. Search the Shooting, AF, Playback, Wireless, Set-up, and Custom Functions dictionary or filter it by <strong>Set Once</strong>, <strong>Situational</strong>, <strong>Ignore</strong>, <strong>Avoid</strong>, or <strong>Unresolved</strong>. Every record identifies its direct camera-menu location, reset-default reference, project recommendation, whether it should be revisited, and the applicable Canon manual source.</p>
+<p>The dictionary separates Canon reference facts from project recommendations. Menu names and locations are grounded in Canon&#x27;s menu overviews. A reset default remains a working reference unless the linked Canon page states it explicitly. Neither the recommendation nor the temporary UI state proves the current physical camera setting.</p>
+<p><strong>Touch &amp; Drag AF</strong> is represented by its three separate controls:</p>
+<ul>
+<li>Touch &amp; Drag AF: Enable</li>
+<li>Positioning method: Relative</li>
+<li>Active touch area: Right</li>
+</ul>
+<p>All three are project <strong>Set Once</strong> recommendations. The active touch area should be revisited if handedness, grip, or unintended face contact makes another area more reliable.</p>
+</section>
+<section class="step"><h2>Configure My Menu</h2>
+<p>Open <strong>Configure My Menu</strong> after reviewing setup. The temporary configurator follows the EOS R5 limit of five tabs with six items per tab. Choose <strong>Load recommended tabs</strong> to start with the approved <strong>SWITCH</strong> and <strong>AF Case</strong> layouts, or build a different session-only arrangement.</p>
+<p>The dictionary shows a <strong>Configured shortcut</strong> only after an item is selected in this configurator. This keeps the direct Canon menu location authoritative and prevents the UI from claiming a My Menu path that was never configured in the draft.</p>
+<p>The My Menu draft is explicitly unverified and exists only in the current browser session. It does not save to project YAML and does not prove the physical camera matches the draft.</p>
+</section>
+<section class="step"><h2>Try a profile</h2>
+<ol>
+<li>Open <strong>Profiles</strong>.</li>
+<li>Choose an existing profile.</li>
+<li>Review the grouped camera settings.</li>
+<li>Look for the <strong>Inherited</strong> or <strong>Customized</strong> label beside each setting.</li>
+<li>Try the available dropdowns and text fields.</li>
+<li>Use <strong>Use baseline</strong> for one setting, <strong>Use baseline for section</strong> for a group, or <strong>Discard draft &amp; reload profile</strong> to restore the selected profile&#x27;s saved source values.</li>
+<li>Choose <strong>Preview card</strong> to render the temporary draft with the established card renderer.</li>
+</ol>
+<p>Exposure, Autofocus, and Drive controls use the prototype&#x27;s Canon EOS R5 options catalog. Each cataloged setting links to the applicable Canon manual page and uses the same approved setting/value icon system as the subject cards. The catalog is scoped to still photos on EOS R5 firmware 2.2.0 or later.</p>
+<p>Canon choices, conditional Canon choices, and project compatibility values are labeled separately. For example, Canon defines One-Shot AF and Servo AF as AF Operation choices; this project retains Manual Focus in that field only for compatibility with existing profile data.</p>
+<p>Some fields allow both Canon choices and custom profile targets. ISO and exposure compensation profiles may contain a descriptive range or field instruction rather than one camera value, so those controls provide Canon suggestions without discarding the existing free-form behavior.</p>
+</section>
+<section class="step"><h2>Where the preview goes</h2>
+<p>The one disposable preview file is written under the prototype worktree&#x27;s separate machine-local workspace:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>Canon Camera Reference UI Prototype Local/Build Output/cards/html/_Profile Editor Preview.html</code></pre></div>
+<p>Each preview replaces the prior disposable preview. No file under <code>10 Profiles/</code> or <code>docs/</code> is changed.</p>
+</section>
+<section class="step"><h2>Discard draft changes</h2>
+<p>Profile and My Menu draft values live only in the open browser page.</p>
+<ul>
+<li><strong>Use baseline</strong> removes the temporary override for one setting.</li>
+<li><strong>Use baseline for section</strong> removes all temporary overrides in that section.</li>
+<li><strong>Discard draft &amp; reload profile</strong> restores the selected profile&#x27;s original saved overrides. This may bring back customized values that differ from the baseline.</li>
+<li>Selecting another profile discards the current draft and loads the selected profile. Returning to the first profile loads its original saved overrides again.</li>
+<li>Reloading the page clears the My Menu draft. Use <strong>Load recommended tabs</strong> to restore the project recommendation.</li>
+<li>Refreshing the page, closing the tab, or stopping the server discards all browser drafts.</li>
+</ul>
+<p>Restarting the server is not required to discard a draft. It is required only when profile or catalog source files were changed externally while the server was already running, because source data is loaded when the server starts.</p>
+<p>Stage 1 intentionally has no <strong>Save</strong> button. Safe profile creation and updating, backups, change review, validation, and automatic recovery belong to a separately reviewed later stage.</p>
+</section>
+<section class="step"><h2>Quick readiness check</h2>
+<p>To confirm that the prototype can load all current profiles without starting the web interface, run:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/profile_editor.py&quot; --check</code></pre></div>
+</section>
+    <footer>Generated from WORKFLOWS/profile-editor.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

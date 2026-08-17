@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Editor Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Canon Camera Reference</p>
+      <h1>Profile Editor</h1>
+    </div>
+    <span class="prototype-badge">Stage 1 · Read only</span>
+  </header>
+
+  <main>
+    <section class="safety-note" aria-label="Prototype safety notice">
+      <strong>Try changes safely.</strong>
+      Nothing on this page can save or alter a profile. <strong>Use baseline</strong> removes a temporary override;
+      <strong>discard and reload</strong> restores the profile's original saved overrides.
+    </section>
+
+    <nav class="view-tabs" aria-label="Prototype sections">
+      <button class="view-tab is-active" type="button" data-view="dictionary">1. Camera setup</button>
+      <button class="view-tab" type="button" data-view="my-menu">2. Configure My Menu</button>
+      <button class="view-tab" type="button" data-view="profiles">3. Profiles</button>
+    </nav>
+
+    <section id="dictionary-view" class="app-view">
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Canon EOS R5 · still photos</p>
+          <h2>Camera settings dictionary</h2>
+          <p class="muted">Menu names and locations are Canon-verified. Reset defaults are working references unless the linked Canon page states them explicitly. Recommendations are project guidance, not verified current camera state.</p>
+        </div>
+        <a id="dictionary-source" class="source-link" href="" target="_blank" rel="noreferrer">Canon manual</a>
+      </div>
+      <div class="dictionary-tools">
+        <label>Find a setting <input id="dictionary-search" type="search" placeholder="Try Touch &amp; drag, format, shutter…"></label>
+        <label>Classification
+          <select id="dictionary-classification">
+            <option value="">All classifications</option>
+            <option>Set Once</option>
+            <option>Situational</option>
+            <option>Ignore</option>
+            <option>Avoid</option>
+            <option>Unresolved</option>
+          </select>
+        </label>
+      </div>
+      <p id="dictionary-count" class="dictionary-count"></p>
+      <div id="dictionary-sections" class="settings" aria-live="polite"></div>
+    </section>
+
+    <section id="my-menu-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Draft navigation layer</p>
+          <h2>Configure My Menu</h2>
+          <p class="muted">This session-only draft supports Canon's limit of five tabs and six items per tab. It does not claim the camera is configured.</p>
+        </div>
+        <button id="load-recommended-menus" class="primary" type="button">Load recommended tabs</button>
+      </div>
+      <div class="configuration-state"><strong>Unverified draft</strong> · Shortcut paths appear only for items selected below.</div>
+      <div id="my-menu-tabs" class="my-menu-tabs"></div>
+    </section>
+
+    <section id="profiles-view" class="app-view" hidden>
+
+    <section class="toolbar" aria-label="Profile controls">
+      <label for="profile-select">Profile</label>
+      <select id="profile-select" disabled>
+        <option>Loading profiles…</option>
+      </select>
+      <button id="reload-button" class="secondary" type="button" disabled>Discard draft &amp; reload profile</button>
+      <button id="preview-button" class="primary" type="button" disabled>Preview card</button>
+    </section>
+
+    <section class="profile-summary" aria-live="polite">
+      <div>
+        <p class="eyebrow">Selected source</p>
+        <h2 id="profile-title">Loading…</h2>
+        <p id="source-file" class="muted"></p>
+      </div>
+      <div class="summary-counts">
+        <span><strong id="custom-count">0</strong> customized</span>
+        <span><strong id="inherited-count">0</strong> inherited</span>
+      </div>
+    </section>
+
+    <div id="message" class="message" role="status" hidden></div>
+    <div id="reference-card" class="reference-card" hidden></div>
+    <div id="settings" class="settings" aria-live="polite"></div>
+
+    <section id="preview-panel" class="preview-panel" hidden>
+      <div class="preview-heading">
+        <div>
+          <p class="eyebrow">Temporary output</p>
+          <h2>Card preview</h2>
+        </div>
+        <p id="preview-path" class="muted"></p>
+      </div>
+      <iframe id="preview-frame" title="Temporary profile card preview"></iframe>
+    </section>
+    </section>
+  </main>
+
+  <template id="section-template">
+    <section class="setting-section">
+      <div class="section-heading">
+        <h2></h2>
+        <button class="reset-section secondary" type="button">Use baseline for section</button>
+      </div>
+      <div class="setting-list"></div>
+    </section>
+  </template>
+
+  <template id="setting-template">
+    <div class="setting-row">
+      <div class="setting-copy">
+        <div class="setting-label-line">
+          <img class="field-icon" src="" alt="" aria-hidden="true" hidden>
+          <label></label>
+        </div>
+        <code></code>
+      </div>
+      <div class="setting-control"></div>
+      <div class="setting-state">
+        <span class="state-badge"></span>
+        <small class="baseline-value"></small>
+        <a class="canon-source" href="" target="_blank" rel="noreferrer" hidden>Canon options</a>
+      </div>
+      <button class="reset-setting secondary icon-button" type="button">Use baseline</button>
+    </div>
+  </template>
+
+  <template id="dictionary-section-template">
+    <section class="setting-section dictionary-section">
+      <div class="section-heading">
+        <h2></h2>
+        <a class="section-source" href="" target="_blank" rel="noreferrer">Canon menu reference</a>
+      </div>
+      <div class="dictionary-list"></div>
+    </section>
+  </template>
+
+  <template id="dictionary-item-template">
+    <article class="dictionary-item">
+      <div class="dictionary-heading">
+        <div><h3></h3><code class="menu-location"></code></div>
+        <span class="classification-badge"></span>
+      </div>
+      <dl>
+        <div><dt>Canon default</dt><dd class="canon-default"></dd></div>
+        <div><dt>Recommended</dt><dd class="recommended"></dd></div>
+        <div><dt>Visit again?</dt><dd class="visit-again"></dd></div>
+        <div class="shortcut-detail" hidden><dt>Configured shortcut</dt><dd class="shortcut-path"></dd></div>
+      </dl>
+      <p class="dictionary-note"></p>
+      <a class="item-source" href="" target="_blank" rel="noreferrer">Open Canon instructions</a>
+    </article>
+  </template>
+
+  <template id="my-menu-tab-template">
+    <section class="my-menu-card">
+      <div class="my-menu-card-heading">
+        <label>Tab name <input class="my-menu-name" type="text" maxlength="16"></label>
+        <span class="my-menu-number"></span>
+      </div>
+      <div class="my-menu-items"></div>
+    </section>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
