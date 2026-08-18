@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-03
+  last_updated: 2026-08-18
   release: true
 title: People
 card:
@@ -11,14 +11,14 @@ card:
     start: C1
     source_profile: Wildlife
     my_menus:
-      - name: SWITCH
-        settings:
-          - shutter.type
-          - autofocus.subject_detection
-      - name: AF Case
-        settings:
-          - autofocus.servo_af_case
-          - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - shutter.type
+      - autofocus.subject_detection
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+      - autofocus.switching_tracked_subjects
 inherits: baseline
 overrides:
   autofocus:
@@ -32,17 +32,17 @@ overrides:
     aperture:
       target: f/1.8–f/4 single; f/4–f/8 groups
 checklist:
-  - Eye detected
-  - Catchlight in eyes
-  - Review depth of field
+- Eye detected
+- Catchlight in eyes
+- Review depth of field
 watch_for:
-  - Distracting backgrounds
+- Distracting backgrounds
 common_mistakes:
-  - Focus on nose instead of eye
+- Focus on nose instead of eye
 notes:
-  - When starting from C1 Wildlife, use My Menu AF Case to change the project-customized Case 1 back to Case A (Auto).
-  - Use short bursts to capture expressions without filling the buffer unnecessarily.
-  - Consider Av for intentional portraits; use Fv for casual family and event people photography.
+- When starting from C1 Wildlife, use My Menu AF Case to change the project-customized Case 1 back to Case A (Auto).
+- Use short bursts to capture expressions without filling the buffer unnecessarily.
+- Consider Av for intentional portraits; use Fv for casual family and event people photography.
 appendix_links:
-  - id: af_cases_tracking
-    label: Servo AF Case selection and tracking adjustments
+- id: af_cases_tracking
+  label: Servo AF Case selection and tracking adjustments

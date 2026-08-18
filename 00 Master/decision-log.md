@@ -2,6 +2,25 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Guarded Local Profile Authoring
+
+**Status:** Accepted
+**Date:** 2026-08-17
+
+Allow the loopback-only profile editor to update an existing shooting profile, create a baseline-derived shooting profile, or duplicate an existing shooting profile. Keep permanent reference cards, `00 Master/baseline.yaml`, My Menu persistence, and profile deletion outside the writable scope. New and duplicated profiles must begin with `metadata.status: Draft` and `metadata.release: false`.
+
+Require an exact YAML diff before every save. Bind the reviewed candidate bytes to a short-lived one-time token so the browser cannot save different content from what was reviewed. Before writing, confirm the loaded source fingerprint still matches and that a new target name remains available. Validate the complete candidate profile in an isolated temporary source layout, create a timestamped machine-local recovery backup, replace the target atomically, and run source validation after the write. Automatically restore the prior source state when post-save validation fails.
+
+Allow a session-only **Baseline impact** workspace to propose value changes for existing baseline setting paths and calculate their effect on every inheriting profile. Keep the draft in browser memory, reject added or removed paths and incompatible values at the server boundary, and expose no baseline save endpoint. Classify inherited effective-value changes, protected overrides, newly redundant overrides, removed paths, and incompatible override types through one repository-owned read-only impact engine.
+
+Allow that workspace to build a read-only migration plan. Require an explicit per-profile choice for each inherited effective-value change: follow the proposed baseline or preserve the previous effective value as a proposed override. Permit deliberate bulk choices across the complete proposal or within one changed setting, but apply them only to unresolved inherited changes and never replace an existing individual choice. Automatically include newly redundant overrides as proposed removals, retain protected overrides, and keep missing choices or invalid overrides visibly unresolved. Recompute and validate the proposal and choices on the server; reject stale, duplicate, invalid, or inapplicable choices. The migration plan remains session-only and creates no diff, review token, save endpoint, or source write.
+
+Extend baseline impact analysis to the canonical C1–C3 registration definitions. For every proposed baseline setting change, show the effective value before and after in **C1 Wildlife**, **C2 Birds in Flight**, and **C3 Landscape**, including when an explicit registration value protects a mode from the baseline change. Warn for every shooting profile whose declared `card.field_setup.start` uses an affected registered mode, and identify its declared source profile and affected settings. These are warnings only: analysis must not rewrite registrations, starting-mode routes, source-profile declarations, My Menu routes, or profile YAML.
+
+Initialize the session-only My Menu configurator with the approved **SWITCH** and **AF Case** recommended tabs after the settings dictionary loads. Leave the remaining tabs and slots empty. Users may modify the browser draft, and **Restore recommended tabs** replaces it with the approved recommendation. Refreshing or reopening the editor starts from the recommendation again. This initial draft remains unverified, does not claim the physical camera matches it, and creates no My Menu persistence or write endpoint.
+
+The editor must not run builds, commit, push, publish, rename existing profiles, delete profiles, or modify non-profile source. Git and publication remain separate operator-authorized workflows.
+
 ## Consolidated Spreadsheet-Derived Artifact Recovery
 
 **Status:** Accepted

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Profile Editor Prototype</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,20 +13,21 @@
       <p class="eyebrow">Canon Camera Reference</p>
       <h1>Profile Editor</h1>
     </div>
-    <span class="prototype-badge">Stage 1 · Read only</span>
+    <span class="prototype-badge">Stage 2 · Guarded saves</span>
   </header>
 
   <main>
     <section class="safety-note" aria-label="Prototype safety notice">
-      <strong>Try changes safely.</strong>
-      Nothing on this page can save or alter a profile. <strong>Use baseline</strong> removes a temporary override;
-      <strong>discard and reload</strong> restores the profile's original saved overrides.
+      <strong>Review before every save.</strong>
+      Profile writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
+      Reference cards, the shared baseline, My Menu drafts, deletion, builds, Git, and publishing remain read-only or unavailable here.
     </section>
 
     <nav class="view-tabs" aria-label="Prototype sections">
       <button class="view-tab is-active" type="button" data-view="dictionary">1. Camera setup</button>
       <button class="view-tab" type="button" data-view="my-menu">2. Configure My Menu</button>
       <button class="view-tab" type="button" data-view="profiles">3. Profiles</button>
+      <button class="view-tab" type="button" data-view="baseline">4. Baseline impact</button>
     </nav>
 
     <section id="dictionary-view" class="app-view">
@@ -61,7 +63,7 @@
           <h2>Configure My Menu</h2>
           <p class="muted">This session-only draft supports Canon's limit of five tabs and six items per tab. It does not claim the camera is configured.</p>
         </div>
-        <button id="load-recommended-menus" class="primary" type="button">Load recommended tabs</button>
+        <button id="load-recommended-menus" class="primary" type="button">Restore recommended tabs</button>
       </div>
       <div class="configuration-state"><strong>Unverified draft</strong> · Shortcut paths appear only for items selected below.</div>
       <div id="my-menu-tabs" class="my-menu-tabs"></div>
@@ -74,8 +76,34 @@
       <select id="profile-select" disabled>
         <option>Loading profiles…</option>
       </select>
+      <button id="new-button" class="secondary" type="button">New from baseline</button>
+      <button id="duplicate-button" class="secondary" type="button" disabled>Duplicate profile</button>
       <button id="reload-button" class="secondary" type="button" disabled>Discard draft &amp; reload profile</button>
       <button id="preview-button" class="primary" type="button" disabled>Preview card</button>
+      <button id="review-button" class="save-action" type="button" disabled>Review YAML changes</button>
+    </section>
+
+    <section id="profile-metadata" class="profile-metadata" aria-label="Profile identity and release state" hidden>
+      <div class="metadata-heading">
+        <div>
+          <p class="eyebrow">Profile source fields</p>
+          <h2 id="operation-title">Update existing profile</h2>
+        </div>
+        <p id="operation-note" class="muted"></p>
+      </div>
+      <div class="metadata-grid">
+        <label>Title <input id="title-input" type="text" maxlength="120"></label>
+        <label>Subtitle <input id="subtitle-input" type="text" maxlength="200"></label>
+        <label>YAML filename <span class="filename-control"><input id="filename-input" type="text" maxlength="80"><span>.yaml</span></span></label>
+        <label>Status
+          <select id="status-input">
+            <option>Draft</option>
+            <option>Review</option>
+            <option>Final</option>
+          </select>
+        </label>
+        <label class="release-control"><input id="release-input" type="checkbox"> Include in released card bundle</label>
+      </div>
     </section>
 
     <section class="profile-summary" aria-live="polite">
@@ -105,7 +133,55 @@
       <iframe id="preview-frame" title="Temporary profile card preview"></iframe>
     </section>
     </section>
+
+    <section id="baseline-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Read-only planning workspace</p>
+          <h2>Baseline impact</h2>
+          <p class="muted">Temporarily change existing baseline values to see which profiles would follow them, remain protected by overrides, or need cleanup. This view cannot save the baseline or profiles.</p>
+        </div>
+        <div class="baseline-actions">
+          <button id="baseline-reset" class="secondary" type="button" disabled>Discard baseline draft</button>
+          <button id="baseline-analyze" class="primary" type="button" disabled>Analyze draft</button>
+        </div>
+      </div>
+      <div class="configuration-state"><strong>Session-only proposal</strong> · Existing setting paths and value types are preserved. Refreshing the page discards this draft.</div>
+      <div id="baseline-message" class="message" role="status" hidden></div>
+      <section id="baseline-summary" class="baseline-summary" aria-label="Baseline impact summary" hidden></section>
+      <section id="baseline-decision-tools" class="baseline-decision-tools" hidden>
+        <div>
+          <strong id="baseline-decision-status">No decisions selected.</strong>
+          <p class="muted">Every inherited change needs an explicit choice. Bulk actions apply only to unresolved inherited changes.</p>
+        </div>
+        <div class="baseline-decision-actions">
+          <button id="baseline-follow-all" class="secondary" type="button">Follow baseline for unresolved</button>
+          <button id="baseline-preserve-all" class="secondary" type="button">Preserve previous for unresolved</button>
+          <button id="baseline-build-plan" class="primary" type="button">Build migration plan</button>
+        </div>
+      </section>
+      <div id="baseline-results" class="baseline-results" aria-live="polite"></div>
+      <section id="baseline-plan" class="baseline-plan" aria-live="polite" hidden></section>
+      <div id="baseline-settings" class="settings" aria-live="polite"></div>
+    </section>
   </main>
+
+  <dialog id="review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required save review</p>
+        <h2>Exact YAML changes</h2>
+        <p id="review-summary" class="muted"></p>
+      </div>
+      <button id="review-close" class="secondary" type="button" aria-label="Close review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Only the YAML shown below will be saved.</strong> If the source changes before save, this review is rejected.</p>
+    <pre id="review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="review-cancel" class="secondary" type="button">Continue editing</button>
+      <button id="save-button" class="save-action" type="button">Save reviewed YAML</button>
+    </div>
+  </dialog>
 
   <template id="section-template">
     <section class="setting-section">

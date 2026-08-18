@@ -9,8 +9,19 @@ const elements = {
   loadRecommendedMenus: document.querySelector("#load-recommended-menus"),
   myMenuTabs: document.querySelector("#my-menu-tabs"),
   profileSelect: document.querySelector("#profile-select"),
+  newButton: document.querySelector("#new-button"),
+  duplicateButton: document.querySelector("#duplicate-button"),
   reloadButton: document.querySelector("#reload-button"),
   previewButton: document.querySelector("#preview-button"),
+  reviewButton: document.querySelector("#review-button"),
+  profileMetadata: document.querySelector("#profile-metadata"),
+  operationTitle: document.querySelector("#operation-title"),
+  operationNote: document.querySelector("#operation-note"),
+  titleInput: document.querySelector("#title-input"),
+  subtitleInput: document.querySelector("#subtitle-input"),
+  filenameInput: document.querySelector("#filename-input"),
+  statusInput: document.querySelector("#status-input"),
+  releaseInput: document.querySelector("#release-input"),
   profileTitle: document.querySelector("#profile-title"),
   sourceFile: document.querySelector("#source-file"),
   customCount: document.querySelector("#custom-count"),
@@ -21,6 +32,24 @@ const elements = {
   previewPanel: document.querySelector("#preview-panel"),
   previewFrame: document.querySelector("#preview-frame"),
   previewPath: document.querySelector("#preview-path"),
+  reviewDialog: document.querySelector("#review-dialog"),
+  reviewSummary: document.querySelector("#review-summary"),
+  reviewDiff: document.querySelector("#review-diff"),
+  reviewClose: document.querySelector("#review-close"),
+  reviewCancel: document.querySelector("#review-cancel"),
+  saveButton: document.querySelector("#save-button"),
+  baselineReset: document.querySelector("#baseline-reset"),
+  baselineAnalyze: document.querySelector("#baseline-analyze"),
+  baselineMessage: document.querySelector("#baseline-message"),
+  baselineSummary: document.querySelector("#baseline-summary"),
+  baselineDecisionTools: document.querySelector("#baseline-decision-tools"),
+  baselineDecisionStatus: document.querySelector("#baseline-decision-status"),
+  baselineFollowAll: document.querySelector("#baseline-follow-all"),
+  baselinePreserveAll: document.querySelector("#baseline-preserve-all"),
+  baselineBuildPlan: document.querySelector("#baseline-build-plan"),
+  baselineResults: document.querySelector("#baseline-results"),
+  baselinePlan: document.querySelector("#baseline-plan"),
+  baselineSettings: document.querySelector("#baseline-settings"),
 };
 
 const state = {
@@ -29,7 +58,14 @@ const state = {
   detail: null,
   originalOverrides: {},
   draftOverrides: {},
+  reviewToken: null,
   loadSequence: 0,
+  baselineDetail: null,
+  baselineCurrent: {},
+  baselineDraft: {},
+  baselineAnalysis: null,
+  baselineDecisions: {},
+  baselinePlan: null,
 };
 
 function clone(value) {
@@ -59,7 +95,13 @@ function showMessage(text, error = false) {
   elements.message.hidden = !text;
 }
 
-async function loadProfiles() {
+function showBaselineMessage(text, error = false) {
+  elements.baselineMessage.textContent = text;
+  elements.baselineMessage.classList.toggle("error", error);
+  elements.baselineMessage.hidden = !text;
+}
+
+async function loadProfiles(selectedName = null, loadSelection = true) {
   try {
     const payload = await request("/api/profiles");
     elements.profileSelect.replaceChildren();
@@ -70,7 +112,11 @@ async function loadProfiles() {
       elements.profileSelect.append(option);
     }
     elements.profileSelect.disabled = false;
-    if (payload.profiles.length) await loadProfile(payload.profiles[0].name);
+    const selected = payload.profiles.find((profile) => profile.name === selectedName) || payload.profiles[0];
+    if (selected) {
+      elements.profileSelect.value = selected.name;
+      if (loadSelection) await loadProfile(selected.name);
+    }
   } catch (error) {
     showMessage(error.message, true);
   }
@@ -80,10 +126,26 @@ async function loadDictionary() {
   try {
     state.dictionary = await request("/api/dictionary");
     elements.dictionarySource.href = state.dictionary.metadata.authority_url || "https://cam.start.canon/en/C003/manual/html/index.html";
-    renderDictionary();
-    renderMyMenus();
+    loadRecommendedMenus();
   } catch (error) {
     showMessage(error.message, true);
+  }
+}
+
+async function loadBaseline() {
+  showBaselineMessage("Loading the current baseline…");
+  try {
+    const detail = await request("/api/baseline");
+    state.baselineDetail = detail;
+    state.baselineCurrent = clone(detail.values || {});
+    state.baselineDraft = clone(state.baselineCurrent);
+    state.baselineAnalysis = null;
+    state.baselineDecisions = {};
+    state.baselinePlan = null;
+    renderBaseline();
+    showBaselineMessage("No proposed baseline changes. This workspace is read-only.");
+  } catch (error) {
+    showBaselineMessage(error.message, true);
   }
 }
 
@@ -221,14 +283,8 @@ async function loadProfile(name) {
   try {
     const detail = await request(`/api/profiles/${encodeURIComponent(name)}`);
     if (loadSequence !== state.loadSequence) return;
-    state.detail = detail;
-    state.originalOverrides = clone(detail.originalOverrides || {});
-    state.draftOverrides = clone(state.originalOverrides);
     elements.profileSelect.value = name;
-    elements.profileTitle.textContent = detail.title;
-    elements.sourceFile.textContent = detail.sourceFile;
-    elements.previewPanel.hidden = true;
-    render();
+    applyProfileDetail(detail);
   } catch (error) {
     if (loadSequence !== state.loadSequence) return;
     showMessage(error.message, true);
@@ -237,22 +293,90 @@ async function loadProfile(name) {
   }
 }
 
+async function loadProfileDraft(operation) {
+  const sourceProfile = operation === "duplicate" ? state.detail?.sourceProfile || state.detail?.name : null;
+  if (operation === "duplicate" && !state.detail?.editableDraft) return;
+  disableProfileActions(true);
+  showMessage(operation === "duplicate" ? "Preparing a duplicate draft…" : "Preparing a baseline-derived draft…");
+  try {
+    const detail = await request("/api/profile-drafts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ operation, sourceProfile }),
+    });
+    applyProfileDetail(detail);
+    elements.profileSelect.value = "";
+    elements.titleInput.focus();
+  } catch (error) {
+    showMessage(error.message, true);
+  } finally {
+    disableProfileActions(false);
+  }
+}
+
+function applyProfileDetail(detail) {
+  state.detail = detail;
+  state.originalOverrides = clone(detail.originalOverrides || {});
+  state.draftOverrides = clone(state.originalOverrides);
+  state.reviewToken = null;
+  elements.profileTitle.textContent = detail.title;
+  elements.sourceFile.textContent = detail.sourceFile;
+  elements.titleInput.value = detail.title || "";
+  elements.subtitleInput.value = detail.subtitle || "";
+  elements.filenameInput.value = detail.targetName || detail.name || "";
+  elements.statusInput.value = detail.metadata?.status || "Draft";
+  elements.releaseInput.checked = Boolean(detail.metadata?.release);
+  elements.previewPanel.hidden = true;
+  if (elements.reviewDialog.open) elements.reviewDialog.close();
+  render();
+}
+
+function disableProfileActions(disabled) {
+  elements.newButton.disabled = disabled;
+  elements.duplicateButton.disabled = disabled || !state.detail?.editableDraft;
+  elements.reloadButton.disabled = disabled || !state.detail?.editableDraft;
+  elements.previewButton.disabled = disabled || !state.detail?.editableDraft;
+  elements.reviewButton.disabled = disabled || !state.detail?.editableDraft;
+}
+
 function render() {
   elements.settings.replaceChildren();
   elements.referenceCard.hidden = true;
   const editable = state.detail?.editableDraft;
+  elements.profileMetadata.hidden = !editable;
+  elements.duplicateButton.disabled = !editable;
   elements.reloadButton.disabled = !editable;
   elements.previewButton.disabled = !editable;
+  elements.reviewButton.disabled = !editable;
   if (!editable) {
     renderReference();
     elements.customCount.textContent = "0";
     elements.inheritedCount.textContent = "0";
-    showMessage("This reference card has no baseline overrides. It is shown for completeness and cannot be drafted in Stage 1.");
+    showMessage("This reference card remains read-only. Stage 2 saves apply only to shooting profiles.");
     return;
   }
+  renderMetadataState();
   showMessage("");
   for (const section of state.detail.sections) renderSection(section);
   updateCounts();
+}
+
+function renderMetadataState() {
+  const operation = state.detail.operation || "update";
+  const creating = operation !== "update";
+  elements.operationTitle.textContent = operation === "update"
+    ? "Update existing profile"
+    : operation === "duplicate" ? "Duplicate shooting profile" : "Create from baseline";
+  elements.operationNote.textContent = operation === "update"
+    ? "The existing filename is preserved."
+    : "New profiles are saved as Draft and excluded from release.";
+  elements.filenameInput.disabled = !creating;
+  elements.statusInput.disabled = creating;
+  elements.releaseInput.disabled = creating;
+  elements.profileTitle.textContent = elements.titleInput.value.trim() || "Untitled profile";
+  elements.sourceFile.textContent = operation === "update"
+    ? `10 Profiles/${state.detail.name}.yaml`
+    : `Proposed: 10 Profiles/${elements.filenameInput.value.trim() || "Untitled"}.yaml`;
 }
 
 function renderReference() {
@@ -280,6 +404,7 @@ function renderSection(section) {
   fragment.querySelector("h2").textContent = section.label;
   fragment.querySelector(".reset-section").addEventListener("click", () => {
     for (const setting of section.settings) delete state.draftOverrides[setting.path];
+    draftChanged();
     render();
   });
   const list = fragment.querySelector(".setting-list");
@@ -330,9 +455,508 @@ function renderSetting(setting) {
   reset.disabled = !hasOverride;
   reset.addEventListener("click", () => {
     delete state.draftOverrides[setting.path];
+    draftChanged();
     render();
   });
   return row;
+}
+
+function baselineChangedPaths() {
+  return Object.keys(state.baselineCurrent).filter(
+    (path) => !equal(state.baselineCurrent[path], state.baselineDraft[path]),
+  );
+}
+
+function renderBaseline() {
+  if (!state.baselineDetail) return;
+  elements.baselineSettings.replaceChildren();
+  for (const section of state.baselineDetail.sections) renderBaselineSection(section);
+  updateBaselineDraftState();
+  renderBaselineAnalysis();
+}
+
+function renderBaselineSection(section) {
+  const fragment = document.querySelector("#section-template").content.cloneNode(true);
+  const container = fragment.querySelector(".setting-section");
+  fragment.querySelector("h2").textContent = section.label;
+  const reset = fragment.querySelector(".reset-section");
+  reset.textContent = "Restore current section";
+  reset.disabled = !section.settings.some(
+    (setting) => !equal(state.baselineCurrent[setting.path], state.baselineDraft[setting.path]),
+  );
+  reset.addEventListener("click", () => {
+    for (const setting of section.settings) {
+      state.baselineDraft[setting.path] = clone(state.baselineCurrent[setting.path]);
+    }
+    baselineDraftChanged();
+    renderBaseline();
+  });
+  const list = fragment.querySelector(".setting-list");
+  for (const setting of section.settings) list.append(renderBaselineSetting(setting));
+  elements.baselineSettings.append(container);
+}
+
+function renderBaselineSetting(setting) {
+  const fragment = document.querySelector("#setting-template").content.cloneNode(true);
+  const row = fragment.querySelector(".setting-row");
+  const label = fragment.querySelector("label");
+  const path = fragment.querySelector("code");
+  const controlHost = fragment.querySelector(".setting-control");
+  const icon = fragment.querySelector(".field-icon");
+  const reset = fragment.querySelector(".reset-setting");
+  const current = state.baselineCurrent[setting.path];
+  const value = state.baselineDraft[setting.path];
+  const changed = !equal(current, value);
+  label.textContent = setting.label;
+  path.textContent = setting.path;
+  const { control, datalist } = buildControl(setting, value);
+  const controlId = `baseline-setting-${setting.path.replaceAll(".", "-")}`;
+  control.id = controlId;
+  label.htmlFor = controlId;
+  control.addEventListener("change", () => updateBaselineSetting(setting, readControl(control, setting)));
+  if (control.tagName === "INPUT") {
+    control.addEventListener("input", () => updateBaselineSetting(setting, readControl(control, setting), false));
+  }
+  controlHost.append(control);
+  if (datalist) controlHost.append(datalist);
+  if (setting.catalogNote) {
+    const note = document.createElement("small");
+    note.className = "catalog-note";
+    note.textContent = setting.catalogNote;
+    controlHost.append(note);
+  }
+  const iconUrl = iconForValue(setting, value);
+  if (iconUrl) {
+    icon.src = iconUrl;
+    icon.hidden = false;
+  }
+  row.classList.toggle("is-custom", changed);
+  fragment.querySelector(".state-badge").textContent = changed ? "Proposed" : "Current";
+  fragment.querySelector(".baseline-value").textContent = `Current: ${displayValue(current)}`;
+  const canonSource = fragment.querySelector(".canon-source");
+  if (setting.catalogSource) {
+    canonSource.href = setting.catalogSource;
+    canonSource.hidden = false;
+  }
+  reset.textContent = "Restore current";
+  reset.disabled = !changed;
+  reset.addEventListener("click", () => {
+    state.baselineDraft[setting.path] = clone(current);
+    baselineDraftChanged();
+    renderBaseline();
+  });
+  return row;
+}
+
+function updateBaselineSetting(setting, value, rerender = true) {
+  state.baselineDraft[setting.path] = value;
+  baselineDraftChanged();
+  if (rerender) renderBaseline();
+  else updateBaselineDraftState();
+}
+
+function baselineDraftChanged() {
+  state.baselineAnalysis = null;
+  state.baselineDecisions = {};
+  state.baselinePlan = null;
+  elements.baselineSummary.hidden = true;
+  elements.baselineSummary.replaceChildren();
+  elements.baselineDecisionTools.hidden = true;
+  elements.baselineResults.replaceChildren();
+  elements.baselinePlan.hidden = true;
+  elements.baselinePlan.replaceChildren();
+}
+
+function updateBaselineDraftState() {
+  const changed = baselineChangedPaths().length;
+  elements.baselineAnalyze.disabled = changed === 0;
+  elements.baselineReset.disabled = changed === 0;
+  if (changed === 0) {
+    showBaselineMessage("No proposed baseline changes. This workspace is read-only.");
+  } else {
+    showBaselineMessage(`${changed} proposed baseline ${changed === 1 ? "change" : "changes"}. Analyze the draft to review profile impact.`);
+  }
+}
+
+async function analyzeBaselineDraft() {
+  elements.baselineAnalyze.disabled = true;
+  showBaselineMessage("Calculating effective values for every inheriting profile…");
+  try {
+    state.baselineAnalysis = await request("/api/baseline-impact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ values: state.baselineDraft }),
+    });
+    state.baselineDecisions = {};
+    state.baselinePlan = null;
+    renderBaselineAnalysis();
+    showBaselineMessage("Impact analysis complete. Nothing was saved.");
+    elements.baselineSummary.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    state.baselineAnalysis = null;
+    state.baselineDecisions = {};
+    state.baselinePlan = null;
+    renderBaselineAnalysis();
+    showBaselineMessage(error.message, true);
+  } finally {
+    elements.baselineAnalyze.disabled = baselineChangedPaths().length === 0;
+  }
+}
+
+function renderBaselineAnalysis() {
+  elements.baselineSummary.replaceChildren();
+  elements.baselineResults.replaceChildren();
+  elements.baselinePlan.hidden = true;
+  elements.baselinePlan.replaceChildren();
+  const analysis = state.baselineAnalysis;
+  if (!analysis) {
+    elements.baselineSummary.hidden = true;
+    elements.baselineDecisionTools.hidden = true;
+    return;
+  }
+  const summaryItems = [
+    ["Changed settings", analysis.summary.changed_settings],
+    ["Affected profiles", analysis.summary.affected_profiles],
+    ["Need decisions", analysis.summary.profiles_requiring_decision],
+    ["Redundant overrides", analysis.summary.classifications.override_redundant || 0],
+  ];
+  for (const [label, value] of summaryItems) {
+    const item = document.createElement("div");
+    const count = document.createElement("strong");
+    const caption = document.createElement("span");
+    count.textContent = String(value);
+    caption.textContent = label;
+    item.append(count, caption);
+    elements.baselineSummary.append(item);
+  }
+  elements.baselineSummary.hidden = false;
+  if (analysis.cx_impact) elements.baselineResults.append(renderCxImpact(analysis.cx_impact));
+  for (const change of analysis.changes) elements.baselineResults.append(renderImpactChange(change));
+  elements.baselineDecisionTools.hidden = false;
+  updateBaselineDecisionState();
+}
+
+const impactLabels = {
+  inherited_change: "Would follow the proposed baseline",
+  override_protected: "Protected by an existing override",
+  override_redundant: "Override would become redundant",
+  override_invalid_path: "Override path would be invalid",
+  override_invalid_type: "Override type would be invalid",
+};
+
+function baselineSettingLabel(path) {
+  for (const section of state.baselineDetail?.sections || []) {
+    const setting = section.settings.find((candidate) => candidate.path === path);
+    if (setting) return setting.label;
+  }
+  return path.split(".").at(-1).replaceAll("_", " ");
+}
+
+function renderCxImpact(cxImpact) {
+  const article = document.createElement("article");
+  article.className = "cx-impact";
+  const heading = document.createElement("div");
+  heading.className = "cx-impact-heading";
+  const headingCopy = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const title = document.createElement("h3");
+  const summary = document.createElement("strong");
+  eyebrow.className = "eyebrow";
+  eyebrow.textContent = "Registration warning report";
+  title.textContent = "C1–C3 effective impact";
+  summary.textContent = `${cxImpact.summary.affected_registered_modes} modes · ${cxImpact.summary.profiles_with_affected_starting_mode} routed profiles affected`;
+  headingCopy.append(eyebrow, title);
+  heading.append(headingCopy, summary);
+  article.append(heading);
+
+  const modes = document.createElement("div");
+  modes.className = "cx-mode-grid";
+  for (const mode of cxImpact.registered_modes) {
+    const section = document.createElement("section");
+    const modeHeading = document.createElement("div");
+    const modeTitle = document.createElement("h4");
+    const modeStatus = document.createElement("span");
+    const list = document.createElement("ul");
+    section.className = "cx-mode";
+    section.dataset.affected = String(mode.affected);
+    modeTitle.textContent = mode.heading;
+    modeStatus.textContent = mode.affected ? "Effective value changes" : "Registration protects value";
+    modeHeading.append(modeTitle, modeStatus);
+    for (const setting of mode.settings) {
+      const item = document.createElement("li");
+      const settingCopy = document.createElement("div");
+      const label = document.createElement("strong");
+      const path = document.createElement("code");
+      const result = document.createElement("div");
+      const transition = document.createElement("span");
+      const badge = document.createElement("em");
+      label.textContent = baselineSettingLabel(setting.path);
+      path.textContent = setting.path;
+      transition.textContent = `${displayValue(setting.current_effective_value)} → ${displayValue(setting.proposed_effective_value)}`;
+      badge.textContent = setting.changed
+        ? "Changes with baseline"
+        : setting.registration_override
+          ? `Protected by ${mode.start} registration`
+          : "No effective change";
+      settingCopy.append(label, path);
+      result.append(transition, badge);
+      item.append(settingCopy, result);
+      list.append(item);
+    }
+    modeHeading.className = "cx-mode-heading";
+    section.append(modeHeading, list);
+    modes.append(section);
+  }
+  article.append(modes);
+
+  const warnings = document.createElement("section");
+  const warningTitle = document.createElement("h4");
+  const warningCopy = document.createElement("p");
+  const warningList = document.createElement("ul");
+  warnings.className = "cx-route-warnings";
+  warningTitle.textContent = `Declared starting-mode warnings · ${cxImpact.route_warnings.length}`;
+  warningCopy.textContent = cxImpact.route_warnings.length
+    ? "These profile routes start from a C-mode whose effective registered value would change. Routing is not rewritten."
+    : "No declared profile starting mode is affected by this baseline proposal.";
+  for (const warning of cxImpact.route_warnings) {
+    const item = document.createElement("li");
+    const profile = document.createElement("strong");
+    const route = document.createElement("span");
+    const paths = document.createElement("small");
+    profile.textContent = warning.title;
+    route.textContent = `${warning.start} ${warning.source_profile || "declared source"}`;
+    paths.textContent = warning.affected_paths.map(baselineSettingLabel).join(", ");
+    item.append(profile, route, paths);
+    warningList.append(item);
+  }
+  warnings.append(warningTitle, warningCopy, warningList);
+  article.append(warnings);
+  return article;
+}
+
+function baselineDecisionKey(profile, path) {
+  return JSON.stringify([profile, path]);
+}
+
+function inheritedDecisionItems() {
+  const items = [];
+  for (const change of state.baselineAnalysis?.changes || []) {
+    for (const profile of change.profiles) {
+      if (profile.classification === "inherited_change") {
+        items.push({ profile: profile.name, path: change.path });
+      }
+    }
+  }
+  return items;
+}
+
+function migrationDecisions() {
+  return inheritedDecisionItems()
+    .map(({ profile, path }) => ({
+      profile,
+      path,
+      decision: state.baselineDecisions[baselineDecisionKey(profile, path)],
+    }))
+    .filter((item) => item.decision);
+}
+
+function updateBaselineDecisionState() {
+  const required = inheritedDecisionItems();
+  const resolved = required.filter(({ profile, path }) => state.baselineDecisions[baselineDecisionKey(profile, path)]).length;
+  const unresolved = required.length - resolved;
+  elements.baselineDecisionStatus.textContent = `${resolved} of ${required.length} inherited ${required.length === 1 ? "change" : "changes"} decided.`;
+  elements.baselineFollowAll.disabled = unresolved === 0;
+  elements.baselinePreserveAll.disabled = unresolved === 0;
+  elements.baselineBuildPlan.disabled = false;
+  elements.baselineBuildPlan.textContent = unresolved ? `Build plan · ${unresolved} unresolved` : "Build complete plan";
+}
+
+function setUnresolvedBaselineDecisions(decision, settingPath = null) {
+  for (const { profile, path } of inheritedDecisionItems()) {
+    if (settingPath && path !== settingPath) continue;
+    const key = baselineDecisionKey(profile, path);
+    if (!state.baselineDecisions[key]) state.baselineDecisions[key] = decision;
+  }
+  state.baselinePlan = null;
+  renderBaselineAnalysis();
+}
+
+function renderImpactChange(change) {
+  const article = document.createElement("article");
+  article.className = "impact-change";
+  const heading = document.createElement("div");
+  heading.className = "impact-heading";
+  const title = document.createElement("div");
+  const name = document.createElement("h3");
+  const path = document.createElement("code");
+  const transition = document.createElement("span");
+  name.textContent = baselineSettingLabel(change.path);
+  path.textContent = change.path;
+  transition.textContent = `${displayValue(change.current_baseline_value)} → ${displayValue(change.proposed_baseline_value)}`;
+  title.append(name, path);
+  heading.append(title, transition);
+  article.append(heading);
+
+  const groups = new Map();
+  for (const profile of change.profiles) {
+    if (!groups.has(profile.classification)) groups.set(profile.classification, []);
+    groups.get(profile.classification).push(profile);
+  }
+  for (const [classification, profiles] of groups) {
+    const group = document.createElement("section");
+    group.className = "impact-group";
+    group.dataset.classification = classification;
+    const groupTitle = document.createElement("h4");
+    const list = document.createElement("ul");
+    groupTitle.textContent = `${impactLabels[classification] || classification} · ${profiles.length}`;
+    group.append(groupTitle);
+    if (classification === "inherited_change") {
+      const unresolved = profiles.filter(
+        (profile) => !state.baselineDecisions[baselineDecisionKey(profile.name, change.path)],
+      ).length;
+      const actions = document.createElement("div");
+      const actionLabel = document.createElement("span");
+      actions.className = "setting-decision-actions";
+      actionLabel.textContent = unresolved
+        ? `${unresolved} unresolved for this setting`
+        : "All profiles decided for this setting";
+      actions.append(actionLabel);
+      for (const [decision, label] of [
+        ["follow_baseline", "Follow baseline for this setting"],
+        ["preserve_previous", "Preserve previous for this setting"],
+      ]) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "secondary";
+        button.textContent = label;
+        button.disabled = unresolved === 0;
+        button.addEventListener("click", () => setUnresolvedBaselineDecisions(decision, change.path));
+        actions.append(button);
+      }
+      group.append(actions);
+    }
+    for (const profile of profiles) {
+      const item = document.createElement("li");
+      item.className = "impact-profile";
+      const profileName = document.createElement("strong");
+      const values = document.createElement("span");
+      profileName.textContent = profile.title;
+      values.textContent = `${displayValue(profile.old_effective_value)} → ${displayValue(profile.new_effective_value)}`;
+      item.append(profileName, values);
+      if (classification === "inherited_change") {
+        const choices = document.createElement("fieldset");
+        const legend = document.createElement("legend");
+        const key = baselineDecisionKey(profile.name, change.path);
+        legend.textContent = "Migration decision";
+        choices.className = "impact-decisions";
+        choices.append(legend);
+        for (const [decision, label] of [
+          ["follow_baseline", "Follow proposed baseline"],
+          ["preserve_previous", "Preserve previous value as override"],
+        ]) {
+          const choice = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = `decision-${encodeURIComponent(key)}`;
+          input.value = decision;
+          input.checked = state.baselineDecisions[key] === decision;
+          input.addEventListener("change", () => {
+            state.baselineDecisions[key] = decision;
+            state.baselinePlan = null;
+            elements.baselinePlan.hidden = true;
+            elements.baselinePlan.replaceChildren();
+            updateBaselineDecisionState();
+          });
+          choice.append(input, document.createTextNode(label));
+          choices.append(choice);
+        }
+        item.append(choices);
+      } else if (classification === "override_redundant") {
+        const action = document.createElement("em");
+        action.textContent = "Plan action: remove redundant override";
+        item.append(action);
+      }
+      list.append(item);
+    }
+    group.append(list);
+    article.append(group);
+  }
+  return article;
+}
+
+async function buildBaselinePlan() {
+  elements.baselineBuildPlan.disabled = true;
+  showBaselineMessage("Validating migration decisions against the current sources…");
+  try {
+    state.baselinePlan = await request("/api/baseline-plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        values: state.baselineDraft,
+        decisions: migrationDecisions(),
+      }),
+    });
+    renderBaselinePlan();
+    const unresolved = state.baselinePlan.summary.unresolved_decisions;
+    showBaselineMessage(
+      unresolved
+        ? `Migration plan built with ${unresolved} unresolved ${unresolved === 1 ? "item" : "items"}. Nothing was saved.`
+        : "Complete migration plan validated. Nothing was saved.",
+    );
+    elements.baselinePlan.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    state.baselinePlan = null;
+    renderBaselinePlan();
+    showBaselineMessage(error.message, true);
+  } finally {
+    updateBaselineDecisionState();
+  }
+}
+
+function renderBaselinePlan() {
+  elements.baselinePlan.replaceChildren();
+  const plan = state.baselinePlan;
+  if (!plan) {
+    elements.baselinePlan.hidden = true;
+    return;
+  }
+  const heading = document.createElement("div");
+  heading.className = "baseline-plan-heading";
+  const title = document.createElement("h3");
+  const status = document.createElement("strong");
+  title.textContent = "Read-only migration plan";
+  status.textContent = plan.complete ? "Complete" : "Needs decisions";
+  status.className = plan.complete ? "plan-complete" : "plan-incomplete";
+  heading.append(title, status);
+  elements.baselinePlan.append(heading);
+
+  const groups = [
+    ["Profiles following baseline", plan.profiles_following_baseline, (item) => `${item.title}: ${displayValue(item.previous_effective_value)} → ${displayValue(item.proposed_effective_value)}`],
+    ["Overrides to add", plan.overrides_to_add, (item) => `${item.title}: preserve ${displayValue(item.override_value)} for ${item.path}`],
+    ["Redundant overrides to remove", plan.overrides_to_remove, (item) => `${item.title}: remove ${item.path}`],
+    ["Existing overrides retained", plan.overrides_to_keep, (item) => `${item.title}: keep ${item.path}`],
+    ["Unresolved decisions", plan.unresolved_decisions, (item) => `${item.title}: ${item.path} · ${item.reason.replaceAll("_", " ")}`],
+  ];
+  for (const [label, items, describe] of groups) {
+    const section = document.createElement("section");
+    const groupTitle = document.createElement("h4");
+    const list = document.createElement("ul");
+    groupTitle.textContent = `${label} · ${items.length}`;
+    if (!items.length) {
+      const empty = document.createElement("li");
+      empty.textContent = "None";
+      list.append(empty);
+    } else {
+      for (const item of items) {
+        const row = document.createElement("li");
+        row.textContent = describe(item);
+        list.append(row);
+      }
+    }
+    section.append(groupTitle, list);
+    elements.baselinePlan.append(section);
+  }
+  elements.baselinePlan.hidden = false;
 }
 
 function buildControl(setting, value) {
@@ -403,9 +1027,15 @@ function readControl(control, setting) {
 function updateSetting(setting, value, rerender = true) {
   if (equal(value, setting.baseline)) delete state.draftOverrides[setting.path];
   else state.draftOverrides[setting.path] = value;
-  elements.previewPanel.hidden = true;
+  draftChanged();
   if (rerender) render();
   else updateCounts();
+}
+
+function draftChanged() {
+  state.reviewToken = null;
+  elements.previewPanel.hidden = true;
+  if (elements.reviewDialog.open) elements.reviewDialog.close();
 }
 
 function updateCounts() {
@@ -415,6 +1045,68 @@ function updateCounts() {
   elements.inheritedCount.textContent = String(total - custom);
 }
 
+function profileDraftPayload() {
+  return {
+    operation: state.detail.operation || "update",
+    sourceProfile: state.detail.sourceProfile,
+    targetName: elements.filenameInput.value.trim(),
+    sourceFingerprint: state.detail.sourceFingerprint,
+    title: elements.titleInput.value.trim(),
+    subtitle: elements.subtitleInput.value.trim(),
+    status: elements.statusInput.value,
+    release: elements.releaseInput.checked,
+    overrides: state.draftOverrides,
+  };
+}
+
+async function reviewChanges() {
+  elements.reviewButton.disabled = true;
+  showMessage("Validating the candidate profile and preparing the exact YAML diff…");
+  try {
+    const review = await request("/api/profile-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profileDraftPayload()),
+    });
+    state.reviewToken = review.reviewToken;
+    elements.reviewSummary.textContent = review.summary;
+    elements.reviewDiff.textContent = review.diff;
+    elements.reviewDialog.showModal();
+    showMessage("Candidate validation passed. Review the exact YAML before saving.");
+  } catch (error) {
+    showMessage(error.message, true);
+  } finally {
+    elements.reviewButton.disabled = false;
+  }
+}
+
+async function saveReviewedProfile() {
+  if (!state.reviewToken) {
+    showMessage("This review is no longer current. Review the draft again.", true);
+    elements.reviewDialog.close();
+    return;
+  }
+  elements.saveButton.disabled = true;
+  showMessage("Creating a recovery backup and validating the reviewed save…");
+  try {
+    const result = await request("/api/profile-saves", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.reviewToken }),
+    });
+    state.reviewToken = null;
+    elements.reviewDialog.close();
+    await loadProfiles(result.savedProfile);
+    showMessage(`Saved ${result.sourceFile}. Validation passed. Recovery backup: ${result.backup}`);
+  } catch (error) {
+    state.reviewToken = null;
+    elements.reviewDialog.close();
+    showMessage(error.message, true);
+  } finally {
+    elements.saveButton.disabled = false;
+  }
+}
+
 async function preview() {
   elements.previewButton.disabled = true;
   showMessage("Rendering a temporary preview…");
@@ -422,12 +1114,12 @@ async function preview() {
     const payload = await request("/api/preview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ profile: state.detail.name, overrides: state.draftOverrides }),
+      body: JSON.stringify(profileDraftPayload()),
     });
     elements.previewPath.textContent = payload.outputFile;
     elements.previewFrame.src = `${payload.previewUrl}?t=${Date.now()}`;
     elements.previewPanel.hidden = false;
-    showMessage("Preview updated. The profile YAML remains unchanged.");
+    showMessage("Preview updated. No profile source was saved.");
     elements.previewPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     showMessage(error.message, true);
@@ -437,16 +1129,43 @@ async function preview() {
 }
 
 elements.profileSelect.addEventListener("change", () => loadProfile(elements.profileSelect.value));
-elements.reloadButton.addEventListener("click", () => {
-  state.draftOverrides = clone(state.originalOverrides);
-  elements.previewPanel.hidden = true;
-  render();
-  showMessage("Draft discarded. The selected profile's original saved overrides were reloaded; no source file was changed.");
+elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
+elements.duplicateButton.addEventListener("click", () => loadProfileDraft("duplicate"));
+elements.reloadButton.addEventListener("click", async () => {
+  if (state.detail.operation === "update") await loadProfile(state.detail.name);
+  else applyProfileDetail(state.detail);
+  showMessage("Draft discarded and original source values reloaded. No profile was saved.");
 });
 elements.previewButton.addEventListener("click", preview);
+elements.reviewButton.addEventListener("click", reviewChanges);
+elements.saveButton.addEventListener("click", saveReviewedProfile);
+elements.reviewClose.addEventListener("click", () => elements.reviewDialog.close());
+elements.reviewCancel.addEventListener("click", () => elements.reviewDialog.close());
+for (const input of [elements.titleInput, elements.subtitleInput, elements.filenameInput, elements.statusInput, elements.releaseInput]) {
+  input.addEventListener("input", () => {
+    draftChanged();
+    renderMetadataState();
+  });
+  input.addEventListener("change", () => {
+    draftChanged();
+    renderMetadataState();
+  });
+}
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);
 elements.loadRecommendedMenus.addEventListener("click", loadRecommendedMenus);
+elements.baselineAnalyze.addEventListener("click", analyzeBaselineDraft);
+elements.baselineFollowAll.addEventListener("click", () => setUnresolvedBaselineDecisions("follow_baseline"));
+elements.baselinePreserveAll.addEventListener("click", () => setUnresolvedBaselineDecisions("preserve_previous"));
+elements.baselineBuildPlan.addEventListener("click", buildBaselinePlan);
+elements.baselineReset.addEventListener("click", () => {
+  state.baselineDraft = clone(state.baselineCurrent);
+  state.baselineAnalysis = null;
+  state.baselineDecisions = {};
+  state.baselinePlan = null;
+  renderBaseline();
+  showBaselineMessage("Baseline draft discarded. Nothing was saved.");
+});
 
-Promise.all([loadDictionary(), loadProfiles()]);
+Promise.all([loadDictionary(), loadProfiles(), loadBaseline()]);

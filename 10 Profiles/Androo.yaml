@@ -1,0 +1,25 @@
+metadata:
+  version: 1.0
+  status: Review
+  last_updated: 2026-08-17
+  release: true
+title: Androo
+inherits: baseline
+overrides:
+  exposure:
+    auto_iso:
+      maximum: 3200
+  shutter:
+    target: 1/200
+    type: Mechanical
+  lens:
+    aperture:
+      target: '5.89'
+  autofocus:
+    operation: One-Shot AF
+    servo_af_case: Case 1 (Custom)
+    subject_detection: Vehicles
+    eye_detection: Disable
+  drive:
+    mode: Single Shot
+subtitle: test

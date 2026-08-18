@@ -12,7 +12,7 @@ PAGES = {
     "preflight": "Preflight",
     "other-mac": "Continue on Another Mac",
     "local-build": "Local Build",
-    "profile-editor": "Profile Editor Prototype",
+    "profile-editor": "Profile Editor",
     "spreadsheets": "Spreadsheet Workflows",
     "verification-testing": "On-Camera Verification Testing",
     "publish": "Publish the Website",

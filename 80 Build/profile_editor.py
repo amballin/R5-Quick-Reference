@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
-"""Read-only local profile editor prototype with isolated HTML previews."""
+"""Guarded local profile editor with isolated previews and reviewed YAML saves."""
 
 from __future__ import annotations
 
 import argparse
 import copy
+from datetime import date, datetime
+import difflib
+import hashlib
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import mimetypes
+import os
 from pathlib import Path
 import re
+import secrets
+import shutil
 import sys
+import tempfile
+import threading
+import time
 from urllib.parse import quote, unquote, urlparse
+
+import yaml
 
 
 BUILD_DIR = Path(__file__).resolve().parent
@@ -24,6 +35,12 @@ if str(BUILD_DIR) not in sys.path:
 
 from asset_manager import ProjectPaths
 from baseline import merge
+from baseline_impact import (
+    BaselineImpactError,
+    analyze_baseline_impact,
+    analyze_cx_impact,
+    plan_baseline_migration,
+)
 from build_validator import discover_profiles, is_reference_card
 from html_renderer import LABEL, render_card
 from icon_manager import IconManager
@@ -61,9 +78,17 @@ TOGGLE_SETS = (
     {"true", "false"},
 )
 REFERENCE_CLASSIFICATIONS = {"Set Once", "Situational", "Ignore", "Avoid", "Unresolved"}
+PROFILE_STATUSES = {"Draft", "Review", "Final"}
+PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
+REVIEW_TTL_SECONDS = 30 * 60
+MAX_PENDING_REVIEWS = 20
 
 
 class PrototypeError(ValueError):
+    pass
+
+
+class ProfileConflictError(PrototypeError):
     pass
 
 
@@ -94,11 +119,14 @@ def same_value(left, right):
 
 
 class ProfileEditorModel:
-    def __init__(self, root=PROJECT_ROOT):
+    def __init__(self, root=PROJECT_ROOT, source_validator=None):
         self.paths = ProjectPaths(root)
+        self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         self.baseline = load_baseline(self.paths)
         self.defaults = self.baseline.get("defaults") or {}
         self.default_fields = flatten(self.defaults)
+        self.verification_tracker = load_yaml(self.paths.verification_tracker_source_file) or {}
+        self.registration = self.verification_tracker.get("registration") or {}
         self.icon_manager = IconManager(self.paths)
         self.profiles = self._load_profiles()
         self.option_catalog = self._load_option_catalog()
@@ -109,6 +137,9 @@ class ProfileEditorModel:
         self._validate_reference_catalog()
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
+        self._source_validator = source_validator or self._validate_project_sources
+        self._pending_reviews = {}
+        self._write_lock = threading.RLock()
 
     def _load_profiles(self):
         profiles = {}
@@ -118,9 +149,9 @@ class ProfileEditorModel:
         return profiles
 
     def _load_option_catalog(self):
-        data = load_yaml(CATALOG_FILE) or {}
+        data = load_yaml(self.catalog_file) or {}
         if not isinstance(data, dict):
-            raise PrototypeError(f"Canon option catalog must be a mapping: {CATALOG_FILE}")
+            raise PrototypeError(f"Canon option catalog must be a mapping: {self.catalog_file}")
         return data
 
     def _validate_option_catalog(self):
@@ -284,19 +315,143 @@ class ProfileEditorModel:
             "myMenuEligible": sorted(eligible, key=lambda item: item["label"].casefold()),
         }
 
+    def baseline_detail(self):
+        """Return current baseline controls for a session-only browser draft."""
+        detail = self._shooting_profile_detail(
+            name="Baseline",
+            profile={"title": "Baseline", "overrides": {}},
+            operation="update",
+            source_name=None,
+            source_fingerprint=None,
+        )
+        return {
+            "sourceFile": "00 Master/baseline.yaml",
+            "readOnly": True,
+            "values": copy.deepcopy(self.default_fields),
+            "sections": detail["sections"],
+        }
+
+    def baseline_impact(self, values):
+        """Analyze a complete, value-only baseline draft without writing it."""
+        proposed = self._proposed_baseline(values)
+        try:
+            analysis = analyze_baseline_impact(self.baseline, proposed, self.profiles)
+            analysis["cx_impact"] = analyze_cx_impact(
+                self.baseline,
+                proposed,
+                self.profiles,
+                self.registration,
+            )
+            return analysis
+        except BaselineImpactError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def baseline_plan(self, values, decisions):
+        """Validate decisions and return a read-only baseline migration plan."""
+        proposed = self._proposed_baseline(values)
+        try:
+            return plan_baseline_migration(
+                self.baseline,
+                proposed,
+                self.profiles,
+                decisions,
+            )
+        except BaselineImpactError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def _proposed_baseline(self, values):
+        if not isinstance(values, dict):
+            raise PrototypeError("Baseline draft values must be an object.")
+        missing = sorted(set(self.default_fields) - set(values))
+        unknown = sorted(set(values) - set(self.default_fields))
+        if missing:
+            raise PrototypeError(
+                "Baseline impact drafts cannot remove settings: " + ", ".join(missing)
+            )
+        if unknown:
+            raise PrototypeError(
+                "Baseline impact drafts cannot add settings: " + ", ".join(unknown)
+            )
+        clean = {
+            path: self._coerce_value(path, value)
+            for path, value in values.items()
+        }
+        proposed = copy.deepcopy(self.baseline)
+        proposed["defaults"] = nested_from_flat(clean)
+        return proposed
+
     def profile_detail(self, name):
         profile = self._profile(name)
+        fingerprint = self._profile_fingerprint(name)
         if is_reference_card(profile):
             return {
                 "name": name,
                 "title": profile.get("title", name),
+                "subtitle": profile.get("subtitle") or "",
                 "cardType": "reference",
                 "editableDraft": False,
                 "sourceFile": f"10 Profiles/{name}.yaml",
+                "sourceFingerprint": fingerprint,
                 "referenceSettings": profile.get("reference_settings") or [],
                 "sections": [],
                 "originalOverrides": {},
             }
+
+        return self._shooting_profile_detail(
+            name=name,
+            profile=profile,
+            operation="update",
+            source_name=name,
+            source_fingerprint=fingerprint,
+        )
+
+    def profile_draft(self, operation, source_name=None):
+        if operation == "create":
+            title = self._available_profile_name("New Profile")
+            profile = {
+                "metadata": {
+                    "version": 1.0,
+                    "status": "Draft",
+                    "last_updated": date.today(),
+                    "release": False,
+                },
+                "title": title,
+                "inherits": "baseline",
+                "overrides": {},
+            }
+            return self._shooting_profile_detail(
+                name=title,
+                profile=profile,
+                operation="create",
+                source_name=None,
+                source_fingerprint=None,
+            )
+        if operation != "duplicate":
+            raise PrototypeError("Profile draft operation must be create or duplicate.")
+        source = self._profile(source_name)
+        if is_reference_card(source):
+            raise PrototypeError("Reference cards cannot be duplicated in the profile editor.")
+        title = self._available_profile_name(f"{source.get('title', source_name)} Copy")
+        profile = copy.deepcopy(source)
+        profile["title"] = title
+        profile["metadata"] = self._new_profile_metadata(profile.get("metadata"))
+        return self._shooting_profile_detail(
+            name=title,
+            profile=profile,
+            operation="duplicate",
+            source_name=source_name,
+            source_fingerprint=self._profile_fingerprint(source_name),
+        )
+
+    def _shooting_profile_detail(
+        self,
+        *,
+        name,
+        profile,
+        operation,
+        source_name,
+        source_fingerprint,
+    ):
 
         original = flatten(profile.get("overrides") or {})
         effective = flatten(merge(self.defaults, profile.get("overrides") or {}))
@@ -337,9 +492,18 @@ class ProfileEditorModel:
         return {
             "name": name,
             "title": profile.get("title", name),
+            "subtitle": profile.get("subtitle") or "",
             "cardType": "profile",
             "editableDraft": True,
-            "sourceFile": f"10 Profiles/{name}.yaml",
+            "operation": operation,
+            "sourceProfile": source_name,
+            "targetName": name,
+            "sourceFile": f"10 Profiles/{source_name or name}.yaml" if source_name else "New profile",
+            "sourceFingerprint": source_fingerprint,
+            "metadata": {
+                "status": (profile.get("metadata") or {}).get("status", "Draft"),
+                "release": bool((profile.get("metadata") or {}).get("release", False)),
+            },
             "sections": sections,
             "originalOverrides": original,
         }
@@ -398,6 +562,359 @@ class ProfileEditorModel:
         relative = icon_path.resolve().relative_to(self.paths.root)
         return "/source/" + quote(relative.as_posix(), safe="/")
 
+    def review_profile(self, payload):
+        review = self._prepare_review(payload)
+        with self._write_lock:
+            self._expire_reviews()
+            while len(self._pending_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(self._pending_reviews, key=lambda key: self._pending_reviews[key]["created"])
+                del self._pending_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "operation": review["operation"],
+            "targetName": review["target_name"],
+            "sourceFile": f"10 Profiles/{review['target_name']}.yaml",
+            "diff": review["diff"],
+            "candidateYaml": review["candidate"].decode("utf-8"),
+            "summary": review["summary"],
+        }
+
+    def save_profile(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed profile token is required.")
+        with self._write_lock:
+            self._expire_reviews()
+            review = self._pending_reviews.get(review_token)
+            if review is None:
+                raise ProfileConflictError("This review expired or was already used. Review the current draft again.")
+            self._confirm_review_source(review)
+            self._validate_candidate(review["target_name"], review["candidate"])
+            target = self._profile_path(review["target_name"])
+            before = target.read_bytes() if target.exists() else None
+            backup = self._create_transaction_backup(review, before)
+            try:
+                self._atomic_write(target, review["candidate"], before)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_error = None
+                try:
+                    if before is None:
+                        target.unlink(missing_ok=True)
+                    else:
+                        self._atomic_write(target, before, target.read_bytes() if target.exists() else None)
+                except Exception as rollback_exc:  # pragma: no cover - catastrophic filesystem failure
+                    rollback_error = rollback_exc
+                if rollback_error is not None:
+                    raise PrototypeError(
+                        f"Save failed and automatic rollback also failed. Recovery backup: {backup}. "
+                        f"Save error: {exc}. Rollback error: {rollback_error}"
+                    ) from exc
+                raise PrototypeError(
+                    f"Save failed; the prior source state was restored automatically. Recovery backup: {backup}. {exc}"
+                ) from exc
+            finally:
+                self._pending_reviews.pop(review_token, None)
+            self._reload_profiles()
+            return {
+                "savedProfile": review["target_name"],
+                "sourceFile": f"10 Profiles/{review['target_name']}.yaml",
+                "backup": str(backup),
+                "sourceFingerprint": self._profile_fingerprint(review["target_name"]),
+                "validation": "passed",
+            }
+
+    def preview_draft(self, payload):
+        profile, target_name, _operation, _source_name, _fingerprint = self._candidate_profile(payload)
+        return self._render_preview(target_name, profile)
+
+    def _prepare_review(self, payload):
+        profile, target_name, operation, source_name, source_fingerprint = self._candidate_profile(payload)
+        candidate = self._dump_profile(profile)
+        self._confirm_target_state(operation, source_name, target_name, source_fingerprint)
+        self._validate_candidate(target_name, candidate)
+        target = self._profile_path(target_name)
+        before = target.read_text(encoding="utf-8") if target.exists() else ""
+        before_label = f"a/10 Profiles/{target_name}.yaml" if before else "/dev/null"
+        diff = "".join(
+            difflib.unified_diff(
+                before.splitlines(keepends=True),
+                candidate.decode("utf-8").splitlines(keepends=True),
+                fromfile=before_label,
+                tofile=f"b/10 Profiles/{target_name}.yaml",
+            )
+        )
+        if not diff:
+            raise PrototypeError("The draft does not change the selected profile.")
+        return {
+            "created": time.monotonic(),
+            "operation": operation,
+            "source_name": source_name,
+            "source_fingerprint": source_fingerprint,
+            "target_name": target_name,
+            "target_absent": not target.exists(),
+            "candidate": candidate,
+            "candidate_sha256": self._sha256(candidate),
+            "diff": diff,
+            "summary": self._review_summary(operation, source_name, target_name),
+        }
+
+    def _candidate_profile(self, payload):
+        if not isinstance(payload, dict):
+            raise PrototypeError("Profile draft must be an object.")
+        operation = payload.get("operation")
+        if operation not in {"update", "create", "duplicate"}:
+            raise PrototypeError("Profile operation must be update, create, or duplicate.")
+        source_name = payload.get("sourceProfile")
+        source_fingerprint = payload.get("sourceFingerprint")
+        target_name = self._validate_profile_name(payload.get("targetName"))
+        title = self._single_line(payload.get("title"), "Title", 120, required=True)
+        subtitle = self._single_line(payload.get("subtitle"), "Subtitle", 200, required=False)
+        clean_overrides = self._validate_overrides(payload.get("overrides", {}))
+
+        if operation == "create":
+            if source_name not in {None, ""} or source_fingerprint not in {None, ""}:
+                raise PrototypeError("A baseline-derived profile must not identify a source profile.")
+            profile = {
+                "metadata": self._new_profile_metadata(),
+                "title": title,
+                "inherits": "baseline",
+                "overrides": nested_from_flat(clean_overrides),
+            }
+        else:
+            if not isinstance(source_name, str) or not source_name:
+                raise PrototypeError("The source profile is required.")
+            source = copy.deepcopy(self._profile(source_name))
+            if is_reference_card(source):
+                raise PrototypeError("Reference cards remain read-only.")
+            if not isinstance(source_fingerprint, str) or not re.fullmatch(r"[0-9a-f]{64}", source_fingerprint):
+                raise PrototypeError("The source profile fingerprint is missing or invalid.")
+            if operation == "update" and target_name != source_name:
+                raise PrototypeError("Renaming an existing profile is not available in Stage 2.")
+            profile = source
+            if operation == "duplicate":
+                profile["metadata"] = self._new_profile_metadata(profile.get("metadata"))
+            else:
+                metadata = profile.setdefault("metadata", {})
+                status = payload.get("status")
+                release = payload.get("release")
+                if status not in PROFILE_STATUSES:
+                    raise PrototypeError("Profile status must be Draft, Review, or Final.")
+                if not isinstance(release, bool):
+                    raise PrototypeError("Profile release state must be true or false.")
+                metadata["status"] = status
+                metadata["release"] = release
+                metadata["last_updated"] = date.today()
+            profile["title"] = title
+            profile["inherits"] = "baseline"
+            profile["overrides"] = nested_from_flat(clean_overrides)
+        if subtitle:
+            profile["subtitle"] = subtitle
+        else:
+            profile.pop("subtitle", None)
+        return profile, target_name, operation, source_name or None, source_fingerprint or None
+
+    def _confirm_review_source(self, review):
+        self._confirm_target_state(
+            review["operation"],
+            review["source_name"],
+            review["target_name"],
+            review["source_fingerprint"],
+        )
+        target = self._profile_path(review["target_name"])
+        if review["target_absent"] != (not target.exists()):
+            raise ProfileConflictError("The target profile changed after review. Reload and review again.")
+
+    def _confirm_target_state(self, operation, source_name, target_name, source_fingerprint):
+        target = self._profile_path(target_name)
+        if operation in {"create", "duplicate"}:
+            conflicts = {name.casefold() for name in self.profiles}
+            if target_name.casefold() in conflicts or target.exists():
+                raise ProfileConflictError(f"A profile named {target_name} already exists.")
+        if operation in {"update", "duplicate"}:
+            current = self._profile_fingerprint(source_name)
+            if current != source_fingerprint:
+                raise ProfileConflictError(
+                    f"{source_name}.yaml changed after it was loaded. Reload the profile before reviewing or saving."
+                )
+
+    def _validate_candidate(self, target_name, candidate):
+        from validators import profile_validator
+        from validators.common import load_yaml_checked
+
+        with tempfile.TemporaryDirectory(prefix="profile-editor-candidate-") as temporary:
+            shadow = Path(temporary)
+            (shadow / "00 Master").mkdir(parents=True)
+            (shadow / "10 Profiles").mkdir()
+            (shadow / "50 Field Guide").mkdir()
+            for relative in (
+                "00 Master/baseline.yaml",
+                "00 Master/card_layout.yaml",
+                "50 Field Guide/required_appendices.yaml",
+            ):
+                source = self.paths.root / relative
+                destination = shadow / relative
+                shutil.copy2(source, destination)
+            for source in discover_profiles(self.paths):
+                if source.stem != target_name:
+                    shutil.copy2(source, shadow / "10 Profiles" / source.name)
+            candidate_path = shadow / "10 Profiles" / f"{target_name}.yaml"
+            candidate_path.write_bytes(candidate)
+            try:
+                loaded = load_yaml_checked(candidate_path)
+            except Exception as exc:
+                raise PrototypeError(f"Candidate YAML is invalid: {exc}") from exc
+            if not isinstance(loaded, dict):
+                raise PrototypeError("Candidate profile must be a YAML mapping.")
+            errors = [issue.message for issue in profile_validator.validate(shadow) if issue.level == "error"]
+            if errors:
+                raise PrototypeError("Candidate profile validation failed: " + "; ".join(errors))
+
+    def _create_transaction_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", review["target_name"]).strip("-").lower()
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-{review['operation']}-{safe_name}"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        before_dir = backup / "before" / "10 Profiles"
+        candidate_dir = backup / "candidate" / "10 Profiles"
+        before_dir.mkdir(parents=True)
+        candidate_dir.mkdir(parents=True)
+        if before is not None:
+            (before_dir / f"{review['target_name']}.yaml").write_bytes(before)
+        (candidate_dir / f"{review['target_name']}.yaml").write_bytes(review["candidate"])
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": review["operation"],
+            "source_profile": review["source_name"],
+            "source_fingerprint": review["source_fingerprint"],
+            "target_profile": review["target_name"],
+            "target_existed": before is not None,
+            "candidate_sha256": review["candidate_sha256"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
+
+    @staticmethod
+    def _atomic_write(target, data, prior):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        descriptor, temporary_name = tempfile.mkstemp(prefix=f".{target.stem}-", suffix=".yaml.tmp", dir=target.parent)
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "wb") as output:
+                output.write(data)
+                output.flush()
+                os.fsync(output.fileno())
+            mode = target.stat().st_mode & 0o777 if target.exists() else 0o644
+            os.chmod(temporary, mode)
+            os.replace(temporary, target)
+            directory = os.open(target.parent, os.O_RDONLY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    @staticmethod
+    def _dump_profile(profile):
+        return yaml.safe_dump(
+            profile,
+            sort_keys=False,
+            allow_unicode=True,
+            width=1000,
+            default_flow_style=False,
+        ).encode("utf-8")
+
+    @staticmethod
+    def _new_profile_metadata(existing=None):
+        version = (existing or {}).get("version", 1.0)
+        return {
+            "version": version,
+            "status": "Draft",
+            "last_updated": date.today(),
+            "release": False,
+        }
+
+    def _reload_profiles(self):
+        self.profiles = self._load_profiles()
+        self.choices = self._choice_catalog()
+
+    def _profile_path(self, name):
+        path = self.paths.profile_file(name).resolve()
+        if path.parent != self.paths.profiles_dir.resolve():
+            raise PrototypeError("Profile path must stay inside 10 Profiles.")
+        return path
+
+    def _profile_fingerprint(self, name):
+        path = self._profile_path(name)
+        if not path.is_file():
+            raise ProfileConflictError(f"Profile source no longer exists: {name}.yaml")
+        return self._sha256(path.read_bytes())
+
+    @staticmethod
+    def _sha256(data):
+        return hashlib.sha256(data).hexdigest()
+
+    def _validate_profile_name(self, value):
+        if not isinstance(value, str):
+            raise PrototypeError("Profile filename is required.")
+        value = value.strip()
+        if not PROFILE_NAME_PATTERN.fullmatch(value) or value.endswith((".", " ")) or ".." in value:
+            raise PrototypeError(
+                "Profile filename must be 1–80 characters using letters, numbers, spaces, and ordinary title punctuation."
+            )
+        return value
+
+    @staticmethod
+    def _single_line(value, label, maximum, required):
+        if value is None:
+            value = ""
+        if not isinstance(value, str):
+            raise PrototypeError(f"{label} must be text.")
+        value = value.strip()
+        if required and not value:
+            raise PrototypeError(f"{label} is required.")
+        if len(value) > maximum or any(character in value for character in "\r\n\x00"):
+            raise PrototypeError(f"{label} must be a single line of at most {maximum} characters.")
+        return value
+
+    def _available_profile_name(self, preferred):
+        existing = {name.casefold() for name in self.profiles}
+        if preferred.casefold() not in existing:
+            return preferred
+        counter = 2
+        while f"{preferred} {counter}".casefold() in existing:
+            counter += 1
+        return f"{preferred} {counter}"
+
+    @staticmethod
+    def _review_summary(operation, source_name, target_name):
+        if operation == "update":
+            return f"Update existing profile {target_name}.yaml"
+        if operation == "duplicate":
+            return f"Create {target_name}.yaml from {source_name}.yaml"
+        return f"Create baseline-derived profile {target_name}.yaml"
+
+    def _expire_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [token for token, review in self._pending_reviews.items() if review["created"] < cutoff]
+        for token in expired:
+            del self._pending_reviews[token]
+
+    @staticmethod
+    def _validate_project_sources(root):
+        from validator import run
+
+        return [issue.message for issue in run(root, source_only=True) if issue.level == "error"]
+
     def preview(self, name, flat_overrides):
         profile = copy.deepcopy(self._profile(name))
         if is_reference_card(profile):
@@ -405,7 +922,10 @@ class ProfileEditorModel:
         clean = self._validate_overrides(flat_overrides)
         nested = nested_from_flat(clean)
         profile["overrides"] = nested
-        merged = merge(self.defaults, nested)
+        return self._render_preview(name, profile)
+
+    def _render_preview(self, name, profile):
+        merged = merge(self.defaults, profile.get("overrides") or {})
         template = self.paths.card_template.read_text(encoding="utf-8")
         html = render_card(
             template,
@@ -487,6 +1007,8 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json({"profiles": self.model.profile_list()})
             if path == "/api/dictionary":
                 return self._json(self.model.dictionary_detail())
+            if path == "/api/baseline":
+                return self._json(self.model.baseline_detail())
             if path.startswith("/api/profiles/"):
                 name = unquote(path.removeprefix("/api/profiles/"))
                 return self._json(self.model.profile_detail(name))
@@ -505,22 +1027,43 @@ class EditorHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
-        if parsed.path != "/api/preview":
+        if parsed.path not in {
+            "/api/preview",
+            "/api/profile-drafts",
+            "/api/profile-reviews",
+            "/api/profile-saves",
+            "/api/baseline-impact",
+            "/api/baseline-plan",
+        }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         try:
             payload = self._request_json()
-            output = self.model.preview(payload.get("profile"), payload.get("overrides", {}))
-            return self._json(
-                {
-                    "previewUrl": "/preview/card.html",
-                    "outputFile": str(output),
-                    "readOnly": True,
-                }
-            )
+            if parsed.path == "/api/profile-drafts":
+                return self._json(self.model.profile_draft(payload.get("operation"), payload.get("sourceProfile")))
+            if parsed.path == "/api/profile-reviews":
+                return self._json(self.model.review_profile(payload))
+            if parsed.path == "/api/profile-saves":
+                return self._json(self.model.save_profile(payload.get("reviewToken")))
+            if parsed.path == "/api/baseline-impact":
+                return self._json(self.model.baseline_impact(payload.get("values")))
+            if parsed.path == "/api/baseline-plan":
+                return self._json(
+                    self.model.baseline_plan(
+                        payload.get("values"),
+                        payload.get("decisions"),
+                    )
+                )
+            if "operation" in payload:
+                output = self.model.preview_draft(payload)
+            else:
+                output = self.model.preview(payload.get("profile"), payload.get("overrides", {}))
+            return self._json({"previewUrl": "/preview/card.html", "outputFile": str(output)})
+        except ProfileConflictError as exc:
+            return self._json({"error": str(exc)}, HTTPStatus.CONFLICT)
         except PrototypeError as exc:
             return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
         except Exception as exc:
-            return self._json({"error": f"Could not render preview: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
+            return self._json({"error": f"Profile editor operation failed: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def _request_json(self):
         try:
@@ -530,9 +1073,12 @@ class EditorHandler(BaseHTTPRequestHandler):
         if length <= 0 or length > MAX_REQUEST_BYTES:
             raise PrototypeError("Invalid or oversized request.")
         try:
-            return json.loads(self.rfile.read(length).decode("utf-8"))
+            payload = json.loads(self.rfile.read(length).decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise PrototypeError("Request body must be valid JSON.") from exc
+        if not isinstance(payload, dict):
+            raise PrototypeError("Request body must be a JSON object.")
+        return payload
 
     def _static_file(self, request_path):
         relative = "index.html" if request_path in {"", "/"} else unquote(request_path.lstrip("/"))
@@ -600,9 +1146,9 @@ def main():
         return 2
     EditorHandler.model = model
     server = ThreadingHTTPServer((HOST, args.port), EditorHandler)
-    print("Canon Camera Reference — read-only profile editor prototype")
+    print("Canon Camera Reference — guarded profile editor")
     print(f"Open http://{HOST}:{args.port}")
-    print("Press Control-C to stop. Draft changes are never written to profile YAML.")
+    print("Press Control-C to stop. Profile saves require exact diff review, backup, and validation.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
