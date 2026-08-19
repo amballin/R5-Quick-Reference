@@ -56,7 +56,7 @@ def _node_modules(paths):
 
 def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
     rows = []
-    value_colors = field_setup_value_colors(profile)
+    value_colors = field_setup_value_colors(profile, merged, paths)
     for row in settings_rows(profile, merged, paths):
         icon_path = icon_manager.icon_path(row["key"], row["value"])
         rows.append(
@@ -71,7 +71,7 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
     return {
         "title": profile.get("title", profile_name),
         "subtitle": profile_subtitle(profile, baseline),
-        "field_setup": field_setup_summary(profile),
+        "field_setup": field_setup_summary(profile, merged, paths),
         "colors": card_colors(profile, baseline),
         "header_icons": {
             "left": str(header_icons["left"]) if header_icons["left"] else "",
@@ -82,7 +82,7 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
         "checklist": _plain_text_items(profile.get("checklist") or []),
         "watch_for": _plain_text_items(profile.get("watch_for") or []),
         "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),
-        "notes": _plain_text_items(card_note_items(profile, paths)),
+        "notes": _plain_text_items(card_note_items(profile, paths, merged)),
     }
 
 

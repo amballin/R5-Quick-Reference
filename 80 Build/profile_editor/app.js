@@ -47,6 +47,8 @@ const elements = {
   baselineFollowAll: document.querySelector("#baseline-follow-all"),
   baselinePreserveAll: document.querySelector("#baseline-preserve-all"),
   baselineBuildPlan: document.querySelector("#baseline-build-plan"),
+  baselineBuildPlanBottomRow: document.querySelector("#baseline-build-plan-bottom-row"),
+  baselineBuildPlanBottom: document.querySelector("#baseline-build-plan-bottom"),
   baselineResults: document.querySelector("#baseline-results"),
   baselinePlan: document.querySelector("#baseline-plan"),
   baselineSettings: document.querySelector("#baseline-settings"),
@@ -126,7 +128,7 @@ async function loadDictionary() {
   try {
     state.dictionary = await request("/api/dictionary");
     elements.dictionarySource.href = state.dictionary.metadata.authority_url || "https://cam.start.canon/en/C003/manual/html/index.html";
-    loadRecommendedMenus();
+    loadRecommendedMenus(false);
   } catch (error) {
     showMessage(error.message, true);
   }
@@ -233,6 +235,7 @@ function renderMyMenus() {
     name.placeholder = `Tab ${tabIndex + 1}`;
     name.addEventListener("input", () => {
       tab.name = name.value;
+      myMenuDraftChanged();
       renderDictionary();
     });
     const items = fragment.querySelector(".my-menu-items");
@@ -254,6 +257,7 @@ function renderMyMenus() {
       }
       select.addEventListener("change", () => {
         tab.items[itemIndex] = select.value;
+        myMenuDraftChanged();
         renderMyMenus();
         renderDictionary();
       });
@@ -264,14 +268,21 @@ function renderMyMenus() {
   });
 }
 
-function loadRecommendedMenus() {
+function loadRecommendedMenus(invalidateAnalysis = true) {
   state.myMenus = Array.from({ length: 5 }, () => ({ name: "", items: Array(6).fill("") }));
   (state.dictionary?.myMenu?.recommended_tabs || []).slice(0, 5).forEach((tab, index) => {
     state.myMenus[index].name = tab.name;
     tab.items.slice(0, 6).forEach((itemId, itemIndex) => { state.myMenus[index].items[itemIndex] = itemId; });
   });
+  if (invalidateAnalysis) myMenuDraftChanged();
   renderMyMenus();
   renderDictionary();
+}
+
+function myMenuDraftChanged() {
+  if (!state.baselineAnalysis) return;
+  baselineDraftChanged();
+  updateBaselineDraftState();
 }
 
 async function loadProfile(name) {
@@ -562,6 +573,7 @@ function baselineDraftChanged() {
   elements.baselineSummary.hidden = true;
   elements.baselineSummary.replaceChildren();
   elements.baselineDecisionTools.hidden = true;
+  elements.baselineBuildPlanBottomRow.hidden = true;
   elements.baselineResults.replaceChildren();
   elements.baselinePlan.hidden = true;
   elements.baselinePlan.replaceChildren();
@@ -585,7 +597,7 @@ async function analyzeBaselineDraft() {
     state.baselineAnalysis = await request("/api/baseline-impact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ values: state.baselineDraft }),
+      body: JSON.stringify({ values: state.baselineDraft, myMenuTabs: state.myMenus }),
     });
     state.baselineDecisions = {};
     state.baselinePlan = null;
@@ -612,6 +624,7 @@ function renderBaselineAnalysis() {
   if (!analysis) {
     elements.baselineSummary.hidden = true;
     elements.baselineDecisionTools.hidden = true;
+    elements.baselineBuildPlanBottomRow.hidden = true;
     return;
   }
   const summaryItems = [
@@ -631,8 +644,10 @@ function renderBaselineAnalysis() {
   }
   elements.baselineSummary.hidden = false;
   if (analysis.cx_impact) elements.baselineResults.append(renderCxImpact(analysis.cx_impact));
+  if (analysis.my_menu_impact) elements.baselineResults.append(renderMyMenuImpact(analysis.my_menu_impact));
   for (const change of analysis.changes) elements.baselineResults.append(renderImpactChange(change));
   elements.baselineDecisionTools.hidden = false;
+  elements.baselineBuildPlanBottomRow.hidden = false;
   updateBaselineDecisionState();
 }
 
@@ -734,6 +749,200 @@ function renderCxImpact(cxImpact) {
   return article;
 }
 
+function renderMyMenuImpact(menuImpact) {
+  const article = document.createElement("article");
+  article.className = "my-menu-impact";
+  const heading = document.createElement("div");
+  heading.className = "my-menu-impact-heading";
+  const headingCopy = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  const title = document.createElement("h3");
+  const summary = document.createElement("strong");
+  eyebrow.className = "eyebrow";
+  eyebrow.textContent = "Card access report";
+  title.textContent = "My Menu card coverage";
+  summary.textContent = `${menuImpact.summary.profiles_with_warnings} profiles with warnings · ${menuImpact.summary.missing_card_cues} missing cues`;
+  headingCopy.append(eyebrow, title);
+  heading.append(headingCopy, summary);
+  article.append(heading);
+
+  const overview = document.createElement("div");
+  overview.className = "my-menu-impact-overview";
+  const overviewItems = [
+    ["Displayed menu assignments", menuImpact.summary.displayed_assignments],
+    ["Assignments hidden on cards", menuImpact.summary.hidden_assignments],
+    ["Unavailable in named tab", menuImpact.summary.unavailable_settings],
+    ["Configured shortcuts unused by cards", menuImpact.summary.unreferenced_configured_items],
+  ];
+  for (const [label, value] of overviewItems) {
+    const item = document.createElement("div");
+    const count = document.createElement("strong");
+    const copy = document.createElement("span");
+    count.textContent = String(value);
+    copy.textContent = label;
+    item.append(count, copy);
+    overview.append(item);
+  }
+  article.append(overview);
+
+  if (menuImpact.configuration_warnings.length) {
+    const warnings = document.createElement("ul");
+    warnings.className = "my-menu-configuration-warnings";
+    for (const warning of menuImpact.configuration_warnings) {
+      const item = document.createElement("li");
+      item.textContent = warning;
+      warnings.append(item);
+    }
+    article.append(warnings);
+  }
+
+  if (menuImpact.unreferenced_configured_items.length) {
+    const unused = document.createElement("div");
+    const unusedTitle = document.createElement("h4");
+    const unusedCopy = document.createElement("p");
+    const unusedList = document.createElement("ul");
+    unused.className = "my-menu-unused";
+    unusedTitle.textContent = "Configured shortcuts not referenced by any card";
+    unusedCopy.textContent = "These are the only shortcuts this report identifies as possible removal candidates. My Menu itself is never changed automatically.";
+    unusedList.className = "my-menu-setting-findings";
+    for (const setting of menuImpact.unreferenced_configured_items) {
+      const item = document.createElement("li");
+      const label = document.createElement("strong");
+      const location = document.createElement("small");
+      label.textContent = setting.path ? baselineSettingLabel(setting.path) : myMenuItemLabel(setting.item_id);
+      location.textContent = `${setting.tabs.join(", ")} · ${setting.item_id}`;
+      item.append(label, location);
+      unusedList.append(item);
+    }
+    unused.append(unusedTitle, unusedCopy, unusedList);
+    article.append(unused);
+  }
+
+  const profiles = document.createElement("div");
+  profiles.className = "my-menu-route-profiles";
+  for (const profile of menuImpact.profiles) profiles.append(renderMyMenuRouteProfile(profile));
+  article.append(profiles);
+  return article;
+}
+
+function renderMyMenuRouteProfile(profile) {
+  const details = document.createElement("details");
+  details.className = "my-menu-route-profile";
+  details.open = profile.warning_count > 0;
+  const summary = document.createElement("summary");
+  const identity = document.createElement("span");
+  const title = document.createElement("strong");
+  const route = document.createElement("small");
+  const status = document.createElement("em");
+  title.textContent = profile.title;
+  route.textContent = profile.access_only
+    ? "Access-only card"
+    : profile.start
+      ? `${profile.start} ${profile.source_profile || "declared source"}`
+      : "No starting mode declared";
+  status.textContent = profile.warning_count
+    ? `${profile.warning_count} ${profile.warning_count === 1 ? "warning" : "warnings"}`
+    : "Card cues covered";
+  status.dataset.warning = String(profile.warning_count > 0);
+  identity.append(title, route);
+  summary.append(identity, status);
+  details.append(summary);
+
+  const body = document.createElement("div");
+  body.className = "my-menu-route-body";
+  if (profile.tabs.length) {
+    const tabs = document.createElement("ul");
+    tabs.className = "my-menu-tab-findings";
+    for (const tab of profile.tabs) {
+      const item = document.createElement("li");
+      const name = document.createElement("strong");
+      const finding = document.createElement("span");
+      name.textContent = tab.name;
+      finding.textContent = tab.shown_on_card
+        ? tab.configured
+          ? `${tab.displayed_paths.length} displayed ${tab.displayed_paths.length === 1 ? "setting" : "settings"}`
+          : "Named tab is not configured"
+        : "Not shown — no listed settings on card";
+      item.dataset.warning = String(tab.shown_on_card && !tab.configured);
+      item.append(name, finding);
+      tabs.append(item);
+    }
+    body.append(tabs);
+  }
+
+  if (profile.declared_settings.length) {
+    body.append(myMenuFindingHeading("Declared route settings"));
+    const declared = document.createElement("ul");
+    declared.className = "my-menu-setting-findings";
+    for (const setting of profile.declared_settings) {
+      const item = document.createElement("li");
+      const copy = document.createElement("div");
+      const label = document.createElement("strong");
+      const route = document.createElement("small");
+      const badges = document.createElement("div");
+      label.textContent = baselineSettingLabel(setting.path);
+      route.textContent = `${setting.tab} · ${setting.path}`;
+      copy.append(label, route);
+      badges.className = "my-menu-finding-badges";
+      badges.append(myMenuFindingBadge(
+        setting.displayed_after ? "Shown on card" : "Not listed on this card",
+        setting.displayed_after ? "required" : "hidden",
+      ));
+      if (setting.displayed_after) {
+        badges.append(myMenuFindingBadge(
+          setting.item_available ? "Available in named tab" : setting.identity_missing ? "No menu identity" : "Missing from named tab",
+          setting.item_available ? "covered" : "missing",
+        ));
+      }
+      item.append(copy, badges);
+      declared.append(item);
+    }
+    body.append(declared);
+  }
+
+  if (profile.missing_card_cues.length) {
+    body.append(myMenuFindingHeading("Displayed settings without a My Menu cue"));
+    const missing = document.createElement("ul");
+    missing.className = "my-menu-setting-findings missing";
+    for (const setting of profile.missing_card_cues) {
+      const item = document.createElement("li");
+      const copy = document.createElement("div");
+      const label = document.createElement("strong");
+      const route = document.createElement("small");
+      const badge = myMenuFindingBadge(setting.newly_visible ? "Newly visible" : "Menu cue missing", "missing");
+      label.textContent = baselineSettingLabel(setting.path);
+      route.textContent = setting.available_in_tabs.length
+        ? `Configured in ${setting.available_in_tabs.join(", ")}`
+        : `Canon item ${setting.item_id} is not in the current My Menu draft`;
+      copy.append(label, route);
+      item.append(copy, badge);
+      missing.append(item);
+    }
+    body.append(missing);
+  }
+
+  details.append(body);
+  return details;
+}
+
+function myMenuItemLabel(itemId) {
+  return state.dictionary?.myMenuEligible?.find((item) => item.id === itemId)?.label || itemId;
+}
+
+function myMenuFindingHeading(text) {
+  const heading = document.createElement("h4");
+  heading.textContent = text;
+  return heading;
+}
+
+function myMenuFindingBadge(text, status) {
+  const badge = document.createElement("span");
+  badge.className = "my-menu-finding-badge";
+  badge.dataset.status = status;
+  badge.textContent = text;
+  return badge;
+}
+
 function baselineDecisionKey(profile, path) {
   return JSON.stringify([profile, path]);
 }
@@ -767,8 +976,10 @@ function updateBaselineDecisionState() {
   elements.baselineDecisionStatus.textContent = `${resolved} of ${required.length} inherited ${required.length === 1 ? "change" : "changes"} decided.`;
   elements.baselineFollowAll.disabled = unresolved === 0;
   elements.baselinePreserveAll.disabled = unresolved === 0;
-  elements.baselineBuildPlan.disabled = false;
-  elements.baselineBuildPlan.textContent = unresolved ? `Build plan · ${unresolved} unresolved` : "Build complete plan";
+  for (const button of [elements.baselineBuildPlan, elements.baselineBuildPlanBottom]) {
+    button.disabled = false;
+    button.textContent = unresolved ? `Build plan · ${unresolved} unresolved` : "Build complete plan";
+  }
 }
 
 function setUnresolvedBaselineDecisions(decision, settingPath = null) {
@@ -886,6 +1097,7 @@ function renderImpactChange(change) {
 
 async function buildBaselinePlan() {
   elements.baselineBuildPlan.disabled = true;
+  elements.baselineBuildPlanBottom.disabled = true;
   showBaselineMessage("Validating migration decisions against the current sources…");
   try {
     state.baselinePlan = await request("/api/baseline-plan", {
@@ -894,6 +1106,7 @@ async function buildBaselinePlan() {
       body: JSON.stringify({
         values: state.baselineDraft,
         decisions: migrationDecisions(),
+        myMenuTabs: state.myMenus,
       }),
     });
     renderBaselinePlan();
@@ -930,11 +1143,21 @@ function renderBaselinePlan() {
   heading.append(title, status);
   elements.baselinePlan.append(heading);
 
+  if (plan.profile_card_cues_to_add.length) {
+    const explanation = document.createElement("section");
+    const explanationCopy = document.createElement("p");
+    explanation.className = "baseline-plan-explanation";
+    explanationCopy.textContent = "What these My Menu suggestions mean: Each suggestion applies to a setting that is already shown on the card. The setting will use the color of the My Menu tab where you can find it, and that tab’s name will appear at the top of the card. Nothing new will be added to the card or to the camera’s My Menu.";
+    explanation.append(explanationCopy);
+    elements.baselinePlan.append(explanation);
+  }
+
   const groups = [
     ["Profiles following baseline", plan.profiles_following_baseline, (item) => `${item.title}: ${displayValue(item.previous_effective_value)} → ${displayValue(item.proposed_effective_value)}`],
     ["Overrides to add", plan.overrides_to_add, (item) => `${item.title}: preserve ${displayValue(item.override_value)} for ${item.path}`],
     ["Redundant overrides to remove", plan.overrides_to_remove, (item) => `${item.title}: remove ${item.path}`],
     ["Existing overrides retained", plan.overrides_to_keep, (item) => `${item.title}: keep ${item.path}`],
+    ["Existing card rows to mark with My Menu access", plan.profile_card_cues_to_add, (item) => `${item.title}: color-code existing ${baselineSettingLabel(item.path)} row for ${item.tab} access`],
     ["Unresolved decisions", plan.unresolved_decisions, (item) => `${item.title}: ${item.path} · ${item.reason.replaceAll("_", " ")}`],
   ];
   for (const [label, items, describe] of groups) {
@@ -1154,11 +1377,12 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);
-elements.loadRecommendedMenus.addEventListener("click", loadRecommendedMenus);
+elements.loadRecommendedMenus.addEventListener("click", () => loadRecommendedMenus(true));
 elements.baselineAnalyze.addEventListener("click", analyzeBaselineDraft);
 elements.baselineFollowAll.addEventListener("click", () => setUnresolvedBaselineDecisions("follow_baseline"));
 elements.baselinePreserveAll.addEventListener("click", () => setUnresolvedBaselineDecisions("preserve_previous"));
 elements.baselineBuildPlan.addEventListener("click", buildBaselinePlan);
+elements.baselineBuildPlanBottom.addEventListener("click", buildBaselinePlan);
 elements.baselineReset.addEventListener("click", () => {
   state.baselineDraft = clone(state.baselineCurrent);
   state.baselineAnalysis = null;

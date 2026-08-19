@@ -131,7 +131,15 @@ def analyze_baseline_impact(current_baseline, proposed_baseline, profiles):
     }
 
 
-def plan_baseline_migration(current_baseline, proposed_baseline, profiles, decisions):
+def plan_baseline_migration(
+    current_baseline,
+    proposed_baseline,
+    profiles,
+    decisions,
+    registration=None,
+    setting_menu_items=None,
+    menu_tabs=None,
+):
     """Return a validated, read-only migration plan for a baseline proposal.
 
     ``decisions`` is a list of objects containing ``profile``, ``path``, and
@@ -149,6 +157,7 @@ def plan_baseline_migration(current_baseline, proposed_baseline, profiles, decis
     overrides_to_add = []
     overrides_to_remove = []
     overrides_to_keep = []
+    profile_card_cues_to_add = []
 
     for change in analysis["changes"]:
         path = change["path"]
@@ -192,6 +201,40 @@ def plan_baseline_migration(current_baseline, proposed_baseline, profiles, decis
     ):
         items.sort(key=lambda item: (item["path"], item["profile"].casefold()))
 
+    if setting_menu_items is not None and menu_tabs is not None:
+        coverage = analyze_my_menu_routes(
+            current_baseline,
+            proposed_baseline,
+            profiles,
+            registration or {},
+            setting_menu_items,
+            menu_tabs,
+        )
+        for profile in coverage["profiles"]:
+            for cue in profile["missing_card_cues"]:
+                if len(cue["available_in_tabs"]) != 1:
+                    raise BaselineImpactError(
+                        "A missing My Menu card cue must resolve to exactly one configured tab: "
+                        f"{profile['name']} / {cue['path']}"
+                    )
+                profile_card_cues_to_add.append(
+                    {
+                        "profile": profile["name"],
+                        "title": profile["title"],
+                        "tab": cue["available_in_tabs"][0],
+                        "path": cue["path"],
+                        "item_id": cue["item_id"],
+                        "yaml_path": "card.field_setup.my_menus",
+                    }
+                )
+        profile_card_cues_to_add.sort(
+            key=lambda item: (
+                item["title"].casefold(),
+                item["tab"].casefold(),
+                item["path"],
+            )
+        )
+
     return {
         "complete": not unresolved,
         "summary": {
@@ -199,12 +242,14 @@ def plan_baseline_migration(current_baseline, proposed_baseline, profiles, decis
             "overrides_to_add": len(overrides_to_add),
             "overrides_to_remove": len(overrides_to_remove),
             "overrides_to_keep": len(overrides_to_keep),
+            "profile_card_cues_to_add": len(profile_card_cues_to_add),
             "unresolved_decisions": len(unresolved),
         },
         "profiles_following_baseline": follows,
         "overrides_to_add": overrides_to_add,
         "overrides_to_remove": overrides_to_remove,
         "overrides_to_keep": overrides_to_keep,
+        "profile_card_cues_to_add": profile_card_cues_to_add,
         "unresolved_decisions": unresolved,
     }
 
@@ -294,6 +339,263 @@ def analyze_cx_impact(current_baseline, proposed_baseline, profiles, registratio
         "registered_modes": registered_modes,
         "route_warnings": route_warnings,
     }
+
+
+def analyze_my_menu_routes(
+    current_baseline,
+    proposed_baseline,
+    profiles,
+    registration,
+    setting_menu_items,
+    menu_tabs,
+):
+    """Report My Menu coverage for settings that are visible on merged cards.
+
+    My Menu is a stable fast-access configuration, not a transition recipe.
+    Baseline changes may alter which conditional rows a merged card displays,
+    but matching a C1-C3 starting value never makes a shortcut unnecessary.
+    ``setting_menu_items`` supplies explicit setting-path identities and
+    ``menu_tabs`` is the session-only arrangement to inspect. No input is
+    mutated and no routing or My Menu configuration is rewritten.
+    """
+
+    from html_renderer import displayed_card_setting_paths
+
+    current_defaults = _baseline_defaults(current_baseline, "Current baseline")
+    proposed_defaults = _baseline_defaults(proposed_baseline, "Proposed baseline")
+    profile_map = _profiles(profiles)
+    route_catalog = _setting_menu_items(setting_menu_items)
+    configured_tabs, configuration_warnings = _configured_menu_tabs(menu_tabs)
+    configured_item_tabs = {}
+    for tab in configured_tabs.values():
+        for item_id in tab["items"]:
+            configured_item_tabs.setdefault(item_id, []).append(tab["name"])
+
+    route_profiles = []
+    warning_profiles = 0
+    declared_settings = 0
+    displayed_assignments = 0
+    hidden_assignments = 0
+    unavailable_settings = 0
+    missing_card_cues = 0
+    newly_visible_missing_cues = 0
+    omitted_tabs = 0
+    referenced_configured_items = set()
+
+    for name, profile in sorted(profile_map.items()):
+        if profile.get("card_type") == "reference":
+            continue
+        field_setup = _field_setup(name, profile)
+        start = str(field_setup.get("start") or "").upper()
+        if start and start not in {key.upper() for key in REGISTERED_MODE_KEYS}:
+            raise BaselineImpactError(f"Profile has an unsupported starting mode: {name} / {start}")
+
+        overrides = profile.get("overrides") or {}
+        if not isinstance(overrides, Mapping):
+            raise BaselineImpactError(f"Profile overrides must be a mapping: {name}")
+        merged_current = _deep_merge(current_defaults, overrides)
+        merged_proposed = _deep_merge(proposed_defaults, overrides)
+        visible_current = displayed_card_setting_paths(profile, merged_current)
+        visible_proposed = displayed_card_setting_paths(profile, merged_proposed)
+
+        for path in visible_proposed:
+            item_id = route_catalog.get(path)
+            if item_id in configured_item_tabs:
+                referenced_configured_items.add(item_id)
+
+        declarations, tabs = _declared_menu_routes(name, field_setup)
+        declared_paths = {item["path"] for item in declarations}
+        declaration_results = []
+        for declaration in declarations:
+            path = declaration["path"]
+            tab_name = declaration["tab"]
+            item_id = route_catalog.get(path)
+            configured = configured_tabs.get(tab_name.casefold())
+            displayed_before = path in visible_current
+            displayed_after = path in visible_proposed
+            item_available = bool(item_id and configured and item_id in configured["items"])
+            identity_missing = item_id is None
+            availability_problem = displayed_after and not item_available
+            record = {
+                "tab": tab_name,
+                "path": path,
+                "item_id": item_id,
+                "displayed_before": displayed_before,
+                "displayed_after": displayed_after,
+                "became_hidden": displayed_before and not displayed_after,
+                "became_visible": not displayed_before and displayed_after,
+                "identity_missing": identity_missing,
+                "tab_present": configured is not None,
+                "item_available": item_available,
+                "availability_problem": availability_problem,
+            }
+            declaration_results.append(record)
+            declared_settings += 1
+            displayed_assignments += int(displayed_after)
+            hidden_assignments += int(not displayed_after)
+            unavailable_settings += int(availability_problem)
+
+        tab_results = []
+        for tab_name, paths in tabs:
+            displayed_paths = sorted(path for path in paths if path in visible_proposed)
+            shown_on_card = bool(displayed_paths)
+            omitted_tabs += int(not shown_on_card)
+            configured = configured_tabs.get(tab_name.casefold())
+            tab_results.append(
+                {
+                    "name": tab_name,
+                    "declared_paths": list(paths),
+                    "displayed_paths": displayed_paths,
+                    "shown_on_card": shown_on_card,
+                    "configured": configured is not None,
+                }
+            )
+
+        missing = []
+        for path in sorted(visible_proposed):
+            item_id = route_catalog.get(path)
+            available_in = sorted(configured_item_tabs.get(item_id, []))
+            if not available_in or path in declared_paths:
+                continue
+            item = {
+                "path": path,
+                "item_id": item_id,
+                "newly_visible": path not in visible_current,
+                "available_in_tabs": available_in,
+            }
+            missing.append(item)
+            missing_card_cues += 1
+            newly_visible_missing_cues += int(item["newly_visible"])
+
+        warnings = (
+            sum(item["availability_problem"] for item in declaration_results)
+            + len(missing)
+        )
+        warning_profiles += int(warnings > 0)
+        if declarations or missing:
+            route_profiles.append(
+                {
+                    "name": name,
+                    "title": profile.get("title") or name,
+                    "start": start,
+                    "source_profile": field_setup.get("source_profile") or "",
+                    "access_only": field_setup.get("access_only") is True,
+                    "warning_count": warnings,
+                    "declared_settings": declaration_results,
+                    "tabs": tab_results,
+                    "missing_card_cues": missing,
+                }
+            )
+
+    unreferenced_items = []
+    item_paths = {item_id: path for path, item_id in route_catalog.items()}
+    for item_id, tab_names in sorted(configured_item_tabs.items()):
+        if item_id in referenced_configured_items:
+            continue
+        unreferenced_items.append(
+            {
+                "item_id": item_id,
+                "path": item_paths.get(item_id),
+                "tabs": sorted(tab_names),
+            }
+        )
+
+    return {
+        "summary": {
+            "profiles_analyzed": len(route_profiles),
+            "profiles_with_warnings": warning_profiles,
+            "declared_settings": declared_settings,
+            "displayed_assignments": displayed_assignments,
+            "hidden_assignments": hidden_assignments,
+            "unavailable_settings": unavailable_settings,
+            "missing_card_cues": missing_card_cues,
+            "newly_visible_missing_cues": newly_visible_missing_cues,
+            "omitted_tabs": omitted_tabs,
+            "unreferenced_configured_items": len(unreferenced_items),
+        },
+        "configuration_warnings": configuration_warnings,
+        "unreferenced_configured_items": unreferenced_items,
+        "profiles": route_profiles,
+    }
+
+
+def _setting_menu_items(setting_menu_items):
+    if not isinstance(setting_menu_items, Mapping):
+        raise BaselineImpactError("My Menu setting identity must be a mapping.")
+    normalized = {}
+    for path, item_id in setting_menu_items.items():
+        if not isinstance(path, str) or not path or not isinstance(item_id, str) or not item_id:
+            raise BaselineImpactError("My Menu setting identity entries must use non-empty strings.")
+        normalized[path] = item_id
+    return normalized
+
+
+def _configured_menu_tabs(menu_tabs):
+    if not isinstance(menu_tabs, list):
+        raise BaselineImpactError("My Menu configuration must be a list.")
+    configured = {}
+    warnings = []
+    for index, tab in enumerate(menu_tabs, start=1):
+        if not isinstance(tab, Mapping):
+            raise BaselineImpactError("Each My Menu configuration tab must be a mapping.")
+        name = str(tab.get("name") or "").strip()
+        items = tab.get("items") or []
+        if not isinstance(items, list) or any(not isinstance(item, str) for item in items):
+            raise BaselineImpactError(f"My Menu tab items must be strings: tab {index}")
+        if not name:
+            continue
+        key = name.casefold()
+        if key in configured:
+            warnings.append(f"Duplicate configured My Menu tab name: {name}")
+            configured[key]["items"].update(item for item in items if item)
+            continue
+        configured[key] = {"name": name, "items": {item for item in items if item}}
+    return configured, warnings
+
+
+def _field_setup(name, profile):
+    card = profile.get("card") or {}
+    if not isinstance(card, Mapping):
+        raise BaselineImpactError(f"Profile card must be a mapping: {name}")
+    field_setup = card.get("field_setup") or {}
+    if not isinstance(field_setup, Mapping):
+        raise BaselineImpactError(f"Profile field setup must be a mapping: {name}")
+    return field_setup
+
+
+def _declared_menu_routes(name, field_setup):
+    my_menus = field_setup.get("my_menus") or []
+    if not isinstance(my_menus, list):
+        raise BaselineImpactError(f"Profile My Menu routes must be a list: {name}")
+    declarations = []
+    tabs = []
+    for tab in my_menus:
+        if not isinstance(tab, Mapping):
+            raise BaselineImpactError(f"Profile My Menu route must be a mapping: {name}")
+        tab_name = str(tab.get("name") or "").strip()
+        settings = tab.get("settings") or []
+        if not tab_name or not isinstance(settings, list) or any(not isinstance(path, str) or not path for path in settings):
+            raise BaselineImpactError(f"Profile My Menu route is incomplete: {name}")
+        paths = []
+        for path in settings:
+            declarations.append({"tab": tab_name, "path": path})
+            paths.append(path)
+        tabs.append((tab_name, paths))
+    return declarations, tabs
+
+
+def _effective_differences(start_values, target_values):
+    differences = {}
+    for path in sorted(set(start_values) | set(target_values)):
+        if _same_present_value(path, start_values, target_values):
+            continue
+        differences[path] = {
+            "start_present": path in start_values,
+            "start_value": start_values.get(path),
+            "target_present": path in target_values,
+            "target_value": target_values.get(path),
+        }
+    return differences
 
 
 def _registration_definition(registration):

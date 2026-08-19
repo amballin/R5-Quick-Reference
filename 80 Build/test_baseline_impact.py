@@ -15,8 +15,10 @@ from baseline_impact import (
     BaselineImpactError,
     analyze_baseline_impact,
     analyze_cx_impact,
+    analyze_my_menu_routes,
     plan_baseline_migration,
 )
+from html_renderer import field_setup_summary
 
 
 def baseline(**defaults):
@@ -224,6 +226,38 @@ class BaselineImpactTests(unittest.TestCase):
         self.assertEqual(result["summary"]["overrides_to_remove"], 1)
         self.assertEqual(result["overrides_to_remove"][0]["profile"], "Wildlife")
 
+    def test_migration_plan_adds_missing_my_menu_cues_as_profile_changes(self):
+        result = plan_baseline_migration(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {
+                "Travel": {
+                    "title": "Travel",
+                    "card": {"field_setup": {"start": "C3", "my_menus": []}},
+                    "overrides": {},
+                }
+            },
+            [],
+            registration(),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}],
+        )
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["summary"]["profile_card_cues_to_add"], 1)
+        self.assertEqual(
+            result["profile_card_cues_to_add"],
+            [
+                {
+                    "profile": "Travel",
+                    "title": "Travel",
+                    "tab": "SWITCH",
+                    "path": "shutter.type",
+                    "item_id": "shoot6_shutter_mode",
+                    "yaml_path": "card.field_setup.my_menus",
+                }
+            ],
+        )
+
     def test_invalid_override_keeps_plan_unresolved(self):
         result = plan_baseline_migration(
             baseline(display={"histogram": "RGB"}),
@@ -331,6 +365,190 @@ class BaselineImpactTests(unittest.TestCase):
         before = deepcopy((current, proposed, profiles, source))
         analyze_cx_impact(current, proposed, profiles, source)
         self.assertEqual((current, proposed, profiles, source), before)
+
+    def test_my_menu_assignment_remains_displayed_when_start_and_target_match(self):
+        result = analyze_my_menu_routes(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "Mechanical"}),
+            {
+                "People": {
+                    "title": "People",
+                    "card": {
+                        "field_setup": {
+                            "start": "C1",
+                            "source_profile": "Wildlife",
+                            "my_menus": [
+                                {"name": "SWITCH", "settings": ["shutter.type"]}
+                            ],
+                        }
+                    },
+                    "overrides": {},
+                }
+            },
+            registration(c1="Mechanical"),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}],
+        )
+        profile = result["profiles"][0]
+        assignment = profile["declared_settings"][0]
+        self.assertTrue(assignment["displayed_before"])
+        self.assertTrue(assignment["displayed_after"])
+        self.assertTrue(profile["tabs"][0]["shown_on_card"])
+        self.assertEqual(result["summary"]["displayed_assignments"], 1)
+        self.assertEqual(result["summary"]["hidden_assignments"], 0)
+
+    def test_my_menu_route_reports_displayed_item_missing_from_named_tab(self):
+        result = analyze_my_menu_routes(
+            baseline(autofocus={"subject_detection": "Animals"}),
+            baseline(autofocus={"subject_detection": "Animals"}),
+            {
+                "People": {
+                    "title": "People",
+                    "card": {
+                        "field_setup": {
+                            "start": "C1",
+                            "my_menus": [
+                                {
+                                    "name": "SWITCH",
+                                    "settings": ["autofocus.subject_detection"],
+                                }
+                            ],
+                        }
+                    },
+                    "overrides": {"autofocus": {"subject_detection": "People"}},
+                }
+            },
+            registration(),
+            {"autofocus.subject_detection": "af1_subject_to_detect"},
+            [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}],
+        )
+        assignment = result["profiles"][0]["declared_settings"][0]
+        self.assertTrue(assignment["displayed_after"])
+        self.assertTrue(assignment["tab_present"])
+        self.assertFalse(assignment["item_available"])
+        self.assertTrue(assignment["availability_problem"])
+        self.assertEqual(result["summary"]["unavailable_settings"], 1)
+
+    def test_my_menu_route_reports_newly_visible_setting_without_card_cue(self):
+        result = analyze_my_menu_routes(
+            baseline(autofocus={"operation": "One-Shot AF", "servo_af_case": "Case A (Auto)"}),
+            baseline(autofocus={"operation": "Servo AF", "servo_af_case": "Case A (Auto)"}),
+            {
+                "Travel": {
+                    "title": "Travel",
+                    "card": {"field_setup": {"start": "C1", "my_menus": []}},
+                    "overrides": {},
+                }
+            },
+            registration(),
+            {"autofocus.servo_af_case": "af3_servo_af_characteristics"},
+            [{"name": "AF Case", "items": ["af3_servo_af_characteristics"]}],
+        )
+        missing = result["profiles"][0]["missing_card_cues"][0]
+        self.assertEqual(missing["path"], "autofocus.servo_af_case")
+        self.assertTrue(missing["newly_visible"])
+        self.assertEqual(missing["available_in_tabs"], ["AF Case"])
+        self.assertEqual(result["summary"]["newly_visible_missing_cues"], 1)
+
+    def test_direct_control_does_not_create_missing_card_cue(self):
+        result = analyze_my_menu_routes(
+            baseline(exposure={"mode": "Fv"}),
+            baseline(exposure={"mode": "Fv"}),
+            {
+                "Sports": {
+                    "title": "Sports",
+                    "card": {"field_setup": {"start": "C1"}},
+                    "overrides": {"exposure": {"mode": "Tv"}},
+                }
+            },
+            registration(),
+            {},
+            [],
+        )
+        self.assertEqual(result["profiles"], [])
+        self.assertEqual(result["summary"]["missing_card_cues"], 0)
+
+    def test_only_configured_shortcuts_unused_by_all_cards_are_flagged(self):
+        result = analyze_my_menu_routes(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {"Travel": {"title": "Travel", "card": {}, "overrides": {}}},
+            registration(),
+            {
+                "shutter.type": "shoot6_shutter_mode",
+                "image.focus_bracketing": "shoot5_focus_bracketing",
+            },
+            [
+                {
+                    "name": "SWITCH",
+                    "items": ["shoot6_shutter_mode", "shoot5_focus_bracketing"],
+                }
+            ],
+        )
+        self.assertEqual(
+            result["unreferenced_configured_items"],
+            [
+                {
+                    "item_id": "shoot5_focus_bracketing",
+                    "path": "image.focus_bracketing",
+                    "tabs": ["SWITCH"],
+                }
+            ],
+        )
+
+    def test_card_renderer_omits_only_menu_tabs_without_visible_settings(self):
+        profile = {
+            "title": "People",
+            "card": {
+                "field_setup": {
+                    "start": "C1",
+                    "my_menus": [
+                        {
+                            "name": "AF Case",
+                            "settings": [
+                                "autofocus.servo_af_case",
+                                "autofocus.switching_tracked_subjects",
+                            ],
+                        }
+                    ],
+                }
+            },
+            "overrides": {},
+        }
+        merged = {
+            "autofocus": {
+                "operation": "One-Shot AF",
+                "servo_af_case": "Case A (Auto)",
+                "method": "Face + Tracking",
+                "switching_tracked_subjects": "On subject",
+            }
+        }
+        summary = field_setup_summary(profile, merged)
+        self.assertEqual(summary["menus"][0]["name"], "AF Case")
+        self.assertEqual(
+            summary["menus"][0]["settings"],
+            ["autofocus.switching_tracked_subjects"],
+        )
+
+        merged["autofocus"]["method"] = "1-Point AF"
+        self.assertEqual(field_setup_summary(profile, merged)["menus"], [])
+
+    def test_my_menu_route_analysis_does_not_mutate_inputs(self):
+        current = baseline(shutter={"type": "EFCS"})
+        proposed = baseline(shutter={"type": "Mechanical"})
+        profiles = {
+            "Travel": {
+                "title": "Travel",
+                "card": {"field_setup": {"start": "C1"}},
+                "overrides": {},
+            }
+        }
+        source = registration(c1="EFCS")
+        identities = {"shutter.type": "shoot6_shutter_mode"}
+        tabs = [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}]
+        before = deepcopy((current, proposed, profiles, source, identities, tabs))
+        analyze_my_menu_routes(current, proposed, profiles, source, identities, tabs)
+        self.assertEqual((current, proposed, profiles, source, identities, tabs), before)
 
 
 if __name__ == "__main__":

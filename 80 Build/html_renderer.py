@@ -189,6 +189,18 @@ def settings_rows(profile, merged, paths=None):
     return rows
 
 
+def displayed_card_setting_paths(profile, merged, paths=None):
+    """Return underlying setting paths represented by visible card rows."""
+    visible = {row["key"] for row in settings_rows(profile, merged, paths)}
+    if "autofocus.tracking_sensitivity" in visible:
+        visible.add("autofocus.accel_decel_tracking")
+    if "stabilization.ibis" in visible:
+        visible.add("stabilization.lens_is")
+    if "exposure.iso.mode" in visible:
+        visible.update({"exposure.iso.value", "exposure.auto_iso.maximum"})
+    return visible
+
+
 def reference_setting_key(control):
     """Return a stable renderer key for a reference-card control label."""
     slug = re.sub(r"[^a-z0-9]+", "_", str(control).casefold()).strip("_")
@@ -304,7 +316,7 @@ def iso_display_value(merged_fields):
 def table(profile, merged, icon_manager=None, paths=None):
     """Render the settings table with optional field-based icons."""
     html = "<table>"
-    access_classes = field_setup_setting_classes(profile)
+    access_classes = field_setup_setting_classes(profile, merged, paths)
     for row in settings_rows(profile, merged, paths):
         rendered_label = row["label"]
         if icon_manager is not None:
@@ -325,7 +337,7 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
     return (
         template.replace("{{TITLE}}", profile.get("title", profile_name))
         .replace("{{SUBTITLE_BLOCK}}", subtitle_block(profile, baseline))
-        .replace("{{FIELD_SETUP_STRIP}}", field_setup_strip(profile))
+        .replace("{{FIELD_SETUP_STRIP}}", field_setup_strip(profile, merged, paths))
         .replace("{{BACKGROUND_COLOR}}", colors["background"])
         .replace("{{TEXT_COLOR}}", colors["text"])
         .replace("{{SITE_NAV_CSS}}", SITE_NAV_CSS)
@@ -343,7 +355,7 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
-        .replace("{{NOTES}}", bullets(card_note_items(profile, paths)))
+        .replace("{{NOTES}}", bullets(card_note_items(profile, paths, merged)))
     )
 
 
@@ -368,9 +380,9 @@ def appendix_link_entries(profile, paths=None):
     ]
 
 
-def card_note_items(profile, paths=None):
+def card_note_items(profile, paths=None, merged=None):
     items = []
-    setup_note = field_setup_note(profile)
+    setup_note = field_setup_note(profile, merged, paths)
     if setup_note:
         items.append(setup_note)
     items.extend(profile.get("notes") or [])
@@ -392,15 +404,27 @@ def field_setup(profile):
     return setup if isinstance(setup, dict) else {}
 
 
-def field_setup_menus(profile):
-    """Return My Menu entries with stable renderer-managed color classes."""
+def field_setup_menus(profile, merged=None, paths=None):
+    """Return visible My Menu entries with stable renderer-managed colors."""
     menus = field_setup(profile).get("my_menus") or []
+    visible_paths = (
+        displayed_card_setting_paths(profile, merged, paths)
+        if merged is not None
+        else None
+    )
     alternate_number = 2
     rendered = []
     for menu in menus:
         if not isinstance(menu, dict):
             continue
         name = str(menu.get("name") or "").strip()
+        displayed_settings = [
+            setting
+            for setting in menu.get("settings") or []
+            if visible_paths is None or setting in visible_paths
+        ]
+        if visible_paths is not None and not displayed_settings:
+            continue
         if name.casefold() == "switch":
             access_class = "access-switch"
         else:
@@ -410,6 +434,7 @@ def field_setup_menus(profile):
             {
                 **menu,
                 "name": name,
+                "settings": displayed_settings,
                 "access_class": access_class,
                 "color": FIELD_ACCESS_COLORS[access_class],
             }
@@ -417,22 +442,29 @@ def field_setup_menus(profile):
     return rendered
 
 
-def field_setup_setting_classes(profile):
+def field_setup_setting_classes(profile, merged=None, paths=None):
     classes = {}
-    for menu in field_setup_menus(profile):
+    for menu in field_setup_menus(profile, merged, paths):
         for key in menu.get("settings") or []:
             classes[key] = menu["access_class"]
+    if "autofocus.accel_decel_tracking" in classes:
+        classes.setdefault(
+            "autofocus.tracking_sensitivity",
+            classes["autofocus.accel_decel_tracking"],
+        )
+    if "stabilization.lens_is" in classes:
+        classes.setdefault("stabilization.ibis", classes["stabilization.lens_is"])
     return classes
 
 
-def field_setup_value_colors(profile):
+def field_setup_value_colors(profile, merged=None, paths=None):
     return {
         key: FIELD_ACCESS_COLORS[access_class]
-        for key, access_class in field_setup_setting_classes(profile).items()
+        for key, access_class in field_setup_setting_classes(profile, merged, paths).items()
     }
 
 
-def field_setup_summary(profile):
+def field_setup_summary(profile, merged=None, paths=None):
     setup = field_setup(profile)
     if not setup:
         return None
@@ -440,13 +472,15 @@ def field_setup_summary(profile):
         "start": setup.get("start", ""),
         "source_profile": setup.get("source_profile", ""),
         "access_only": setup.get("access_only") is True,
-        "menus": field_setup_menus(profile),
+        "menus": field_setup_menus(profile, merged, paths),
     }
 
 
-def field_setup_strip(profile):
-    summary = field_setup_summary(profile)
+def field_setup_strip(profile, merged=None, paths=None):
+    summary = field_setup_summary(profile, merged, paths)
     if not summary:
+        return ""
+    if not summary["start"] and not summary["menus"]:
         return ""
     parts = []
     if summary["start"]:
@@ -460,11 +494,13 @@ def field_setup_strip(profile):
     return f'<div class="field-route" aria-label="{aria_label}">' + "".join(parts) + "</div>"
 
 
-def field_setup_note(profile):
-    summary = field_setup_summary(profile)
+def field_setup_note(profile, merged=None, paths=None):
+    summary = field_setup_summary(profile, merged, paths)
     if not summary:
         return ""
     if summary["access_only"]:
+        if not summary["menus"]:
+            return ""
         return (
             "Colored setting values use the matching My Menu tab; white values use "
             "Quick Control, dials, buttons, or normal menu access."

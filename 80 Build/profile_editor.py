@@ -39,6 +39,7 @@ from baseline_impact import (
     BaselineImpactError,
     analyze_baseline_impact,
     analyze_cx_impact,
+    analyze_my_menu_routes,
     plan_baseline_migration,
 )
 from build_validator import discover_profiles, is_reference_card
@@ -200,6 +201,7 @@ class ProfileEditorModel:
             raise PrototypeError("Camera reference sections are missing.")
         section_keys = set()
         item_ids = set()
+        setting_paths = set()
         for section in self.reference_sections:
             if not isinstance(section, dict) or not section.get("key") or not section.get("label"):
                 raise PrototypeError("Camera reference section is incomplete.")
@@ -216,7 +218,7 @@ class ProfileEditorModel:
                 if not isinstance(item, dict):
                     raise PrototypeError(f"Camera reference item must be a mapping: {section['key']}")
                 required = {"id", "label", "menu_location", "canon_default", "recommended", "classification", "visit_again"}
-                allowed = required | {"note", "my_menu_eligible", "source"}
+                allowed = required | {"note", "my_menu_eligible", "setting_path", "source"}
                 unknown = sorted(set(item) - allowed)
                 if unknown:
                     raise PrototypeError(f"Camera reference item {item.get('id', '?')} has unknown fields: {', '.join(unknown)}")
@@ -229,6 +231,19 @@ class ProfileEditorModel:
                 if item["id"] in item_ids:
                     raise PrototypeError(f"Duplicate camera reference item: {item['id']}")
                 item_ids.add(item["id"])
+                setting_path = item.get("setting_path")
+                if setting_path:
+                    if setting_path not in self.default_fields:
+                        raise PrototypeError(
+                            f"Camera reference item has an unknown setting path: {item['id']} / {setting_path}"
+                        )
+                    if setting_path in setting_paths:
+                        raise PrototypeError(f"Duplicate My Menu setting identity: {setting_path}")
+                    if not item.get("my_menu_eligible"):
+                        raise PrototypeError(
+                            f"My Menu setting identity is not menu eligible: {setting_path}"
+                        )
+                    setting_paths.add(setting_path)
                 if item["classification"] not in REFERENCE_CLASSIFICATIONS:
                     raise PrototypeError(f"Invalid classification for {item['id']}: {item['classification']}")
         if not isinstance(self.my_menu_catalog, dict):
@@ -236,11 +251,35 @@ class ProfileEditorModel:
         tabs = self.my_menu_catalog.get("recommended_tabs") or []
         if not isinstance(tabs, list) or not tabs:
             raise PrototypeError("Recommended My Menu tabs are missing.")
+        tab_names = set()
+        recommended_item_ids = set()
         for tab in tabs:
             if not isinstance(tab, dict) or not tab.get("name") or not isinstance(tab.get("items"), list):
                 raise PrototypeError("Recommended My Menu tab is incomplete.")
             if len(tab["items"]) > 6:
                 raise PrototypeError(f"Recommended My Menu tab exceeds six items: {tab['name']}")
+            tab_key = tab["name"].casefold()
+            if tab_key in tab_names:
+                raise PrototypeError(f"Duplicate recommended My Menu tab: {tab['name']}")
+            tab_names.add(tab_key)
+            for item_id in tab["items"]:
+                if item_id not in item_ids:
+                    raise PrototypeError(f"Recommended My Menu item is unknown: {item_id}")
+                if item_id in recommended_item_ids:
+                    raise PrototypeError(f"Recommended My Menu item is duplicated: {item_id}")
+                recommended_item_ids.add(item_id)
+        identity_item_ids = {
+            item["id"]
+            for section in self.reference_sections
+            for item in section["items"]
+            if item.get("setting_path")
+        }
+        missing_recommended = sorted(identity_item_ids - recommended_item_ids)
+        if missing_recommended:
+            raise PrototypeError(
+                "My Menu setting identities are absent from recommended tabs: "
+                + ", ".join(missing_recommended)
+            )
 
     def _setting_order(self):
         layout = load_yaml(self.paths.card_layout_file) or {}
@@ -331,7 +370,7 @@ class ProfileEditorModel:
             "sections": detail["sections"],
         }
 
-    def baseline_impact(self, values):
+    def baseline_impact(self, values, my_menu_tabs=None):
         """Analyze a complete, value-only baseline draft without writing it."""
         proposed = self._proposed_baseline(values)
         try:
@@ -342,11 +381,29 @@ class ProfileEditorModel:
                 self.profiles,
                 self.registration,
             )
+            analysis["my_menu_impact"] = analyze_my_menu_routes(
+                self.baseline,
+                proposed,
+                self.profiles,
+                self.registration,
+                self._my_menu_route_catalog(),
+                my_menu_tabs
+                if my_menu_tabs is not None
+                else copy.deepcopy(self.my_menu_catalog.get("recommended_tabs") or []),
+            )
             return analysis
         except BaselineImpactError as exc:
             raise PrototypeError(str(exc)) from exc
 
-    def baseline_plan(self, values, decisions):
+    def _my_menu_route_catalog(self):
+        return {
+            item["setting_path"]: item["id"]
+            for section in self.reference_sections
+            for item in section["items"]
+            if item.get("setting_path")
+        }
+
+    def baseline_plan(self, values, decisions, my_menu_tabs=None):
         """Validate decisions and return a read-only baseline migration plan."""
         proposed = self._proposed_baseline(values)
         try:
@@ -355,6 +412,11 @@ class ProfileEditorModel:
                 proposed,
                 self.profiles,
                 decisions,
+                self.registration,
+                self._my_menu_route_catalog(),
+                my_menu_tabs
+                if my_menu_tabs is not None
+                else copy.deepcopy(self.my_menu_catalog.get("recommended_tabs") or []),
             )
         except BaselineImpactError as exc:
             raise PrototypeError(str(exc)) from exc
@@ -1045,12 +1107,18 @@ class EditorHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/profile-saves":
                 return self._json(self.model.save_profile(payload.get("reviewToken")))
             if parsed.path == "/api/baseline-impact":
-                return self._json(self.model.baseline_impact(payload.get("values")))
+                return self._json(
+                    self.model.baseline_impact(
+                        payload.get("values"),
+                        payload.get("myMenuTabs"),
+                    )
+                )
             if parsed.path == "/api/baseline-plan":
                 return self._json(
                     self.model.baseline_plan(
                         payload.get("values"),
                         payload.get("decisions"),
+                        payload.get("myMenuTabs"),
                     )
                 )
             if "operation" in payload:

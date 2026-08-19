@@ -64,7 +64,7 @@ main {
 }
 
 .safety-note, .toolbar, .profile-metadata, .profile-summary, .setting-section, .preview-panel, .reference-card,
-.view-tabs, .view-intro, .dictionary-tools, .my-menu-card, .baseline-summary, .baseline-decision-tools, .impact-change, .cx-impact, .baseline-plan {
+.view-tabs, .view-intro, .dictionary-tools, .my-menu-card, .baseline-summary, .baseline-decision-tools, .impact-change, .cx-impact, .my-menu-impact, .baseline-plan {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
@@ -204,6 +204,43 @@ main {
 .cx-route-warnings > p { margin: 0 0 .65rem; color: var(--muted); font-size: .78rem; }
 .cx-route-warnings li { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(150px, 1fr) 2fr; gap: .5rem 1rem; padding: .5rem 0; border-top: 1px solid #efdfba; font-size: .78rem; }
 .cx-route-warnings li span, .cx-route-warnings li small { color: var(--muted); }
+.my-menu-impact { overflow: hidden; }
+.my-menu-impact-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; color: white; background: #26584f; }
+.my-menu-impact-heading .eyebrow { margin-bottom: .15rem; }
+.my-menu-impact-heading h3 { margin: 0; }
+.my-menu-impact-heading > strong { max-width: 45%; font-size: .78rem; text-align: right; }
+.my-menu-impact-overview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); }
+.my-menu-impact-overview > div { display: grid; gap: .15rem; padding: .75rem .85rem; background: var(--surface); }
+.my-menu-impact-overview strong { font-size: 1.15rem; }
+.my-menu-impact-overview span { color: var(--muted); font-size: .7rem; font-weight: 760; }
+.my-menu-configuration-warnings { margin: 0; padding: .7rem 1rem .7rem 2rem; color: var(--danger); background: #fff0f0; font-size: .78rem; }
+.my-menu-route-profiles { display: grid; }
+.my-menu-route-profile { border-top: 1px solid var(--line); }
+.my-menu-route-profile:first-child { border-top: 0; }
+.my-menu-route-profile > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; cursor: pointer; background: var(--soft); }
+.my-menu-route-profile > summary > span { display: grid; gap: .12rem; }
+.my-menu-route-profile > summary small { color: var(--muted); }
+.my-menu-route-profile > summary em { padding: .28rem .5rem; border-radius: 999px; color: #2f5d54; background: var(--teal-soft); font-size: .7rem; font-style: normal; font-weight: 800; }
+.my-menu-route-profile > summary em[data-warning="true"] { color: #7c5011; background: var(--gold-soft); }
+.my-menu-route-body { display: grid; gap: .7rem; padding: .8rem 1rem 1rem; }
+.my-menu-route-body h4 { margin: .15rem 0 -.25rem; font-size: .78rem; }
+.my-menu-tab-findings, .my-menu-setting-findings { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.my-menu-tab-findings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.my-menu-tab-findings li { display: flex; align-items: center; justify-content: space-between; gap: .65rem; padding: .55rem .65rem; border: 1px solid #b8ddd5; border-radius: 8px; background: var(--teal-soft); font-size: .75rem; }
+.my-menu-tab-findings li[data-warning="true"] { border-color: #e4bd76; background: var(--gold-soft); }
+.my-menu-tab-findings span { color: var(--muted); text-align: right; }
+.my-menu-setting-findings li { display: grid; grid-template-columns: minmax(180px, 1fr) auto; align-items: center; gap: .7rem 1rem; padding: .55rem 0; border-top: 1px solid #edf1f4; }
+.my-menu-setting-findings li > div:first-child { display: grid; gap: .12rem; min-width: 0; }
+.my-menu-setting-findings small { overflow-wrap: anywhere; color: var(--muted); }
+.my-menu-finding-badges { display: flex; justify-content: flex-end; gap: .35rem; flex-wrap: wrap; }
+.my-menu-finding-badge { padding: .25rem .45rem; border-radius: 999px; font-size: .68rem; font-weight: 800; white-space: nowrap; }
+.my-menu-finding-badge[data-status="required"], .my-menu-finding-badge[data-status="covered"] { color: #2f5d54; background: var(--teal-soft); }
+.my-menu-finding-badge[data-status="hidden"] { color: #684287; background: #f3eafa; }
+.my-menu-finding-badge[data-status="missing"] { color: #7c5011; background: var(--gold-soft); }
+.my-menu-direct-note { margin: .15rem 0 0; color: var(--muted); font-size: .75rem; }
+.my-menu-unused { padding: .8rem 1rem; border-top: 1px solid var(--line); background: #fbf8ff; }
+.my-menu-unused h4, .my-menu-unused p { margin: 0 0 .5rem; }
+.my-menu-unused p { color: var(--muted); font-size: .75rem; }
 .baseline-plan { margin: 0 0 1rem; overflow: hidden; }
 .baseline-plan[hidden] { display: none; }
 .baseline-plan-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; background: var(--soft); }
@@ -213,6 +250,8 @@ main {
 .plan-incomplete { color: var(--danger); background: #fff0f0; }
 .baseline-plan section { padding: .75rem 1rem; border-top: 1px solid var(--line); }
 .baseline-plan h4 { margin: 0 0 .45rem; font-size: .84rem; }
+.baseline-plan-explanation { background: var(--teal-soft); }
+.baseline-plan-explanation p { margin: 0; color: #31584f; font-size: .8rem; }
 .baseline-plan ul { display: grid; gap: .3rem; margin: 0; padding-left: 1.15rem; font-size: .8rem; }
 
 .safety-note {
@@ -417,6 +456,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .dictionary-list { grid-template-columns: 1fr; }
   .dictionary-item:nth-child(odd) { border-right: 0; }
   .baseline-summary { grid-template-columns: repeat(2, 1fr); }
+  .my-menu-impact-overview { grid-template-columns: repeat(2, 1fr); }
   .cx-mode-grid { grid-template-columns: 1fr; }
   .cx-mode { border-right: 0; border-bottom: 1px solid var(--line); }
   .cx-mode:last-child { border-bottom: 0; }
@@ -440,6 +480,11 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .impact-heading, .impact-group li { align-items: flex-start; flex-direction: column; }
   .cx-impact-heading { align-items: flex-start; flex-direction: column; }
   .cx-impact-heading > strong { max-width: none; text-align: left; }
+  .my-menu-impact-heading, .my-menu-route-profile > summary { align-items: flex-start; flex-direction: column; }
+  .my-menu-impact-heading > strong { max-width: none; text-align: left; }
+  .my-menu-tab-findings { grid-template-columns: 1fr; }
+  .my-menu-setting-findings li { grid-template-columns: 1fr; }
+  .my-menu-finding-badges { justify-content: flex-start; }
   .cx-route-warnings li { grid-template-columns: 1fr; gap: .15rem; }
   .impact-group li { grid-template-columns: 1fr; }
   .setting-decision-actions { align-items: stretch; flex-direction: column; }

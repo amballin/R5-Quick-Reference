@@ -194,6 +194,46 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertTrue(
             any(warning["start"] == "C1" for warning in cx_impact["route_warnings"])
         )
+        self.assertGreaterEqual(result["my_menu_impact"]["summary"]["profiles_analyzed"], 10)
+        camera_defaults = next(
+            profile
+            for profile in result["my_menu_impact"]["profiles"]
+            if profile["name"] == "Camera Defaults"
+        )
+        self.assertTrue(camera_defaults["access_only"])
+        self.assertEqual({path: path.read_bytes() for path in before}, before)
+
+    def test_baseline_impact_checks_session_my_menu_availability_without_writes(self):
+        catalog_path = self.root / "80 Build" / "profile_editor" / "canon_options.yaml"
+        profile_path = self.root / "10 Profiles" / "People.yaml"
+        before = {catalog_path: catalog_path.read_bytes(), profile_path: profile_path.read_bytes()}
+        values = dict(self.model.baseline_detail()["values"])
+        values["shutter.type"] = "Mechanical"
+        tabs = [
+            {"name": "SWITCH", "items": []},
+            {
+                "name": "AF Case",
+                "items": [
+                    "af3_servo_af_characteristics",
+                    "af3_tracking_sensitivity",
+                    "af3_accel_decel_tracking",
+                    "af4_switching_tracked_subjects",
+                ],
+            },
+        ]
+        result = self.model.baseline_impact(values, tabs)
+        people = next(
+            profile
+            for profile in result["my_menu_impact"]["profiles"]
+            if profile["name"] == "People"
+        )
+        subject_route = next(
+            item
+            for item in people["declared_settings"]
+            if item["path"] == "autofocus.subject_detection"
+        )
+        self.assertTrue(subject_route["displayed_after"])
+        self.assertTrue(subject_route["availability_problem"])
         self.assertEqual({path: path.read_bytes() for path in before}, before)
 
     def test_baseline_plan_validates_decisions_without_writing_sources(self):
@@ -218,6 +258,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertTrue(result["complete"])
         self.assertEqual(result["summary"]["overrides_to_add"], len(decisions))
         self.assertGreater(result["summary"]["overrides_to_remove"], 0)
+        self.assertGreater(result["summary"]["profile_card_cues_to_add"], 0)
+        self.assertTrue(
+            any(
+                item["profile"] == "Travel" and item["tab"] == "SWITCH"
+                for item in result["profile_card_cues_to_add"]
+            )
+        )
         self.assertEqual(baseline_path.read_bytes(), before_baseline)
         self.assertEqual({path: path.read_bytes() for path in profile_paths}, before_profiles)
 

@@ -4,12 +4,14 @@ from .common import error
 
 
 REQUIRED_FILES = (
+    "80 Build/baseline_impact.py",
     "80 Build/profile_editor.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/canon_options.yaml",
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/test_profile_editor.py",
+    "80 Build/test_baseline_impact.py",
 )
 
 
@@ -35,6 +37,18 @@ def validate(root):
         create_detail = model.profile_draft("create")
         if create_detail.get("metadata") != {"status": "Draft", "release": False}:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profiles must begin as unreleased drafts."))
+        route_catalog = model._my_menu_route_catalog()
+        if not route_catalog:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "canon_options.yaml", "My Menu card coverage requires explicit setting identities."))
+        declared_paths = {
+            setting
+            for profile in model.profiles.values()
+            for menu in (((profile.get("card") or {}).get("field_setup") or {}).get("my_menus") or [])
+            for setting in (menu.get("settings") or [])
+        }
+        missing_identities = sorted(declared_paths - set(route_catalog))
+        if missing_identities:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "canon_options.yaml", f"My Menu card setting identities are missing: {', '.join(missing_identities)}"))
     except Exception as exc:
         issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", f"Profile editor readiness failed: {exc}"))
     return issues
