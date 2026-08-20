@@ -1,9 +1,8 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-03
+  last_updated: 2026-08-20
   release: true
-
 title: Birds in Flight
 card:
   icons:
@@ -12,58 +11,59 @@ card:
     start: C2
     source_profile: Birds in Flight
     my_menus:
-      - name: AF Case
-        settings:
-          - autofocus.servo_af_case
-          - autofocus.tracking_sensitivity
-          - autofocus.accel_decel_tracking
-          - autofocus.switching_tracked_subjects
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+      - autofocus.tracking_sensitivity
+      - autofocus.accel_decel_tracking
+      - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - autofocus.subject_detection
+      - shutter.type
+      - stabilization.image_stabilization.mode
+    - name: test
+      settings:
+      - exposure.iso.mode
 inherits: baseline
 overrides:
   autofocus:
     servo_af_case: Case 4
-    tracking_sensitivity: "0"
-    accel_decel_tracking: "+1"
-
+    tracking_sensitivity: '0'
+    accel_decel_tracking: '+1'
   exposure:
     mode: Tv
-    exposure_compensation: "Adjust for background"
-
+    exposure_compensation: Adjust for background
   drive:
     mode: High Speed Continuous+
-
   shutter:
     type: Mechanical
-    target: "1/2000–1/4000"
+    target: 1/2000–1/4000
   stabilization:
     image_stabilization:
       mode: Mode 3
-
 checklist:
-  - Servo AF
-  - Bird/eye acquired
-  - Shutter speed verified
-  - Histogram checked
-  - Focus limiter set for distance
-
+- Servo AF
+- Bird/eye acquired
+- Shutter speed verified
+- Histogram checked
+- Focus limiter set for distance
 watch_for:
-  - Motion blur
-  - Tracking the wrong bird
-  - Bright-sky underexposure
-  - Buffer filling
-
+- Motion blur
+- Tracking the wrong bird
+- Bright-sky underexposure
+- Buffer filling
 common_mistakes:
-  - Shutter too slow
-  - Failing to adjust exposure for the background
-  - Staying with subject detection when it repeatedly selects the wrong target
-  - Poor panning
-
+- Shutter too slow
+- Failing to adjust exposure for the background
+- Staying with subject detection when it repeatedly selects the wrong target
+- Poor panning
 notes:
-  - Use Expand AF Area when the bird is small or obscured, the background is busy, or Face + Tracking repeatedly selects the wrong target. Subject to Detect does not apply to Expand AF Area on the original EOS R5.
-  - Use Image Stabilization Mode 3 for erratic flight and action.
-  - Switch to Mode 2 only for deliberate steady panning.
+- Use Expand AF Area when the bird is small or obscured, the background is busy, or Face + Tracking repeatedly selects the wrong target. Subject to Detect does not apply to Expand AF Area on the original EOS R5.
+- Use Image Stabilization Mode 3 for erratic flight and action.
+- Switch to Mode 2 only for deliberate steady panning.
 appendix_links:
-  - id: af_cases_tracking
-    label: Servo AF Case selection and tracking adjustments
-  - id: r5_quick_reference
-    label: When to use 1.6× crop mode
+- id: af_cases_tracking
+  label: Servo AF Case selection and tracking adjustments
+- id: r5_quick_reference
+  label: When to use 1.6× crop mode

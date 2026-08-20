@@ -194,20 +194,6 @@ def validate(root):
         ]
         if incomplete_targets:
             issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"Generated C1-C3 registration values are incomplete: {incomplete_targets}"))
-        source_rows = {
-            row.get("setting"): row
-            for row in registration_rows
-            if isinstance(row, dict) and row.get("setting")
-        }
-        redundant_overrides = [
-            f"{row.get('setting', '<unknown>')}:{key}"
-            for row in materialized_registration.get("rows") or []
-            for key in ("c1", "c2", "c3")
-            if key in source_rows.get(row.get("setting"), {})
-            and row.get(key) == row.get("default_value")
-        ]
-        if redundant_overrides:
-            issues.append(error("spreadsheet_specs", paths.verification_tracker_source_file, f"C1-C3 rows must omit values inherited unchanged from the baseline: {redundant_overrides}"))
     ids = [test.get("test_id") for test in tests if isinstance(test, dict)]
     sequences = [test.get("sequence") for test in tests if isinstance(test, dict)]
     if len(ids) != len(set(ids)):

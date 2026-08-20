@@ -1,8 +1,10 @@
 # Profile Editor
 
-This Stage 2 local editor is a safe way to work through camera setup, My Menu organization, baseline impact, and shooting profiles. It provides a Canon-sourced EOS R5 still-photo settings dictionary, keeps temporary My Menu and baseline-impact drafts, renders isolated card previews, and can create, duplicate, or update shooting-profile YAML through a guarded review-and-save transaction.
+This Stage 2 local editor is a safe way to work through camera setup, persisted My Menu organization and card colors, baseline impact, and shooting profiles. It provides a Canon-sourced EOS R5 still-photo settings dictionary, loads and saves the reviewed My Menu layout, renders isolated shooting and reference-card previews, can create, duplicate, or update shooting-profile YAML, and can apply a complete reviewed baseline migration.
 
-It cannot edit permanent reference cards, the shared baseline, or saved My Menu configuration. It cannot rename or delete profiles and does not run the normal website build, change `docs/`, commit, push, merge, or publish anything.
+The header shows the editor version and a deterministic short build identifier. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.
+
+It cannot edit permanent reference cards, rename or delete profiles, or run the normal website build, change `docs/`, commit, push, merge, or publish anything. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction.
 
 ## Start the editor
 
@@ -38,15 +40,27 @@ All three are project **Set Once** recommendations. The active touch area should
 
 ## Configure My Menu
 
-Open **Configure My Menu** after reviewing setup. The temporary configurator follows the EOS R5 limit of five tabs with six items per tab and starts with the approved **SWITCH** and **AF Case** layouts. The remaining tabs and slots start empty. Modify that session-only arrangement as needed, or choose **Restore recommended tabs** to replace it with the approved recommendation.
+Open **Configure My Menu** after reviewing setup. The configurator follows the EOS R5 limit of five tabs with six items per tab and starts from the saved layout in `00 Master/my_menu.yaml`. **Reload saved layout** discards browser edits. **Restore recommended tabs** creates a draft of the approved **SWITCH** and **AF Case** recommendation without saving it.
+
+Each used tab requires a name, one to six unique ordered items, and a distinct **Card color** from the curated palette. Light Red is visibly red; Coral is more orange. Choose **Review My Menu changes** to validate the complete layout and inspect the exact diffs for `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml`. **Save reviewed My Menu** creates a machine-local recovery backup, checks both source fingerprints, writes only the reviewed changed bytes, runs source validation, and restores every written file automatically if validation fails. Saved colors apply consistently to matching card route tokens, setting values, `Δ` indicators, PDF cards, field-guide My Menu tokens, and My Menu reference-card section headings.
+
+Choose **Analyze profile impact** at any time to evaluate the current browser My Menu draft before or after saving it. The editor opens Baseline Impact and focuses the shared My Menu coverage report. The analysis is read-only and remains available when no baseline setting changed. It identifies old tab names that profiles can no longer find and displayed configured shortcuts that need a profile-card cue.
+
+Supported shortcuts are matched by setting identity, not by whether they came from **Restore recommended tabs**. For example, AF Operation, Eye Detection, and ISO speed settings in a newly created tab are checked against their corresponding profile card rows. A saved shortcut that has no supported card-setting identity remains visible as an unrepresented configured item instead of being assigned by guesswork.
 
 The dictionary shows a **Configured shortcut** only after an item is selected in this configurator. This keeps the direct Canon menu location authoritative and prevents the UI from claiming a My Menu path that was never configured in the draft.
 
-The My Menu draft is explicitly unverified and exists only in the current browser session. It does not save to project YAML and does not prove the physical camera matches the draft.
+The saved layout is the approved project reference, not proof that the physical camera currently matches it. Compare the generated My Menu card with the camera after a reset, firmware update, or deliberate on-camera menu change.
+
+## Use the My Menu reference card
+
+The released **My Menu** card appears under **Camera Setup & Controls** beside **Camera Buttons** and is read-only in the Profiles view. Choose it and select **Preview reference card** to see the current field reminder without saving anything. Each used saved tab becomes a separate section in `MY MENU1`–`MY MENU5` order, followed by its saved shortcuts in item order. Adding, renaming, reordering, or removing a used tab through **Configure My Menu** changes the next preview and normal build automatically.
+
+After scrolling down in any editor tab, use the floating circular **↑** control at the lower right to return to the top. It is available in Camera setup, Configure My Menu, Profiles, and Baseline Impact and disappears near the top.
 
 ## Preview baseline impact
 
-Open **Baseline impact** to test how proposed baseline values would affect the authored profiles. Change one or more existing values, then choose **Analyze draft**. The report separates inherited changes from profiles protected by existing overrides and identifies overrides that would become redundant.
+Open **Baseline impact** to test how proposed baseline values would affect the authored profiles or to inspect My Menu coverage without changing the baseline. **Analyze draft** remains enabled after the baseline loads. The report separates inherited changes from profiles protected by existing overrides, identifies overrides that would become redundant, and always includes current My Menu route coverage.
 
 For every inherited profile change, deliberately choose one result:
 
@@ -63,11 +77,17 @@ The **My Menu card coverage** report uses the My Menu arrangement currently show
 
 The renderer shows a My Menu tab on a card whenever at least one setting assigned to that tab is visible. If conditional card rules hide every assigned setting, the tab is omitted from that card without changing My Menu or recommending removal. The report separately lists displayed configured shortcuts without a card cue; **Newly visible** means a baseline proposal caused that conditional row to appear. Camera Defaults is included as an access-only card.
 
-The global **Configured shortcuts not referenced by any card** note is the only removal-oriented finding. It lists shortcuts whose setting is not displayed on any card and describes them only as possible removal candidates; the editor never changes My Menu automatically. Conversely, each displayed configured shortcut without an authored card cue is automatically included in the migration plan as an existing card row to color-code for its target tab. This adds no card field and no camera My Menu item, and the plan does not write the cue change.
+The global **Configured shortcuts not referenced by any card** note is the only removal-oriented finding. It lists shortcuts whose setting is not displayed on any card and describes them only as possible removal candidates; the editor never changes My Menu automatically. Conversely, each displayed configured shortcut without an authored card cue on an existing C1–C3 route is automatically included in the migration plan as an existing card row to color-code for its target tab. This adds no card field and no camera My Menu item. The cue is written only if the complete migration is reviewed and applied.
 
-Changing a My Menu tab name or item, or restoring the recommended tabs, clears an existing impact report; choose **Analyze draft** again to evaluate the new session arrangement. Coverage findings are warnings only. They do not modify the My Menu draft, saved profile routes, registrations, or source YAML.
+Changing a My Menu tab name or item, or restoring the recommended tabs, clears an existing impact report and migration review; choose **Analyze draft** again to evaluate the new session arrangement. Coverage findings do not modify the My Menu draft, saved profile routes, or registrations. Unavailable, unnecessary, and unresolved routes remain warnings and are not rewritten by migration.
 
-This is a planning view only. It cannot add, remove, or rename baseline settings, and it provides no YAML diff, review token, baseline save, or profile save action. The complete draft, decisions, and plan exist only in browser memory; refreshing the page, closing the tab, or stopping the server discards them. The analysis reads the baseline and profiles loaded when the editor server started, so restart the server after external source changes.
+The view cannot add, remove, or rename baseline setting paths. An incomplete plan remains session-only. When the plan is complete, acknowledge both the C1–C3 and My Menu warning reports, then choose **Review exact migration YAML**. The editor validates the proposed baseline and every affected profile together and shows one exact multi-file diff. **Apply reviewed migration** writes only those reviewed bytes.
+
+The migration updates the baseline, adds selected preservation overrides, removes newly redundant overrides, retains protected overrides, and adds the planned My Menu card cues. It does not rewrite C1–C3 registrations, starting routes, source-profile declarations, unused routes, unavailable routes, or the camera/My Menu draft. Before writing, it verifies that every source still matches the review, creates a recovery backup with all prior and candidate files, writes each file atomically, and runs source validation. If any write or validation fails, every file already written is restored. A successful migration reloads the baseline and profile data in the editor.
+
+When the baseline is unchanged and the plan contains only missing My Menu card cues, the reviewed migration contains only the affected profile files. It does not touch the baseline merely to permit the profile update. If analysis finds no baseline or profile source change, the plan says no migration is required and offers no save action.
+
+The draft, decisions, and unapplied plan exist only in browser memory; refreshing the page, closing the tab, or stopping the server discards them. The analysis reads the baseline and profiles loaded when the editor server started, so restart the server after external source changes.
 
 ## Edit or preview a profile
 
@@ -79,6 +99,8 @@ This is a planning view only. It cannot add, remove, or rename baseline settings
 6. Use **Use baseline** for one setting, **Use baseline for section** for a group, or **Discard draft & reload profile** to restore the selected profile's saved source values.
 7. Choose **Preview card** to render the temporary draft with the established card renderer.
 8. Choose **Review YAML changes** only when the draft is ready to save.
+
+On a preview or generated profile card, the C1/C2/C3 token remains white. My Menu-colored values keep their saved tab color whether or not they already match the selected foundation. A fixed rightmost column shows `Δ` in the same color as the setting value only when that row differs from the effective profile named as the Cx foundation. A blank indicator cell means no field change is required for that row. The legend below Settings names the foundation used for the comparison.
 
 Exposure, Autofocus, and Drive controls use the prototype's Canon EOS R5 options catalog. Each cataloged setting links to the applicable Canon manual page and uses the same approved setting/value icon system as the subject cards. The catalog is scoped to still photos on EOS R5 firmware 2.2.0 or later.
 
@@ -119,13 +141,13 @@ If another process changes the profile after it was loaded or reviewed, the edit
 
 ## Discard draft changes
 
-Profile, My Menu, and baseline-impact draft values live only in the open browser page.
+Unsaved profile, My Menu, and baseline-impact draft values live only in the open browser page. A reviewed My Menu save persists its tab layout in `00 Master/my_menu.yaml` and matching colors in `00 Master/my_menu_colors.yaml`.
 
 - **Use baseline** removes the temporary override for one setting.
 - **Use baseline for section** removes all temporary overrides in that section.
 - **Discard draft & reload profile** restores the selected profile's title, metadata, and saved overrides. This may bring back customized values that differ from the baseline.
 - Selecting another profile discards the current draft and loads the selected profile. Returning to the first profile loads its original saved overrides again.
-- Reloading the page clears My Menu edits and starts a new draft from the approved **SWITCH** and **AF Case** recommendation.
+- Reloading the page clears unsaved My Menu edits and reloads the persisted layout.
 - **Discard baseline draft** restores every temporary baseline value to the currently loaded source baseline.
 - Refreshing the page, closing the tab, or stopping the server discards all browser drafts.
 
@@ -133,7 +155,7 @@ Restarting the server is not required to discard a draft. A successful editor sa
 
 ## Boundaries
 
-The editor intentionally provides no profile deletion, existing-profile rename, baseline write, persistent My Menu save, build, commit, push, merge, or publish action. Use the established project workflows for validation, Git checkpoints, and publication.
+The editor intentionally provides no profile deletion, existing-profile rename, direct baseline edit, reference-card edit, build, commit, push, merge, or publish action. Baseline writes are available only through a complete reviewed migration. My Menu layout and colors are available only through their exact-diff guarded transaction. Use the established project workflows for validation, Git checkpoints, and publication.
 
 ## Quick readiness check
 

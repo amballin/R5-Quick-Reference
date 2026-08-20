@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
+  last_updated: 2026-08-20
   release: false
 title: Waterdrops
 card:
@@ -11,10 +11,13 @@ card:
     start: C3
     source_profile: Landscape
     my_menus:
-      - name: SWITCH
-        settings:
-          - shutter.type
-          - stabilization.image_stabilization.mode
+    - name: SWITCH
+      settings:
+      - shutter.type
+      - stabilization.image_stabilization.mode
+    - name: test
+      settings:
+      - exposure.iso.mode
 inherits: baseline
 overrides:
   exposure:
@@ -37,29 +40,29 @@ overrides:
       target: f/8–f/11
   stabilization:
     image_stabilization:
-      mode: "Off"
-    ibis: "Off"
-    lens_is: "Off"
+      mode: 'Off'
+    ibis: 'Off'
+    lens_is: 'Off'
 checklist:
-  - Pluto valve primed; liquid level and pressure stable
-  - Manual focus locked on a stand-in at the collision plane
-  - Multiple diffused flashes ready at about 1/16–1/64 power
-  - Pluto drop timing and camera-to-flash sync verified
+- Pluto valve primed; liquid level and pressure stable
+- Manual focus locked on a stand-in at the collision plane
+- Multiple diffused flashes ready at about 1/16–1/64 power
+- Pluto drop timing and camera-to-flash sync verified
 watch_for:
-  - Ambient light
-  - Flash recycle consistency
-  - Reflections from each light or modifier
-  - Soap film refracting the collision plane
+- Ambient light
+- Flash recycle consistency
+- Reflections from each light or modifier
+- Soap film refracting the collision plane
 common_mistakes:
-  - Treating valve-open milliseconds as a measured drop volume
-  - Changing drop size, liquid depth, or viscosity without recalibrating timing
-  - Using f/22 and high ISO before optimizing flash distance and power
+- Treating valve-open milliseconds as a measured drop volume
+- Changing drop size, liquid depth, or viscosity without recalibrating timing
+- Using f/22 and high ISO before optimizing flash distance and power
 notes:
-  - In the current setup, Pluto controls the valve timing and fires the camera; the camera then fires the flashes. Recheck timing after changing any trigger or shutter connection.
-  - At 1/200, the short manual-flash duration freezes the collision. Start at ISO 100, f/8–f/11, and about 1/16–1/64 power; raise ISO only when flash placement and distance cannot supply enough exposure.
-  - Form any soap bubble first, place a temporary target at the collision plane, focus with magnified Live View, then lock manual focus. A changing curved soap film can still shift or distort the apparent plane.
+- In the current setup, Pluto controls the valve timing and fires the camera; the camera then fires the flashes. Recheck timing after changing any trigger or shutter connection.
+- At 1/200, the short manual-flash duration freezes the collision. Start at ISO 100, f/8–f/11, and about 1/16–1/64 power; raise ISO only when flash placement and distance cannot supply enough exposure.
+- Form any soap bubble first, place a temporary target at the collision plane, focus with magnified Live View, then lock manual focus. A changing curved soap film can still shift or distort the apparent plane.
 appendix_links:
-  - id: water_drop_collision_photography
-    label: Water Drop Collision Photography guide
-  - id: flash_photography
-    label: Flash Photography deep dive
+- id: water_drop_collision_photography
+  label: Water Drop Collision Photography guide
+- id: flash_photography
+  label: Flash Photography deep dive

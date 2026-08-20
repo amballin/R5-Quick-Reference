@@ -1,0 +1,12 @@
+schema_version: 1
+palette:
+  Green: '#72dda8'
+  Gold: '#f0bf69'
+  Violet: '#c6a6ff'
+  Light Red: '#ff7f7f'
+  Blue: '#80d8ff'
+  Coral: '#ffb36b'
+assignments:
+  SWITCH: Green
+  AF Case: Gold
+  test: Light Red

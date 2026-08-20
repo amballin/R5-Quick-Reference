@@ -42,9 +42,17 @@ from baseline_impact import (
     analyze_my_menu_routes,
     plan_baseline_migration,
 )
+from baseline_migration import (
+    BaselineMigrationError,
+    build_migration_candidates,
+    migration_diff,
+)
 from build_validator import discover_profiles, is_reference_card
 from html_renderer import LABEL, render_card
 from icon_manager import IconManager
+from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
+from my_menu_colors import MyMenuColorError, load_my_menu_colors, validate_my_menu_colors
+from my_menu_reference import reference_settings as my_menu_reference_settings
 from profile_loader import load_baseline, load_yaml
 from utilities import flatten
 
@@ -83,6 +91,22 @@ PROFILE_STATUSES = {"Draft", "Review", "Final"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
+EDITOR_VERSION = "0.7.9"
+EDITOR_BUILD_FILES = (
+    "00 Master/my_menu.yaml",
+    "00 Master/my_menu_colors.yaml",
+    "10 Profiles/My Menu.yaml",
+    "20 Templates/card.html",
+    "80 Build/cx_route_analysis.py",
+    "80 Build/html_renderer.py",
+    "80 Build/my_menu_colors.py",
+    "80 Build/my_menu.py",
+    "80 Build/my_menu_reference.py",
+    "80 Build/profile_editor.py",
+    "80 Build/profile_editor/app.js",
+    "80 Build/profile_editor/index.html",
+    "80 Build/profile_editor/styles.css",
+)
 
 
 class PrototypeError(ValueError):
@@ -131,15 +155,19 @@ class ProfileEditorModel:
         self.icon_manager = IconManager(self.paths)
         self.profiles = self._load_profiles()
         self.option_catalog = self._load_option_catalog()
+        self.my_menu_colors = load_my_menu_colors(self.paths)
         self.catalog_settings = self.option_catalog.get("settings") or {}
         self._validate_option_catalog()
         self.reference_sections = self.option_catalog.get("reference_sections") or []
         self.my_menu_catalog = self.option_catalog.get("my_menu") or {}
         self._validate_reference_catalog()
+        self.my_menu = load_my_menu(self.paths, self._all_my_menu_item_ids())
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
         self._source_validator = source_validator or self._validate_project_sources
         self._pending_reviews = {}
+        self._pending_migration_reviews = {}
+        self._pending_color_reviews = {}
         self._write_lock = threading.RLock()
 
     def _load_profiles(self):
@@ -268,19 +296,6 @@ class ProfileEditorModel:
                 if item_id in recommended_item_ids:
                     raise PrototypeError(f"Recommended My Menu item is duplicated: {item_id}")
                 recommended_item_ids.add(item_id)
-        identity_item_ids = {
-            item["id"]
-            for section in self.reference_sections
-            for item in section["items"]
-            if item.get("setting_path")
-        }
-        missing_recommended = sorted(identity_item_ids - recommended_item_ids)
-        if missing_recommended:
-            raise PrototypeError(
-                "My Menu setting identities are absent from recommended tabs: "
-                + ", ".join(missing_recommended)
-            )
-
     def _setting_order(self):
         layout = load_yaml(self.paths.card_layout_file) or {}
         configured = (layout.get("card_layout") or {}).get("display_order") or []
@@ -347,12 +362,352 @@ class ProfileEditorModel:
                         "label": item["label"],
                         "menuLocation": item["menu_location"],
                     })
+        my_menu = copy.deepcopy(self.my_menu_catalog)
+        my_menu["saved_tabs"] = copy.deepcopy(used_tabs(self.my_menu))
+        my_menu["sourceFile"] = "00 Master/my_menu.yaml"
+        my_menu["colors"] = {
+            "sourceFile": "00 Master/my_menu_colors.yaml",
+            "palette": copy.deepcopy(self.my_menu_colors["palette"]),
+            "assignments": copy.deepcopy(self.my_menu_colors["assignments"]),
+        }
         return {
             "metadata": copy.deepcopy(self.option_catalog.get("metadata") or {}),
             "sections": sections,
-            "myMenu": copy.deepcopy(self.my_menu_catalog),
+            "myMenu": my_menu,
             "myMenuEligible": sorted(eligible, key=lambda item: item["label"].casefold()),
         }
+
+    def _all_my_menu_item_ids(self):
+        return {
+            item["id"]
+            for section in self.reference_sections
+            for item in section["items"]
+            if item.get("my_menu_eligible")
+        }
+
+    def review_my_menu_configuration(self, tabs):
+        menu_candidate, color_candidate = self._my_menu_configuration_candidates(tabs)
+        candidates = {
+            "00 Master/my_menu.yaml": self._dump_yaml(menu_candidate),
+            "00 Master/my_menu_colors.yaml": self._dump_yaml(color_candidate),
+        }
+        before = {
+            relative: (self.paths.root / relative).read_bytes()
+            for relative in candidates
+        }
+        diff_parts = []
+        for relative in candidates:
+            if before[relative] == candidates[relative]:
+                continue
+            diff_parts.append(
+                "".join(
+                    difflib.unified_diff(
+                        before[relative].decode("utf-8").splitlines(keepends=True),
+                        candidates[relative].decode("utf-8").splitlines(keepends=True),
+                        fromfile=f"a/{relative}",
+                        tofile=f"b/{relative}",
+                    )
+                )
+            )
+        diff = "".join(diff_parts)
+        if not diff:
+            raise PrototypeError("The My Menu draft matches the saved configuration.")
+        review = {
+            "created": time.monotonic(),
+            "source_sha256": {relative: self._sha256(data) for relative, data in before.items()},
+            "candidate_sha256": {relative: self._sha256(data) for relative, data in candidates.items()},
+            "candidates": candidates,
+            "diff": diff,
+        }
+        with self._write_lock:
+            self._expire_color_reviews()
+            while len(self._pending_color_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(self._pending_color_reviews, key=lambda key: self._pending_color_reviews[key]["created"])
+                del self._pending_color_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_color_reviews[token] = review
+        changed_files = sum(before[name] != candidates[name] for name in candidates)
+        return {
+            "reviewToken": token,
+            "diff": diff,
+            "summary": f"Update saved My Menu layout and presentation ({changed_files} file{'s' if changed_files != 1 else ''}).",
+        }
+
+    def save_my_menu_configuration(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed My Menu token is required.")
+        with self._write_lock:
+            self._expire_color_reviews()
+            review = self._pending_color_reviews.pop(review_token, None)
+            if review is None or "candidates" not in review:
+                raise ProfileConflictError("This My Menu review expired or was already used. Review the current layout again.")
+            before = {}
+            for relative, expected_sha in review["source_sha256"].items():
+                data = (self.paths.root / relative).read_bytes()
+                if self._sha256(data) != expected_sha:
+                    raise ProfileConflictError(f"{relative} changed after review. Reload the editor and review again.")
+                before[relative] = data
+            for relative, candidate in review["candidates"].items():
+                if self._sha256(candidate) != review["candidate_sha256"][relative]:
+                    raise ProfileConflictError("The reviewed My Menu candidate is no longer valid.")
+            menu_candidate = yaml.safe_load(review["candidates"]["00 Master/my_menu.yaml"])
+            color_candidate = yaml.safe_load(review["candidates"]["00 Master/my_menu_colors.yaml"])
+            try:
+                validate_my_menu(menu_candidate, self._all_my_menu_item_ids())
+                validate_my_menu_colors(color_candidate)
+            except (MyMenuError, MyMenuColorError) as exc:
+                raise PrototypeError(str(exc)) from exc
+            backup = self._create_my_menu_configuration_backup(review, before)
+            written = []
+            try:
+                for relative, candidate in review["candidates"].items():
+                    target = self.paths.root / relative
+                    if candidate != before[relative]:
+                        self._atomic_write(target, candidate, before[relative])
+                        written.append(relative)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_errors = []
+                for relative in reversed(written):
+                    target = self.paths.root / relative
+                    try:
+                        self._atomic_write(target, before[relative], target.read_bytes())
+                    except Exception as rollback_exc:  # pragma: no cover
+                        rollback_errors.append(f"{relative}: {rollback_exc}")
+                if rollback_errors:
+                    raise PrototypeError(
+                        f"My Menu save failed and rollback was incomplete. Recovery backup: {backup}. "
+                        + "; ".join(rollback_errors)
+                    ) from exc
+                raise PrototypeError(
+                    f"My Menu save failed; the prior source state was restored automatically. Recovery backup: {backup}. {exc}"
+                ) from exc
+            finally:
+                self._pending_color_reviews.pop(review_token, None)
+            self.my_menu = load_my_menu(self.paths, self._all_my_menu_item_ids())
+            self.my_menu_colors = load_my_menu_colors(self.paths)
+            return {
+                "sourceFiles": list(review["candidates"]),
+                "backup": str(backup),
+                "validation": "passed",
+                "tabs": copy.deepcopy(used_tabs(self.my_menu)),
+                "colors": copy.deepcopy(self.my_menu_colors),
+            }
+
+    def _my_menu_configuration_candidates(self, tabs):
+        if not isinstance(tabs, list):
+            raise PrototypeError("My Menu tabs must be an array.")
+        menu_tabs = []
+        assignments = {}
+        for index, tab in enumerate(tabs[:5], start=1):
+            if not isinstance(tab, dict):
+                raise PrototypeError(f"My Menu tab {index} must be an object.")
+            name = str(tab.get("name") or "").strip()
+            items = [item for item in (tab.get("items") or []) if item]
+            color = tab.get("colorChoice")
+            if not name and not items:
+                continue
+            if not name:
+                raise PrototypeError(f"MY MENU{index} has items but no tab name.")
+            if not items:
+                raise PrototypeError(f"My Menu tab {name} requires at least one item.")
+            menu_tabs.append({"name": name, "items": items})
+            assignments[name] = color
+        menu_candidate = {"schema_version": 1, "tabs": menu_tabs}
+        color_candidate = {
+            "schema_version": 1,
+            "palette": copy.deepcopy(self.my_menu_colors["palette"]),
+            "assignments": assignments,
+        }
+        try:
+            validate_my_menu(menu_candidate, self._all_my_menu_item_ids())
+            validate_my_menu_colors(color_candidate)
+        except (MyMenuError, MyMenuColorError) as exc:
+            raise PrototypeError(str(exc)) from exc
+        return menu_candidate, color_candidate
+
+    @staticmethod
+    def _dump_yaml(data):
+        return yaml.safe_dump(
+            data,
+            sort_keys=False,
+            allow_unicode=True,
+            width=1000,
+            default_flow_style=False,
+        ).encode("utf-8")
+
+    def _create_my_menu_configuration_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-my-menu"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        for relative, data in before.items():
+            target = backup / "before" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        for relative, data in review["candidates"].items():
+            target = backup / "candidate" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": "update-my-menu",
+            "source_sha256": review["source_sha256"],
+            "candidate_sha256": review["candidate_sha256"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
+
+    def review_my_menu_colors(self, assignments):
+        candidate_data = self._my_menu_color_candidate(assignments)
+        candidate = yaml.safe_dump(
+            candidate_data,
+            sort_keys=False,
+            allow_unicode=True,
+            width=1000,
+            default_flow_style=False,
+        ).encode("utf-8")
+        target = self.paths.my_menu_colors_file
+        before = target.read_bytes()
+        diff = "".join(
+            difflib.unified_diff(
+                before.decode("utf-8").splitlines(keepends=True),
+                candidate.decode("utf-8").splitlines(keepends=True),
+                fromfile="a/00 Master/my_menu_colors.yaml",
+                tofile="b/00 Master/my_menu_colors.yaml",
+            )
+        )
+        if not diff:
+            raise PrototypeError("The My Menu color draft does not change any assignments.")
+        review = {
+            "created": time.monotonic(),
+            "source_sha256": self._sha256(before),
+            "candidate_sha256": self._sha256(candidate),
+            "candidate": candidate,
+            "diff": diff,
+        }
+        with self._write_lock:
+            self._expire_color_reviews()
+            while len(self._pending_color_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(
+                    self._pending_color_reviews,
+                    key=lambda key: self._pending_color_reviews[key]["created"],
+                )
+                del self._pending_color_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_color_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "sourceFile": "00 Master/my_menu_colors.yaml",
+            "diff": diff,
+            "candidateYaml": candidate.decode("utf-8"),
+            "summary": "Update named My Menu card-color assignments.",
+        }
+
+    def save_my_menu_colors(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed My Menu color token is required.")
+        with self._write_lock:
+            self._expire_color_reviews()
+            review = self._pending_color_reviews.get(review_token)
+            if review is None:
+                raise ProfileConflictError(
+                    "This color review expired or was already used. Review the current colors again."
+                )
+            target = self.paths.my_menu_colors_file
+            before = target.read_bytes()
+            if self._sha256(before) != review["source_sha256"]:
+                raise ProfileConflictError(
+                    "My Menu colors changed after review. Reload the editor and review again."
+                )
+            if self._sha256(review["candidate"]) != review["candidate_sha256"]:
+                raise ProfileConflictError("The reviewed My Menu color candidate is no longer valid.")
+            candidate_data = yaml.safe_load(review["candidate"])
+            try:
+                validate_my_menu_colors(candidate_data)
+            except MyMenuColorError as exc:
+                raise PrototypeError(str(exc)) from exc
+            backup = self._create_my_menu_color_backup(review, before)
+            try:
+                self._atomic_write(target, review["candidate"], before)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_error = None
+                try:
+                    self._atomic_write(target, before, target.read_bytes() if target.exists() else None)
+                except Exception as rollback_exc:  # pragma: no cover
+                    rollback_error = rollback_exc
+                if rollback_error is not None:
+                    raise PrototypeError(
+                        f"Color save failed and automatic rollback also failed. Recovery backup: {backup}. "
+                        f"Save error: {exc}. Rollback error: {rollback_error}"
+                    ) from exc
+                raise PrototypeError(
+                    f"Color save failed; the prior source state was restored automatically. "
+                    f"Recovery backup: {backup}. {exc}"
+                ) from exc
+            finally:
+                self._pending_color_reviews.pop(review_token, None)
+            self.my_menu_colors = load_my_menu_colors(self.paths)
+            return {
+                "sourceFile": "00 Master/my_menu_colors.yaml",
+                "backup": str(backup),
+                "validation": "passed",
+                "colors": copy.deepcopy(self.my_menu_colors),
+            }
+
+    def _my_menu_color_candidate(self, assignments):
+        if not isinstance(assignments, dict) or not assignments:
+            raise PrototypeError("My Menu color assignments must be a non-empty object.")
+        candidate = {
+            "schema_version": 1,
+            "palette": copy.deepcopy(self.my_menu_colors["palette"]),
+            "assignments": {},
+        }
+        for name, choice in assignments.items():
+            if not isinstance(name, str) or not name.strip():
+                raise PrototypeError("Every saved My Menu color requires a named tab.")
+            candidate["assignments"][name.strip()] = choice
+        try:
+            validate_my_menu_colors(candidate)
+        except MyMenuColorError as exc:
+            raise PrototypeError(str(exc)) from exc
+        saved_names = {tab["name"] for tab in used_tabs(self.my_menu)}
+        if set(candidate["assignments"]) != saved_names:
+            raise PrototypeError("Named My Menu colors must match the persisted used tabs.")
+        return candidate
+
+    def _create_my_menu_color_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-my-menu-colors"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        before_dir = backup / "before" / "00 Master"
+        candidate_dir = backup / "candidate" / "00 Master"
+        before_dir.mkdir(parents=True)
+        candidate_dir.mkdir(parents=True)
+        (before_dir / "my_menu_colors.yaml").write_bytes(before)
+        (candidate_dir / "my_menu_colors.yaml").write_bytes(review["candidate"])
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": "update-my-menu-colors",
+            "source_sha256": review["source_sha256"],
+            "candidate_sha256": review["candidate_sha256"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
 
     def baseline_detail(self):
         """Return current baseline controls for a session-only browser draft."""
@@ -368,6 +723,19 @@ class ProfileEditorModel:
             "readOnly": True,
             "values": copy.deepcopy(self.default_fields),
             "sections": detail["sections"],
+        }
+
+    def editor_info(self):
+        digest = hashlib.sha256()
+        for relative in EDITOR_BUILD_FILES:
+            source = self.paths.root / relative
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(source.read_bytes())
+            digest.update(b"\0")
+        return {
+            "version": EDITOR_VERSION,
+            "build": digest.hexdigest()[:8],
         }
 
     def baseline_impact(self, values, my_menu_tabs=None):
@@ -389,7 +757,7 @@ class ProfileEditorModel:
                 self._my_menu_route_catalog(),
                 my_menu_tabs
                 if my_menu_tabs is not None
-                else copy.deepcopy(self.my_menu_catalog.get("recommended_tabs") or []),
+                else copy.deepcopy(used_tabs(self.my_menu)),
             )
             return analysis
         except BaselineImpactError as exc:
@@ -416,10 +784,186 @@ class ProfileEditorModel:
                 self._my_menu_route_catalog(),
                 my_menu_tabs
                 if my_menu_tabs is not None
-                else copy.deepcopy(self.my_menu_catalog.get("recommended_tabs") or []),
+                else copy.deepcopy(used_tabs(self.my_menu)),
             )
         except BaselineImpactError as exc:
             raise PrototypeError(str(exc)) from exc
+
+    def review_baseline_migration(self, payload):
+        """Return an exact, one-use review of a complete multi-file migration."""
+        if not isinstance(payload, dict):
+            raise PrototypeError("Baseline migration review input must be an object.")
+        if payload.get("acknowledgeCxImpact") is not True:
+            raise PrototypeError("Acknowledge the C1–C3 impact report before reviewing the migration.")
+        if payload.get("acknowledgeMyMenuImpact") is not True:
+            raise PrototypeError("Acknowledge the My Menu route report before reviewing the migration.")
+        values = payload.get("values")
+        decisions = payload.get("decisions")
+        tabs = payload.get("myMenuTabs")
+        proposed = self._proposed_baseline(values)
+        plan = self.baseline_plan(values, decisions, tabs)
+        if not plan.get("complete"):
+            raise PrototypeError("Complete every profile migration decision before review.")
+        try:
+            candidates = build_migration_candidates(
+                self.baseline,
+                proposed,
+                self.profiles,
+                plan,
+            )
+        except BaselineMigrationError as exc:
+            raise PrototypeError(str(exc)) from exc
+        before = self._migration_source_bytes(candidates)
+        diff = migration_diff(before, candidates)
+        if not diff:
+            raise PrototypeError("The migration does not change any source files.")
+        self._validate_migration_candidates(candidates)
+        impact = self.baseline_impact(values, tabs)
+        review = {
+            "created": time.monotonic(),
+            "candidates": candidates,
+            "candidate_sha256": {path: self._sha256(data) for path, data in candidates.items()},
+            "source_sha256": {path: self._sha256(data) for path, data in before.items()},
+            "diff": diff,
+            "plan": plan,
+            "impact": impact,
+            "acknowledgements": {"cx": True, "my_menu": True},
+        }
+        with self._write_lock:
+            self._expire_migration_reviews()
+            while len(self._pending_migration_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(
+                    self._pending_migration_reviews,
+                    key=lambda key: self._pending_migration_reviews[key]["created"],
+                )
+                del self._pending_migration_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_migration_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "sourceFiles": sorted(candidates),
+            "diff": diff,
+            "summary": plan["summary"],
+            "cxImpact": impact["cx_impact"],
+            "myMenuImpact": impact["my_menu_impact"],
+        }
+
+    def save_baseline_migration(self, review_token):
+        """Apply one reviewed migration or restore every source on any failure."""
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed baseline migration token is required.")
+        with self._write_lock:
+            self._expire_migration_reviews()
+            review = self._pending_migration_reviews.get(review_token)
+            if review is None:
+                raise ProfileConflictError(
+                    "This migration review expired or was already used. Review the current plan again."
+                )
+            try:
+                before = self._migration_source_bytes(review["candidates"])
+                current_fingerprints = {path: self._sha256(data) for path, data in before.items()}
+                if current_fingerprints != review["source_sha256"]:
+                    raise ProfileConflictError(
+                        "A baseline or affected profile changed after review. Reload and review the migration again."
+                    )
+                for path, data in review["candidates"].items():
+                    if self._sha256(data) != review["candidate_sha256"][path]:
+                        raise ProfileConflictError("The reviewed migration candidate is no longer valid.")
+                self._validate_migration_candidates(review["candidates"])
+                backup = self._create_migration_backup(review, before)
+                written = []
+                try:
+                    for relative in sorted(review["candidates"]):
+                        target = self.paths.root / relative
+                        self._atomic_write(target, review["candidates"][relative], before[relative])
+                        written.append(relative)
+                    errors = list(self._source_validator(self.paths.root))
+                    if errors:
+                        raise PrototypeError("Post-migration source validation failed: " + "; ".join(errors))
+                except Exception as exc:
+                    rollback_errors = []
+                    for relative in reversed(written):
+                        target = self.paths.root / relative
+                        try:
+                            self._atomic_write(target, before[relative], target.read_bytes())
+                        except Exception as rollback_exc:  # pragma: no cover - catastrophic filesystem failure
+                            rollback_errors.append(f"{relative}: {rollback_exc}")
+                    if rollback_errors:
+                        raise PrototypeError(
+                            f"Migration failed and automatic rollback was incomplete. Recovery backup: {backup}. "
+                            f"Migration error: {exc}. Rollback errors: {'; '.join(rollback_errors)}"
+                        ) from exc
+                    raise PrototypeError(
+                        f"Migration failed; every written source was restored automatically. "
+                        f"Recovery backup: {backup}. {exc}"
+                    ) from exc
+                self._reload_project_data()
+                return {
+                    "sourceFiles": sorted(review["candidates"]),
+                    "backup": str(backup),
+                    "validation": "passed",
+                }
+            finally:
+                self._pending_migration_reviews.pop(review_token, None)
+
+    def _migration_source_bytes(self, candidates):
+        before = {}
+        for relative in candidates:
+            target = (self.paths.root / relative).resolve()
+            try:
+                target.relative_to(self.paths.root.resolve())
+            except ValueError as exc:
+                raise PrototypeError(f"Migration source escapes the project root: {relative}") from exc
+            if not target.is_file():
+                raise ProfileConflictError(f"Migration source no longer exists: {relative}")
+            before[relative] = target.read_bytes()
+        return before
+
+    def _validate_migration_candidates(self, candidates):
+        from validators import baseline_validator, profile_validator, yaml_validator
+
+        with tempfile.TemporaryDirectory(prefix="baseline-migration-candidate-") as temporary:
+            shadow = Path(temporary)
+            for directory in ("00 Master", "10 Profiles", "50 Field Guide"):
+                shutil.copytree(self.paths.root / directory, shadow / directory)
+            for relative, data in candidates.items():
+                target = shadow / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(data)
+            errors = []
+            for validator in (yaml_validator.validate, baseline_validator.validate, profile_validator.validate):
+                errors.extend(issue.message for issue in validator(shadow) if issue.level == "error")
+            if errors:
+                raise PrototypeError("Migration candidate validation failed: " + "; ".join(errors))
+
+    def _create_migration_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-baseline-migration"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        for relative, data in before.items():
+            target = backup / "before" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        for relative, data in review["candidates"].items():
+            target = backup / "candidate" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": "baseline_migration",
+            "source_files": sorted(review["candidates"]),
+            "source_sha256": review["source_sha256"],
+            "candidate_sha256": review["candidate_sha256"],
+            "acknowledgements": review["acknowledgements"],
+            "plan_summary": review["plan"]["summary"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
 
     def _proposed_baseline(self, values):
         if not isinstance(values, dict):
@@ -446,6 +990,11 @@ class ProfileEditorModel:
         profile = self._profile(name)
         fingerprint = self._profile_fingerprint(name)
         if is_reference_card(profile):
+            reference_settings = (
+                my_menu_reference_settings(self.paths)
+                if profile.get("reference_source") == "my_menu"
+                else profile.get("reference_settings") or []
+            )
             return {
                 "name": name,
                 "title": profile.get("title", name),
@@ -454,7 +1003,7 @@ class ProfileEditorModel:
                 "editableDraft": False,
                 "sourceFile": f"10 Profiles/{name}.yaml",
                 "sourceFingerprint": fingerprint,
-                "referenceSettings": profile.get("reference_settings") or [],
+                "referenceSettings": reference_settings,
                 "sections": [],
                 "originalOverrides": {},
             }
@@ -909,6 +1458,15 @@ class ProfileEditorModel:
         self.profiles = self._load_profiles()
         self.choices = self._choice_catalog()
 
+    def _reload_project_data(self):
+        self.baseline = load_baseline(self.paths)
+        self.defaults = self.baseline.get("defaults") or {}
+        self.default_fields = flatten(self.defaults)
+        self.profiles = self._load_profiles()
+        self._validate_option_catalog()
+        self.setting_order = self._setting_order()
+        self.choices = self._choice_catalog()
+
     def _profile_path(self, name):
         path = self.paths.profile_file(name).resolve()
         if path.parent != self.paths.profiles_dir.resolve():
@@ -971,6 +1529,26 @@ class ProfileEditorModel:
         for token in expired:
             del self._pending_reviews[token]
 
+    def _expire_migration_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_migration_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_migration_reviews[token]
+
+    def _expire_color_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_color_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_color_reviews[token]
+
     @staticmethod
     def _validate_project_sources(root):
         from validator import run
@@ -980,7 +1558,9 @@ class ProfileEditorModel:
     def preview(self, name, flat_overrides):
         profile = copy.deepcopy(self._profile(name))
         if is_reference_card(profile):
-            raise PrototypeError("Reference cards do not use profile overrides.")
+            if flat_overrides not in ({}, None):
+                raise PrototypeError("Reference cards do not use profile overrides.")
+            return self._render_preview(name, profile)
         clean = self._validate_overrides(flat_overrides)
         nested = nested_from_flat(clean)
         profile["overrides"] = nested
@@ -1071,6 +1651,8 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.dictionary_detail())
             if path == "/api/baseline":
                 return self._json(self.model.baseline_detail())
+            if path == "/api/editor-info":
+                return self._json(self.model.editor_info())
             if path.startswith("/api/profiles/"):
                 name = unquote(path.removeprefix("/api/profiles/"))
                 return self._json(self.model.profile_detail(name))
@@ -1096,6 +1678,12 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/profile-saves",
             "/api/baseline-impact",
             "/api/baseline-plan",
+            "/api/baseline-migration-reviews",
+            "/api/baseline-migration-saves",
+            "/api/my-menu-color-reviews",
+            "/api/my-menu-color-saves",
+            "/api/my-menu-reviews",
+            "/api/my-menu-saves",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         try:
@@ -1121,6 +1709,18 @@ class EditorHandler(BaseHTTPRequestHandler):
                         payload.get("myMenuTabs"),
                     )
                 )
+            if parsed.path == "/api/baseline-migration-reviews":
+                return self._json(self.model.review_baseline_migration(payload))
+            if parsed.path == "/api/baseline-migration-saves":
+                return self._json(self.model.save_baseline_migration(payload.get("reviewToken")))
+            if parsed.path == "/api/my-menu-color-reviews":
+                return self._json(self.model.review_my_menu_colors(payload.get("assignments")))
+            if parsed.path == "/api/my-menu-color-saves":
+                return self._json(self.model.save_my_menu_colors(payload.get("reviewToken")))
+            if parsed.path == "/api/my-menu-reviews":
+                return self._json(self.model.review_my_menu_configuration(payload.get("tabs")))
+            if parsed.path == "/api/my-menu-saves":
+                return self._json(self.model.save_my_menu_configuration(payload.get("reviewToken")))
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
             else:

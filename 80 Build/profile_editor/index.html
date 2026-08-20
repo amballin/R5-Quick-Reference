@@ -13,14 +13,17 @@
       <p class="eyebrow">Canon Camera Reference</p>
       <h1>Profile Editor</h1>
     </div>
-    <span class="prototype-badge">Stage 2 · Guarded saves</span>
+    <div class="build-badges">
+      <span class="prototype-badge">Stage 2 · Guarded saves</span>
+      <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
+    </div>
   </header>
 
   <main>
     <section class="safety-note" aria-label="Prototype safety notice">
       <strong>Review before every save.</strong>
-      Profile writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference cards, the shared baseline, My Menu drafts, deletion, builds, Git, and publishing remain read-only or unavailable here.
+      Profile and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
+      Reference cards, direct baseline edits, deletion, builds, Git, and publishing remain read-only or unavailable here. My Menu layout and color changes use their own guarded save.
     </section>
 
     <nav class="view-tabs" aria-label="Prototype sections">
@@ -59,13 +62,19 @@
     <section id="my-menu-view" class="app-view" hidden>
       <div class="view-intro">
         <div>
-          <p class="eyebrow">Draft navigation layer</p>
+          <p class="eyebrow">Saved navigation layer</p>
           <h2>Configure My Menu</h2>
-          <p class="muted">This session-only draft supports Canon's limit of five tabs and six items per tab. It does not claim the camera is configured.</p>
+          <p class="muted">Edit the saved tab names, ordered shortcuts, and distinct card colors. The generated My Menu reference card follows every saved used tab.</p>
         </div>
-        <button id="load-recommended-menus" class="primary" type="button">Restore recommended tabs</button>
+        <div class="my-menu-actions">
+          <button id="load-saved-menus" class="secondary" type="button">Reload saved layout</button>
+          <button id="load-recommended-menus" class="secondary" type="button">Restore recommended tabs</button>
+          <button id="analyze-my-menu" class="primary" type="button" disabled>Analyze profile impact</button>
+          <button id="review-my-menu-colors" class="save-action" type="button">Review My Menu changes</button>
+        </div>
       </div>
-      <div class="configuration-state"><strong>Unverified draft</strong> · Shortcut paths appear only for items selected below.</div>
+      <div class="configuration-state"><strong>Guarded persistence</strong> · Used tabs, ordered items, and card colors are saved together only after exact diff review.</div>
+      <div id="my-menu-color-message" class="message" role="status" hidden></div>
       <div id="my-menu-tabs" class="my-menu-tabs"></div>
     </section>
 
@@ -137,16 +146,16 @@
     <section id="baseline-view" class="app-view" hidden>
       <div class="view-intro">
         <div>
-          <p class="eyebrow">Read-only planning workspace</p>
+          <p class="eyebrow">Guarded migration workspace</p>
           <h2>Baseline impact</h2>
-          <p class="muted">Temporarily change existing baseline values to see which profiles would follow them, remain protected by overrides, or need cleanup. This view cannot save the baseline or profiles.</p>
+          <p class="muted">Propose baseline values, inspect profile and route impact, then apply only a complete migration after reviewing the exact multi-file YAML diff.</p>
         </div>
         <div class="baseline-actions">
           <button id="baseline-reset" class="secondary" type="button" disabled>Discard baseline draft</button>
           <button id="baseline-analyze" class="primary" type="button" disabled>Analyze draft</button>
         </div>
       </div>
-      <div class="configuration-state"><strong>Session-only proposal</strong> · Existing setting paths and value types are preserved. Refreshing the page discards this draft.</div>
+      <div class="configuration-state"><strong>Session-only proposal</strong> · Nothing is written until both warning reports are acknowledged and the exact migration diff is reviewed and applied.</div>
       <div id="baseline-message" class="message" role="status" hidden></div>
       <section id="baseline-summary" class="baseline-summary" aria-label="Baseline impact summary" hidden></section>
       <section id="baseline-decision-tools" class="baseline-decision-tools" hidden>
@@ -191,6 +200,44 @@
       <button id="save-button" class="save-action" type="button">Save reviewed YAML</button>
     </div>
   </dialog>
+
+  <dialog id="my-menu-color-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required My Menu review</p>
+        <h2>Exact saved My Menu YAML</h2>
+        <p id="my-menu-color-review-summary" class="muted"></p>
+      </div>
+      <button id="my-menu-color-review-close" class="secondary" type="button" aria-label="Close My Menu review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Only the shown My Menu layout and presentation files are saved.</strong> The generated reference card reads this saved layout.</p>
+    <pre id="my-menu-color-review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="my-menu-color-review-cancel" class="secondary" type="button">Continue editing</button>
+      <button id="save-my-menu-colors" class="save-action" type="button">Save reviewed My Menu</button>
+    </div>
+  </dialog>
+
+  <dialog id="migration-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required baseline migration review</p>
+        <h2>Exact multi-file YAML changes</h2>
+        <p id="migration-review-summary" class="muted"></p>
+      </div>
+      <button id="migration-review-close" class="secondary" type="button" aria-label="Close migration review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Every file shown below is one protected transaction.</strong> If any source changes or validation fails, the migration is rejected or all written files are restored.</p>
+    <pre id="migration-review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="migration-review-cancel" class="secondary" type="button">Continue planning</button>
+      <button id="migration-save-button" class="save-action" type="button">Apply reviewed migration</button>
+    </div>
+  </dialog>
+
+  <button id="return-to-top" class="floating-return" type="button" aria-label="Return to top" title="Return to top" hidden>
+    <span aria-hidden="true">↑</span>
+  </button>
 
   <template id="section-template">
     <section class="setting-section">
@@ -252,6 +299,9 @@
     <section class="my-menu-card">
       <div class="my-menu-card-heading">
         <label>Tab name <input class="my-menu-name" type="text" maxlength="16"></label>
+        <label class="my-menu-color-control">Card color
+          <span><span class="my-menu-color-swatch" aria-hidden="true"></span><select class="my-menu-color"></select></span>
+        </label>
         <span class="my-menu-number"></span>
       </div>
       <div class="my-menu-items"></div>

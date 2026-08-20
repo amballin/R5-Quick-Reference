@@ -233,7 +233,13 @@ class BaselineImpactTests(unittest.TestCase):
             {
                 "Travel": {
                     "title": "Travel",
-                    "card": {"field_setup": {"start": "C3", "my_menus": []}},
+                    "card": {
+                        "field_setup": {
+                            "start": "C3",
+                            "source_profile": "Landscape",
+                            "my_menus": [],
+                        }
+                    },
                     "overrides": {},
                 }
             },

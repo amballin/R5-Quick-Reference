@@ -1,46 +1,40 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
-
-subtitle:
-
+  last_updated: 2026-08-20
+subtitle: null
 card:
   icons:
     header: Card Logos/png/Silver Logo.png
-    left:
-    right:
+    left: null
+    right: null
   colors:
-    background:
-    text:
-
+    background: null
+    text: null
 camera:
   manufacturer: Canon
   model: EOS R5
-  firmware: "2.2.1"
-
+  firmware: 2.2.1
 workflow:
   capture_format: cRAW
   post_processing:
     application: Lightroom Classic
     ai_denoise:
       enabled: true
-
 philosophy:
-  - Capture the image first.
-  - Sharp is better than noise.
-  - Lightroom is part of the camera.
-  - Change as few settings as possible in the field.
-  - Subject profiles override only what is necessary.
-
+- Capture the image first.
+- Sharp is better than noise.
+- Lightroom is part of the camera.
+- Change as few settings as possible in the field.
+- Subject profiles override only what is necessary.
 defaults:
   exposure:
-    mode: "Fv"
+    mode: Fv
     metering: Evaluative
-    exposure_compensation: "0"
+    exposure_compensation: '0'
     iso:
       mode: Auto
-      value:
+      value: null
     auto_iso:
       maximum: 12800
   autofocus:
@@ -56,9 +50,9 @@ defaults:
     touch_drag_positioning_method: Relative
     touch_drag_active_area: Right
   drive:
-    mode: "High Speed Continuous"
+    mode: High Speed Continuous
   shutter:
-    type: "EFCS"
+    type: EFCS
     target: Auto
     efcs:
       status: Approved Target Pending Physical Verification
@@ -70,26 +64,26 @@ defaults:
   stabilization:
     image_stabilization:
       mode: Mode 1
-    ibis: "On"
-    lens_is: "On"
+    ibis: 'On'
+    lens_is: 'On'
   display:
     high_speed_display: Enable
-    screen_info_settings: "Modes 1–5 enabled"
+    screen_info_settings: Modes 1–5 enabled
     histogram: RGB
     highlight_alert: Enabled
   image:
     quality: cRAW
-    cropping_aspect_ratio: "Full-frame"
-    white_balance: "AWB"
-    picture_style: "Neutral"
+    cropping_aspect_ratio: Full-frame
+    white_balance: AWB
+    picture_style: Neutral
     focus_bracketing: Disable
-    highlight_tone_priority: "Off"
-    high_iso_noise_reduction: "Off"
+    highlight_tone_priority: 'Off'
+    high_iso_noise_reduction: 'Off'
     long_exposure_noise_reduction:
-      value: "Off"
+      value: 'Off'
       note: Enable only for multi-second or night exposures.
   camera_setup:
-    custom_shooting_mode_auto_update: "Disable"
-    electronic_full_time_mf: "Off"
-    ibis_high_res_shot: "Off"
-    continuous_af: "Off"
+    custom_shooting_mode_auto_update: Disable
+    electronic_full_time_mf: 'Off'
+    ibis_high_res_shot: 'Off'
+    continuous_af: 'Off'

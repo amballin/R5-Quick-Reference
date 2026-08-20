@@ -1,21 +1,31 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-02
+  last_updated: 2026-08-20
   release: false
 title: Travel
 inherits: baseline
-
 card:
   icons:
     left: travel
   field_setup:
     start: C3
     source_profile: Landscape
+    my_menus:
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+    - name: SWITCH
+      settings:
+      - autofocus.subject_detection
+      - shutter.type
+      - stabilization.image_stabilization.mode
+    - name: test
+      settings:
+      - exposure.iso.mode
   colors:
-    background:
-    text:
-
+    background: null
+    text: null
 overrides:
   autofocus:
     method: 1-Point AF
@@ -24,15 +34,15 @@ overrides:
   drive:
     mode: Single Shot
 checklist:
-  - Battery
-  - Spare card
-  - Shutter speed safe for focal length and subject
-  - ISO and stabilization checked
-  - Exposure compensation checked
+- Battery
+- Spare card
+- Shutter speed safe for focal length and subject
+- ISO and stabilization checked
+- Exposure compensation checked
 watch_for:
-  - Changing light
+- Changing light
 common_mistakes:
-  - Leaving exposure compensation set
+- Leaving exposure compensation set
 notes:
-  - Use neutral 1-Point AF for general travel subjects; switch to People detection and Face + Tracking for portraits and family photographs.
-  - Raise ISO when needed to protect shutter speed as light or subject movement changes.
+- Use neutral 1-Point AF for general travel subjects; switch to People detection and Face + Tracking for portraits and family photographs.
+- Raise ISO when needed to protect shutter speed as light or subject movement changes.

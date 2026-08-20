@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-18
+  last_updated: 2026-08-20
   release: true
 title: People
 card:
@@ -15,10 +15,14 @@ card:
       settings:
       - shutter.type
       - autofocus.subject_detection
+      - stabilization.image_stabilization.mode
     - name: AF Case
       settings:
       - autofocus.servo_af_case
       - autofocus.switching_tracked_subjects
+    - name: test
+      settings:
+      - exposure.iso.mode
 inherits: baseline
 overrides:
   autofocus:

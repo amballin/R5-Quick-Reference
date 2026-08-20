@@ -211,6 +211,17 @@ def plan_baseline_migration(
             menu_tabs,
         )
         for profile in coverage["profiles"]:
+            source_profile = profiles.get(profile["name"]) or {}
+            card = source_profile.get("card") or {}
+            field_setup = card.get("field_setup") or {} if isinstance(card, Mapping) else {}
+            route_is_authored = (
+                isinstance(field_setup, Mapping)
+                and str(field_setup.get("start") or "").upper() in {"C1", "C2", "C3"}
+                and isinstance(field_setup.get("source_profile"), str)
+                and bool(field_setup["source_profile"].strip())
+            )
+            if not route_is_authored:
+                continue
             for cue in profile["missing_card_cues"]:
                 if len(cue["available_in_tabs"]) != 1:
                     raise BaselineImpactError(

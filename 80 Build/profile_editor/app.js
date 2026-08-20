@@ -1,4 +1,5 @@
 const elements = {
+  editorBuild: document.querySelector("#editor-build"),
   viewTabs: [...document.querySelectorAll(".view-tab")],
   views: [...document.querySelectorAll(".app-view")],
   dictionarySource: document.querySelector("#dictionary-source"),
@@ -6,8 +7,18 @@ const elements = {
   dictionaryClassification: document.querySelector("#dictionary-classification"),
   dictionaryCount: document.querySelector("#dictionary-count"),
   dictionarySections: document.querySelector("#dictionary-sections"),
+  loadSavedMenus: document.querySelector("#load-saved-menus"),
   loadRecommendedMenus: document.querySelector("#load-recommended-menus"),
+  analyzeMyMenu: document.querySelector("#analyze-my-menu"),
+  reviewMyMenuColors: document.querySelector("#review-my-menu-colors"),
+  myMenuColorMessage: document.querySelector("#my-menu-color-message"),
   myMenuTabs: document.querySelector("#my-menu-tabs"),
+  myMenuColorReviewDialog: document.querySelector("#my-menu-color-review-dialog"),
+  myMenuColorReviewSummary: document.querySelector("#my-menu-color-review-summary"),
+  myMenuColorReviewDiff: document.querySelector("#my-menu-color-review-diff"),
+  myMenuColorReviewClose: document.querySelector("#my-menu-color-review-close"),
+  myMenuColorReviewCancel: document.querySelector("#my-menu-color-review-cancel"),
+  saveMyMenuColors: document.querySelector("#save-my-menu-colors"),
   profileSelect: document.querySelector("#profile-select"),
   newButton: document.querySelector("#new-button"),
   duplicateButton: document.querySelector("#duplicate-button"),
@@ -32,12 +43,19 @@ const elements = {
   previewPanel: document.querySelector("#preview-panel"),
   previewFrame: document.querySelector("#preview-frame"),
   previewPath: document.querySelector("#preview-path"),
+  returnToTop: document.querySelector("#return-to-top"),
   reviewDialog: document.querySelector("#review-dialog"),
   reviewSummary: document.querySelector("#review-summary"),
   reviewDiff: document.querySelector("#review-diff"),
   reviewClose: document.querySelector("#review-close"),
   reviewCancel: document.querySelector("#review-cancel"),
   saveButton: document.querySelector("#save-button"),
+  migrationReviewDialog: document.querySelector("#migration-review-dialog"),
+  migrationReviewSummary: document.querySelector("#migration-review-summary"),
+  migrationReviewDiff: document.querySelector("#migration-review-diff"),
+  migrationReviewClose: document.querySelector("#migration-review-close"),
+  migrationReviewCancel: document.querySelector("#migration-review-cancel"),
+  migrationSaveButton: document.querySelector("#migration-save-button"),
   baselineReset: document.querySelector("#baseline-reset"),
   baselineAnalyze: document.querySelector("#baseline-analyze"),
   baselineMessage: document.querySelector("#baseline-message"),
@@ -56,7 +74,8 @@ const elements = {
 
 const state = {
   dictionary: null,
-  myMenus: Array.from({ length: 5 }, () => ({ name: "", items: Array(6).fill("") })),
+  myMenus: Array.from({ length: 5 }, () => ({ name: "", colorChoice: "", items: Array(6).fill("") })),
+  myMenuColorReviewToken: null,
   detail: null,
   originalOverrides: {},
   draftOverrides: {},
@@ -68,6 +87,7 @@ const state = {
   baselineAnalysis: null,
   baselineDecisions: {},
   baselinePlan: null,
+  migrationReviewToken: null,
 };
 
 function clone(value) {
@@ -91,6 +111,16 @@ async function request(url, options) {
   return payload;
 }
 
+async function loadEditorInfo() {
+  try {
+    const info = await request("/api/editor-info");
+    elements.editorBuild.textContent = `Editor ${info.version} · Build ${info.build}`;
+  } catch (error) {
+    elements.editorBuild.textContent = "Editor build unavailable";
+    showMessage(error.message, true);
+  }
+}
+
 function showMessage(text, error = false) {
   elements.message.textContent = text;
   elements.message.classList.toggle("error", error);
@@ -101,6 +131,12 @@ function showBaselineMessage(text, error = false) {
   elements.baselineMessage.textContent = text;
   elements.baselineMessage.classList.toggle("error", error);
   elements.baselineMessage.hidden = !text;
+}
+
+function showMyMenuColorMessage(text, error = false) {
+  elements.myMenuColorMessage.textContent = text;
+  elements.myMenuColorMessage.classList.toggle("error", error);
+  elements.myMenuColorMessage.hidden = !text;
 }
 
 async function loadProfiles(selectedName = null, loadSelection = true) {
@@ -128,7 +164,7 @@ async function loadDictionary() {
   try {
     state.dictionary = await request("/api/dictionary");
     elements.dictionarySource.href = state.dictionary.metadata.authority_url || "https://cam.start.canon/en/C003/manual/html/index.html";
-    loadRecommendedMenus(false);
+    loadSavedMenus(false);
   } catch (error) {
     showMessage(error.message, true);
   }
@@ -144,8 +180,10 @@ async function loadBaseline() {
     state.baselineAnalysis = null;
     state.baselineDecisions = {};
     state.baselinePlan = null;
+    state.migrationReviewToken = null;
     renderBaseline();
-    showBaselineMessage("No proposed baseline changes. This workspace is read-only.");
+    elements.analyzeMyMenu.disabled = false;
+    showBaselineMessage("No proposed baseline changes. My Menu profile coverage can still be analyzed.");
   } catch (error) {
     showBaselineMessage(error.message, true);
   }
@@ -154,6 +192,7 @@ async function loadBaseline() {
 function switchView(viewName) {
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
   for (const view of elements.views) view.hidden = view.id !== `${viewName}-view`;
+  requestAnimationFrame(updateFloatingReturn);
 }
 
 function configuredShortcuts() {
@@ -227,6 +266,10 @@ function renderMyMenus() {
   if (!state.dictionary) return;
   elements.myMenuTabs.replaceChildren();
   const selected = new Set(state.myMenus.flatMap((tab) => tab.items).filter(Boolean));
+  const selectedColors = new Set(
+    state.myMenus.filter((tab) => tab.name.trim()).map((tab) => tab.colorChoice).filter(Boolean),
+  );
+  const palette = state.dictionary.myMenu.colors?.palette || {};
   state.myMenus.forEach((tab, tabIndex) => {
     const fragment = document.querySelector("#my-menu-tab-template").content.cloneNode(true);
     fragment.querySelector(".my-menu-number").textContent = `MY MENU${tabIndex + 1}`;
@@ -237,6 +280,33 @@ function renderMyMenus() {
       tab.name = name.value;
       myMenuDraftChanged();
       renderDictionary();
+    });
+    name.addEventListener("change", () => {
+      const usedByOtherNamedTabs = new Set(
+        state.myMenus
+          .filter((candidate) => candidate !== tab && candidate.name.trim())
+          .map((candidate) => candidate.colorChoice),
+      );
+      if (tab.name.trim() && usedByOtherNamedTabs.has(tab.colorChoice)) {
+        tab.colorChoice = Object.keys(palette).find((choice) => !usedByOtherNamedTabs.has(choice)) || tab.colorChoice;
+      }
+      renderMyMenus();
+    });
+    const color = fragment.querySelector(".my-menu-color");
+    const swatch = fragment.querySelector(".my-menu-color-swatch");
+    for (const [choice, hex] of Object.entries(palette)) {
+      const option = document.createElement("option");
+      option.value = choice;
+      option.textContent = choice;
+      option.selected = choice === tab.colorChoice;
+      option.disabled = selectedColors.has(choice) && choice !== tab.colorChoice;
+      color.append(option);
+      if (choice === tab.colorChoice) swatch.style.backgroundColor = hex;
+    }
+    color.addEventListener("change", () => {
+      tab.colorChoice = color.value;
+      myMenuDraftChanged();
+      renderMyMenus();
     });
     const items = fragment.querySelector(".my-menu-items");
     tab.items.forEach((itemId, itemIndex) => {
@@ -268,10 +338,18 @@ function renderMyMenus() {
   });
 }
 
-function loadRecommendedMenus(invalidateAnalysis = true) {
-  state.myMenus = Array.from({ length: 5 }, () => ({ name: "", items: Array(6).fill("") }));
-  (state.dictionary?.myMenu?.recommended_tabs || []).slice(0, 5).forEach((tab, index) => {
+function loadMenus(tabs, invalidateAnalysis = true) {
+  const colorConfig = state.dictionary?.myMenu?.colors || {};
+  const paletteChoices = Object.keys(colorConfig.palette || {});
+  const assignments = colorConfig.assignments || {};
+  state.myMenus = Array.from({ length: 5 }, (_unused, index) => ({
+    name: "",
+    colorChoice: paletteChoices[index] || paletteChoices[0] || "",
+    items: Array(6).fill(""),
+  }));
+  (tabs || []).slice(0, 5).forEach((tab, index) => {
     state.myMenus[index].name = tab.name;
+    state.myMenus[index].colorChoice = assignments[tab.name] || state.myMenus[index].colorChoice;
     tab.items.slice(0, 6).forEach((itemId, itemIndex) => { state.myMenus[index].items[itemIndex] = itemId; });
   });
   if (invalidateAnalysis) myMenuDraftChanged();
@@ -279,10 +357,88 @@ function loadRecommendedMenus(invalidateAnalysis = true) {
   renderDictionary();
 }
 
+function loadSavedMenus(invalidateAnalysis = true) {
+  loadMenus(state.dictionary?.myMenu?.saved_tabs || [], invalidateAnalysis);
+  if (invalidateAnalysis) showMyMenuColorMessage("Saved My Menu layout reloaded. Nothing was written.");
+}
+
+function loadRecommendedMenus(invalidateAnalysis = true) {
+  loadMenus(state.dictionary?.myMenu?.recommended_tabs || [], invalidateAnalysis);
+  if (invalidateAnalysis) showMyMenuColorMessage("Recommended tabs restored as a draft. Review to save them.");
+}
+
 function myMenuDraftChanged() {
+  state.myMenuColorReviewToken = null;
+  if (elements.myMenuColorReviewDialog.open) elements.myMenuColorReviewDialog.close();
   if (!state.baselineAnalysis) return;
   baselineDraftChanged();
   updateBaselineDraftState();
+}
+
+function myMenuColorAssignments() {
+  const assignments = {};
+  for (const tab of state.myMenus) {
+    const name = tab.name.trim();
+    if (name) assignments[name] = tab.colorChoice;
+  }
+  return assignments;
+}
+
+async function reviewMyMenuColors() {
+  elements.reviewMyMenuColors.disabled = true;
+  showMyMenuColorMessage("Validating the saved tab layout, item order, and colors…");
+  try {
+    const review = await request("/api/my-menu-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tabs: state.myMenus }),
+    });
+    state.myMenuColorReviewToken = review.reviewToken;
+    elements.myMenuColorReviewSummary.textContent = review.summary;
+    elements.myMenuColorReviewDiff.textContent = review.diff;
+    elements.myMenuColorReviewDialog.showModal();
+    showMyMenuColorMessage("My Menu candidate validation passed. Review the exact YAML before saving.");
+  } catch (error) {
+    showMyMenuColorMessage(error.message, true);
+  } finally {
+    elements.reviewMyMenuColors.disabled = false;
+  }
+}
+
+async function saveMyMenuColors() {
+  if (!state.myMenuColorReviewToken) {
+    showMyMenuColorMessage("This My Menu review is no longer current. Review the layout again.", true);
+    elements.myMenuColorReviewDialog.close();
+    return;
+  }
+  elements.saveMyMenuColors.disabled = true;
+  showMyMenuColorMessage("Creating a recovery backup and validating the reviewed My Menu layout…");
+  try {
+    const result = await request("/api/my-menu-saves", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.myMenuColorReviewToken }),
+    });
+    state.myMenuColorReviewToken = null;
+    elements.myMenuColorReviewDialog.close();
+    state.dictionary.myMenu.saved_tabs = clone(result.tabs);
+    state.dictionary.myMenu.colors = {
+      sourceFile: "00 Master/my_menu_colors.yaml",
+      palette: result.colors.palette,
+      assignments: result.colors.assignments,
+    };
+    for (const tab of state.myMenus) {
+      tab.colorChoice = result.colors.assignments[tab.name.trim()] || tab.colorChoice;
+    }
+    renderMyMenus();
+    showMyMenuColorMessage(`Saved the My Menu layout and refreshed its reference-card source. Validation passed. Recovery backup: ${result.backup}`);
+  } catch (error) {
+    state.myMenuColorReviewToken = null;
+    elements.myMenuColorReviewDialog.close();
+    showMyMenuColorMessage(error.message, true);
+  } finally {
+    elements.saveMyMenuColors.disabled = false;
+  }
 }
 
 async function loadProfile(name) {
@@ -346,7 +502,7 @@ function disableProfileActions(disabled) {
   elements.newButton.disabled = disabled;
   elements.duplicateButton.disabled = disabled || !state.detail?.editableDraft;
   elements.reloadButton.disabled = disabled || !state.detail?.editableDraft;
-  elements.previewButton.disabled = disabled || !state.detail?.editableDraft;
+  elements.previewButton.disabled = disabled || !state.detail;
   elements.reviewButton.disabled = disabled || !state.detail?.editableDraft;
 }
 
@@ -357,13 +513,14 @@ function render() {
   elements.profileMetadata.hidden = !editable;
   elements.duplicateButton.disabled = !editable;
   elements.reloadButton.disabled = !editable;
-  elements.previewButton.disabled = !editable;
+  elements.previewButton.disabled = !state.detail;
+  elements.previewButton.textContent = editable ? "Preview card" : "Preview reference card";
   elements.reviewButton.disabled = !editable;
   if (!editable) {
     renderReference();
     elements.customCount.textContent = "0";
     elements.inheritedCount.textContent = "0";
-    showMessage("This reference card remains read-only. Stage 2 saves apply only to shooting profiles.");
+    showMessage("This reference card remains read-only. Preview it here; edit My Menu through Configure My Menu.");
     return;
   }
   renderMetadataState();
@@ -392,15 +549,34 @@ function renderMetadataState() {
 
 function renderReference() {
   const intro = document.createElement("p");
-  intro.textContent = "Reference-card assignments";
+  intro.textContent = state.detail.name === "My Menu"
+    ? "Saved My Menu field reference"
+    : "Reference-card assignments";
   const table = document.createElement("table");
   const body = document.createElement("tbody");
   for (const item of state.detail.referenceSettings || []) {
     const row = document.createElement("tr");
     const control = document.createElement("th");
     const assignment = document.createElement("td");
+    if (item.rowType === "section") {
+      row.className = "reference-section";
+      control.colSpan = 2;
+      control.textContent = item.control;
+      const name = document.createElement("strong");
+      name.textContent = item.assignment;
+      if (item.color) name.style.color = item.color;
+      control.append(name);
+      row.append(control);
+      body.append(row);
+      continue;
+    }
     control.textContent = item.control;
     assignment.textContent = item.assignment;
+    if (item.detail) {
+      const detail = document.createElement("small");
+      detail.textContent = item.detail;
+      assignment.append(detail);
+    }
     row.append(control, assignment);
     body.append(row);
   }
@@ -570,6 +746,8 @@ function baselineDraftChanged() {
   state.baselineAnalysis = null;
   state.baselineDecisions = {};
   state.baselinePlan = null;
+  state.migrationReviewToken = null;
+  if (elements.migrationReviewDialog.open) elements.migrationReviewDialog.close();
   elements.baselineSummary.hidden = true;
   elements.baselineSummary.replaceChildren();
   elements.baselineDecisionTools.hidden = true;
@@ -581,18 +759,20 @@ function baselineDraftChanged() {
 
 function updateBaselineDraftState() {
   const changed = baselineChangedPaths().length;
-  elements.baselineAnalyze.disabled = changed === 0;
+  elements.baselineAnalyze.disabled = false;
   elements.baselineReset.disabled = changed === 0;
   if (changed === 0) {
-    showBaselineMessage("No proposed baseline changes. This workspace is read-only.");
+    showBaselineMessage("No proposed baseline changes. Analyze the current My Menu layout and profile-card coverage at any time.");
   } else {
     showBaselineMessage(`${changed} proposed baseline ${changed === 1 ? "change" : "changes"}. Analyze the draft to review profile impact.`);
   }
 }
 
-async function analyzeBaselineDraft() {
+async function analyzeBaselineDraft(fromMyMenu = false) {
   elements.baselineAnalyze.disabled = true;
-  showBaselineMessage("Calculating effective values for every inheriting profile…");
+  showBaselineMessage(fromMyMenu
+    ? "Analyzing the current My Menu layout against every profile card…"
+    : "Calculating effective values and My Menu coverage for every inheriting profile…");
   try {
     state.baselineAnalysis = await request("/api/baseline-impact", {
       method: "POST",
@@ -602,8 +782,13 @@ async function analyzeBaselineDraft() {
     state.baselineDecisions = {};
     state.baselinePlan = null;
     renderBaselineAnalysis();
-    showBaselineMessage("Impact analysis complete. Nothing was saved.");
-    elements.baselineSummary.scrollIntoView({ behavior: "smooth", block: "start" });
+    showBaselineMessage(fromMyMenu
+      ? "My Menu profile-impact analysis complete. Nothing was saved."
+      : "Impact analysis complete. Nothing was saved.");
+    const target = fromMyMenu
+      ? elements.baselineResults.querySelector(".my-menu-impact") || elements.baselineSummary
+      : elements.baselineSummary;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     state.baselineAnalysis = null;
     state.baselineDecisions = {};
@@ -611,8 +796,27 @@ async function analyzeBaselineDraft() {
     renderBaselineAnalysis();
     showBaselineMessage(error.message, true);
   } finally {
-    elements.baselineAnalyze.disabled = baselineChangedPaths().length === 0;
+    elements.baselineAnalyze.disabled = false;
   }
+}
+
+async function analyzeMyMenuImpact() {
+  if (!state.baselineDetail) {
+    showMyMenuColorMessage("The baseline is still loading. Try the analysis again in a moment.", true);
+    return;
+  }
+  elements.analyzeMyMenu.disabled = true;
+  showMyMenuColorMessage("Opening the shared My Menu profile-impact report…");
+  switchView("baseline");
+  try {
+    await analyzeBaselineDraft(true);
+  } finally {
+    elements.analyzeMyMenu.disabled = false;
+  }
+}
+
+function updateFloatingReturn() {
+  elements.returnToTop.hidden = window.scrollY < 280;
 }
 
 function renderBaselineAnalysis() {
@@ -1100,6 +1304,8 @@ async function buildBaselinePlan() {
   elements.baselineBuildPlanBottom.disabled = true;
   showBaselineMessage("Validating migration decisions against the current sources…");
   try {
+    state.migrationReviewToken = null;
+    if (elements.migrationReviewDialog.open) elements.migrationReviewDialog.close();
     state.baselinePlan = await request("/api/baseline-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1137,7 +1343,7 @@ function renderBaselinePlan() {
   heading.className = "baseline-plan-heading";
   const title = document.createElement("h3");
   const status = document.createElement("strong");
-  title.textContent = "Read-only migration plan";
+  title.textContent = "Migration plan";
   status.textContent = plan.complete ? "Complete" : "Needs decisions";
   status.className = plan.complete ? "plan-complete" : "plan-incomplete";
   heading.append(title, status);
@@ -1179,7 +1385,111 @@ function renderBaselinePlan() {
     section.append(groupTitle, list);
     elements.baselinePlan.append(section);
   }
+  const hasSourceChanges = baselineChangedPaths().length > 0
+    || plan.overrides_to_add.length > 0
+    || plan.overrides_to_remove.length > 0
+    || plan.profile_card_cues_to_add.length > 0;
+  if (plan.complete && hasSourceChanges) {
+    const applySection = document.createElement("section");
+    applySection.className = "baseline-migration-apply";
+    const applyTitle = document.createElement("h4");
+    applyTitle.textContent = "Review and apply this migration";
+    const warning = document.createElement("p");
+    warning.textContent = baselineChangedPaths().length > 0
+      ? "This writes the proposed baseline and planned profile cleanup/cues. C1–C3 registrations and unresolved or unnecessary My Menu routes remain unchanged as warnings."
+      : "This profile-only migration writes the planned My Menu card cues without changing the baseline, C1–C3 registrations, or the saved My Menu layout.";
+    const acknowledgements = document.createElement("div");
+    acknowledgements.className = "migration-acknowledgements";
+    const cxLabel = document.createElement("label");
+    const cx = document.createElement("input");
+    cx.type = "checkbox";
+    cx.id = "acknowledge-cx-impact";
+    cxLabel.append(cx, document.createTextNode(" I reviewed the C1–C3 effective-value and starting-mode warnings."));
+    const menuLabel = document.createElement("label");
+    const menu = document.createElement("input");
+    menu.type = "checkbox";
+    menu.id = "acknowledge-my-menu-impact";
+    menuLabel.append(menu, document.createTextNode(" I reviewed the My Menu availability, missing-cue, and unused-route warnings."));
+    acknowledgements.append(cxLabel, menuLabel);
+    const reviewButton = document.createElement("button");
+    reviewButton.type = "button";
+    reviewButton.className = "save-action";
+    reviewButton.textContent = "Review exact migration YAML";
+    reviewButton.disabled = true;
+    const update = () => { reviewButton.disabled = !(cx.checked && menu.checked); };
+    cx.addEventListener("change", update);
+    menu.addEventListener("change", update);
+    reviewButton.addEventListener("click", () => reviewBaselineMigration(cx, menu, reviewButton));
+    applySection.append(applyTitle, warning, acknowledgements, reviewButton);
+    elements.baselinePlan.append(applySection);
+  } else if (plan.complete) {
+    const noChanges = document.createElement("p");
+    noChanges.className = "baseline-plan-explanation";
+    noChanges.textContent = "No baseline or profile source changes are needed for this configuration.";
+    elements.baselinePlan.append(noChanges);
+  }
   elements.baselinePlan.hidden = false;
+}
+
+async function reviewBaselineMigration(cxAcknowledgement, menuAcknowledgement, reviewButton) {
+  reviewButton.disabled = true;
+  showBaselineMessage("Validating every candidate source and preparing the exact multi-file diff…");
+  try {
+    const review = await request("/api/baseline-migration-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        values: state.baselineDraft,
+        decisions: migrationDecisions(),
+        myMenuTabs: state.myMenus,
+        acknowledgeCxImpact: cxAcknowledgement.checked,
+        acknowledgeMyMenuImpact: menuAcknowledgement.checked,
+      }),
+    });
+    state.migrationReviewToken = review.reviewToken;
+    elements.migrationReviewSummary.textContent = `${review.sourceFiles.length} source ${review.sourceFiles.length === 1 ? "file" : "files"}: ${review.sourceFiles.join(", ")}`;
+    elements.migrationReviewDiff.textContent = review.diff;
+    elements.migrationReviewDialog.showModal();
+    showBaselineMessage("Candidate validation passed. Review every YAML change before applying the migration.");
+  } catch (error) {
+    state.migrationReviewToken = null;
+    showBaselineMessage(error.message, true);
+  } finally {
+    reviewButton.disabled = !(cxAcknowledgement.checked && menuAcknowledgement.checked);
+  }
+}
+
+function closeMigrationReview() {
+  state.migrationReviewToken = null;
+  elements.migrationReviewDialog.close();
+  renderBaselinePlan();
+}
+
+async function saveReviewedBaselineMigration() {
+  if (!state.migrationReviewToken) {
+    showBaselineMessage("This migration review is no longer current. Review the complete plan again.", true);
+    elements.migrationReviewDialog.close();
+    return;
+  }
+  elements.migrationSaveButton.disabled = true;
+  showBaselineMessage("Backing up and validating the reviewed multi-file migration…");
+  try {
+    const result = await request("/api/baseline-migration-saves", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.migrationReviewToken }),
+    });
+    state.migrationReviewToken = null;
+    elements.migrationReviewDialog.close();
+    await Promise.all([loadProfiles(), loadBaseline()]);
+    showBaselineMessage(`Migration applied to ${result.sourceFiles.length} source files. Validation passed. Recovery backup: ${result.backup}`);
+  } catch (error) {
+    state.migrationReviewToken = null;
+    elements.migrationReviewDialog.close();
+    showBaselineMessage(error.message, true);
+  } finally {
+    elements.migrationSaveButton.disabled = false;
+  }
 }
 
 function buildControl(setting, value) {
@@ -1334,15 +1644,18 @@ async function preview() {
   elements.previewButton.disabled = true;
   showMessage("Rendering a temporary preview…");
   try {
+    const body = state.detail?.cardType === "reference"
+      ? { profile: state.detail.name, overrides: {} }
+      : profileDraftPayload();
     const payload = await request("/api/preview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profileDraftPayload()),
+      body: JSON.stringify(body),
     });
     elements.previewPath.textContent = payload.outputFile;
     elements.previewFrame.src = `${payload.previewUrl}?t=${Date.now()}`;
     elements.previewPanel.hidden = false;
-    showMessage("Preview updated. No profile source was saved.");
+    showMessage("Preview updated. No source was saved.");
     elements.previewPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     showMessage(error.message, true);
@@ -1360,10 +1673,15 @@ elements.reloadButton.addEventListener("click", async () => {
   showMessage("Draft discarded and original source values reloaded. No profile was saved.");
 });
 elements.previewButton.addEventListener("click", preview);
+elements.returnToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+window.addEventListener("scroll", updateFloatingReturn, { passive: true });
 elements.reviewButton.addEventListener("click", reviewChanges);
 elements.saveButton.addEventListener("click", saveReviewedProfile);
 elements.reviewClose.addEventListener("click", () => elements.reviewDialog.close());
 elements.reviewCancel.addEventListener("click", () => elements.reviewDialog.close());
+elements.migrationSaveButton.addEventListener("click", saveReviewedBaselineMigration);
+elements.migrationReviewClose.addEventListener("click", closeMigrationReview);
+elements.migrationReviewCancel.addEventListener("click", closeMigrationReview);
 for (const input of [elements.titleInput, elements.subtitleInput, elements.filenameInput, elements.statusInput, elements.releaseInput]) {
   input.addEventListener("input", () => {
     draftChanged();
@@ -1377,8 +1695,14 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);
+elements.loadSavedMenus.addEventListener("click", () => loadSavedMenus(true));
 elements.loadRecommendedMenus.addEventListener("click", () => loadRecommendedMenus(true));
-elements.baselineAnalyze.addEventListener("click", analyzeBaselineDraft);
+elements.analyzeMyMenu.addEventListener("click", analyzeMyMenuImpact);
+elements.reviewMyMenuColors.addEventListener("click", reviewMyMenuColors);
+elements.saveMyMenuColors.addEventListener("click", saveMyMenuColors);
+elements.myMenuColorReviewClose.addEventListener("click", () => elements.myMenuColorReviewDialog.close());
+elements.myMenuColorReviewCancel.addEventListener("click", () => elements.myMenuColorReviewDialog.close());
+elements.baselineAnalyze.addEventListener("click", () => analyzeBaselineDraft(false));
 elements.baselineFollowAll.addEventListener("click", () => setUnresolvedBaselineDecisions("follow_baseline"));
 elements.baselinePreserveAll.addEventListener("click", () => setUnresolvedBaselineDecisions("preserve_previous"));
 elements.baselineBuildPlan.addEventListener("click", buildBaselinePlan);
@@ -1388,8 +1712,10 @@ elements.baselineReset.addEventListener("click", () => {
   state.baselineAnalysis = null;
   state.baselineDecisions = {};
   state.baselinePlan = null;
+  state.migrationReviewToken = null;
   renderBaseline();
   showBaselineMessage("Baseline draft discarded. Nothing was saved.");
 });
 
-Promise.all([loadDictionary(), loadProfiles(), loadBaseline()]);
+Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline()]);
+updateFloatingReturn();

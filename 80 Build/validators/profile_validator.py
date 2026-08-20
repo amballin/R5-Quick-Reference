@@ -61,7 +61,14 @@ def validate(root):
                 issues.append(error("profiles", path, "Reference cards must not inherit the shooting baseline."))
             if "overrides" in data:
                 issues.append(error("profiles", path, "Reference cards must not define shooting-profile overrides."))
-            issues.extend(_validate_reference_settings(path, data.get("reference_settings")))
+            reference_source = data.get("reference_source")
+            if reference_source == "my_menu":
+                if "reference_settings" in data:
+                    issues.append(error("profiles", path, "My Menu reference rows are derived and must not be authored."))
+            else:
+                if reference_source is not None:
+                    issues.append(error("profiles", path, f"Unknown reference_source: {reference_source}."))
+                issues.extend(_validate_reference_settings(path, data.get("reference_settings")))
         elif not isinstance(overrides, dict):
             issues.append(error("profiles", path, "overrides must be a mapping."))
         else:

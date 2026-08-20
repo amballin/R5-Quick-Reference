@@ -6,6 +6,9 @@ from urllib.parse import quote
 
 from validators.common import load_yaml_checked
 from site_navigation import SITE_NAV_CSS, site_navigation
+from cx_route_analysis import analyze_selected_foundation, row_requires_change
+from my_menu_colors import load_my_menu_colors, menu_color
+from my_menu_reference import reference_rows as my_menu_reference_rows
 
 from utilities import flatten
 
@@ -19,9 +22,9 @@ FIELD_ACCESS_COLORS = {
     "access-switch": "#72dda8",
     "access-menu-2": "#f0bf69",
     "access-menu-3": "#c6a6ff",
-    "access-menu-4": "#ff9fba",
+    "access-menu-4": "#ff7f7f",
     "access-menu-5": "#80d8ff",
-    "access-menu-6": "#ff9b7a",
+    "access-menu-6": "#ffb36b",
 }
 
 LABEL = {
@@ -120,6 +123,10 @@ CAMERA_SETUP_SETTINGS = {
 def settings_rows(profile, merged, paths=None):
     """Return the settings rows in the same order used by the HTML table."""
     if profile.get("card_type") == "reference":
+        if profile.get("reference_source") == "my_menu":
+            if paths is None:
+                return []
+            return my_menu_reference_rows(paths)
         return [
             {
                 "key": reference_setting_key(item["control"]),
@@ -313,17 +320,51 @@ def iso_display_value(merged_fields):
     return mode
 
 
-def table(profile, merged, icon_manager=None, paths=None):
+def table(profile, merged, icon_manager=None, paths=None, baseline=None):
     """Render the settings table with optional field-based icons."""
-    html = "<table>"
+    rows = settings_rows(profile, merged, paths)
+    change_summary = field_setup_change_summary(profile, merged, baseline, paths)
+    table_class = ' class="has-change-column"' if change_summary else ""
+    html = f"<table{table_class}>"
     access_classes = field_setup_setting_classes(profile, merged, paths)
-    for row in settings_rows(profile, merged, paths):
+    access_colors = field_setup_value_colors(profile, merged, paths)
+    for row in rows:
+        if row.get("row_type") == "section":
+            section_style = (
+                f' style="color:{escape(row["section_color"])}"'
+                if row.get("section_color") else ""
+            )
+            html += (
+                '<tr class="reference-section"><th colspan="2">'
+                f'<span>{escape(str(row["label"]))}</span>'
+                f'<strong{section_style}>{escape(str(row["value"]))}</strong>'
+                '</th></tr>'
+            )
+            continue
         rendered_label = row["label"]
         if icon_manager is not None:
             rendered_label = icon_manager.icon_html(row["key"], row["label"], row["value"])
         access_class = access_classes.get(row["key"])
-        class_attribute = f' class="field-value {access_class}"' if access_class else ""
-        html += f"<tr><td>{rendered_label}</td><td{class_attribute}>{row['value']}</td></tr>"
+        access_color = access_colors.get(row["key"])
+        value_class = f"field-value {access_class}" if access_class else "field-value"
+        value_style = f' style="color:{escape(access_color)}"' if access_color else ""
+        detail = row.get("detail")
+        rendered_value = escape(str(row["value"]))
+        if detail:
+            rendered_value += f'<small class="reference-detail">{escape(str(detail))}</small>'
+        html += f'<tr><td class="field-label">{rendered_label}</td><td class="{value_class}"{value_style}>{rendered_value}</td>'
+        if change_summary:
+            changed = row_requires_change(row["key"], change_summary["changed_paths"])
+            if changed:
+                label = escape(f'Change from {change_summary["foundation_label"]}')
+                change_style = f' style="color:{escape(access_color)}"' if access_color else ""
+                html += (
+                    f'<td class="field-change"{change_style} title="{label}" aria-label="{label}">'
+                    '<span aria-hidden="true">Δ</span></td>'
+                )
+            else:
+                html += '<td class="field-change" aria-hidden="true"></td>'
+        html += "</tr>"
     return html + "</table>"
 
 
@@ -351,7 +392,7 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         )
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
-        .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths))
+        .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths, baseline))
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
@@ -394,8 +435,31 @@ def card_note_items(profile, paths=None, merged=None):
     return items
 
 
-def settings_section(profile, merged, icon_manager=None, paths=None):
-    return f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths)}"
+def settings_section(profile, merged, icon_manager=None, paths=None, baseline=None):
+    rendered = f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths, baseline)}"
+    change_summary = field_setup_change_summary(profile, merged, baseline, paths)
+    if change_summary:
+        label = escape(change_summary["foundation_label"])
+        rendered += (
+            '<p class="field-change-legend">'
+            '<span aria-hidden="true">Δ</span> '
+            f"Change from {label}</p>"
+        )
+    return rendered
+
+
+def field_setup_change_summary(profile, merged, baseline=None, paths=None):
+    """Return derived Cx differences for the visible rows on one card."""
+    if paths is None:
+        return None
+    if baseline is None:
+        baseline = load_yaml_checked(paths.baseline_file) or {}
+    profiles = {}
+    for source in sorted(paths.profiles_dir.glob("*.yaml")):
+        loaded = load_yaml_checked(source) or {}
+        profiles[source.stem] = loaded
+    visible = displayed_card_setting_paths(profile, merged, paths)
+    return analyze_selected_foundation(profile, merged, profiles, baseline, visible)
 
 
 def field_setup(profile):
@@ -405,7 +469,7 @@ def field_setup(profile):
 
 
 def field_setup_menus(profile, merged=None, paths=None):
-    """Return visible My Menu entries with stable renderer-managed colors."""
+    """Return visible My Menu entries with canonical named-tab colors."""
     menus = field_setup(profile).get("my_menus") or []
     visible_paths = (
         displayed_card_setting_paths(profile, merged, paths)
@@ -413,6 +477,7 @@ def field_setup_menus(profile, merged=None, paths=None):
         else None
     )
     alternate_number = 2
+    color_config = load_my_menu_colors(paths) if paths is not None else None
     rendered = []
     for menu in menus:
         if not isinstance(menu, dict):
@@ -436,7 +501,11 @@ def field_setup_menus(profile, merged=None, paths=None):
                 "name": name,
                 "settings": displayed_settings,
                 "access_class": access_class,
-                "color": FIELD_ACCESS_COLORS[access_class],
+                "color": (
+                    menu_color(color_config, name, len(rendered))
+                    if color_config is not None
+                    else FIELD_ACCESS_COLORS[access_class]
+                ),
             }
         )
     return rendered
@@ -458,10 +527,15 @@ def field_setup_setting_classes(profile, merged=None, paths=None):
 
 
 def field_setup_value_colors(profile, merged=None, paths=None):
-    return {
-        key: FIELD_ACCESS_COLORS[access_class]
-        for key, access_class in field_setup_setting_classes(profile, merged, paths).items()
-    }
+    colors = {}
+    for menu in field_setup_menus(profile, merged, paths):
+        for key in menu.get("settings") or []:
+            colors[key] = menu["color"]
+    if "autofocus.accel_decel_tracking" in colors:
+        colors.setdefault("autofocus.tracking_sensitivity", colors["autofocus.accel_decel_tracking"])
+    if "stabilization.lens_is" in colors:
+        colors.setdefault("stabilization.ibis", colors["stabilization.lens_is"])
+    return colors
 
 
 def field_setup_summary(profile, merged=None, paths=None):
@@ -487,7 +561,8 @@ def field_setup_strip(profile, merged=None, paths=None):
         parts.append(f'<span class="field-route-start">{escape(str(summary["start"]))}</span>')
     for menu in summary["menus"]:
         parts.append(
-            f'<span class="field-route-menu {menu["access_class"]}">'
+            f'<span class="field-route-menu {menu["access_class"]}" '
+            f'style="border-color:{escape(menu["color"])};color:{escape(menu["color"])}">'
             f'★ {escape(menu["name"])}</span>'
         )
     aria_label = "Field access shortcuts" if summary["access_only"] else "Field setup shortcuts"
@@ -508,11 +583,13 @@ def field_setup_note(profile, merged=None, paths=None):
     start = escape(str(summary["start"]))
     source = escape(str(summary["source_profile"]))
     prefix = f"Start from {start} {source} after verifying its registration."
+    change_note = " A Δ in the value's color marks each setting that differs from that starting profile."
     if not summary["menus"]:
-        return prefix
+        return prefix + change_note
     return (
-        f"{prefix} Colored setting values use the matching My Menu tab; "
-        "white values use Quick Control, dials, or buttons."
+        f"{prefix} Colored setting values use the matching My Menu tab whether or not "
+        f"a change is required; white values use Quick Control, dials, buttons, or normal menu access."
+        f"{change_note}"
     )
 
 

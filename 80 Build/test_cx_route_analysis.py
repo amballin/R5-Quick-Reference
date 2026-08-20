@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Tests for derived Cx foundation changes and card indicators."""
+
+from copy import deepcopy
+from pathlib import Path
+import re
+import sys
+import unittest
+
+
+BUILD_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BUILD_DIR.parent
+if str(BUILD_DIR) not in sys.path:
+    sys.path.insert(0, str(BUILD_DIR))
+
+from asset_manager import ProjectPaths
+from baseline import merge
+from cx_route_analysis import (
+    CxRouteAnalysisError,
+    analyze_selected_foundation,
+    row_requires_change,
+)
+from html_renderer import settings_section, table
+from profile_loader import load_baseline, load_yaml
+
+
+class CxRouteAnalysisTests(unittest.TestCase):
+    def setUp(self):
+        self.baseline = {
+            "defaults": {
+                "autofocus": {"subject_detection": "Animals"},
+                "drive": {"mode": "High Speed Continuous"},
+                "stabilization": {"ibis": "On", "lens_is": "On"},
+            }
+        }
+        self.foundation = {
+            "title": "Wildlife",
+            "overrides": {"autofocus": {"subject_detection": "Animals"}},
+        }
+        self.profile = {
+            "title": "People",
+            "card": {"field_setup": {"start": "C1", "source_profile": "Wildlife"}},
+            "overrides": {
+                "autofocus": {"subject_detection": "People"},
+                "drive": {"mode": "Low Speed Continuous"},
+            },
+        }
+        self.profiles = {"Wildlife": self.foundation, "People": self.profile}
+        self.merged = merge(self.baseline["defaults"], self.profile["overrides"])
+
+    def test_reports_only_visible_values_that_differ_from_foundation(self):
+        result = analyze_selected_foundation(
+            self.profile,
+            self.merged,
+            self.profiles,
+            self.baseline,
+            {"autofocus.subject_detection", "stabilization.ibis", "stabilization.lens_is"},
+        )
+        self.assertEqual(result["foundation_label"], "C1 Wildlife")
+        self.assertEqual(result["changed_paths"], {"autofocus.subject_detection"})
+
+    def test_combined_row_changes_when_any_underlying_value_changes(self):
+        self.merged["stabilization"]["lens_is"] = "Off"
+        result = analyze_selected_foundation(
+            self.profile,
+            self.merged,
+            self.profiles,
+            self.baseline,
+            {"stabilization.ibis", "stabilization.lens_is"},
+        )
+        self.assertTrue(row_requires_change("stabilization.ibis", result["changed_paths"]))
+
+    def test_foundation_profile_has_no_changes(self):
+        source = {
+            **self.foundation,
+            "card": {"field_setup": {"start": "C1", "source_profile": "Wildlife"}},
+        }
+        merged = merge(self.baseline["defaults"], source["overrides"])
+        profiles = {**self.profiles, "Wildlife": source}
+        result = analyze_selected_foundation(
+            source, merged, profiles, self.baseline, {"autofocus.subject_detection"}
+        )
+        self.assertEqual(result["changed_paths"], set())
+
+    def test_access_only_card_has_no_cx_comparison(self):
+        profile = {
+            "title": "Defaults",
+            "card": {"field_setup": {"access_only": True}},
+            "overrides": {},
+        }
+        self.assertIsNone(
+            analyze_selected_foundation(profile, self.baseline["defaults"], {}, self.baseline, set())
+        )
+
+    def test_rejects_unknown_foundation_without_mutating_inputs(self):
+        before = deepcopy((self.profile, self.merged, self.profiles, self.baseline))
+        broken = deepcopy(self.profile)
+        broken["card"]["field_setup"]["source_profile"] = "Missing"
+        with self.assertRaisesRegex(CxRouteAnalysisError, "exactly one profile"):
+            analyze_selected_foundation(
+                broken, self.merged, self.profiles, self.baseline, {"drive.mode"}
+            )
+        self.assertEqual((self.profile, self.merged, self.profiles, self.baseline), before)
+
+
+class CxCardIndicatorIntegrationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.paths = ProjectPaths(PROJECT_ROOT)
+        cls.baseline = load_baseline(cls.paths)
+
+    def rendered_rows(self, name):
+        profile = load_yaml(self.paths.profile_file(name))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        return profile, merged, table(profile, merged, paths=self.paths, baseline=self.baseline)
+
+    def test_my_menu_color_remains_when_matching_cx_and_delta_marks_only_difference(self):
+        _profile, _merged, html = self.rendered_rows("People")
+        rows = re.findall(r"<tr>.*?</tr>", html)
+        subject = next(row for row in rows if "Subject Detection" in row)
+        stabilization = next(row for row in rows if "Image Stabilization" in row)
+        self.assertIn('field-value access-switch', subject)
+        self.assertIn('style="color:#72dda8"', subject)
+        self.assertIn(">Δ</span>", subject)
+        self.assertRegex(subject, r'field-change" style="color:#72dda8"[^>]*>')
+        self.assertIn('field-value access-switch', stabilization)
+        self.assertNotIn(">Δ</span>", stabilization)
+
+    def test_foundation_card_reserves_blank_column_and_has_no_delta(self):
+        _profile, _merged, html = self.rendered_rows("Wildlife")
+        self.assertIn('class="has-change-column"', html)
+        self.assertIn('class="field-change" aria-hidden="true"', html)
+        self.assertNotIn(">Δ</span>", html)
+
+    def test_settings_section_includes_foundation_legend(self):
+        profile = load_yaml(self.paths.profile_file("People"))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
+        self.assertIn("Δ</span> Change from C1 Wildlife", html)
+
+    def test_every_authored_cx_route_renders_and_access_only_cards_skip_column(self):
+        rendered_routes = 0
+        for source in sorted(self.paths.profiles_dir.glob("*.yaml")):
+            profile = load_yaml(source)
+            if profile.get("card_type") == "reference":
+                continue
+            merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+            html = table(profile, merged, paths=self.paths, baseline=self.baseline)
+            setup = ((profile.get("card") or {}).get("field_setup") or {})
+            if setup.get("start"):
+                rendered_routes += 1
+                self.assertIn('class="has-change-column"', html, source.name)
+            elif setup.get("access_only") is True:
+                self.assertNotIn('class="has-change-column"', html, source.name)
+        self.assertGreater(rendered_routes, 0)
+
+
+if __name__ == "__main__":
+    unittest.main()
