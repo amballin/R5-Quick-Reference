@@ -11,6 +11,7 @@ REQUIRED_FILES = (
     "80 Build/my_menu_colors.py",
     "80 Build/my_menu_reference.py",
     "80 Build/baseline_impact.py",
+    "80 Build/baseline_impact_check.py",
     "80 Build/baseline_migration.py",
     "80 Build/profile_editor.py",
     "80 Build/profile_editor/app.js",
@@ -19,6 +20,7 @@ REQUIRED_FILES = (
     "80 Build/profile_editor/styles.css",
     "80 Build/test_profile_editor.py",
     "80 Build/test_baseline_impact.py",
+    "80 Build/test_baseline_impact_check.py",
     "80 Build/test_baseline_migration.py",
     "80 Build/test_cx_route_analysis.py",
 )

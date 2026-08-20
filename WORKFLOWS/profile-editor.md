@@ -91,6 +91,22 @@ When the baseline is unchanged and the plan contains only My Menu card-cue addit
 
 The draft, decisions, and unapplied plan exist only in browser memory; refreshing the page, closing the tab, or stopping the server discards them. The analysis reads the baseline and profiles loaded when the editor server started, so restart the server after external source changes.
 
+### Check baseline impact outside the editor
+
+The shared impact rules also have a read-only command-line check. To compare an uncommitted worktree baseline with `HEAD`, run:
+
+```bash
+python3 "80 Build/baseline_impact_check.py"
+```
+
+For branch integration, select the baseline branch explicitly:
+
+```bash
+python3 "80 Build/baseline_impact_check.py" --base-ref origin/main
+```
+
+Status 0 means there is no semantic baseline-default change. Status 1 prints the changed settings and affected profile classifications and requires review through the Baseline Impact workflow above. Status 2 means the comparison could not be completed. The command ignores metadata-only and YAML-formatting differences and never writes a migration.
+
 ## Edit or preview a profile
 
 1. Open **Profiles**.

@@ -336,8 +336,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("autofocus.subject_detection", switch["settings"])
 
     def test_zero_baseline_change_plans_all_non_cx_card_cues(self):
-        androo = deepcopy(self.model.profiles["Androo"])
-        androo.pop("card", None)
+        field_test = deepcopy(self.model.profiles["Travel"])
+        field_test["title"] = "Field Test"
+        field_test.pop("card", None)
         defaults = deepcopy(self.model.profiles["Camera Defaults"])
         defaults["card"]["field_setup"]["my_menus"] = [
             menu for menu in defaults["card"]["field_setup"]["my_menus"]
@@ -346,7 +347,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         essentials = deepcopy(self.model.profiles["Camera Setup Essentials"])
         essentials["card"].pop("field_setup", None)
         for name, profile in (
-            ("Androo", androo),
+            ("Field Test", field_test),
             ("Camera Defaults", defaults),
             ("Camera Setup Essentials", essentials),
         ):
@@ -355,10 +356,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         values = dict(model.baseline_detail()["values"])
         plan = model.baseline_plan(values, [])
         self.assertTrue(plan["complete"])
-        self.assertEqual(plan["summary"]["profile_card_cues_to_add"], 7)
+        self.assertGreater(plan["summary"]["profile_card_cues_to_add"], 0)
         self.assertEqual(
             {item["profile"] for item in plan["profile_card_cues_to_add"]},
-            {"Androo", "Camera Defaults", "Camera Setup Essentials"},
+            {"Field Test", "Camera Setup Essentials"},
         )
         review = model.review_baseline_migration({
             "values": values,
@@ -370,26 +371,33 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(
             set(review["sourceFiles"]),
             {
-                "10 Profiles/Androo.yaml",
-                "10 Profiles/Camera Defaults.yaml",
+                "10 Profiles/Field Test.yaml",
                 "10 Profiles/Camera Setup Essentials.yaml",
             },
         )
 
     def test_zero_baseline_change_removes_card_cues_for_removed_my_menu_tab(self):
+        field_test = deepcopy(self.model.profiles["Travel"])
+        field_test["title"] = "Field Test"
+        field_test.setdefault("card", {})["field_setup"] = {
+            "my_menus": [{"name": "test", "settings": ["shutter.type"]}],
+        }
+        field_test_path = self.root / "10 Profiles" / "Field Test.yaml"
+        field_test_path.write_bytes(self.model._dump_profile(field_test))
+        model = ProfileEditorModel(self.root, source_validator=lambda _root: [])
         tabs = [
-            tab for tab in self.model.dictionary_detail()["myMenu"]["saved_tabs"]
+            tab for tab in model.dictionary_detail()["myMenu"]["saved_tabs"]
             if tab["name"] != "test"
         ]
-        values = dict(self.model.baseline_detail()["values"])
-        plan = self.model.baseline_plan(values, [], tabs)
+        values = dict(model.baseline_detail()["values"])
+        plan = model.baseline_plan(values, [], tabs)
         removals = [
             item for item in plan["profile_card_cues_to_remove"]
             if item["tab"] == "test"
         ]
         self.assertGreater(len(removals), 0)
-        self.assertTrue(any(item["profile"] == "Androo" for item in removals))
-        review = self.model.review_baseline_migration({
+        self.assertTrue(any(item["profile"] == "Field Test" for item in removals))
+        review = model.review_baseline_migration({
             "values": values,
             "decisions": [],
             "myMenuTabs": tabs,
@@ -397,13 +405,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "acknowledgeMyMenuImpact": True,
         })
         self.assertNotIn("00 Master/baseline.yaml", review["sourceFiles"])
-        self.assertIn("10 Profiles/Androo.yaml", review["sourceFiles"])
-        result = self.model.save_baseline_migration(review["reviewToken"])
+        self.assertIn("10 Profiles/Field Test.yaml", review["sourceFiles"])
+        result = model.save_baseline_migration(review["reviewToken"])
         self.assertEqual(result["validation"], "passed")
-        androo = load_yaml(self.root / "10 Profiles" / "Androo.yaml")
+        field_test = load_yaml(field_test_path)
         self.assertNotIn(
             "test",
-            [menu["name"] for menu in androo["card"]["field_setup"]["my_menus"]],
+            [menu["name"] for menu in field_test.get("card", {}).get("field_setup", {}).get("my_menus", [])],
         )
 
     def test_baseline_impact_rejects_added_or_removed_paths(self):

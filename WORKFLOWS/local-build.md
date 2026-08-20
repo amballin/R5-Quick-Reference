@@ -18,6 +18,16 @@ You may copy and run the complete block. The `&&` connections stop the sequence 
 
 Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.
 
+## Baseline impact before the build
+
+When `00 Master/baseline.yaml` changed outside a reviewed Profile Editor migration, run:
+
+```bash
+python3 "80 Build/baseline_impact_check.py"
+```
+
+The command compares worktree defaults with `HEAD`. Use `--base-ref origin/main` when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Impact workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.
+
 If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family's dedicated command in [Spreadsheet Workflows](spreadsheets.html), then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.
 
 ## Which website copy to open

@@ -167,6 +167,12 @@
 <p>The migration updates the baseline, adds selected preservation overrides, removes newly redundant overrides, retains protected overrides, removes obsolete My Menu card cues, and adds missing cues. Empty cue tabs are removed; empty migration-created access-only routing is cleaned up when its last cue is gone. It does not rewrite C1–C3 registrations, starting routes, source-profile declarations, unresolved identities, or the camera/My Menu draft. Before writing, it verifies that every source still matches the review, creates a recovery backup with all prior and candidate files, writes each file atomically, and runs source validation. If any write or validation fails, every file already written is restored. A successful migration reloads the baseline and profile data in the editor.</p>
 <p>When the baseline is unchanged and the plan contains only My Menu card-cue additions or removals, the reviewed migration contains only the affected profile files. It does not touch the baseline merely to permit the profile update. If analysis finds no baseline or profile source change, the plan says no migration is required and offers no save action.</p>
 <p>The draft, decisions, and unapplied plan exist only in browser memory; refreshing the page, closing the tab, or stopping the server discards them. The analysis reads the baseline and profiles loaded when the editor server started, so restart the server after external source changes.</p>
+<h3>Check baseline impact outside the editor</h3>
+<p>The shared impact rules also have a read-only command-line check. To compare an uncommitted worktree baseline with <code>HEAD</code>, run:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot;</code></pre></div>
+<p>For branch integration, select the baseline branch explicitly:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot; --base-ref origin/main</code></pre></div>
+<p>Status 0 means there is no semantic baseline-default change. Status 1 prints the changed settings and affected profile classifications and requires review through the Baseline Impact workflow above. Status 2 means the comparison could not be completed. The command ignores metadata-only and YAML-formatting differences and never writes a migration.</p>
 </section>
 <section class="step"><h2>Edit or preview a profile</h2>
 <ol>

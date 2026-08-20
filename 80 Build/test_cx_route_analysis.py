@@ -173,7 +173,9 @@ class CxCardIndicatorIntegrationTests(unittest.TestCase):
         self.assertGreater(rendered_routes, 0)
 
     def test_non_cx_settings_section_uses_verification_legend(self):
-        profile = load_yaml(self.paths.profile_file("Androo"))
+        profile = deepcopy(load_yaml(self.paths.profile_file("Travel")))
+        profile["title"] = "Unregistered Test Profile"
+        profile.get("card", {}).pop("field_setup", None)
         merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
         html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
         self.assertIn("Δ</span> Verify/set — no Cx foundation", html)

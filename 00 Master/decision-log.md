@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Main-Owned Baseline Impact Invariant
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Keep baseline/profile impact analysis in the shared repository module `80 Build/baseline_impact.py`. The Profile Editor remains the guided interface for proposing values, choosing per-profile outcomes, reviewing exact source changes, and applying a guarded migration, but the invariant does not belong exclusively to the browser application.
+
+Provide `80 Build/baseline_impact_check.py` as a read-only command-line check for baseline changes made or reviewed outside the UI. By default it compares the worktree baseline defaults with `HEAD`; `--base-ref REF` selects another Git baseline such as `origin/main`. It must load the current authored profiles, call the same shared impact engine as the UI, ignore metadata-only or YAML-formatting differences, print every semantic baseline-setting change and its profile classifications, return success when no semantic baseline-default change exists, return status 1 when review is required, and return status 2 when the comparison cannot be completed. It must never modify baseline, profile, generated, Git, or publication state.
+
+Use the CLI as a review boundary, not as an alternate migration writer. A semantic change reported by the command still belongs in the guarded Profile Editor migration workflow. Main owns the shared engine, CLI, tests, and specifications; the UI owns the guided transaction.
+
 ## Cx Foundation Change Indicators
 
 **Status:** Accepted

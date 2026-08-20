@@ -22,7 +22,7 @@ class SubjectSettingsMatrixRouteTests(unittest.TestCase):
                     {"name": "SWITCH", "settings": ["shutter.type"]},
                 ]
             },
-            "Androo",
+            "Test Profile",
         )
         self.assertEqual(label, "No Cx + AF Case + SWITCH")
 
