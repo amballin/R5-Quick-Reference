@@ -38,19 +38,27 @@ class CxRouteAnalysisError(ValueError):
 def analyze_selected_foundation(profile, merged, profiles, baseline, setting_paths):
     """Compare visible target settings with the selected Cx foundation.
 
-    Returns ``None`` for permanent references, access-only cards, and cards
-    without a selected Cx. Inputs are not mutated.
+    Returns ``None`` only for permanent references. Profile cards without a
+    selected Cx conservatively mark every visible target for verification.
+    Inputs are not mutated.
     """
 
     if not isinstance(profile, Mapping) or profile.get("card_type") == "reference":
         return None
     setup = ((profile.get("card") or {}).get("field_setup") or {})
-    if not isinstance(setup, Mapping) or setup.get("access_only") is True:
-        return None
+    if not isinstance(setup, Mapping):
+        setup = {}
     start = str(setup.get("start") or "").upper()
     source_title = setup.get("source_profile")
     if not start and not source_title:
-        return None
+        return {
+            "start": "",
+            "source_profile": "",
+            "foundation_label": "No Cx foundation",
+            "change_label": "Verify or set — no Cx foundation",
+            "legend_label": "Verify/set — no Cx foundation",
+            "changed_paths": set(setting_paths or []),
+        }
     if start not in {"C1", "C2", "C3"}:
         raise CxRouteAnalysisError(f"Unsupported Cx starting mode: {start or 'missing'}")
     if not isinstance(source_title, str) or not source_title.strip():
@@ -75,6 +83,8 @@ def analyze_selected_foundation(profile, merged, profiles, baseline, setting_pat
         "start": start,
         "source_profile": source_title,
         "foundation_label": f"{start} {source_title}",
+        "change_label": f"Change from {start} {source_title}",
+        "legend_label": f"Change from {start} {source_title}",
         "changed_paths": changed,
     }
 

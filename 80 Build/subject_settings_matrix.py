@@ -212,7 +212,7 @@ def _card_start_label(field_setup, profile_title=""):
     if field_setup.get("access_only") is True:
         return f"{profile_title} + " + " + ".join(menu_names) if menu_names else profile_title
     if not start or not source_profile:
-        return ""
+        return "No Cx + " + " + ".join(menu_names) if menu_names else ""
     route = f"{start} {source_profile}"
     if menu_names:
         route += " + " + " + ".join(menu_names)

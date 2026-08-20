@@ -965,7 +965,7 @@ function renderMyMenuImpact(menuImpact) {
   eyebrow.className = "eyebrow";
   eyebrow.textContent = "Card access report";
   title.textContent = "My Menu card coverage";
-  summary.textContent = `${menuImpact.summary.profiles_with_warnings} profiles with warnings · ${menuImpact.summary.missing_card_cues} missing cues`;
+  summary.textContent = `${menuImpact.summary.profiles_with_warnings} profiles with warnings · ${menuImpact.summary.missing_card_cues} missing cues · ${menuImpact.summary.obsolete_card_cues} obsolete cues`;
   headingCopy.append(eyebrow, title);
   heading.append(headingCopy, summary);
   article.append(heading);
@@ -1043,7 +1043,7 @@ function renderMyMenuRouteProfile(profile) {
     ? "Access-only card"
     : profile.start
       ? `${profile.start} ${profile.source_profile || "declared source"}`
-      : "No starting mode declared";
+      : "No Cx foundation · verify/set rows";
   status.textContent = profile.warning_count
     ? `${profile.warning_count} ${profile.warning_count === 1 ? "warning" : "warnings"}`
     : "Card cues covered";
@@ -1097,11 +1097,37 @@ function renderMyMenuRouteProfile(profile) {
           setting.item_available ? "Available in named tab" : setting.identity_missing ? "No menu identity" : "Missing from named tab",
           setting.item_available ? "covered" : "missing",
         ));
+      } else if (setting.obsolete) {
+        badges.append(myMenuFindingBadge(
+          setting.reason === "tab_removed" ? "Tab removed from My Menu" : "Shortcut removed from tab",
+          "missing",
+        ));
       }
       item.append(copy, badges);
       declared.append(item);
     }
     body.append(declared);
+  }
+
+  if (profile.obsolete_card_cues.length) {
+    body.append(myMenuFindingHeading("Card cues to remove"));
+    const obsolete = document.createElement("ul");
+    obsolete.className = "my-menu-setting-findings missing";
+    for (const setting of profile.obsolete_card_cues) {
+      const item = document.createElement("li");
+      const copy = document.createElement("div");
+      const label = document.createElement("strong");
+      const route = document.createElement("small");
+      const badge = myMenuFindingBadge("Planned removal", "missing");
+      label.textContent = baselineSettingLabel(setting.path);
+      route.textContent = setting.reason === "tab_removed"
+        ? `${setting.tab} is no longer configured`
+        : `${setting.tab} no longer contains this shortcut`;
+      copy.append(label, route);
+      item.append(copy, badge);
+      obsolete.append(item);
+    }
+    body.append(obsolete);
   }
 
   if (profile.missing_card_cues.length) {
@@ -1349,11 +1375,11 @@ function renderBaselinePlan() {
   heading.append(title, status);
   elements.baselinePlan.append(heading);
 
-  if (plan.profile_card_cues_to_add.length) {
+  if (plan.profile_card_cues_to_add.length || plan.profile_card_cues_to_remove.length) {
     const explanation = document.createElement("section");
     const explanationCopy = document.createElement("p");
     explanation.className = "baseline-plan-explanation";
-    explanationCopy.textContent = "What these My Menu suggestions mean: Each suggestion applies to a setting that is already shown on the card. The setting will use the color of the My Menu tab where you can find it, and that tab’s name will appear at the top of the card. Nothing new will be added to the card or to the camera’s My Menu.";
+    explanationCopy.textContent = "What these My Menu changes mean: New cues color-code settings already shown on cards for their configured tab. Obsolete cues are removed when their tab or shortcut is no longer in the My Menu draft. These changes do not add or remove settings from the cards or change the camera’s My Menu.";
     explanation.append(explanationCopy);
     elements.baselinePlan.append(explanation);
   }
@@ -1364,6 +1390,7 @@ function renderBaselinePlan() {
     ["Redundant overrides to remove", plan.overrides_to_remove, (item) => `${item.title}: remove ${item.path}`],
     ["Existing overrides retained", plan.overrides_to_keep, (item) => `${item.title}: keep ${item.path}`],
     ["Existing card rows to mark with My Menu access", plan.profile_card_cues_to_add, (item) => `${item.title}: color-code existing ${baselineSettingLabel(item.path)} row for ${item.tab} access`],
+    ["Obsolete My Menu card cues to remove", plan.profile_card_cues_to_remove, (item) => `${item.title}: remove ${baselineSettingLabel(item.path)} cue for ${item.tab}`],
     ["Unresolved decisions", plan.unresolved_decisions, (item) => `${item.title}: ${item.path} · ${item.reason.replaceAll("_", " ")}`],
   ];
   for (const [label, items, describe] of groups) {
@@ -1388,7 +1415,8 @@ function renderBaselinePlan() {
   const hasSourceChanges = baselineChangedPaths().length > 0
     || plan.overrides_to_add.length > 0
     || plan.overrides_to_remove.length > 0
-    || plan.profile_card_cues_to_add.length > 0;
+    || plan.profile_card_cues_to_add.length > 0
+    || plan.profile_card_cues_to_remove.length > 0;
   if (plan.complete && hasSourceChanges) {
     const applySection = document.createElement("section");
     applySection.className = "baseline-migration-apply";
@@ -1396,8 +1424,8 @@ function renderBaselinePlan() {
     applyTitle.textContent = "Review and apply this migration";
     const warning = document.createElement("p");
     warning.textContent = baselineChangedPaths().length > 0
-      ? "This writes the proposed baseline and planned profile cleanup/cues. C1–C3 registrations and unresolved or unnecessary My Menu routes remain unchanged as warnings."
-      : "This profile-only migration writes the planned My Menu card cues without changing the baseline, C1–C3 registrations, or the saved My Menu layout.";
+      ? "This writes the proposed baseline and planned profile cleanup/cues. C1–C3 registrations and unresolved My Menu identities remain unchanged as warnings."
+      : "This profile-only migration adds missing My Menu card cues and removes obsolete ones without changing the baseline, C1–C3 registrations, or the saved My Menu layout.";
     const acknowledgements = document.createElement("div");
     acknowledgements.className = "migration-acknowledgements";
     const cxLabel = document.createElement("label");
@@ -1409,7 +1437,7 @@ function renderBaselinePlan() {
     const menu = document.createElement("input");
     menu.type = "checkbox";
     menu.id = "acknowledge-my-menu-impact";
-    menuLabel.append(menu, document.createTextNode(" I reviewed the My Menu availability, missing-cue, and unused-route warnings."));
+    menuLabel.append(menu, document.createTextNode(" I reviewed the My Menu availability, missing-cue, obsolete-cue, and unused-route warnings."));
     acknowledgements.append(cxLabel, menuLabel);
     const reviewButton = document.createElement("button");
     reviewButton.type = "button";

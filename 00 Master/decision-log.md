@@ -13,6 +13,26 @@ Keep My Menu value colors independent from whether a change is required. Every v
 
 Display the local profile editor's semantic version and a short deterministic build identifier in its header. Calculate the build identifier from the relevant editor, renderer, comparison-engine, and card-template source bytes rather than a timestamp so the same sources produce the same identifier.
 
+## Field Setup Without a Cx Foundation
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Permit every editable profile card to carry named My Menu setting cues without requiring a C1–C3 starting route. My Menu color answers where a displayed setting can be found and therefore remains useful independently of any registered-mode foundation. Automatically plan a missing cue for every displayed setting whose configured My Menu item resolves to one unique tab, including subject cards without a Cx route and profile-based reference cards. Permanent reference cards remain read-only and excluded.
+
+Keep derived Cx comparisons when both `card.field_setup.start` and `source_profile` identify a valid foundation. When an editable profile card has no Cx foundation, reserve the same change-indicator column and mark every visible settings row with `Δ` because the current camera state cannot be proven from project data; the marker directs the user to verify or set the target value. Use a legend and accessible label that state **Verify/set — no Cx foundation** rather than claiming a calculated difference. This decision supersedes only the authored-Cx limitation on planned My Menu cues and the prior omission of change indicators from access-only or other non-Cx profile cards. My Menu colors remain independent from change indicators.
+
+## Guarded Removal of Obsolete My Menu Card Cues
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+When the current My Menu draft removes a named tab or removes a supported shortcut from its declared tab, identify every matching profile-card cue as obsolete and include its removal automatically in the guarded migration plan. This applies whether or not the setting is currently visible on that card because the authored access route is no longer true. A tab rename or shortcut move is represented explicitly as removal from the old tab plus addition to the uniquely resolved new tab.
+
+Remove only the reviewed setting cue. Delete its tab block when no settings remain, and clean up empty migration-created access-only routing scaffolding when the last cue is removed. Keep C1–C3 registrations, starting modes, source profiles, unrelated card cues, the session My Menu draft, and declarations without enough setting identity to prove obsolescence unchanged. Require the existing analysis, acknowledgement, exact multi-file diff, source fingerprints, recovery backup, validation, atomic replacement, and rollback safeguards.
+
+This decision supersedes the warnings-only treatment of known unavailable My Menu routes in **Always-Available My Menu Profile Impact and Global Return Control** and **Guarded Local Profile Authoring**. Advisory treatment remains in force for unresolved identities and for configured shortcuts not displayed on any card.
+
 ## Guarded My Menu Card Colors
 
 **Status:** Accepted

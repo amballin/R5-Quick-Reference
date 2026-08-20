@@ -10,6 +10,12 @@ display_order: 30
 card:
   icons:
     left: camera_default
+  field_setup:
+    access_only: true
+    my_menus:
+    - name: SWITCH
+      settings:
+      - shutter.type
 inherits: baseline
 overrides: {}
 checklist:

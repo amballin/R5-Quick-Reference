@@ -182,7 +182,7 @@ function cardContent(data) {
     }
   }
   if (data.change_legend) {
-    content += `<text x="371" y="${y + 2}" class="legend" text-anchor="end"><tspan class="change">Δ</tspan> Change from ${esc(data.change_legend)}</text>`;
+    content += `<text x="371" y="${y + 2}" class="legend" text-anchor="end"><tspan class="change">Δ</tspan> ${esc(data.change_legend)}</text>`;
     y += 20;
   }
   y += data.rows.length ? 18 : 0;

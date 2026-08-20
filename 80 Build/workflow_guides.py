@@ -13,6 +13,7 @@ PAGES = {
     "other-mac": "Continue on Another Mac",
     "local-build": "Local Build",
     "profile-editor": "Profile Editor",
+    "editor-user-guide": "Profile Editor User Guide",
     "spreadsheets": "Spreadsheet Workflows",
     "verification-testing": "On-Camera Verification Testing",
     "publish": "Publish the Website",

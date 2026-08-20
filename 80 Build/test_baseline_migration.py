@@ -43,6 +43,7 @@ class BaselineMigrationCandidateTests(unittest.TestCase):
             "overrides_to_add": [{"profile": "Beta", "path": "mode", "override_value": "old"}],
             "overrides_to_remove": [{"profile": "Alpha", "path": "mode"}],
             "overrides_to_keep": [],
+            "profile_card_cues_to_remove": [],
             "profile_card_cues_to_add": [{"profile": "Beta", "tab": "FAST", "path": "mode"}],
         }
 
@@ -87,6 +88,119 @@ class BaselineMigrationCandidateTests(unittest.TestCase):
         self.assertNotIn("00 Master/baseline.yaml", candidates)
         beta = yaml.safe_load(candidates["10 Profiles/Beta.yaml"])
         self.assertEqual(beta["card"]["field_setup"]["my_menus"], [{"name": "FAST", "settings": ["mode"]}])
+        self.assertNotIn("access_only", beta["card"]["field_setup"])
+
+    def test_new_reference_category_route_is_access_only(self):
+        profiles = {
+            "Setup": {
+                "metadata": {"last_updated": date(2026, 1, 1)},
+                "title": "Setup",
+                "display_category": "reference",
+                "inherits": "baseline",
+                "overrides": {},
+            }
+        }
+        plan = {
+            "complete": True,
+            "unresolved_decisions": [],
+            "profiles_following_baseline": [],
+            "overrides_to_add": [],
+            "overrides_to_remove": [],
+            "overrides_to_keep": [],
+            "profile_card_cues_to_add": [{"profile": "Setup", "tab": "FAST", "path": "mode"}],
+        }
+        candidates = build_migration_candidates(
+            self.current, self.current, profiles, plan, today=date(2026, 8, 20)
+        )
+        setup = yaml.safe_load(candidates["10 Profiles/Setup.yaml"])["card"]["field_setup"]
+        self.assertTrue(setup["access_only"])
+        self.assertEqual(setup["my_menus"], [{"name": "FAST", "settings": ["mode"]}])
+
+    def test_removes_only_planned_cue_and_empty_tab(self):
+        profiles = deepcopy(self.profiles)
+        profiles["Alpha"]["card"]["field_setup"]["my_menus"] = [
+            {"name": "OLD", "settings": ["mode"]},
+            {"name": "KEEP", "settings": ["nested.keep"]},
+        ]
+        plan = {
+            "complete": True,
+            "unresolved_decisions": [],
+            "profiles_following_baseline": [],
+            "overrides_to_add": [],
+            "overrides_to_remove": [],
+            "overrides_to_keep": [],
+            "profile_card_cues_to_remove": [
+                {"profile": "Alpha", "tab": "OLD", "path": "mode"}
+            ],
+            "profile_card_cues_to_add": [],
+        }
+        candidates = build_migration_candidates(
+            self.current, self.current, profiles, plan, today=date(2026, 8, 20)
+        )
+        alpha = yaml.safe_load(candidates["10 Profiles/Alpha.yaml"])
+        self.assertEqual(
+            alpha["card"]["field_setup"]["my_menus"],
+            [{"name": "KEEP", "settings": ["nested.keep"]}],
+        )
+
+    def test_moves_cue_between_tabs_in_one_candidate(self):
+        profiles = deepcopy(self.profiles)
+        plan = {
+            "complete": True,
+            "unresolved_decisions": [],
+            "profiles_following_baseline": [],
+            "overrides_to_add": [],
+            "overrides_to_remove": [],
+            "overrides_to_keep": [],
+            "profile_card_cues_to_remove": [
+                {"profile": "Alpha", "tab": "FAST", "path": "mode"}
+            ],
+            "profile_card_cues_to_add": [
+                {"profile": "Alpha", "tab": "NEW", "path": "mode"}
+            ],
+        }
+        candidates = build_migration_candidates(
+            self.current, self.current, profiles, plan, today=date(2026, 8, 20)
+        )
+        alpha = yaml.safe_load(candidates["10 Profiles/Alpha.yaml"])
+        self.assertEqual(
+            alpha["card"]["field_setup"]["my_menus"],
+            [{"name": "NEW", "settings": ["mode"]}],
+        )
+
+    def test_last_access_only_cue_removal_cleans_empty_route_scaffolding(self):
+        profiles = {
+            "Setup": {
+                "metadata": {"last_updated": date(2026, 1, 1)},
+                "title": "Setup",
+                "display_category": "reference",
+                "inherits": "baseline",
+                "card": {
+                    "field_setup": {
+                        "access_only": True,
+                        "my_menus": [{"name": "FAST", "settings": ["mode"]}],
+                    }
+                },
+                "overrides": {},
+            }
+        }
+        plan = {
+            "complete": True,
+            "unresolved_decisions": [],
+            "profiles_following_baseline": [],
+            "overrides_to_add": [],
+            "overrides_to_remove": [],
+            "overrides_to_keep": [],
+            "profile_card_cues_to_remove": [
+                {"profile": "Setup", "tab": "FAST", "path": "mode"}
+            ],
+            "profile_card_cues_to_add": [],
+        }
+        candidates = build_migration_candidates(
+            self.current, self.current, profiles, plan, today=date(2026, 8, 20)
+        )
+        setup = yaml.safe_load(candidates["10 Profiles/Setup.yaml"])
+        self.assertNotIn("card", setup)
 
 
 if __name__ == "__main__":

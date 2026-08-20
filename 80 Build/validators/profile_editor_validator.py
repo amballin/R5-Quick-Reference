@@ -47,7 +47,7 @@ def validate(root):
         if create_detail.get("metadata") != {"status": "Draft", "release": False}:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profiles must begin as unreleased drafts."))
         editor_info = model.editor_info()
-        if editor_info.get("version") != "0.7.9" or len(editor_info.get("build") or "") != 8:
+        if editor_info.get("version") != "0.8.1" or len(editor_info.get("build") or "") != 8:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Editor version/build metadata is incomplete."))
         route_catalog = model._my_menu_route_catalog()
         if not route_catalog:

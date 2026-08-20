@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Editor User Guide</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    h3 { margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Profile Editor User Guide</h1>
+<p>The Profile Editor is a local workspace for reviewing camera setup information, organizing My Menu, creating or updating shooting profiles, previewing cards, and evaluating shared baseline changes. This guide explains how to operate the editor. Use the camera reference materials when you need the meaning or recommended value of a particular field.</p>
+<section class="step"><h2>Start the editor</h2>
+<p>From the project root, run:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
+<p>Open the local address shown in Terminal. Keep that Terminal window open while using the editor. Press <strong>Control-C</strong> in Terminal when you are finished.</p>
+<p>The editor runs only on this Mac. It does not publish the website or make Git changes.</p>
+</section>
+<section class="step"><h2>Understand the working model</h2>
+<p>The editor separates temporary work from saved source:</p>
+<ul>
+<li>Changes begin as a browser draft.</li>
+<li>A preview shows the result without saving it.</li>
+<li>A review step shows the exact source changes.</li>
+<li>A save is available only for the version that was reviewed.</li>
+<li>Refreshing or closing the page discards unsaved drafts.</li>
+</ul>
+<p>If source files change outside the editor, restart the editor before continuing. If the editor detects that a reviewed source changed, it blocks the save so you can reload and review again.</p>
+</section>
+<section class="step"><h2>Move around the editor</h2>
+<p>Use the four numbered tabs across the top:</p>
+<ol>
+<li><strong>Camera setup</strong> — Find and review setup records and their source links.</li>
+<li><strong>Configure My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
+<li><strong>Profiles</strong> — Preview, create, duplicate, or update shooting profiles.</li>
+<li><strong>Baseline impact</strong> — Test a proposed shared change and review its effect across profiles.</li>
+</ol>
+<p>Moving to another tab does not save work. Complete or deliberately discard a draft before switching tasks.</p>
+</section>
+<section class="step"><h2>Review camera setup</h2>
+<p>Use the search box to find a record by name or related wording. Use the classification filter to narrow the list by how the record is used in the project.</p>
+<p>Each record provides its menu location, project guidance, status, and reference link. Treat the editor as an organized view of the source material; consult the linked references for field-level detail.</p>
+<p>This section is for review and navigation. It does not write settings to the camera or prove the camera&#x27;s current physical configuration.</p>
+</section>
+<section class="step"><h2>Configure My Menu</h2>
+<p>Open <strong>Configure My Menu</strong> to work with the saved navigation layout.</p>
+<ul>
+<li>Edit a tab name, select its ordered shortcuts, and choose its card color.</li>
+<li>Keep each used tab valid and each selected shortcut unique where the editor requires it.</li>
+<li>Use <strong>Reload saved layout</strong> to discard browser edits and return to the saved version.</li>
+<li>Use <strong>Restore recommended tabs</strong> to create a recommended draft without saving it.</li>
+<li>Choose <strong>Review My Menu changes</strong> when the complete layout is ready.</li>
+</ul>
+<p>The review shows the exact changes. Read the review, then use the save action only if it matches your intent. A successful save updates the project source; it does not update the physical camera.</p>
+<h3>Remove a tab or shortcut from cards</h3>
+<p>To remove a complete tab, clear all of its shortcut slots and its tab name. To remove one shortcut, clear only that shortcut slot. Review and save the My Menu changes, then choose <strong>Analyze profile impact</strong>.</p>
+<p>The coverage report lists every stored card cue that no longer matches the saved tab layout under <strong>Card cues to remove</strong>. Build the migration plan, confirm the <strong>Obsolete My Menu card cues to remove</strong> list, review the exact profile YAML, and apply the migration. A renamed tab or moved shortcut is shown as removal from the old tab and addition to the new one. The migration changes the cards&#x27; access labels and colors; it does not remove setting rows from the cards or make another change to the camera&#x27;s My Menu.</p>
+</section>
+<section class="step"><h2>Work with profiles</h2>
+<p>Open <strong>Profiles</strong>, then select a profile from the menu. Reference cards can be previewed but not edited.</p>
+<p>For an editable profile:</p>
+<ol>
+<li>Review the profile title, release information, and grouped fields.</li>
+<li>Use the state beside each field to see whether the value is inherited or customized.</li>
+<li>Change only the fields needed for this profile.</li>
+<li>Use <strong>Use baseline</strong> for a field or section when the profile should inherit the shared value again.</li>
+<li>Choose <strong>Preview card</strong> and inspect the temporary card.</li>
+<li>Choose <strong>Review YAML changes</strong> when the draft is ready.</li>
+<li>Save only after the exact review matches the intended result.</li>
+</ol>
+<p>Use <strong>Discard draft &amp; reload profile</strong> to return the selected profile to its saved state.</p>
+<p>On cards with a declared C1–C3 foundation, <code>Δ</code> identifies a value that differs from that foundation. On editable profile cards without a Cx foundation, every visible settings row uses <code>Δ</code> as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.</p>
+<h3>Create or duplicate a profile</h3>
+<p>Use <strong>New from baseline</strong> for a profile that should begin with shared values and no custom fields. Use <strong>Duplicate profile</strong> when a new profile should begin from an existing editable profile.</p>
+<p>Provide a unique filename and complete the same preview, review, and save process. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.</p>
+</section>
+<section class="step"><h2>Evaluate baseline impact</h2>
+<p>Use <strong>Baseline impact</strong> when considering a change to a shared value. This area is a planning workspace, not a quick-edit form.</p>
+<ol>
+<li>Change one or more draft values.</li>
+<li>Choose <strong>Analyze draft</strong>.</li>
+<li>Review which profiles would follow the proposal and which are protected by existing customization.</li>
+<li>For each affected inherited value, choose whether the profile should follow the proposed baseline or preserve its previous value as a customization.</li>
+<li>Build the migration plan and review all warnings and route effects.</li>
+<li>Review the exact multi-file changes only when the plan is complete.</li>
+<li>Apply the migration only when every listed change matches the intended result.</li>
+</ol>
+<p>Use <strong>Discard baseline draft</strong> to abandon the proposal. Refreshing the page also clears an unapplied analysis and its decisions.</p>
+</section>
+<section class="step"><h2>Preview, review, and save safely</h2>
+<p>A preview is disposable and may replace the previous editor preview. It does not change profile source or the released website.</p>
+<p>A review is tied to the exact draft and source state shown. If you edit the draft after reviewing it, review again before saving. When a save succeeds, the editor creates a recovery backup and validates the source.</p>
+<p>If validation or a concurrent-change check fails, stop and read the message. Reload the affected source rather than trying to force the prior review through.</p>
+</section>
+<section class="step"><h2>Finish the editing session</h2>
+<p>After the intended source changes are saved:</p>
+<ol>
+<li>Run the project&#x27;s normal local validation and build workflow separately.</li>
+<li>Review the generated result.</li>
+<li>Follow the established Finish Day or publishing workflow when appropriate.</li>
+<li>Stop the editor with <strong>Control-C</strong> in its Terminal window.</li>
+</ol>
+<p>The editor does not delete or rename existing profiles, edit permanent reference cards, run the normal build, commit, push, or publish.</p>
+</section>
+<section class="step"><h2>Get more help</h2>
+<p>For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the <a href="profile-editor.html">Profile Editor workflow reference</a>. For camera-field meaning and recommendations, use the linked Canon and project reference materials.</p>
+</section>
+    <footer>Generated from WORKFLOWS/editor-user-guide.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

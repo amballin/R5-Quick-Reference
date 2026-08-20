@@ -20,9 +20,6 @@ card:
       - autofocus.subject_detection
       - shutter.type
       - stabilization.image_stabilization.mode
-    - name: test
-      settings:
-      - exposure.iso.mode
   colors:
     background: null
     text: null

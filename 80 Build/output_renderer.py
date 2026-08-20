@@ -82,7 +82,7 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
         "title": profile.get("title", profile_name),
         "subtitle": profile_subtitle(profile, baseline),
         "field_setup": field_setup_summary(profile, merged, paths),
-        "change_legend": (change_summary or {}).get("foundation_label", ""),
+        "change_legend": (change_summary or {}).get("legend_label", ""),
         "colors": card_colors(profile, baseline),
         "header_icons": {
             "left": str(header_icons["left"]) if header_icons["left"] else "",

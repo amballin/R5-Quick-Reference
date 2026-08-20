@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1787178125";
+const CACHE_NAME = "photography-reference-1787253221";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -11,6 +11,7 @@ const CACHE_URLS = [
   "Cards/Camera%20Setup%20Essentials.html",
   "Cards/Fireworks.html",
   "Cards/Landscape.html",
+  "Cards/My%20Menu.html",
   "Cards/People.html",
   "Cards/Wildlife.html",
   "app-assets/apple-touch-icon.png",

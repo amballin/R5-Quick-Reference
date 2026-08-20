@@ -356,7 +356,7 @@ def table(profile, merged, icon_manager=None, paths=None, baseline=None):
         if change_summary:
             changed = row_requires_change(row["key"], change_summary["changed_paths"])
             if changed:
-                label = escape(f'Change from {change_summary["foundation_label"]}')
+                label = escape(change_summary["change_label"])
                 change_style = f' style="color:{escape(access_color)}"' if access_color else ""
                 html += (
                     f'<td class="field-change"{change_style} title="{label}" aria-label="{label}">'
@@ -439,17 +439,17 @@ def settings_section(profile, merged, icon_manager=None, paths=None, baseline=No
     rendered = f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths, baseline)}"
     change_summary = field_setup_change_summary(profile, merged, baseline, paths)
     if change_summary:
-        label = escape(change_summary["foundation_label"])
+        label = escape(change_summary["legend_label"])
         rendered += (
             '<p class="field-change-legend">'
             '<span aria-hidden="true">Δ</span> '
-            f"Change from {label}</p>"
+            f"{label}</p>"
         )
     return rendered
 
 
 def field_setup_change_summary(profile, merged, baseline=None, paths=None):
-    """Return derived Cx differences for the visible rows on one card."""
+    """Return derived Cx differences or conservative non-Cx verification markers."""
     if paths is None:
         return None
     if baseline is None:
@@ -571,13 +571,17 @@ def field_setup_strip(profile, merged=None, paths=None):
 
 def field_setup_note(profile, merged=None, paths=None):
     summary = field_setup_summary(profile, merged, paths)
-    if not summary:
+    if profile.get("card_type") == "reference":
         return ""
-    if summary["access_only"]:
-        if not summary["menus"]:
-            return ""
+    if not summary or not summary["start"]:
+        menus = (summary or {}).get("menus") or []
+        prefix = (
+            "No Cx foundation is declared. Every Δ marks a target to verify or set on the camera."
+        )
+        if not menus:
+            return prefix
         return (
-            "Colored setting values use the matching My Menu tab; white values use "
+            f"{prefix} Colored setting values use the matching My Menu tab; white values use "
             "Quick Control, dials, buttons, or normal menu access."
         )
     start = escape(str(summary["start"]))

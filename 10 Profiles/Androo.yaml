@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Review
-  last_updated: 2026-08-17
+  last_updated: 2026-08-20
   release: true
 title: Androo
 inherits: baseline
@@ -23,3 +23,14 @@ overrides:
   drive:
     mode: Single Shot
 subtitle: test
+card:
+  field_setup:
+    my_menus:
+    - name: AF Case
+      settings:
+      - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - autofocus.subject_detection
+      - shutter.type
+      - stabilization.image_stabilization.mode

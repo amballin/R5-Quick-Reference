@@ -82,15 +82,32 @@ class CxRouteAnalysisTests(unittest.TestCase):
         )
         self.assertEqual(result["changed_paths"], set())
 
-    def test_access_only_card_has_no_cx_comparison(self):
+    def test_access_only_card_marks_every_visible_setting_for_verification(self):
         profile = {
             "title": "Defaults",
             "card": {"field_setup": {"access_only": True}},
             "overrides": {},
         }
-        self.assertIsNone(
-            analyze_selected_foundation(profile, self.baseline["defaults"], {}, self.baseline, set())
+        result = analyze_selected_foundation(
+            profile,
+            self.baseline["defaults"],
+            {},
+            self.baseline,
+            {"drive.mode", "stabilization.ibis"},
         )
+        self.assertEqual(result["changed_paths"], {"drive.mode", "stabilization.ibis"})
+        self.assertEqual(result["legend_label"], "Verify/set — no Cx foundation")
+
+    def test_profile_without_field_setup_marks_every_visible_setting(self):
+        result = analyze_selected_foundation(
+            {"title": "Unregistered", "overrides": {}},
+            self.baseline["defaults"],
+            {},
+            self.baseline,
+            {"autofocus.subject_detection"},
+        )
+        self.assertEqual(result["changed_paths"], {"autofocus.subject_detection"})
+        self.assertEqual(result["change_label"], "Verify or set — no Cx foundation")
 
     def test_rejects_unknown_foundation_without_mutating_inputs(self):
         before = deepcopy((self.profile, self.merged, self.profiles, self.baseline))
@@ -138,7 +155,7 @@ class CxCardIndicatorIntegrationTests(unittest.TestCase):
         html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
         self.assertIn("Δ</span> Change from C1 Wildlife", html)
 
-    def test_every_authored_cx_route_renders_and_access_only_cards_skip_column(self):
+    def test_every_editable_profile_card_renders_change_column(self):
         rendered_routes = 0
         for source in sorted(self.paths.profiles_dir.glob("*.yaml")):
             profile = load_yaml(source)
@@ -150,9 +167,16 @@ class CxCardIndicatorIntegrationTests(unittest.TestCase):
             if setup.get("start"):
                 rendered_routes += 1
                 self.assertIn('class="has-change-column"', html, source.name)
-            elif setup.get("access_only") is True:
-                self.assertNotIn('class="has-change-column"', html, source.name)
+            else:
+                self.assertIn('class="has-change-column"', html, source.name)
+                self.assertIn(">Δ</span>", html, source.name)
         self.assertGreater(rendered_routes, 0)
+
+    def test_non_cx_settings_section_uses_verification_legend(self):
+        profile = load_yaml(self.paths.profile_file("Androo"))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
+        self.assertIn("Δ</span> Verify/set — no Cx foundation", html)
 
 
 if __name__ == "__main__":

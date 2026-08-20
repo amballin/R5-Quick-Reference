@@ -22,10 +22,10 @@ card:
     background: optional color string
     text: optional color string
   field_setup:
-    start: optional C1|C2|C3
-    source_profile: optional exact profile title represented by the starting Cx
+    start: optional C1|C2|C3; requires source_profile
+    source_profile: optional exact profile title represented by the starting Cx; requires start
     access_only: optional true for a reference-category profile that shows My Menu access without a C1-C3 starting mode
-    my_menus: optional list of up to five My Menu tabs
+    my_menus: optional list of up to five My Menu tabs; may be used without a C1-C3 starting mode
 
 field_setup my_menus item:
   name: non-empty My Menu tab name

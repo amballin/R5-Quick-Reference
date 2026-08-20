@@ -23,9 +23,6 @@ card:
       - autofocus.tracking_sensitivity
       - autofocus.accel_decel_tracking
       - autofocus.switching_tracked_subjects
-    - name: test
-      settings:
-      - exposure.iso.mode
   colors:
     background: null
     text: null

@@ -79,6 +79,11 @@ def _markdown_body(source):
             output.append(f'<section class="step"><h2>{_inline(line[3:])}</h2>')
             section_open = True
             continue
+        if line.startswith("### "):
+            close_paragraph()
+            close_list()
+            output.append(f"<h3>{_inline(line[4:])}</h3>")
+            continue
         if line.startswith("> "):
             close_paragraph()
             close_list()
@@ -251,6 +256,7 @@ def render_guide_html(source, page_title, footer_text, navigation="", project_te
       padding: 22px clamp(18px, 4vw, 34px) 28px;
     }}
     h2 {{ margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }}
+    h3 {{ margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }}
     li + li {{ margin-top: 8px; }}
     code {{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }}
     p code, li code, aside code {{

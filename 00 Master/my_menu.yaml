@@ -13,6 +13,3 @@ tabs:
   - af3_tracking_sensitivity
   - af3_accel_decel_tracking
   - af4_switching_tracked_subjects
-- name: test
-  items:
-  - shoot2_iso_speed_settings

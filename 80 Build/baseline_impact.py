@@ -158,6 +158,7 @@ def plan_baseline_migration(
     overrides_to_remove = []
     overrides_to_keep = []
     profile_card_cues_to_add = []
+    profile_card_cues_to_remove = []
 
     for change in analysis["changes"]:
         path = change["path"]
@@ -211,17 +212,18 @@ def plan_baseline_migration(
             menu_tabs,
         )
         for profile in coverage["profiles"]:
-            source_profile = profiles.get(profile["name"]) or {}
-            card = source_profile.get("card") or {}
-            field_setup = card.get("field_setup") or {} if isinstance(card, Mapping) else {}
-            route_is_authored = (
-                isinstance(field_setup, Mapping)
-                and str(field_setup.get("start") or "").upper() in {"C1", "C2", "C3"}
-                and isinstance(field_setup.get("source_profile"), str)
-                and bool(field_setup["source_profile"].strip())
-            )
-            if not route_is_authored:
-                continue
+            for cue in profile["obsolete_card_cues"]:
+                profile_card_cues_to_remove.append(
+                    {
+                        "profile": profile["name"],
+                        "title": profile["title"],
+                        "tab": cue["tab"],
+                        "path": cue["path"],
+                        "item_id": cue["item_id"],
+                        "reason": cue["reason"],
+                        "yaml_path": "card.field_setup.my_menus",
+                    }
+                )
             for cue in profile["missing_card_cues"]:
                 if len(cue["available_in_tabs"]) != 1:
                     raise BaselineImpactError(
@@ -245,6 +247,13 @@ def plan_baseline_migration(
                 item["path"],
             )
         )
+        profile_card_cues_to_remove.sort(
+            key=lambda item: (
+                item["title"].casefold(),
+                item["tab"].casefold(),
+                item["path"],
+            )
+        )
 
     return {
         "complete": not unresolved,
@@ -254,6 +263,7 @@ def plan_baseline_migration(
             "overrides_to_remove": len(overrides_to_remove),
             "overrides_to_keep": len(overrides_to_keep),
             "profile_card_cues_to_add": len(profile_card_cues_to_add),
+            "profile_card_cues_to_remove": len(profile_card_cues_to_remove),
             "unresolved_decisions": len(unresolved),
         },
         "profiles_following_baseline": follows,
@@ -261,6 +271,7 @@ def plan_baseline_migration(
         "overrides_to_remove": overrides_to_remove,
         "overrides_to_keep": overrides_to_keep,
         "profile_card_cues_to_add": profile_card_cues_to_add,
+        "profile_card_cues_to_remove": profile_card_cues_to_remove,
         "unresolved_decisions": unresolved,
     }
 
@@ -389,6 +400,7 @@ def analyze_my_menu_routes(
     hidden_assignments = 0
     unavailable_settings = 0
     missing_card_cues = 0
+    obsolete_card_cues = 0
     newly_visible_missing_cues = 0
     omitted_tabs = 0
     referenced_configured_items = set()
@@ -415,7 +427,7 @@ def analyze_my_menu_routes(
                 referenced_configured_items.add(item_id)
 
         declarations, tabs = _declared_menu_routes(name, field_setup)
-        declared_paths = {item["path"] for item in declarations}
+        covered_declared_paths = set()
         declaration_results = []
         for declaration in declarations:
             path = declaration["path"]
@@ -427,6 +439,10 @@ def analyze_my_menu_routes(
             item_available = bool(item_id and configured and item_id in configured["items"])
             identity_missing = item_id is None
             availability_problem = displayed_after and not item_available
+            obsolete = configured is None or (item_id is not None and not item_available)
+            if item_available:
+                covered_declared_paths.add(path)
+            reason = "tab_removed" if configured is None else "shortcut_removed" if obsolete else None
             record = {
                 "tab": tab_name,
                 "path": path,
@@ -439,12 +455,26 @@ def analyze_my_menu_routes(
                 "tab_present": configured is not None,
                 "item_available": item_available,
                 "availability_problem": availability_problem,
+                "obsolete": obsolete,
+                "reason": reason,
             }
             declaration_results.append(record)
             declared_settings += 1
             displayed_assignments += int(displayed_after)
             hidden_assignments += int(not displayed_after)
             unavailable_settings += int(availability_problem)
+
+        obsolete = [
+            {
+                "tab": item["tab"],
+                "path": item["path"],
+                "item_id": item["item_id"],
+                "reason": item["reason"],
+            }
+            for item in declaration_results
+            if item["obsolete"]
+        ]
+        obsolete_card_cues += len(obsolete)
 
         tab_results = []
         for tab_name, paths in tabs:
@@ -466,7 +496,7 @@ def analyze_my_menu_routes(
         for path in sorted(visible_proposed):
             item_id = route_catalog.get(path)
             available_in = sorted(configured_item_tabs.get(item_id, []))
-            if not available_in or path in declared_paths:
+            if not available_in or path in covered_declared_paths:
                 continue
             item = {
                 "path": path,
@@ -478,10 +508,7 @@ def analyze_my_menu_routes(
             missing_card_cues += 1
             newly_visible_missing_cues += int(item["newly_visible"])
 
-        warnings = (
-            sum(item["availability_problem"] for item in declaration_results)
-            + len(missing)
-        )
+        warnings = len(obsolete) + len(missing)
         warning_profiles += int(warnings > 0)
         if declarations or missing:
             route_profiles.append(
@@ -495,6 +522,7 @@ def analyze_my_menu_routes(
                     "declared_settings": declaration_results,
                     "tabs": tab_results,
                     "missing_card_cues": missing,
+                    "obsolete_card_cues": obsolete,
                 }
             )
 
@@ -520,6 +548,7 @@ def analyze_my_menu_routes(
             "hidden_assignments": hidden_assignments,
             "unavailable_settings": unavailable_settings,
             "missing_card_cues": missing_card_cues,
+            "obsolete_card_cues": obsolete_card_cues,
             "newly_visible_missing_cues": newly_visible_missing_cues,
             "omitted_tabs": omitted_tabs,
             "unreferenced_configured_items": len(unreferenced_items),

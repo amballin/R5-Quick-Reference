@@ -264,6 +264,104 @@ class BaselineImpactTests(unittest.TestCase):
             ],
         )
 
+    def test_migration_plan_adds_cue_without_cx_foundation(self):
+        result = plan_baseline_migration(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {
+                "Unregistered": {
+                    "title": "Unregistered",
+                    "overrides": {},
+                }
+            },
+            [],
+            registration(),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}],
+        )
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["summary"]["profile_card_cues_to_add"], 1)
+        self.assertEqual(result["profile_card_cues_to_add"][0]["profile"], "Unregistered")
+
+    def test_migration_plan_adds_cue_to_profile_based_reference_card(self):
+        result = plan_baseline_migration(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {
+                "Setup": {
+                    "title": "Setup",
+                    "display_category": "reference",
+                    "overrides": {},
+                }
+            },
+            [],
+            registration(),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [{"name": "SWITCH", "items": ["shoot6_shutter_mode"]}],
+        )
+        self.assertEqual(result["summary"]["profile_card_cues_to_add"], 1)
+        self.assertEqual(result["profile_card_cues_to_add"][0]["profile"], "Setup")
+
+    def test_migration_plan_removes_cue_for_removed_tab(self):
+        result = plan_baseline_migration(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {
+                "Travel": {
+                    "title": "Travel",
+                    "card": {
+                        "field_setup": {
+                            "my_menus": [{"name": "OLD", "settings": ["shutter.type"]}]
+                        }
+                    },
+                    "overrides": {},
+                }
+            },
+            [],
+            registration(),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [],
+        )
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["summary"]["profile_card_cues_to_remove"], 1)
+        self.assertEqual(
+            result["profile_card_cues_to_remove"][0],
+            {
+                "profile": "Travel",
+                "title": "Travel",
+                "tab": "OLD",
+                "path": "shutter.type",
+                "item_id": "shoot6_shutter_mode",
+                "reason": "tab_removed",
+                "yaml_path": "card.field_setup.my_menus",
+            },
+        )
+
+    def test_migration_plan_moves_cue_when_tab_is_renamed(self):
+        result = plan_baseline_migration(
+            baseline(shutter={"type": "EFCS"}),
+            baseline(shutter={"type": "EFCS"}),
+            {
+                "Travel": {
+                    "title": "Travel",
+                    "card": {
+                        "field_setup": {
+                            "my_menus": [{"name": "OLD", "settings": ["shutter.type"]}]
+                        }
+                    },
+                    "overrides": {},
+                }
+            },
+            [],
+            registration(),
+            {"shutter.type": "shoot6_shutter_mode"},
+            [{"name": "NEW", "items": ["shoot6_shutter_mode"]}],
+        )
+        self.assertEqual(result["summary"]["profile_card_cues_to_remove"], 1)
+        self.assertEqual(result["summary"]["profile_card_cues_to_add"], 1)
+        self.assertEqual(result["profile_card_cues_to_remove"][0]["tab"], "OLD")
+        self.assertEqual(result["profile_card_cues_to_add"][0]["tab"], "NEW")
+
     def test_invalid_override_keeps_plan_unresolved(self):
         result = plan_baseline_migration(
             baseline(display={"histogram": "RGB"}),
@@ -433,7 +531,44 @@ class BaselineImpactTests(unittest.TestCase):
         self.assertTrue(assignment["tab_present"])
         self.assertFalse(assignment["item_available"])
         self.assertTrue(assignment["availability_problem"])
+        self.assertTrue(assignment["obsolete"])
+        self.assertEqual(assignment["reason"], "shortcut_removed")
         self.assertEqual(result["summary"]["unavailable_settings"], 1)
+        self.assertEqual(result["summary"]["obsolete_card_cues"], 1)
+
+    def test_hidden_route_is_obsolete_when_its_tab_is_removed(self):
+        result = analyze_my_menu_routes(
+            baseline(autofocus={"operation": "One-Shot AF", "servo_af_case": "Case A (Auto)"}),
+            baseline(autofocus={"operation": "One-Shot AF", "servo_af_case": "Case A (Auto)"}),
+            {
+                "Travel": {
+                    "title": "Travel",
+                    "card": {
+                        "field_setup": {
+                            "my_menus": [
+                                {"name": "AF Case", "settings": ["autofocus.servo_af_case"]}
+                            ]
+                        }
+                    },
+                    "overrides": {},
+                }
+            },
+            registration(),
+            {"autofocus.servo_af_case": "af3_servo_af_characteristics"},
+            [],
+        )
+        profile = result["profiles"][0]
+        self.assertFalse(profile["declared_settings"][0]["displayed_after"])
+        self.assertEqual(
+            profile["obsolete_card_cues"],
+            [{
+                "tab": "AF Case",
+                "path": "autofocus.servo_af_case",
+                "item_id": "af3_servo_af_characteristics",
+                "reason": "tab_removed",
+            }],
+        )
+        self.assertEqual(profile["warning_count"], 1)
 
     def test_my_menu_route_reports_newly_visible_setting_without_card_cue(self):
         result = analyze_my_menu_routes(

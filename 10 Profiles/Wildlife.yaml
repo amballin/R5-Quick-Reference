@@ -22,9 +22,6 @@ card:
       - autofocus.subject_detection
       - shutter.type
       - stabilization.image_stabilization.mode
-    - name: test
-      settings:
-      - exposure.iso.mode
 inherits: baseline
 overrides:
   autofocus:

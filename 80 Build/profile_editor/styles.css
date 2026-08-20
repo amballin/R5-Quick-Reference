@@ -58,6 +58,19 @@ h2 { margin-bottom: .25rem; }
   white-space: nowrap;
 }
 
+.guide-link {
+  padding: .45rem .7rem;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 999px;
+  color: white;
+  font-size: .85rem;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.guide-link:hover { background: rgba(255,255,255,.12); }
+.guide-link:focus-visible { outline: 3px solid rgba(255,255,255,.65); outline-offset: 2px; }
+
 .build-badges { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
 .build-badge {
   padding: .42rem .65rem;

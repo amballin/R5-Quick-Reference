@@ -91,12 +91,14 @@ PROFILE_STATUSES = {"Draft", "Review", "Final"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
-EDITOR_VERSION = "0.7.9"
+EDITOR_VERSION = "0.8.1"
 EDITOR_BUILD_FILES = (
     "00 Master/my_menu.yaml",
     "00 Master/my_menu_colors.yaml",
     "10 Profiles/My Menu.yaml",
     "20 Templates/card.html",
+    "80 Build/baseline_impact.py",
+    "80 Build/baseline_migration.py",
     "80 Build/cx_route_analysis.py",
     "80 Build/html_renderer.py",
     "80 Build/my_menu_colors.py",
