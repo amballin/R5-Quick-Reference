@@ -34,22 +34,15 @@ h1{text-align:center;font-size:clamp(26px,7.5vw,32px);line-height:1.08;margin:0;
 .field-route-menu.access-menu-6{border-color:#ff9b7a;color:#ff9b7a}
 h2{color:#8dc8ff;border-bottom:1px solid #53738c;padding-bottom:3px;margin:12px 0 5px;font-size:clamp(19px,5vw,21px);line-height:1.1}
 table{width:100%;border-collapse:collapse;table-layout:fixed}
-.reference-section th{padding:14px 8px 7px;border-bottom:1px solid #53738c;text-align:left}
-.reference-section span{margin-right:10px;color:#b7d2e8;font-size:.72rem;letter-spacing:.08em}
-.reference-section strong{font-size:1rem}
-.reference-detail{display:block;margin-top:2px;color:#b7d2e8;font-size:.68rem;font-weight:400}
 td{padding:3px 0;vertical-align:top;overflow-wrap:anywhere}
-td.field-label{width:48%;padding-right:10px;color:#b7d2e8}
-td.field-value{text-align:right;font-weight:600}
-td.field-change{width:22px;padding-left:7px;text-align:right;color:#ffffff;font-weight:800;white-space:nowrap;overflow:visible}
+td:first-child{width:48%;padding-right:10px;color:#b7d2e8}
+td:last-child{text-align:right;font-weight:600}
 td.field-value.access-switch{color:#72dda8}
 td.field-value.access-menu-2{color:#f0bf69}
 td.field-value.access-menu-3{color:#c6a6ff}
 td.field-value.access-menu-4{color:#ff9fba}
 td.field-value.access-menu-5{color:#80d8ff}
 td.field-value.access-menu-6{color:#ff9b7a}
-.field-change-legend{margin:5px 0 9px;text-align:right;color:#b7d2e8;font-size:clamp(11px,3vw,12px)}
-.field-change-legend span{color:#ffffff;font-weight:800}
 .setting-label{display:inline-flex;align-items:center;gap:7px;max-width:100%}
 .setting-icon{display:block;width:22px;height:22px;object-fit:contain;flex:0 0 22px;filter:brightness(0) saturate(100%) invert(76%) sepia(32%) saturate(784%) hue-rotate(178deg) brightness(103%) contrast(101%)}
 .setting-icon[src$="af_point_button.svg"]{width:31px;height:18px;flex-basis:31px;object-fit:contain}
@@ -71,7 +64,7 @@ a{color:#b7dfff;text-underline-offset:2px}
 @media (max-width:340px){.site-nav__home{font-size:18px}.site-nav__back{font-size:14px}}
 
 @media (min-width:431px){body{padding:24px}.card{min-height:0;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22)}}
-@media (max-width:340px){.card{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}td.field-label{width:50%}td.field-change{width:20px;padding-left:5px}.setting-icon{width:20px;height:20px;flex-basis:20px}}
+@media (max-width:340px){.card{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}td:first-child{width:50%}.setting-icon{width:20px;height:20px;flex-basis:20px}}
 @media print{.card-identity{position:static;box-shadow:none}}
 </style>
 </head>
@@ -85,9 +78,9 @@ a{color:#b7dfff;text-underline-offset:2px}
 <div class="header-icon right"></div>
 </div>
 
-<div class="field-route" aria-label="Field setup shortcuts"><span class="field-route-start">C3</span><span class="field-route-menu access-switch" style="border-color:#72dda8;color:#72dda8">★ SWITCH</span></div>
+<div class="field-route" aria-label="Field setup shortcuts"><span class="field-route-start">C3</span><span class="field-route-menu access-switch">★ SWITCH</span></div>
 </div>
-<h2>Settings</h2><table class="has-change-column"><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td class="field-value">Manual</td><td class="field-change" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td class="field-value">2–6 s (start at 4 s)</td><td class="field-change" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter Type</span></span></td><td class="field-value access-switch" style="color:#72dda8">EFCS</td><td class="field-change" aria-hidden="true"></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td class="field-value">f/8–f/11</td><td class="field-change" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td class="field-value">100</td><td class="field-change" aria-hidden="true"></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_mf.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td class="field-value">Manual Focus</td><td class="field-change" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/single_shooting.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td class="field-value">Single Shot</td><td class="field-change" aria-hidden="true"></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td class="field-value access-switch" style="color:#72dda8">Off</td><td class="field-change" style="color:#72dda8" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr><tr><td class="field-label"><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>IBIS/Lens IS</span></span></td><td class="field-value">Off / Off</td><td class="field-change" title="Change from C3 Landscape" aria-label="Change from C3 Landscape"><span aria-hidden="true">Δ</span></td></tr></table><p class="field-change-legend"><span aria-hidden="true">Δ</span> Change from C3 Landscape</p>
+<h2>Settings</h2><table><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/mode-select.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Mode</span></span></td><td>Manual</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter</span></span></td><td>2–6 s (start at 4 s)</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/shutter.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Shutter Type</span></span></td><td>EFCS</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/aperture.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Aperture</span></span></td><td>f/8–f/11</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/iso.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>ISO</span></span></td><td>100</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/lens_mf.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>AF Operation</span></span></td><td>Manual Focus</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/canon_r5_official/single_shooting.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Drive</span></span></td><td>Single Shot</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>Image Stabilization</span></span></td><td class="field-value access-switch">Off</td></tr><tr><td><span class="setting-label"><img src="../web-assets/icons/card_icons/SVG/image_stabilization.svg" alt="" aria-hidden="true" class="setting-icon" onerror="this.hidden=true"><span>IBIS/Lens IS</span></span></td><td>Off / Off</td></tr></table>
 <h2>Checklist</h2>
 <ul><li>Tripod secure</li><li>Manual focus locked</li><li>Remote release or 2-second timer</li><li>RGB Histogram checked</li><li>Highlight Alert enabled</li><li>Long Exposure NR off during show</li><li>Leave room for highest bursts</li><li>Watch smoke direction</li></ul>
 <h2>Watch For</h2>
@@ -95,7 +88,7 @@ a{color:#b7dfff;text-underline-offset:2px}
 <h2>Common Mistakes</h2>
 <ul><li>ISO too high</li><li>Aperture too wide</li><li>Autofocus hunting</li><li>IS left on while on tripod</li></ul>
 <h2>Notes</h2>
-<ul><li>Start from C3 Landscape after verifying its registration. Colored setting values use the matching My Menu tab whether or not a change is required; white values use Quick Control, dials, buttons, or normal menu access. A Δ in the value's color marks each setting that differs from that starting profile.</li><li>Prefocus on a distant object before the show.</li><li>Start at 4 s, f/8–f/11, ISO 100; adjust shutter time for the number and length of trails.</li><li>Use a smaller aperture only for unusually bright displays.</li><li>Increase shutter time to capture multiple bursts or use Bulb mode for complete control.</li><li>Keep Long Exposure NR off during an active show because its dark-frame cycle can cause missed bursts.</li></ul>
+<ul><li>Start from C3 Landscape after verifying its registration. Colored setting values use the matching My Menu tab; white values use Quick Control, dials, or buttons.</li><li>Prefocus on a distant object before the show.</li><li>Start at 4 s, f/8–f/11, ISO 100; adjust shutter time for the number and length of trails.</li><li>Use a smaller aperture only for unusually bright displays.</li><li>Increase shutter time to capture multiple bursts or use Bulb mode for complete control.</li><li>Keep Long Exposure NR off during an active show because its dark-frame cycle can cause missed bursts.</li></ul>
 </article>
 </body>
 </html>
