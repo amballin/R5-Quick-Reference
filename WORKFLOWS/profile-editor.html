@@ -114,19 +114,23 @@
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Profile Editor</h1>
-<p>This Stage 2 local editor is a safe way to work through camera setup, persisted My Menu organization and card colors, baseline impact, and shooting profiles. It provides a Canon-sourced EOS R5 still-photo settings dictionary, loads and saves the reviewed My Menu layout, renders isolated shooting and reference-card previews, can create, duplicate, or update shooting-profile YAML, and can apply a complete reviewed baseline migration.</p>
+<p>Profile Editor 1.0 is the project&#x27;s main local interface for routine work: shooting profiles, persisted My Menu organization and card colors, baseline setup, session review, local builds, and camera reference. It provides a Canon-sourced EOS R5 still-photo settings dictionary, loads and saves the reviewed My Menu layout, renders isolated shooting and reference-card previews, can create, duplicate, or update shooting-profile YAML, can apply a complete reviewed baseline migration, and can run the guarded normal local build after every browser draft is resolved.</p>
+<p>Use the specialized workflow pages—not the editor—for Git preflight and handoff, spreadsheet preparation and testing-status import, physical-camera verification, recovery, commits and pushes, and publication.</p>
 <p>The header shows the editor version and a deterministic short build identifier. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.</p>
-<p>It cannot edit permanent reference cards, rename or delete profiles, or run the normal website build, change <code>docs/</code>, commit, push, merge, or publish anything. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction.</p>
+<p>It cannot edit permanent reference cards, rename or delete profiles, commit, push, merge, publish, or change website version metadata. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction. <strong>Review &amp; Build</strong> may refresh generated local output and tracked <code>docs/</code> only after all session drafts are resolved, readiness validation passes, and the user confirms the build.</p>
 <section class="step"><h2>Start the editor</h2>
-<p>Use the Project Terminal panel on the <a href="index.html">Workflow Index</a> to open the prototype worktree in Terminal. Then run:</p>
+<p>Use the Project Terminal panel on the <a href="index.html">Workflow Index</a> to open the project worktree in Terminal. Then run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
-<p>Run the command from the repository root. It starts the guarded Stage 2 editor without building or publishing the website.</p>
+<p>Run the command from the repository root. It starts Profile Editor 1.0 without building or publishing the website.</p>
 <p>Open the local address shown in Terminal, normally:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>http://127.0.0.1:8765</code></pre></div>
 <p>The editor is available only on this Mac while that command is running. Press <strong>Control-C</strong> in Terminal to stop it. It listens only on the local loopback address.</p>
 </section>
-<section class="step"><h2>Work through camera setup</h2>
-<p>The prototype opens on <strong>Camera setup</strong>. Search the Shooting, AF, Playback, Wireless, Set-up, and Custom Functions dictionary or filter it by <strong>Set Once</strong>, <strong>Situational</strong>, <strong>Ignore</strong>, <strong>Avoid</strong>, or <strong>Unresolved</strong>. Every record identifies its direct camera-menu location, reset-default reference, project recommendation, whether it should be revisited, and the applicable Canon manual source.</p>
+<section class="step"><h2>Follow the workspace order</h2>
+<p>The sidebar follows the normal editing flow: <strong>Profiles</strong>, <strong>My Menu</strong>, <strong>Baseline Setup</strong>, <strong>Review &amp; Build</strong>, then <strong>Camera Reference</strong>. Numbered badges identify pending browser drafts. Moving to another profile or workspace preserves profile drafts in this browser session instead of silently discarding them. Review &amp; Build collects every profile, My Menu, and baseline draft in one list. Refreshing or closing the page still clears session drafts, so the browser warns before leaving while any remain.</p>
+</section>
+<section class="step"><h2>Work through camera reference</h2>
+<p>Open <strong>Camera Reference</strong>. Search the Shooting, AF, Playback, Wireless, Set-up, and Custom Functions dictionary or filter it by <strong>Set Once</strong>, <strong>Situational</strong>, <strong>Ignore</strong>, <strong>Avoid</strong>, or <strong>Unresolved</strong>. Every record identifies its direct camera-menu location, reset-default reference, project recommendation, whether it should be revisited, and the applicable Canon manual source.</p>
 <p>The dictionary separates Canon reference facts from project recommendations. Menu names and locations are grounded in Canon&#x27;s menu overviews. A reset default remains a working reference unless the linked Canon page states it explicitly. Neither the recommendation nor the temporary UI state proves the current physical camera setting.</p>
 <p><strong>Touch &amp; Drag AF</strong> is represented by its three separate controls:</p>
 <ul>
@@ -137,19 +141,19 @@
 <p>All three are project <strong>Set Once</strong> recommendations. The active touch area should be revisited if handedness, grip, or unintended face contact makes another area more reliable.</p>
 </section>
 <section class="step"><h2>Configure My Menu</h2>
-<p>Open <strong>Configure My Menu</strong> after reviewing setup. The configurator follows the EOS R5 limit of five tabs with six items per tab and starts from the saved layout in <code>00 Master/my_menu.yaml</code>. <strong>Reload saved layout</strong> discards browser edits. <strong>Restore recommended tabs</strong> creates a draft of the approved <strong>SWITCH</strong> and <strong>AF Case</strong> recommendation without saving it.</p>
+<p>Open <strong>My Menu</strong> from the workspace sidebar after reviewing setup. The configurator follows the EOS R5 limit of five tabs with six items per tab and starts from the saved layout in <code>00 Master/my_menu.yaml</code>. <strong>Reload saved layout</strong> discards browser edits. <strong>Restore recommended tabs</strong> creates a draft of the approved <strong>SWITCH</strong> and <strong>AF Case</strong> recommendation without saving it.</p>
 <p>Each used tab requires a name, one to six unique ordered items, and a distinct <strong>Card color</strong> from the curated palette. Light Red is visibly red; Coral is more orange. Choose <strong>Review My Menu changes</strong> to validate the complete layout and inspect the exact diffs for <code>00 Master/my_menu.yaml</code> and <code>00 Master/my_menu_colors.yaml</code>. <strong>Save reviewed My Menu</strong> creates a machine-local recovery backup, checks both source fingerprints, writes only the reviewed changed bytes, runs source validation, and restores every written file automatically if validation fails. Saved colors apply consistently to matching card route tokens, setting values, <code>Δ</code> indicators, PDF cards, field-guide My Menu tokens, and My Menu reference-card section headings.</p>
-<p>Choose <strong>Analyze profile impact</strong> at any time to evaluate the current browser My Menu draft before or after saving it. The editor opens Baseline Impact and focuses the shared My Menu coverage report. The analysis is read-only and remains available when no baseline setting changed. It identifies card cues whose tab or shortcut has been removed and displayed configured shortcuts that need a profile-card cue.</p>
+<p>Choose <strong>Analyze profile impact</strong> at any time to evaluate the current browser My Menu draft before or after saving it. The editor opens <strong>Baseline Setup</strong> and focuses the shared My Menu coverage report. The analysis is read-only and remains available when no baseline setting changed. It identifies card cues whose tab or shortcut has been removed and displayed configured shortcuts that need a profile-card cue.</p>
 <p>Supported shortcuts are matched by setting identity, not by whether they came from <strong>Restore recommended tabs</strong>. For example, AF Operation, Eye Detection, and ISO speed settings in a newly created tab are checked against their corresponding profile card rows. A saved shortcut that has no supported card-setting identity remains visible as an unrepresented configured item instead of being assigned by guesswork.</p>
 <p>The dictionary shows a <strong>Configured shortcut</strong> only after an item is selected in this configurator. This keeps the direct Canon menu location authoritative and prevents the UI from claiming a My Menu path that was never configured in the draft.</p>
 <p>The saved layout is the approved project reference, not proof that the physical camera currently matches it. Compare the generated My Menu card with the camera after a reset, firmware update, or deliberate on-camera menu change.</p>
 </section>
 <section class="step"><h2>Use the My Menu reference card</h2>
-<p>The released <strong>My Menu</strong> card appears under <strong>Camera Setup &amp; Controls</strong> beside <strong>Camera Buttons</strong> and is read-only in the Profiles view. Choose it and select <strong>Preview reference card</strong> to see the current field reminder without saving anything. Each used saved tab becomes a separate section in <code>MY MENU1</code>–<code>MY MENU5</code> order, followed by its saved shortcuts in item order. Adding, renaming, reordering, or removing a used tab through <strong>Configure My Menu</strong> changes the next preview and normal build automatically.</p>
-<p>After scrolling down in any editor tab, use the floating circular <strong>↑</strong> control at the lower right to return to the top. It is available in Camera setup, Configure My Menu, Profiles, and Baseline Impact and disappears near the top.</p>
+<p>The released <strong>My Menu</strong> card appears under <strong>Camera Setup &amp; Controls</strong> beside <strong>Camera Buttons</strong> and is read-only in the Profiles view. Choose it and select <strong>Render reference preview</strong> to see the current field reminder without saving anything. Each used saved tab becomes a separate section in <code>MY MENU1</code>–<code>MY MENU5</code> order, followed by its saved shortcuts in item order. Adding, renaming, reordering, or removing a used tab through <strong>My Menu</strong> changes the next preview and normal build automatically.</p>
+<p>After scrolling down in any editor tab, use the floating circular <strong>↑</strong> control at the lower right to return to the top. It is available throughout Profiles, My Menu, Baseline Setup, Review &amp; Build, and Camera Reference and disappears near the top.</p>
 </section>
-<section class="step"><h2>Preview baseline impact</h2>
-<p>Open <strong>Baseline impact</strong> to test how proposed baseline values would affect the authored profiles or to inspect My Menu coverage without changing the baseline. <strong>Analyze draft</strong> remains enabled after the baseline loads. The report separates inherited changes from profiles protected by existing overrides, identifies overrides that would become redundant, and always includes current My Menu route coverage.</p>
+<section class="step"><h2>Use Baseline Setup</h2>
+<p>Open <strong>Baseline Setup</strong> to test how proposed baseline values would affect the authored profiles or to inspect My Menu coverage without changing the baseline. <strong>Analyze draft</strong> remains enabled after the baseline loads. The report separates inherited changes from profiles protected by existing overrides, identifies overrides that would become redundant, and always includes current My Menu route coverage.</p>
 <p>For every inherited profile change, deliberately choose one result:</p>
 <ul>
 <li><strong>Follow proposed baseline</strong> changes that profile&#x27;s effective value and adds no override.</li>
@@ -172,21 +176,24 @@
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot;</code></pre></div>
 <p>For branch integration, select the baseline branch explicitly:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot; --base-ref origin/main</code></pre></div>
-<p>Status 0 means there is no semantic baseline-default change. Status 1 prints the changed settings and affected profile classifications and requires review through the Baseline Impact workflow above. Status 2 means the comparison could not be completed. The command ignores metadata-only and YAML-formatting differences and never writes a migration.</p>
+<p>Status 0 means there is no semantic baseline-default change. Status 1 prints the changed settings and affected profile classifications and requires review through the Baseline Setup workflow above. Status 2 means the comparison could not be completed. The command ignores metadata-only and YAML-formatting differences and never writes a migration.</p>
 </section>
 <section class="step"><h2>Edit or preview a profile</h2>
 <ol>
 <li>Open <strong>Profiles</strong>.</li>
 <li>Choose an existing profile.</li>
-<li>Review the grouped camera settings.</li>
+<li>Follow the workflow strip from <strong>Choose profile</strong> through <strong>Review &amp; save</strong>.</li>
+<li>Review <strong>Shown on this card</strong> first. Its controls use the renderer&#x27;s actual visible-setting rules and the same path order as <code>00 Master/card_layout.yaml</code>. Combined card rows, including ISO and tracking/acceleration, expose each underlying camera control together in that order.</li>
+<li>Expand <strong>Additional profile settings</strong> for controls that are not currently rendered on the card. They remain grouped by camera-setting category.</li>
 <li>Look for the <strong>Inherited</strong> or <strong>Customized</strong> label beside each setting.</li>
 <li>Edit the title, optional subtitle, status, release state, and available setting controls.</li>
-<li>Use <strong>Use baseline</strong> for one setting, <strong>Use baseline for section</strong> for a group, or <strong>Discard draft &amp; reload profile</strong> to restore the selected profile&#x27;s saved source values.</li>
-<li>Choose <strong>Preview card</strong> to render the temporary draft with the established card renderer.</li>
-<li>Choose <strong>Review YAML changes</strong> only when the draft is ready to save.</li>
+<li>Use <strong>Use baseline</strong> for one setting or <strong>Use baseline for section</strong> for an additional-settings group. Open <strong>Profile actions</strong> and choose <strong>Discard draft &amp; reload</strong> to restore the selected profile&#x27;s saved source values.</li>
+<li>Choose <strong>Render preview</strong> in the right-hand panel. On a desktop-width window, the settings and preview scroll independently so the card remains visible while settings are reviewed. On a narrower window, use the <strong>Settings</strong> and <strong>Preview</strong> pane controls.</li>
+<li>After an edit, treat the retained preview as out of date until <strong>Refresh preview</strong> completes.</li>
+<li>Choose <strong>Review changes</strong> in the persistent action bar only when the draft is ready to save.</li>
 </ol>
-<p>On a preview or generated profile card, the C1/C2/C3 token remains white. My Menu-colored values keep their saved tab color whether or not they already match the selected foundation. A fixed rightmost column shows <code>Δ</code> in the same color as the setting value. With a Cx foundation, <code>Δ</code> appears only when that row differs from the effective named foundation profile, and a blank cell means no field change is required. Without a Cx foundation, every visible settings row shows <code>Δ</code> because the project cannot prove the camera&#x27;s current state; the legend says <strong>Verify/set — no Cx foundation</strong>. Permanent reference cards do not render the indicator column.</p>
-<p>Exposure, Autofocus, and Drive controls use the prototype&#x27;s Canon EOS R5 options catalog. Each cataloged setting links to the applicable Canon manual page and uses the same approved setting/value icon system as the subject cards. The catalog is scoped to still photos on EOS R5 firmware 2.2.0 or later.</p>
+<p>On a preview or generated profile card, the C1/C2/C3 token remains white. My Menu-colored values keep their saved tab color whether or not they already match the selected foundation. A fixed rightmost column shows <code>Δ</code> in the same color as the setting value. With a Cx foundation, <code>Δ</code> compares the draft with the effective saved foundation profile—not with the baseline—and appears only when that row differs. Therefore <strong>Use baseline</strong> clears <code>Δ</code> only when the baseline value also matches the saved foundation. Without a Cx foundation, every visible settings row shows <code>Δ</code> because the project cannot prove the camera&#x27;s current state; the legend says <strong>Verify/set — no Cx foundation</strong>. Permanent reference cards do not render the indicator column.</p>
+<p>Exposure, Autofocus, and Drive controls use the editor&#x27;s Canon EOS R5 options catalog. Each cataloged setting links to the applicable Canon manual page and uses the same approved setting/value icon system as the subject cards. The catalog is scoped to still photos on EOS R5 firmware 2.2.0 or later.</p>
 <p>Canon choices, conditional Canon choices, and project compatibility values are labeled separately. For example, Canon defines One-Shot AF and Servo AF as AF Operation choices; this project retains Manual Focus in that field only for compatibility with existing profile data.</p>
 <p>Some fields allow both Canon choices and custom profile targets. ISO and exposure compensation profiles may contain a descriptive range or field instruction rather than one camera value, so those controls provide Canon suggestions without discarding the existing free-form behavior.</p>
 </section>
@@ -213,23 +220,28 @@
 <li>Runs project source validation.</li>
 <li>Automatically restores the prior source state if validation fails.</li>
 </ol>
-<p>If another process changes the profile after it was loaded or reviewed, the editor blocks the save. Reload the profile, reapply the intended change, and review the new diff. A successful editor save changes source only; run the normal local build separately when you want refreshed cards or website output.</p>
+<p>If another process changes the profile after it was loaded or reviewed, the editor blocks the save. Reload the profile, reapply the intended change, and review the new diff. A successful editor save changes source only; use <strong>Review &amp; Build</strong> when you want refreshed cards or website output.</p>
 </section>
 <section class="step"><h2>Discard draft changes</h2>
-<p>Unsaved profile, My Menu, and baseline-impact draft values live only in the open browser page. A reviewed My Menu save persists its tab layout in <code>00 Master/my_menu.yaml</code> and matching colors in <code>00 Master/my_menu_colors.yaml</code>.</p>
+<p>Unsaved profile, My Menu, and baseline draft values live only in the open browser page. A reviewed My Menu save persists its tab layout in <code>00 Master/my_menu.yaml</code> and matching colors in <code>00 Master/my_menu_colors.yaml</code>.</p>
 <ul>
 <li><strong>Use baseline</strong> removes the temporary override for one setting.</li>
 <li><strong>Use baseline for section</strong> removes all temporary overrides in that section.</li>
 <li><strong>Discard draft &amp; reload profile</strong> restores the selected profile&#x27;s title, metadata, and saved overrides. This may bring back customized values that differ from the baseline.</li>
-<li>Selecting another profile discards the current draft and loads the selected profile. Returning to the first profile loads its original saved overrides again.</li>
+<li>Selecting another profile preserves the current draft in the session ledger. Returning to that profile restores the draft.</li>
 <li>Reloading the page clears unsaved My Menu edits and reloads the persisted layout.</li>
 <li><strong>Discard baseline draft</strong> restores every temporary baseline value to the currently loaded source baseline.</li>
-<li>Refreshing the page, closing the tab, or stopping the server discards all browser drafts.</li>
+<li>Review &amp; Build offers a confirmed <strong>Discard</strong> action for each pending item.</li>
+<li>Refreshing the page, closing the tab, or stopping the server discards all browser drafts; the browser warns before leaving when drafts remain.</li>
 </ul>
 <p>Restarting the server is not required to discard a draft. A successful editor save reloads the in-memory profile list automatically. Restart the server when profile or catalog source files were changed by another tool while the editor was running.</p>
 </section>
+<section class="step"><h2>Review and build locally</h2>
+<p>Open <strong>Review &amp; Build</strong> to validate the editing session before generation. Save each intended draft through its guarded review or choose <strong>Discard</strong> and confirm. The local build remains locked while the pending list is nonempty. When the list is clear, choose <strong>Validate readiness</strong>, then <strong>Run local build</strong> and confirm that generated local output and tracked documentation may change.</p>
+<p>The guarded build runs source-only validation, the normal development build, and full validation in that order, stopping on the first failure and showing its output. It does not run Git, publish, or change website version metadata.</p>
+</section>
 <section class="step"><h2>Boundaries</h2>
-<p>The editor intentionally provides no profile deletion, existing-profile rename, direct baseline edit, reference-card edit, build, commit, push, merge, or publish action. Baseline writes are available only through a complete reviewed migration. My Menu layout and colors are available only through their exact-diff guarded transaction. Use the established project workflows for validation, Git checkpoints, and publication.</p>
+<p>The editor intentionally provides no profile deletion, existing-profile rename, direct baseline edit, reference-card edit, commit, push, merge, publish, or website-version action. Baseline writes are available only through a complete reviewed migration. My Menu layout and colors are available only through their exact-diff guarded transaction. The only build action is the guarded local sequence in Review &amp; Build; Git checkpoints and publication remain separate established workflows.</p>
 </section>
 <section class="step"><h2>Quick readiness check</h2>
 <p>To confirm that the editor can load all current profiles without starting the web interface, run:</p>

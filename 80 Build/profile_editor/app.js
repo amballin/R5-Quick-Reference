@@ -2,6 +2,10 @@ const elements = {
   editorBuild: document.querySelector("#editor-build"),
   viewTabs: [...document.querySelectorAll(".view-tab")],
   views: [...document.querySelectorAll(".app-view")],
+  profileDraftBadge: document.querySelector("#profile-draft-badge"),
+  myMenuDraftBadge: document.querySelector("#my-menu-draft-badge"),
+  baselineDraftBadge: document.querySelector("#baseline-draft-badge"),
+  pendingDraftBadge: document.querySelector("#pending-draft-badge"),
   dictionarySource: document.querySelector("#dictionary-source"),
   dictionarySearch: document.querySelector("#dictionary-search"),
   dictionaryClassification: document.querySelector("#dictionary-classification"),
@@ -37,12 +41,24 @@ const elements = {
   sourceFile: document.querySelector("#source-file"),
   customCount: document.querySelector("#custom-count"),
   inheritedCount: document.querySelector("#inherited-count"),
+  cardSettingsGroup: document.querySelector("#card-settings-group"),
+  cardSettings: document.querySelector("#card-settings"),
+  cardSettingsCount: document.querySelector("#card-settings-count"),
+  additionalSettingsGroup: document.querySelector("#additional-settings-group"),
+  additionalSettingsCount: document.querySelector("#additional-settings-count"),
   settings: document.querySelector("#settings"),
   message: document.querySelector("#message"),
   referenceCard: document.querySelector("#reference-card"),
+  profileWorkspace: document.querySelector("#profile-workspace"),
+  profileSaveBar: document.querySelector("#profile-save-bar"),
+  workflowSteps: [...document.querySelectorAll(".workflow-step")],
+  mobilePaneTabs: [...document.querySelectorAll(".mobile-pane-tab")],
   previewPanel: document.querySelector("#preview-panel"),
   previewFrame: document.querySelector("#preview-frame"),
   previewPath: document.querySelector("#preview-path"),
+  previewStatus: document.querySelector("#preview-status"),
+  previewEmpty: document.querySelector("#preview-empty"),
+  previewChangeNote: document.querySelector("#preview-change-note"),
   returnToTop: document.querySelector("#return-to-top"),
   reviewDialog: document.querySelector("#review-dialog"),
   reviewSummary: document.querySelector("#review-summary"),
@@ -70,6 +86,18 @@ const elements = {
   baselineResults: document.querySelector("#baseline-results"),
   baselinePlan: document.querySelector("#baseline-plan"),
   baselineSettings: document.querySelector("#baseline-settings"),
+  refreshReviewBuild: document.querySelector("#refresh-review-build"),
+  sessionSummary: document.querySelector("#session-summary"),
+  reviewBuildMessage: document.querySelector("#review-build-message"),
+  pendingChangeCount: document.querySelector("#pending-change-count"),
+  pendingChangeList: document.querySelector("#pending-change-list"),
+  validateReadiness: document.querySelector("#validate-readiness"),
+  runLocalBuild: document.querySelector("#run-local-build"),
+  localBuildOutput: document.querySelector("#local-build-output"),
+  buildConfirmDialog: document.querySelector("#build-confirm-dialog"),
+  buildConfirmClose: document.querySelector("#build-confirm-close"),
+  buildConfirmCancel: document.querySelector("#build-confirm-cancel"),
+  buildConfirmRun: document.querySelector("#build-confirm-run"),
 };
 
 const state = {
@@ -80,6 +108,11 @@ const state = {
   originalOverrides: {},
   draftOverrides: {},
   reviewToken: null,
+  previewLoaded: false,
+  profileDrafts: new Map(),
+  currentDraftKey: null,
+  nextDraftId: 1,
+  buildReadiness: null,
   loadSequence: 0,
   baselineDetail: null,
   baselineCurrent: {},
@@ -182,6 +215,8 @@ async function loadBaseline() {
     state.baselinePlan = null;
     state.migrationReviewToken = null;
     renderBaseline();
+    invalidateBuildReadiness();
+    renderSessionStatus();
     elements.analyzeMyMenu.disabled = false;
     showBaselineMessage("No proposed baseline changes. My Menu profile coverage can still be analyzed.");
   } catch (error) {
@@ -190,9 +225,294 @@ async function loadBaseline() {
 }
 
 function switchView(viewName) {
+  const profilesView = document.querySelector("#profiles-view");
+  if (viewName !== "profiles" && profilesView && !profilesView.hidden) captureCurrentProfileDraft();
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
   for (const view of elements.views) view.hidden = view.id !== `${viewName}-view`;
+  if (viewName === "review-build") renderReviewBuild();
   requestAnimationFrame(updateFloatingReturn);
+}
+
+function setWorkflowStep(step) {
+  for (const item of elements.workflowSteps) {
+    const itemStep = Number(item.dataset.step);
+    item.classList.toggle("is-active", itemStep === step);
+    item.classList.toggle("is-complete", itemStep < step);
+  }
+}
+
+function setProfilePane(pane) {
+  const preview = pane === "preview";
+  elements.profileWorkspace.classList.toggle("show-preview", preview);
+  for (const tab of elements.mobilePaneTabs) {
+    tab.classList.toggle("is-active", tab.dataset.pane === pane);
+  }
+}
+
+function markPreviewStale() {
+  if (!state.previewLoaded) {
+    elements.previewStatus.textContent = "Preview not rendered";
+    elements.previewPanel.classList.remove("is-stale");
+    return;
+  }
+  elements.previewStatus.textContent = "Settings changed · refresh preview";
+  elements.previewPanel.classList.add("is-stale");
+}
+
+function profileDraftKey(detail = state.detail) {
+  if (!detail?.editableDraft) return null;
+  if (detail.operation === "update") return `profile:${detail.name}`;
+  if (!detail.sessionDraftId) detail.sessionDraftId = `draft:${state.nextDraftId++}`;
+  return detail.sessionDraftId;
+}
+
+function profilePayloadChanged(payload, detail = state.detail) {
+  if (!detail?.editableDraft) return false;
+  if ((detail.operation || "update") !== "update") return true;
+  return payload.title !== (detail.title || "")
+    || payload.subtitle !== (detail.subtitle || "")
+    || payload.status !== (detail.metadata?.status || "Draft")
+    || payload.release !== Boolean(detail.metadata?.release)
+    || !equal(payload.overrides, detail.originalOverrides || {});
+}
+
+function captureCurrentProfileDraft() {
+  if (!state.detail?.editableDraft || !state.currentDraftKey) return;
+  const payload = profileDraftPayload();
+  if (!profilePayloadChanged(payload)) {
+    state.profileDrafts.delete(state.currentDraftKey);
+  } else {
+    state.profileDrafts.set(state.currentDraftKey, {
+      key: state.currentDraftKey,
+      label: payload.title || payload.targetName || "Untitled profile",
+      detail: clone(state.detail),
+      payload: clone(payload),
+    });
+  }
+  invalidateBuildReadiness();
+  renderSessionStatus();
+}
+
+function normalizedMyMenuDraft(menus = state.myMenus) {
+  return menus
+    .map((tab) => ({
+      name: tab.name.trim(),
+      colorChoice: tab.colorChoice || "",
+      items: tab.items.filter(Boolean),
+    }))
+    .filter((tab) => tab.name || tab.items.length);
+}
+
+function savedMyMenuDraft() {
+  const assignments = state.dictionary?.myMenu?.colors?.assignments || {};
+  return (state.dictionary?.myMenu?.saved_tabs || []).map((tab) => ({
+    name: tab.name,
+    colorChoice: assignments[tab.name] || "",
+    items: [...tab.items],
+  }));
+}
+
+function hasMyMenuDraftChanges() {
+  return Boolean(state.dictionary) && !equal(normalizedMyMenuDraft(), savedMyMenuDraft());
+}
+
+function pendingSessionItems() {
+  const items = [...state.profileDrafts.values()].map((draft) => ({
+    type: "profile",
+    key: draft.key,
+    label: draft.label,
+    detail: "Unsaved profile draft",
+  }));
+  if (hasMyMenuDraftChanges()) items.push({ type: "my-menu", key: "my-menu", label: "My Menu", detail: "Unsaved tab, shortcut, or color changes" });
+  const baselineChanges = baselineChangedPaths();
+  if (baselineChanges.length) {
+    items.push({
+      type: "baseline",
+      key: "baseline",
+      label: "Baseline Setup",
+      detail: `${baselineChanges.length} proposed ${baselineChanges.length === 1 ? "setting" : "settings"}${state.baselinePlan?.complete ? " · migration plan complete" : " · analysis or plan required"}`,
+    });
+  }
+  return items;
+}
+
+function invalidateBuildReadiness() {
+  state.buildReadiness = null;
+  elements.runLocalBuild.disabled = true;
+}
+
+function setBadge(element, count) {
+  element.textContent = String(count);
+  element.hidden = count === 0;
+}
+
+function renderSessionStatus() {
+  const profileCount = state.profileDrafts.size;
+  const menuCount = hasMyMenuDraftChanges() ? 1 : 0;
+  const baselineCount = baselineChangedPaths().length ? 1 : 0;
+  setBadge(elements.profileDraftBadge, profileCount);
+  setBadge(elements.myMenuDraftBadge, menuCount);
+  setBadge(elements.baselineDraftBadge, baselineCount);
+  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount);
+  if (!document.querySelector("#review-build-view")?.hidden) renderReviewBuild();
+}
+
+function showReviewBuildMessage(text, error = false) {
+  elements.reviewBuildMessage.textContent = text;
+  elements.reviewBuildMessage.classList.toggle("error", error);
+  elements.reviewBuildMessage.hidden = !text;
+}
+
+function sessionSummaryCard(value, label) {
+  const card = document.createElement("div");
+  const strong = document.createElement("strong");
+  const span = document.createElement("span");
+  strong.textContent = String(value);
+  span.textContent = label;
+  card.append(strong, span);
+  return card;
+}
+
+function renderReviewBuild() {
+  const items = pendingSessionItems();
+  const profileCount = items.filter((item) => item.type === "profile").length;
+  elements.sessionSummary.replaceChildren(
+    sessionSummaryCard(profileCount, profileCount === 1 ? "profile draft" : "profile drafts"),
+    sessionSummaryCard(items.some((item) => item.type === "my-menu") ? 1 : 0, "My Menu draft"),
+    sessionSummaryCard(items.some((item) => item.type === "baseline") ? 1 : 0, "baseline draft"),
+    sessionSummaryCard(state.buildReadiness?.ready ? "Ready" : "Locked", "local build"),
+  );
+  elements.pendingChangeCount.textContent = `${items.length} ${items.length === 1 ? "change" : "changes"}`;
+  elements.pendingChangeList.replaceChildren();
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "pending-empty";
+    empty.textContent = "No unsaved browser changes. Run a fresh readiness check before building.";
+    elements.pendingChangeList.append(empty);
+  }
+  for (const item of items) {
+    const row = document.createElement("article");
+    row.className = "pending-change-item";
+    const copy = document.createElement("div");
+    const title = document.createElement("h3");
+    const detail = document.createElement("p");
+    title.textContent = item.label;
+    detail.textContent = item.detail;
+    copy.append(title, detail);
+    const actions = document.createElement("div");
+    actions.className = "pending-change-actions";
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "secondary";
+    open.textContent = "Open draft";
+    open.addEventListener("click", () => openPendingItem(item));
+    const discard = document.createElement("button");
+    discard.type = "button";
+    discard.className = "secondary danger-action";
+    discard.textContent = "Discard";
+    discard.addEventListener("click", () => discardPendingItem(item));
+    actions.append(open, discard);
+    row.append(copy, actions);
+    elements.pendingChangeList.append(row);
+  }
+  elements.runLocalBuild.disabled = !(state.buildReadiness?.ready && items.length === 0);
+}
+
+async function openPendingItem(item) {
+  if (item.type === "my-menu") {
+    switchView("my-menu");
+    return;
+  }
+  if (item.type === "baseline") {
+    switchView("baseline");
+    return;
+  }
+  const record = state.profileDrafts.get(item.key);
+  if (!record) return;
+  switchView("profiles");
+  if (record.detail.operation === "update") {
+    await loadProfile(record.detail.name);
+  } else {
+    applyProfileDetail(clone(record.detail), record);
+    elements.profileSelect.value = "";
+  }
+}
+
+async function discardPendingItem(item) {
+  if (!window.confirm(`Discard ${item.label}? These unsaved browser changes cannot be recovered.`)) return;
+  if (item.type === "my-menu") {
+    loadSavedMenus(true);
+  } else if (item.type === "baseline") {
+    discardBaselineDraft();
+  } else {
+    state.profileDrafts.delete(item.key);
+    if (state.currentDraftKey === item.key) {
+      const detail = state.detail;
+      state.currentDraftKey = null;
+      state.detail = null;
+      if (detail.operation === "update") await loadProfile(detail.name);
+      else await loadProfile(detail.sourceProfile || elements.profileSelect.options[0]?.value);
+    }
+    invalidateBuildReadiness();
+    renderSessionStatus();
+  }
+  showReviewBuildMessage(`${item.label} discarded. No source file was changed.`);
+}
+
+async function validateBuildReadiness() {
+  captureCurrentProfileDraft();
+  elements.validateReadiness.disabled = true;
+  showReviewBuildMessage("Checking browser drafts and validating canonical source…");
+  try {
+    const readiness = await request("/api/build-readiness", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
+    });
+    state.buildReadiness = readiness;
+    elements.localBuildOutput.hidden = false;
+    elements.localBuildOutput.textContent = readiness.ready
+      ? "Readiness passed. No pending browser drafts and source validation passed."
+      : readiness.blockers.join("\n");
+    showReviewBuildMessage(
+      readiness.ready ? "Readiness passed. Review the confirmation before running the local build." : "Build remains locked. Resolve the items below and validate again.",
+      !readiness.ready,
+    );
+  } catch (error) {
+    state.buildReadiness = null;
+    showReviewBuildMessage(error.message, true);
+  } finally {
+    elements.validateReadiness.disabled = false;
+    renderReviewBuild();
+  }
+}
+
+async function runLocalBuild() {
+  elements.buildConfirmRun.disabled = true;
+  elements.runLocalBuild.disabled = true;
+  elements.buildConfirmDialog.close();
+  elements.localBuildOutput.hidden = false;
+  elements.localBuildOutput.textContent = "Running source validation, local build, and full validation…";
+  showReviewBuildMessage("Local build is running. Keep this page open.");
+  try {
+    const result = await request("/api/local-build", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmLocalBuild: true }),
+    });
+    elements.localBuildOutput.textContent = result.steps
+      .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
+      .join("\n\n");
+    state.buildReadiness = null;
+    showReviewBuildMessage("Local build and full validation passed. Git and publishing were not run.");
+  } catch (error) {
+    state.buildReadiness = null;
+    elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    showReviewBuildMessage(error.message, true);
+  } finally {
+    elements.buildConfirmRun.disabled = false;
+    renderReviewBuild();
+  }
 }
 
 function configuredShortcuts() {
@@ -369,6 +689,8 @@ function loadRecommendedMenus(invalidateAnalysis = true) {
 
 function myMenuDraftChanged() {
   state.myMenuColorReviewToken = null;
+  invalidateBuildReadiness();
+  renderSessionStatus();
   if (elements.myMenuColorReviewDialog.open) elements.myMenuColorReviewDialog.close();
   if (!state.baselineAnalysis) return;
   baselineDraftChanged();
@@ -431,6 +753,8 @@ async function saveMyMenuColors() {
       tab.colorChoice = result.colors.assignments[tab.name.trim()] || tab.colorChoice;
     }
     renderMyMenus();
+    invalidateBuildReadiness();
+    renderSessionStatus();
     showMyMenuColorMessage(`Saved the My Menu layout and refreshed its reference-card source. Validation passed. Recovery backup: ${result.backup}`);
   } catch (error) {
     state.myMenuColorReviewToken = null;
@@ -442,6 +766,7 @@ async function saveMyMenuColors() {
 }
 
 async function loadProfile(name) {
+  captureCurrentProfileDraft();
   const loadSequence = ++state.loadSequence;
   showMessage("");
   elements.profileSelect.disabled = true;
@@ -451,7 +776,7 @@ async function loadProfile(name) {
     const detail = await request(`/api/profiles/${encodeURIComponent(name)}`);
     if (loadSequence !== state.loadSequence) return;
     elements.profileSelect.value = name;
-    applyProfileDetail(detail);
+    applyProfileDetail(detail, state.profileDrafts.get(`profile:${name}`));
   } catch (error) {
     if (loadSequence !== state.loadSequence) return;
     showMessage(error.message, true);
@@ -461,6 +786,7 @@ async function loadProfile(name) {
 }
 
 async function loadProfileDraft(operation) {
+  captureCurrentProfileDraft();
   const sourceProfile = operation === "duplicate" ? state.detail?.sourceProfile || state.detail?.name : null;
   if (operation === "duplicate" && !state.detail?.editableDraft) return;
   disableProfileActions(true);
@@ -481,21 +807,32 @@ async function loadProfileDraft(operation) {
   }
 }
 
-function applyProfileDetail(detail) {
+function applyProfileDetail(detail, restoredDraft = null) {
   state.detail = detail;
+  state.currentDraftKey = profileDraftKey(detail);
   state.originalOverrides = clone(detail.originalOverrides || {});
-  state.draftOverrides = clone(state.originalOverrides);
+  state.draftOverrides = clone(restoredDraft?.payload?.overrides || state.originalOverrides);
   state.reviewToken = null;
-  elements.profileTitle.textContent = detail.title;
+  elements.profileTitle.textContent = restoredDraft?.payload?.title || detail.title;
   elements.sourceFile.textContent = detail.sourceFile;
-  elements.titleInput.value = detail.title || "";
-  elements.subtitleInput.value = detail.subtitle || "";
-  elements.filenameInput.value = detail.targetName || detail.name || "";
-  elements.statusInput.value = detail.metadata?.status || "Draft";
-  elements.releaseInput.checked = Boolean(detail.metadata?.release);
-  elements.previewPanel.hidden = true;
+  elements.titleInput.value = restoredDraft?.payload?.title ?? detail.title ?? "";
+  elements.subtitleInput.value = restoredDraft?.payload?.subtitle ?? detail.subtitle ?? "";
+  elements.filenameInput.value = restoredDraft?.payload?.targetName ?? detail.targetName ?? detail.name ?? "";
+  elements.statusInput.value = restoredDraft?.payload?.status ?? detail.metadata?.status ?? "Draft";
+  elements.releaseInput.checked = restoredDraft?.payload?.release ?? Boolean(detail.metadata?.release);
+  state.previewLoaded = false;
+  elements.previewFrame.hidden = true;
+  elements.previewFrame.removeAttribute("src");
+  elements.previewEmpty.hidden = false;
+  elements.previewPath.textContent = "";
+  elements.previewStatus.textContent = "Preview not rendered";
+  elements.previewPanel.classList.remove("is-stale");
+  elements.previewChangeNote.hidden = !detail.editableDraft;
+  setProfilePane("settings");
+  setWorkflowStep(detail.editableDraft ? 2 : 1);
   if (elements.reviewDialog.open) elements.reviewDialog.close();
   render();
+  renderSessionStatus();
 }
 
 function disableProfileActions(disabled) {
@@ -508,13 +845,19 @@ function disableProfileActions(disabled) {
 
 function render() {
   elements.settings.replaceChildren();
+  elements.cardSettings.replaceChildren();
   elements.referenceCard.hidden = true;
   const editable = state.detail?.editableDraft;
   elements.profileMetadata.hidden = !editable;
+  elements.cardSettingsGroup.hidden = !editable;
+  elements.additionalSettingsGroup.hidden = !editable;
+  elements.profileSaveBar.hidden = !editable;
   elements.duplicateButton.disabled = !editable;
   elements.reloadButton.disabled = !editable;
   elements.previewButton.disabled = !state.detail;
-  elements.previewButton.textContent = editable ? "Preview card" : "Preview reference card";
+  elements.previewButton.textContent = state.previewLoaded
+    ? "Refresh preview"
+    : editable ? "Render preview" : "Render reference preview";
   elements.reviewButton.disabled = !editable;
   if (!editable) {
     renderReference();
@@ -525,8 +868,35 @@ function render() {
   }
   renderMetadataState();
   showMessage("");
-  for (const section of state.detail.sections) renderSection(section);
+  renderProfileSettings();
   updateCounts();
+}
+
+function renderProfileSettings() {
+  const byPath = new Map();
+  for (const section of state.detail.sections) {
+    for (const setting of section.settings) byPath.set(setting.path, setting);
+  }
+  const orderedPaths = state.detail.settingOrder || [...byPath.keys()];
+  const cardPaths = (state.detail.cardSettingPaths || []).filter((path) => byPath.has(path));
+  const cardPathSet = new Set(cardPaths);
+  const cardSettings = cardPaths.map((path) => byPath.get(path));
+  if (cardSettings.length) {
+    renderSection({ label: "Shown on this card", settings: cardSettings }, elements.cardSettings, true);
+  }
+  elements.cardSettingsCount.textContent = `${cardSettings.length} ${cardSettings.length === 1 ? "control" : "controls"}`;
+
+  let additionalCount = 0;
+  for (const section of state.detail.sections) {
+    const settings = orderedPaths
+      .filter((path) => !cardPathSet.has(path))
+      .map((path) => byPath.get(path))
+      .filter((setting) => setting && setting.path.split(".", 1)[0] === section.key);
+    if (!settings.length) continue;
+    additionalCount += settings.length;
+    renderSection({ ...section, settings }, elements.settings);
+  }
+  elements.additionalSettingsCount.textContent = `${additionalCount} ${additionalCount === 1 ? "control" : "controls"}`;
 }
 
 function renderMetadataState() {
@@ -585,9 +955,10 @@ function renderReference() {
   elements.referenceCard.hidden = false;
 }
 
-function renderSection(section) {
+function renderSection(section, host = elements.settings, cardOrder = false) {
   const fragment = document.querySelector("#section-template").content.cloneNode(true);
   const container = fragment.querySelector(".setting-section");
+  container.classList.toggle("card-order-section", cardOrder);
   fragment.querySelector("h2").textContent = section.label;
   fragment.querySelector(".reset-section").addEventListener("click", () => {
     for (const setting of section.settings) delete state.draftOverrides[setting.path];
@@ -596,7 +967,7 @@ function renderSection(section) {
   });
   const list = fragment.querySelector(".setting-list");
   for (const setting of section.settings) list.append(renderSetting(setting));
-  elements.settings.append(container);
+  host.append(container);
 }
 
 function renderSetting(setting) {
@@ -755,6 +1126,20 @@ function baselineDraftChanged() {
   elements.baselineResults.replaceChildren();
   elements.baselinePlan.hidden = true;
   elements.baselinePlan.replaceChildren();
+  invalidateBuildReadiness();
+  renderSessionStatus();
+}
+
+function discardBaselineDraft() {
+  state.baselineDraft = clone(state.baselineCurrent);
+  state.baselineAnalysis = null;
+  state.baselineDecisions = {};
+  state.baselinePlan = null;
+  state.migrationReviewToken = null;
+  invalidateBuildReadiness();
+  renderBaseline();
+  renderSessionStatus();
+  showBaselineMessage("Baseline draft discarded. Nothing was saved.");
 }
 
 function updateBaselineDraftState() {
@@ -1595,7 +1980,9 @@ function updateSetting(setting, value, rerender = true) {
 
 function draftChanged() {
   state.reviewToken = null;
-  elements.previewPanel.hidden = true;
+  markPreviewStale();
+  setWorkflowStep(2);
+  captureCurrentProfileDraft();
   if (elements.reviewDialog.open) elements.reviewDialog.close();
 }
 
@@ -1633,8 +2020,10 @@ async function reviewChanges() {
     elements.reviewSummary.textContent = review.summary;
     elements.reviewDiff.textContent = review.diff;
     elements.reviewDialog.showModal();
+    setWorkflowStep(4);
     showMessage("Candidate validation passed. Review the exact YAML before saving.");
   } catch (error) {
+    setWorkflowStep(2);
     showMessage(error.message, true);
   } finally {
     elements.reviewButton.disabled = false;
@@ -1656,6 +2045,10 @@ async function saveReviewedProfile() {
       body: JSON.stringify({ reviewToken: state.reviewToken }),
     });
     state.reviewToken = null;
+    state.profileDrafts.delete(state.currentDraftKey);
+    state.currentDraftKey = null;
+    state.detail = null;
+    invalidateBuildReadiness();
     elements.reviewDialog.close();
     await loadProfiles(result.savedProfile);
     showMessage(`Saved ${result.sourceFile}. Validation passed. Recovery backup: ${result.backup}`);
@@ -1670,6 +2063,7 @@ async function saveReviewedProfile() {
 
 async function preview() {
   elements.previewButton.disabled = true;
+  elements.previewButton.textContent = "Rendering…";
   showMessage("Rendering a temporary preview…");
   try {
     const body = state.detail?.cardType === "reference"
@@ -1680,15 +2074,25 @@ async function preview() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (Array.isArray(payload.cardSettingPaths) && state.detail?.editableDraft) {
+      state.detail.cardSettingPaths = payload.cardSettingPaths;
+      render();
+    }
     elements.previewPath.textContent = payload.outputFile;
     elements.previewFrame.src = `${payload.previewUrl}?t=${Date.now()}`;
-    elements.previewPanel.hidden = false;
+    elements.previewFrame.hidden = false;
+    elements.previewEmpty.hidden = true;
+    state.previewLoaded = true;
+    elements.previewPanel.classList.remove("is-stale");
+    elements.previewStatus.textContent = "Current preview";
+    setWorkflowStep(3);
     showMessage("Preview updated. No source was saved.");
-    elements.previewPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (window.matchMedia("(max-width: 950px)").matches) setProfilePane("preview");
   } catch (error) {
     showMessage(error.message, true);
   } finally {
     elements.previewButton.disabled = false;
+    elements.previewButton.textContent = state.previewLoaded ? "Refresh preview" : "Render preview";
   }
 }
 
@@ -1696,8 +2100,14 @@ elements.profileSelect.addEventListener("change", () => loadProfile(elements.pro
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => loadProfileDraft("duplicate"));
 elements.reloadButton.addEventListener("click", async () => {
-  if (state.detail.operation === "update") await loadProfile(state.detail.name);
-  else applyProfileDetail(state.detail);
+  if (!window.confirm("Discard this browser draft? These unsaved changes cannot be recovered.")) return;
+  const detail = state.detail;
+  state.profileDrafts.delete(state.currentDraftKey);
+  state.currentDraftKey = null;
+  state.detail = null;
+  invalidateBuildReadiness();
+  if (detail.operation === "update") await loadProfile(detail.name);
+  else await loadProfile(detail.sourceProfile || elements.profileSelect.options[0]?.value);
   showMessage("Draft discarded and original source values reloaded. No profile was saved.");
 });
 elements.previewButton.addEventListener("click", preview);
@@ -1721,6 +2131,7 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
   });
 }
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
+for (const tab of elements.mobilePaneTabs) tab.addEventListener("click", () => setProfilePane(tab.dataset.pane));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);
 elements.loadSavedMenus.addEventListener("click", () => loadSavedMenus(true));
@@ -1736,13 +2147,26 @@ elements.baselinePreserveAll.addEventListener("click", () => setUnresolvedBaseli
 elements.baselineBuildPlan.addEventListener("click", buildBaselinePlan);
 elements.baselineBuildPlanBottom.addEventListener("click", buildBaselinePlan);
 elements.baselineReset.addEventListener("click", () => {
-  state.baselineDraft = clone(state.baselineCurrent);
-  state.baselineAnalysis = null;
-  state.baselineDecisions = {};
-  state.baselinePlan = null;
-  state.migrationReviewToken = null;
-  renderBaseline();
-  showBaselineMessage("Baseline draft discarded. Nothing was saved.");
+  if (!window.confirm("Discard the baseline draft? These unsaved changes cannot be recovered.")) return;
+  discardBaselineDraft();
+});
+elements.refreshReviewBuild.addEventListener("click", () => {
+  captureCurrentProfileDraft();
+  renderReviewBuild();
+  showReviewBuildMessage("Session status refreshed.");
+});
+elements.validateReadiness.addEventListener("click", validateBuildReadiness);
+elements.runLocalBuild.addEventListener("click", () => {
+  if (state.buildReadiness?.ready && pendingSessionItems().length === 0) elements.buildConfirmDialog.showModal();
+});
+elements.buildConfirmClose.addEventListener("click", () => elements.buildConfirmDialog.close());
+elements.buildConfirmCancel.addEventListener("click", () => elements.buildConfirmDialog.close());
+elements.buildConfirmRun.addEventListener("click", runLocalBuild);
+window.addEventListener("beforeunload", (event) => {
+  captureCurrentProfileDraft();
+  if (!pendingSessionItems().length) return;
+  event.preventDefault();
+  event.returnValue = "";
 });
 
 Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline()]);

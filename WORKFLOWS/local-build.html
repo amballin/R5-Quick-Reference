@@ -119,6 +119,7 @@
 python3 &quot;80 Build/build.py&quot; &amp;&amp;
 python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <p>You may copy and run the complete block. The <code>&amp;&amp;</code> connections stop the sequence at the first error, so a failed check cannot be hidden by a later command. You may also run the three commands one at a time when troubleshooting.</p>
+<p>The Profile Editor provides the same sequence under <strong>Review &amp; Build</strong>. It first requires every browser draft to be saved or explicitly discarded, then requires a fresh readiness check and a final confirmation. This is convenient after profile, My Menu, or baseline work; the command block remains available for troubleshooting and other project changes.</p>
 <section class="step"><h2>Why three commands</h2>
 <ul>
 <li>The source-only validator checks editable source without treating expected stale generated files as errors.</li>
@@ -130,7 +131,7 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <section class="step"><h2>Baseline impact before the build</h2>
 <p>When <code>00 Master/baseline.yaml</code> changed outside a reviewed Profile Editor migration, run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot;</code></pre></div>
-<p>The command compares worktree defaults with <code>HEAD</code>. Use <code>--base-ref origin/main</code> when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Impact workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.</p>
+<p>The command compares worktree defaults with <code>HEAD</code>. Use <code>--base-ref origin/main</code> when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Setup workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.</p>
 <p>If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family&#x27;s dedicated command in <a href="spreadsheets.html">Spreadsheet Workflows</a>, then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.</p>
 </section>
 <section class="step"><h2>Which website copy to open</h2>

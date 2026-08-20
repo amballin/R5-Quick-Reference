@@ -2,6 +2,26 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Profile Editor as the Main Local Interface
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Treat Profile Editor 1.0 as the main day-to-day interface for profile editing and previews, persisted My Menu work, baseline analysis and guarded migration, camera-reference lookup, session-change review, source readiness, and the normal local validation/build sequence. Lead routine workflow documentation with the editor rather than presenting it as an optional prototype or secondary authoring tool.
+
+Keep specialized workflows outside the editor where their scope or authorization differs: Git preflight and handoff, spreadsheet preparation and testing-status import, on-camera verification, recovery, committing and pushing, and publication. The editor remains local and loopback-only and does not expand its existing Git, publication, deletion, rename, or version-metadata authority.
+
+## Guarded Session Review and Local Build
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Order the Profile Editor workspace as **Profiles**, **My Menu**, **Baseline Setup**, **Review & Build**, and **Camera Reference**. Preserve unsaved profile drafts when the user selects another profile or workspace, show per-workspace and total pending-change badges, and collect every unsaved profile, My Menu, and baseline draft in **Review & Build**. Require explicit confirmation before discarding a draft, and use the browser's leave warning while any session draft remains.
+
+Keep the card preview beside the independently scrolling settings panel. Order **Shown on this card** by the renderer's card rows, followed by collapsed additional settings. Explain beside the preview that `Δ` compares the current card with its saved C1/C2/C3 foundation, not with the baseline; using a baseline value clears `Δ` only when that value also matches the saved foundation.
+
+Permit **Review & Build** to run the documented local sequence only after every browser draft has been saved or explicitly discarded, a fresh source-readiness check passes, and the user confirms that generated local output and tracked documentation may change. The server must serialize build requests and run source-only validation, the normal development build, and full validation in that order, stopping at the first failure. It must not commit, push, publish, change website version metadata, rename, or delete. This decision supersedes only the prior prohibition on editor-initiated local builds in **Guarded Local Profile Authoring**; all guarded-save, Git, and publication boundaries remain in force.
+
 ## Main-Owned Baseline Impact Invariant
 
 **Status:** Accepted

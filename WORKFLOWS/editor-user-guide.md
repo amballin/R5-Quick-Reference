@@ -1,6 +1,6 @@
 # Profile Editor User Guide
 
-The Profile Editor is a local workspace for reviewing camera setup information, organizing My Menu, creating or updating shooting profiles, previewing cards, and evaluating shared baseline changes. This guide explains how to operate the editor. Use the camera reference materials when you need the meaning or recommended value of a particular field.
+Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Use the specialized workflow pages for Git handoff, spreadsheets, physical-camera testing, recovery, and publication.
 
 ## Start the editor
 
@@ -22,22 +22,26 @@ The editor separates temporary work from saved source:
 - A preview shows the result without saving it.
 - A review step shows the exact source changes.
 - A save is available only for the version that was reviewed.
-- Refreshing or closing the page discards unsaved drafts.
+- Profile drafts remain available while you move among profiles and workspaces in the same browser session.
+- Refreshing or closing the page discards unsaved drafts, so the browser warns before leaving while changes remain.
 
 If source files change outside the editor, restart the editor before continuing. If the editor detects that a reviewed source changed, it blocks the save so you can reload and review again.
 
 ## Move around the editor
 
-Use the four numbered tabs across the top:
+Use the workspace sidebar:
 
-1. **Camera setup** — Find and review setup records and their source links.
-2. **Configure My Menu** — Arrange saved tabs, shortcuts, and card colors.
-3. **Profiles** — Preview, create, duplicate, or update shooting profiles.
-4. **Baseline impact** — Test a proposed shared change and review its effect across profiles.
+- **Profiles** — Preview, create, duplicate, or update shooting profiles.
+- **My Menu** — Arrange saved tabs, shortcuts, and card colors.
+- **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
+- **Review & Build** — Resolve all browser drafts, validate source, and run the guarded local build.
+- **Camera Reference** — Find and review setup records and their source links.
 
-Moving to another tab does not save work. Complete or deliberately discard a draft before switching tasks.
+On narrower windows, the sidebar becomes a compact navigation row above the workspace.
 
-## Review camera setup
+Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session.
+
+## Review the camera reference
 
 Use the search box to find a record by name or related wording. Use the classification filter to narrow the list by how the record is used in the project.
 
@@ -47,7 +51,7 @@ This section is for review and navigation. It does not write settings to the cam
 
 ## Configure My Menu
 
-Open **Configure My Menu** to work with the saved navigation layout.
+Open **My Menu** to work with the saved navigation layout.
 
 - Edit a tab name, select its ordered shortcuts, and choose its card color.
 - Keep each used tab valid and each selected shortcut unique where the editor requires it.
@@ -69,27 +73,32 @@ Open **Profiles**, then select a profile from the menu. Reference cards can be p
 
 For an editable profile:
 
-1. Review the profile title, release information, and grouped fields.
-2. Use the state beside each field to see whether the value is inherited or customized.
-3. Change only the fields needed for this profile.
-4. Use **Use baseline** for a field or section when the profile should inherit the shared value again.
-5. Choose **Preview card** and inspect the temporary card.
-6. Choose **Review YAML changes** when the draft is ready.
-7. Save only after the exact review matches the intended result.
+1. Follow the profile workflow shown above the workspace: choose, edit, preview, then review and save.
+2. Review the profile title and release information.
+3. Work through **Shown on this card** in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.
+4. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
+5. Use the state beside each field to see whether the value is inherited or customized.
+6. Change only the fields needed for this profile.
+7. Use **Use baseline** for a field or section when the profile should inherit the shared value again.
+8. Use **Render preview** in the right-hand preview panel. The panel remains visible while the settings column scrolls independently.
+9. Choose **Review changes** from the persistent action bar when the draft is ready.
+10. Save only after the exact review matches the intended result.
 
-Use **Discard draft & reload profile** to return the selected profile to its saved state.
+After a setting changes, the existing preview remains available but is labeled as out of date. Choose **Refresh preview** before relying on it. On narrower windows, use the **Settings** and **Preview** controls to switch between the two panes.
 
-On cards with a declared C1–C3 foundation, `Δ` identifies a value that differs from that foundation. On editable profile cards without a Cx foundation, every visible settings row uses `Δ` as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.
+Open **Profile actions** and choose **Discard draft & reload** to return the selected profile to its saved state.
+
+On cards with a declared C1–C3 foundation, `Δ` identifies a value that differs from that saved foundation—not from the baseline. Choosing **Use baseline** clears `Δ` only when the baseline value also matches the saved foundation. On editable profile cards without a Cx foundation, every visible settings row uses `Δ` as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.
 
 ### Create or duplicate a profile
 
-Use **New from baseline** for a profile that should begin with shared values and no custom fields. Use **Duplicate profile** when a new profile should begin from an existing editable profile.
+Use **New from baseline** for a profile that should begin with shared values and no custom fields. Open **Profile actions** and choose **Duplicate profile** when a new profile should begin from an existing editable profile.
 
 Provide a unique filename and complete the same preview, review, and save process. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.
 
-## Evaluate baseline impact
+## Evaluate Baseline Setup
 
-Use **Baseline impact** when considering a change to a shared value. This area is a planning workspace, not a quick-edit form.
+Use **Baseline Setup** when considering a change to a shared value. This area is a planning workspace, not a quick-edit form.
 
 1. Change one or more draft values.
 2. Choose **Analyze draft**.
@@ -109,16 +118,18 @@ A review is tied to the exact draft and source state shown. If you edit the draf
 
 If validation or a concurrent-change check fails, stop and read the message. Reload the affected source rather than trying to force the prior review through.
 
-## Finish the editing session
+## Review the session and build locally
 
-After the intended source changes are saved:
+Open **Review & Build** before finishing:
 
-1. Run the project's normal local validation and build workflow separately.
-2. Review the generated result.
-3. Follow the established Finish Day or publishing workflow when appropriate.
-4. Stop the editor with **Control-C** in its Terminal window.
+1. Review every pending profile, My Menu, and baseline draft.
+2. Open each draft and save it through its exact-diff review, or choose **Discard** and confirm that decision.
+3. When the pending list is empty, choose **Validate readiness**.
+4. After readiness passes, choose **Run local build**, read the final warning, and confirm.
+5. Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.
+6. Stop the editor with **Control-C** in its Terminal window.
 
-The editor does not delete or rename existing profiles, edit permanent reference cards, run the normal build, commit, push, or publish.
+The guarded action runs source-only validation, the normal development build, and full validation. It may refresh local output and tracked documentation, but it does not delete or rename profiles, edit permanent reference cards, commit, push, publish, or change website version metadata.
 
 ## Get more help
 

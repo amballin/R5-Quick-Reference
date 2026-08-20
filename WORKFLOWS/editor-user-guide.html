@@ -114,7 +114,7 @@
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Profile Editor User Guide</h1>
-<p>The Profile Editor is a local workspace for reviewing camera setup information, organizing My Menu, creating or updating shooting profiles, previewing cards, and evaluating shared baseline changes. This guide explains how to operate the editor. Use the camera reference materials when you need the meaning or recommended value of a particular field.</p>
+<p>Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Use the specialized workflow pages for Git handoff, spreadsheets, physical-camera testing, recovery, and publication.</p>
 <section class="step"><h2>Start the editor</h2>
 <p>From the project root, run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
@@ -128,27 +128,30 @@
 <li>A preview shows the result without saving it.</li>
 <li>A review step shows the exact source changes.</li>
 <li>A save is available only for the version that was reviewed.</li>
-<li>Refreshing or closing the page discards unsaved drafts.</li>
+<li>Profile drafts remain available while you move among profiles and workspaces in the same browser session.</li>
+<li>Refreshing or closing the page discards unsaved drafts, so the browser warns before leaving while changes remain.</li>
 </ul>
 <p>If source files change outside the editor, restart the editor before continuing. If the editor detects that a reviewed source changed, it blocks the save so you can reload and review again.</p>
 </section>
 <section class="step"><h2>Move around the editor</h2>
-<p>Use the four numbered tabs across the top:</p>
-<ol>
-<li><strong>Camera setup</strong> — Find and review setup records and their source links.</li>
-<li><strong>Configure My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
+<p>Use the workspace sidebar:</p>
+<ul>
 <li><strong>Profiles</strong> — Preview, create, duplicate, or update shooting profiles.</li>
-<li><strong>Baseline impact</strong> — Test a proposed shared change and review its effect across profiles.</li>
-</ol>
-<p>Moving to another tab does not save work. Complete or deliberately discard a draft before switching tasks.</p>
+<li><strong>My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
+<li><strong>Baseline Setup</strong> — Test a proposed shared change and review its effect across profiles.</li>
+<li><strong>Review &amp; Build</strong> — Resolve all browser drafts, validate source, and run the guarded local build.</li>
+<li><strong>Camera Reference</strong> — Find and review setup records and their source links.</li>
+</ul>
+<p>On narrower windows, the sidebar becomes a compact navigation row above the workspace.</p>
+<p>Moving to another tab does not save work, but the sidebar badges and Review &amp; Build list preserve and identify pending work for this browser session.</p>
 </section>
-<section class="step"><h2>Review camera setup</h2>
+<section class="step"><h2>Review the camera reference</h2>
 <p>Use the search box to find a record by name or related wording. Use the classification filter to narrow the list by how the record is used in the project.</p>
 <p>Each record provides its menu location, project guidance, status, and reference link. Treat the editor as an organized view of the source material; consult the linked references for field-level detail.</p>
 <p>This section is for review and navigation. It does not write settings to the camera or prove the camera&#x27;s current physical configuration.</p>
 </section>
 <section class="step"><h2>Configure My Menu</h2>
-<p>Open <strong>Configure My Menu</strong> to work with the saved navigation layout.</p>
+<p>Open <strong>My Menu</strong> to work with the saved navigation layout.</p>
 <ul>
 <li>Edit a tab name, select its ordered shortcuts, and choose its card color.</li>
 <li>Keep each used tab valid and each selected shortcut unique where the editor requires it.</li>
@@ -165,22 +168,26 @@
 <p>Open <strong>Profiles</strong>, then select a profile from the menu. Reference cards can be previewed but not edited.</p>
 <p>For an editable profile:</p>
 <ol>
-<li>Review the profile title, release information, and grouped fields.</li>
+<li>Follow the profile workflow shown above the workspace: choose, edit, preview, then review and save.</li>
+<li>Review the profile title and release information.</li>
+<li>Work through <strong>Shown on this card</strong> in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.</li>
+<li>Expand <strong>Additional profile settings</strong> only when you need a control that is not currently rendered on the card.</li>
 <li>Use the state beside each field to see whether the value is inherited or customized.</li>
 <li>Change only the fields needed for this profile.</li>
 <li>Use <strong>Use baseline</strong> for a field or section when the profile should inherit the shared value again.</li>
-<li>Choose <strong>Preview card</strong> and inspect the temporary card.</li>
-<li>Choose <strong>Review YAML changes</strong> when the draft is ready.</li>
+<li>Use <strong>Render preview</strong> in the right-hand preview panel. The panel remains visible while the settings column scrolls independently.</li>
+<li>Choose <strong>Review changes</strong> from the persistent action bar when the draft is ready.</li>
 <li>Save only after the exact review matches the intended result.</li>
 </ol>
-<p>Use <strong>Discard draft &amp; reload profile</strong> to return the selected profile to its saved state.</p>
-<p>On cards with a declared C1–C3 foundation, <code>Δ</code> identifies a value that differs from that foundation. On editable profile cards without a Cx foundation, every visible settings row uses <code>Δ</code> as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.</p>
+<p>After a setting changes, the existing preview remains available but is labeled as out of date. Choose <strong>Refresh preview</strong> before relying on it. On narrower windows, use the <strong>Settings</strong> and <strong>Preview</strong> controls to switch between the two panes.</p>
+<p>Open <strong>Profile actions</strong> and choose <strong>Discard draft &amp; reload</strong> to return the selected profile to its saved state.</p>
+<p>On cards with a declared C1–C3 foundation, <code>Δ</code> identifies a value that differs from that saved foundation—not from the baseline. Choosing <strong>Use baseline</strong> clears <code>Δ</code> only when the baseline value also matches the saved foundation. On editable profile cards without a Cx foundation, every visible settings row uses <code>Δ</code> as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.</p>
 <h3>Create or duplicate a profile</h3>
-<p>Use <strong>New from baseline</strong> for a profile that should begin with shared values and no custom fields. Use <strong>Duplicate profile</strong> when a new profile should begin from an existing editable profile.</p>
+<p>Use <strong>New from baseline</strong> for a profile that should begin with shared values and no custom fields. Open <strong>Profile actions</strong> and choose <strong>Duplicate profile</strong> when a new profile should begin from an existing editable profile.</p>
 <p>Provide a unique filename and complete the same preview, review, and save process. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.</p>
 </section>
-<section class="step"><h2>Evaluate baseline impact</h2>
-<p>Use <strong>Baseline impact</strong> when considering a change to a shared value. This area is a planning workspace, not a quick-edit form.</p>
+<section class="step"><h2>Evaluate Baseline Setup</h2>
+<p>Use <strong>Baseline Setup</strong> when considering a change to a shared value. This area is a planning workspace, not a quick-edit form.</p>
 <ol>
 <li>Change one or more draft values.</li>
 <li>Choose <strong>Analyze draft</strong>.</li>
@@ -197,15 +204,17 @@
 <p>A review is tied to the exact draft and source state shown. If you edit the draft after reviewing it, review again before saving. When a save succeeds, the editor creates a recovery backup and validates the source.</p>
 <p>If validation or a concurrent-change check fails, stop and read the message. Reload the affected source rather than trying to force the prior review through.</p>
 </section>
-<section class="step"><h2>Finish the editing session</h2>
-<p>After the intended source changes are saved:</p>
+<section class="step"><h2>Review the session and build locally</h2>
+<p>Open <strong>Review &amp; Build</strong> before finishing:</p>
 <ol>
-<li>Run the project&#x27;s normal local validation and build workflow separately.</li>
-<li>Review the generated result.</li>
-<li>Follow the established Finish Day or publishing workflow when appropriate.</li>
+<li>Review every pending profile, My Menu, and baseline draft.</li>
+<li>Open each draft and save it through its exact-diff review, or choose <strong>Discard</strong> and confirm that decision.</li>
+<li>When the pending list is empty, choose <strong>Validate readiness</strong>.</li>
+<li>After readiness passes, choose <strong>Run local build</strong>, read the final warning, and confirm.</li>
+<li>Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.</li>
 <li>Stop the editor with <strong>Control-C</strong> in its Terminal window.</li>
 </ol>
-<p>The editor does not delete or rename existing profiles, edit permanent reference cards, run the normal build, commit, push, or publish.</p>
+<p>The guarded action runs source-only validation, the normal development build, and full validation. It may refresh local output and tracked documentation, but it does not delete or rename profiles, edit permanent reference cards, commit, push, publish, or change website version metadata.</p>
 </section>
 <section class="step"><h2>Get more help</h2>
 <p>For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the <a href="profile-editor.html">Profile Editor workflow reference</a>. For camera-field meaning and recommendations, use the linked Canon and project reference materials.</p>

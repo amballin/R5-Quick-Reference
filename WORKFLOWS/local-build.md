@@ -10,6 +10,8 @@ python3 "80 Build/validator.py"
 
 You may copy and run the complete block. The `&&` connections stop the sequence at the first error, so a failed check cannot be hidden by a later command. You may also run the three commands one at a time when troubleshooting.
 
+The Profile Editor provides the same sequence under **Review & Build**. It first requires every browser draft to be saved or explicitly discarded, then requires a fresh readiness check and a final confirmation. This is convenient after profile, My Menu, or baseline work; the command block remains available for troubleshooting and other project changes.
+
 ## Why three commands
 
 - The source-only validator checks editable source without treating expected stale generated files as errors.
@@ -26,7 +28,7 @@ When `00 Master/baseline.yaml` changed outside a reviewed Profile Editor migrati
 python3 "80 Build/baseline_impact_check.py"
 ```
 
-The command compares worktree defaults with `HEAD`. Use `--base-ref origin/main` when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Impact workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.
+The command compares worktree defaults with `HEAD`. Use `--base-ref origin/main` when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Setup workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.
 
 If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family's dedicated command in [Spreadsheet Workflows](spreadsheets.html), then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.
 

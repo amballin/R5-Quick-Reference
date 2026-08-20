@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 BUILD_DIR = Path(__file__).resolve().parent
@@ -204,8 +205,108 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         first = self.model.editor_info()
         second = self.model.editor_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], "0.8.1")
+        self.assertEqual(first["version"], "1.0.0")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
+
+    def test_profile_detail_exposes_card_order_and_visible_setting_paths(self):
+        detail = self.model.profile_detail("Birds in Flight")
+        self.assertEqual(
+            detail["cardSettingPaths"][:8],
+            [
+                "exposure.mode",
+                "shutter.target",
+                "shutter.type",
+                "lens.aperture.target",
+                "exposure.iso.mode",
+                "exposure.iso.value",
+                "exposure.auto_iso.maximum",
+                "exposure.exposure_compensation",
+            ],
+        )
+        self.assertNotIn("exposure.metering", detail["cardSettingPaths"])
+        self.assertEqual(detail["settingOrder"][:5], [
+            "exposure.mode",
+            "exposure.metering",
+            "shutter.target",
+            "shutter.type",
+            "lens.aperture.target",
+        ])
+
+    def test_card_setting_paths_follow_draft_visibility_rules(self):
+        detail = self.model.profile_detail("Birds in Flight")
+        overrides = dict(detail["originalOverrides"])
+        overrides["autofocus.operation"] = "Manual Focus"
+        visible = self.model.card_setting_paths("Birds in Flight", overrides)
+        self.assertNotIn("autofocus.method", visible)
+        self.assertNotIn("autofocus.subject_detection", visible)
+        self.assertNotIn("autofocus.eye_detection", visible)
+
+    def test_profile_editor_layout_keeps_preview_beside_ordered_settings(self):
+        editor = self.root / "80 Build" / "profile_editor"
+        html = (editor / "index.html").read_text(encoding="utf-8")
+        javascript = (editor / "app.js").read_text(encoding="utf-8")
+        stylesheet = (editor / "styles.css").read_text(encoding="utf-8")
+        self.assertIn('class="app-sidebar"', html)
+        self.assertIn('id="card-settings"', html)
+        self.assertIn('id="preview-panel"', html)
+        self.assertIn("payload.cardSettingPaths", javascript)
+        self.assertIn("position: sticky", stylesheet)
+
+    def test_profile_editor_exposes_draft_ledger_and_guarded_local_build(self):
+        editor = self.root / "80 Build" / "profile_editor"
+        html = (editor / "index.html").read_text(encoding="utf-8")
+        javascript = (editor / "app.js").read_text(encoding="utf-8")
+        self.assertLess(html.index('data-view="profiles"'), html.index('data-view="my-menu"'))
+        self.assertLess(html.index('data-view="my-menu"'), html.index('data-view="baseline"'))
+        self.assertLess(html.index('data-view="baseline"'), html.index('data-view="review-build"'))
+        self.assertLess(html.index('data-view="review-build"'), html.index('data-view="dictionary"'))
+        self.assertIn('id="pending-change-list"', html)
+        self.assertIn('id="build-confirm-dialog"', html)
+        self.assertIn('window.addEventListener("beforeunload"', javascript)
+        self.assertIn("profileDrafts: new Map()", javascript)
+
+    def test_build_readiness_blocks_pending_drafts_and_source_errors(self):
+        pending = self.model.build_readiness(2)
+        self.assertFalse(pending["ready"])
+        self.assertIn("Resolve 2 unsaved browser drafts", pending["blockers"][0])
+        failing = ProfileEditorModel(self.root, source_validator=lambda _root: ["forced source failure"])
+        readiness = failing.build_readiness(0)
+        self.assertFalse(readiness["ready"])
+        self.assertEqual(readiness["sourceValidation"], "failed")
+
+    def test_local_build_requires_confirmation_and_runs_only_documented_steps(self):
+        with self.assertRaisesRegex(PrototypeError, "confirmation"):
+            self.model.run_local_build(0, False)
+        with self.assertRaisesRegex(PrototypeError, "Resolve 1 unsaved browser draft"):
+            self.model.run_local_build(1, True)
+        with patch("profile_editor.subprocess.run") as run:
+            run.return_value.returncode = 0
+            run.return_value.stdout = "passed"
+            result = self.model.run_local_build(0, True)
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual([step["step"] for step in result["steps"]], [
+            "Source validation",
+            "Development build",
+            "Full validation",
+        ])
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertEqual([command[1:] for command in commands], [
+            ["80 Build/validator.py", "--source-only"],
+            ["80 Build/build.py"],
+            ["80 Build/validator.py"],
+        ])
+        self.assertFalse(any("git" in command or "publish" in command for command in commands))
+
+    def test_change_indicator_compares_with_saved_foundation_not_baseline(self):
+        detail = self.model.profile_detail("Birds in Flight")
+        overrides = dict(detail["originalOverrides"])
+        overrides.pop("exposure.mode", None)
+        baseline_preview = self.model.preview("Birds in Flight", overrides).read_text(encoding="utf-8")
+        mode_row = next(row for row in baseline_preview.split("</tr>") if ">Mode<" in row)
+        self.assertIn("Δ", mode_row)
+        saved_preview = self.model.preview("Birds in Flight", detail["originalOverrides"]).read_text(encoding="utf-8")
+        saved_mode_row = next(row for row in saved_preview.split("</tr>") if ">Mode<" in row)
+        self.assertNotIn("Δ", saved_mode_row)
 
     def test_reviews_and_saves_named_my_menu_color_assignments(self):
         assignments = dict(self.model.my_menu_colors["assignments"])

@@ -28,5 +28,5 @@ Preflight does not refresh derived artifacts, modify source files, pull changes,
 
 ## Next
 
-- If safe, begin work and use [Local Build](local-build.html) when the change requires it.
+- If safe, begin routine work in [Profile Editor](profile-editor.html). Use [Local Build](local-build.html) for equivalent terminal commands, troubleshooting, or changes outside the editor's scope.
 - If this is a different Mac, also read [Continue on Another Mac](other-mac.html).

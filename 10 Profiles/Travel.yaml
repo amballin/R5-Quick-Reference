@@ -30,6 +30,9 @@ overrides:
     eye_detection: Disable
   drive:
     mode: Single Shot
+  lens:
+    aperture:
+      target: '5.8'
 checklist:
 - Battery
 - Spare card

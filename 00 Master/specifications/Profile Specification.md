@@ -46,6 +46,8 @@ The report must include access-only profile cards and exclude permanent referenc
 
 ## Guarded Local Editor Transactions
 
+Profile Editor 1.0 is the primary local interface for routine profile, My Menu, baseline, camera-reference, readiness, and local-build work. Workflow documentation must lead with this interface for those tasks and reserve terminal-first instructions for startup, troubleshooting, Git/handoff, spreadsheets, testing import, recovery, and publication.
+
 The local loopback profile editor may perform only these writes under `10 Profiles/`:
 
 - update the title, optional subtitle, metadata status, release flag, and baseline overrides of an existing shooting profile without renaming its file;
@@ -65,7 +67,11 @@ Every editor save must follow one guarded transaction:
 7. Replace the profile atomically and run source validation.
 8. Restore the prior source state automatically if post-save validation fails.
 
-The editor does not build, commit, push, publish, rename, or delete. Those remain separate operator-authorized workflows.
+The editor does not commit, push, publish, change website version metadata, rename, or delete. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
+
+The workspace order is **Profiles**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+
+The editable settings panel presents card-visible controls first in renderer order and keeps other controls in a collapsed secondary group. Its independently scrolling preview remains visible beside desktop settings. The preview must state that `Δ` compares with the saved C1/C2/C3 foundation rather than the baseline, so removing an override does not imply that the indicator will clear.
 
 The My Menu page loads the persisted used tabs and ordered item identities from `00 Master/my_menu.yaml` and the curated palette/current named-tab assignments from `00 Master/my_menu_colors.yaml`. It supports up to five tabs and six ordered items per tab, omits unused tabs when saving, requires every used tab to have a name and at least one unique catalog item, and requires a distinct palette choice for each used tab. Light Red and Coral must remain visually distinguishable, with Light Red reading as red and Coral as orange-red.
 
@@ -75,7 +81,7 @@ Coverage uses stable `setting_path` identities on supported My Menu catalog item
 
 A My Menu save must validate both complete candidates, show one exact two-file YAML diff, bind every candidate byte and source fingerprint to a short-lived one-use token, create a recovery backup containing prior and candidate files, replace only reviewed changed files atomically, run source validation, and roll back every written file on failure. Saved colors apply globally to matching named-tab tokens, values, change markers, PDFs, and field-guide access tokens. The persisted layout drives the dynamic read-only My Menu reference card. Reference previews are permitted without overrides or source writes, and every displayed card preview must provide a Return to top action in the editor.
 
-The editor provides one global Return to top control rather than a preview-local action. It is a fixed circular up arrow available in Camera setup, Configure My Menu, Profiles, and Baseline Impact, appears only after meaningful vertical scrolling, respects lower-right safe-area insets, carries an accessible text label, and is hidden for print.
+The editor provides one global Return to top control rather than a preview-local action. It is a fixed circular up arrow available in Profiles, My Menu, Baseline Setup, Review & Build, and Camera Reference, appears only after meaningful vertical scrolling, respects lower-right safe-area insets, carries an accessible text label, and is hidden for print.
 
 The editor header must display its semantic editor version and a short deterministic build identifier. The server derives the build identifier from the relevant editor, renderer, Cx-comparison, and card-template source bytes; it must not use a timestamp that changes without a source change.
 
@@ -94,7 +100,7 @@ Profiles use the existing keys documented by `00 Master/schema.yaml`, including 
 - `80 Build/validators/profile_editor_validator.py` verifies editor readiness, source fingerprints, read-only reference-card behavior, unreleased-draft defaults, and complete My Menu setting identities for declared routes.
 - `80 Build/my_menu_colors.py` validates the curated palette and named-tab assignments used by both renderers and guarded editor saves.
 - `80 Build/my_menu.py` validates persisted tab names and ordered Canon item identities; `80 Build/my_menu_reference.py` derives the read-only reference-card rows.
-- `80 Build/test_profile_editor.py` exercises guarded update, create, duplicate, baseline migration, one-use review, conflict, all-file rollback, acknowledgement, reference-card boundaries, and session My Menu availability analysis in temporary repositories.
+- `80 Build/test_profile_editor.py` exercises guarded update, create, duplicate, baseline migration, one-use review, conflict, all-file rollback, acknowledgement, reference-card boundaries, session My Menu availability analysis, draft-ledger UI, Cx-foundation change-indicator semantics, and local-build gating in temporary repositories.
 - `80 Build/baseline_impact.py` provides deterministic, read-only profile comparison, C1–C3 registration and starting-route warnings, My Menu card-coverage analysis, and validated migration planning for current and proposed baseline values.
 - `80 Build/test_baseline_impact.py` covers inherited choices, protected and redundant overrides, C1–C3 effective values, visible-card My Menu coverage and availability, newly visible cue gaps, obsolete cues from removed tabs and shortcuts, tab moves, globally unreferenced configured shortcuts, invalid paths and types, stale-decision rejection, reference-card exclusion, and input immutability.
 - `80 Build/baseline_migration.py` converts a complete plan into deterministic baseline/profile candidate bytes without mutating its inputs.

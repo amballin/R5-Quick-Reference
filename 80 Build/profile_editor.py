@@ -17,6 +17,7 @@ from pathlib import Path
 import re
 import secrets
 import shutil
+import subprocess
 import sys
 import tempfile
 import threading
@@ -48,7 +49,7 @@ from baseline_migration import (
     migration_diff,
 )
 from build_validator import discover_profiles, is_reference_card
-from html_renderer import LABEL, render_card
+from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
 from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
 from my_menu_colors import MyMenuColorError, load_my_menu_colors, validate_my_menu_colors
@@ -91,7 +92,7 @@ PROFILE_STATUSES = {"Draft", "Review", "Final"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
-EDITOR_VERSION = "0.8.1"
+EDITOR_VERSION = "1.0.0"
 EDITOR_BUILD_FILES = (
     "00 Master/my_menu.yaml",
     "00 Master/my_menu_colors.yaml",
@@ -171,6 +172,7 @@ class ProfileEditorModel:
         self._pending_migration_reviews = {}
         self._pending_color_reviews = {}
         self._write_lock = threading.RLock()
+        self._build_lock = threading.Lock()
 
     def _load_profiles(self):
         profiles = {}
@@ -740,6 +742,63 @@ class ProfileEditorModel:
             "build": digest.hexdigest()[:8],
         }
 
+    def build_readiness(self, pending_changes):
+        try:
+            pending = int(pending_changes)
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("Pending-change count must be an integer.") from exc
+        if pending < 0:
+            raise PrototypeError("Pending-change count cannot be negative.")
+        source_errors = list(self._source_validator(self.paths.root))
+        blockers = []
+        if pending:
+            blockers.append(
+                f"Resolve {pending} unsaved browser {('draft' if pending == 1 else 'drafts')} before building."
+            )
+        blockers.extend(source_errors)
+        return {
+            "ready": not blockers,
+            "pendingChanges": pending,
+            "sourceValidation": "passed" if not source_errors else "failed",
+            "blockers": blockers,
+        }
+
+    def run_local_build(self, pending_changes, confirmed):
+        readiness = self.build_readiness(pending_changes)
+        if not readiness["ready"]:
+            raise PrototypeError("Local build is blocked: " + " ".join(readiness["blockers"]))
+        if confirmed is not True:
+            raise PrototypeError("Local build confirmation is required.")
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("A local build is already running.")
+        commands = (
+            ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"]),
+            ("Development build", [sys.executable, "80 Build/build.py"]),
+            ("Full validation", [sys.executable, "80 Build/validator.py"]),
+        )
+        results = []
+        try:
+            for label, command in commands:
+                try:
+                    completed = subprocess.run(
+                        command,
+                        cwd=self.paths.root,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        timeout=15 * 60,
+                        check=False,
+                    )
+                except subprocess.TimeoutExpired as exc:
+                    raise PrototypeError(f"{label} timed out after 15 minutes.") from exc
+                output = completed.stdout[-80_000:]
+                results.append({"step": label, "status": "passed" if completed.returncode == 0 else "failed", "output": output})
+                if completed.returncode:
+                    raise PrototypeError(f"{label} failed.\n{output}")
+            return {"status": "passed", "steps": results}
+        finally:
+            self._build_lock.release()
+
     def baseline_impact(self, values, my_menu_tabs=None):
         """Analyze a complete, value-only baseline draft without writing it."""
         proposed = self._proposed_baseline(values)
@@ -1118,8 +1177,28 @@ class ProfileEditorModel:
                 "release": bool((profile.get("metadata") or {}).get("release", False)),
             },
             "sections": sections,
+            "settingOrder": [path for path in self.setting_order if path in self.default_fields],
+            "cardSettingPaths": self._card_setting_paths(profile),
             "originalOverrides": original,
         }
+
+    def _card_setting_paths(self, profile):
+        if is_reference_card(profile):
+            return []
+        merged = merge(self.defaults, profile.get("overrides") or {})
+        visible = displayed_card_setting_paths(profile, merged, self.paths)
+        return [path for path in self.setting_order if path in visible]
+
+    def card_setting_paths(self, name, flat_overrides):
+        profile = copy.deepcopy(self._profile(name))
+        if is_reference_card(profile):
+            return []
+        profile["overrides"] = nested_from_flat(self._validate_overrides(flat_overrides))
+        return self._card_setting_paths(profile)
+
+    def draft_card_setting_paths(self, payload):
+        profile, _target_name, _operation, _source_name, _fingerprint = self._candidate_profile(payload)
+        return self._card_setting_paths(profile)
 
     @staticmethod
     def _value_type(value):
@@ -1686,6 +1765,8 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/my-menu-color-saves",
             "/api/my-menu-reviews",
             "/api/my-menu-saves",
+            "/api/build-readiness",
+            "/api/local-build",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         try:
@@ -1723,11 +1804,27 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.review_my_menu_configuration(payload.get("tabs")))
             if parsed.path == "/api/my-menu-saves":
                 return self._json(self.model.save_my_menu_configuration(payload.get("reviewToken")))
+            if parsed.path == "/api/build-readiness":
+                return self._json(self.model.build_readiness(payload.get("pendingChanges")))
+            if parsed.path == "/api/local-build":
+                return self._json(
+                    self.model.run_local_build(
+                        payload.get("pendingChanges"), payload.get("confirmLocalBuild")
+                    )
+                )
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
+                card_setting_paths = self.model.draft_card_setting_paths(payload)
             else:
                 output = self.model.preview(payload.get("profile"), payload.get("overrides", {}))
-            return self._json({"previewUrl": "/preview/card.html", "outputFile": str(output)})
+                card_setting_paths = self.model.card_setting_paths(
+                    payload.get("profile"), payload.get("overrides", {})
+                )
+            return self._json({
+                "previewUrl": "/preview/card.html",
+                "outputFile": str(output),
+                "cardSettingPaths": card_setting_paths,
+            })
         except ProfileConflictError as exc:
             return self._json({"error": str(exc)}, HTTPStatus.CONFLICT)
         except PrototypeError as exc:
