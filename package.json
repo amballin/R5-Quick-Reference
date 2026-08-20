@@ -2,6 +2,7 @@
   "name": "r5-quick-reference",
   "private": true,
   "scripts": {
+    "ui": "python3 -B \"80 Build/profile_editor.py\"",
     "build:website": "python3 \"80 Build/build.py\" build website",
     "build:pages": "python3 \"80 Build/build.py\" build pages"
   },

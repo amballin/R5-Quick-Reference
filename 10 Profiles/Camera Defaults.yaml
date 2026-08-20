@@ -1,10 +1,10 @@
 metadata:
   version: 1.0
   status: Final
-  last_updated: 2026-08-02
+  last_updated: 2026-08-20
   release: true
 title: Camera Defaults
-subtitle:
+subtitle: null
 display_category: reference
 display_order: 20
 card:
@@ -13,28 +13,28 @@ card:
   field_setup:
     access_only: true
     my_menus:
-      - name: SWITCH
-        settings:
-          - shutter.type
-          - autofocus.subject_detection
-          - stabilization.image_stabilization.mode
-      - name: AF Case
-        settings:
-          - autofocus.servo_af_case
-          - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - shutter.type
+      - autofocus.subject_detection
+      - stabilization.image_stabilization.mode
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+      - autofocus.switching_tracked_subjects
 inherits: baseline
 overrides: {}
 checklist:
-  - Lens clean
-  - Battery charged
-  - Memory card installed
-  - Shutter speed checked
-  - Histogram checked
+- Lens clean
+- Battery charged
+- Memory card installed
+- Shutter speed checked
+- Histogram checked
 watch_for:
-  - Clipped highlights
-  - Exposure compensation left set
+- Clipped highlights
+- Exposure compensation left set
 common_mistakes:
-  - Wrong shooting mode
-  - Forgetting exposure compensation
+- Wrong shooting mode
+- Forgetting exposure compensation
 notes:
-  - Standard general-purpose starting configuration uses Case A (Auto); C1 Wildlife intentionally overrides it with the project-customized Case 1 preset.
+- Standard general-purpose starting configuration uses Case A (Auto); C1 Wildlife intentionally overrides it with the project-customized Case 1 preset.

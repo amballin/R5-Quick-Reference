@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-03
+  last_updated: 2026-08-20
   release: true
 title: Wildlife
 card:
@@ -11,34 +11,39 @@ card:
     start: C1
     source_profile: Wildlife
     my_menus:
-      - name: AF Case
-        settings:
-          - autofocus.servo_af_case
-          - autofocus.tracking_sensitivity
-          - autofocus.accel_decel_tracking
-          - autofocus.switching_tracked_subjects
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+      - autofocus.tracking_sensitivity
+      - autofocus.accel_decel_tracking
+      - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - autofocus.subject_detection
+      - shutter.type
+      - stabilization.image_stabilization.mode
 inherits: baseline
 overrides:
   autofocus:
     servo_af_case: Case 1 (Custom)
-    tracking_sensitivity: "-1"
-    accel_decel_tracking: "+1"
+    tracking_sensitivity: '-1'
+    accel_decel_tracking: '+1'
 checklist:
-  - Eye detected
-  - Histogram
-  - Background checked
+- Eye detected
+- Histogram
+- Background checked
 watch_for:
-  - Busy background
-  - Subject movement
+- Busy background
+- Subject movement
 common_mistakes:
-  - Focus on body instead of eye
+- Focus on body instead of eye
 notes:
-  - Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
-  - Use Expand AF if Face + Tracking struggles through branches.
-  - Use Tv for active wildlife when shutter speed must dominate; Fv may be better for mixed safari or walkaround wildlife.
-  - Switch to Mode 3 for active wildlife
+- Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
+- Use Expand AF if Face + Tracking struggles through branches.
+- Use Tv for active wildlife when shutter speed must dominate; Fv may be better for mixed safari or walkaround wildlife.
+- Switch to Mode 3 for active wildlife
 appendix_links:
-  - id: af_cases_tracking
-    label: Servo AF Case selection and tracking adjustments
-  - id: r5_quick_reference
-    label: When to use 1.6× crop mode
+- id: af_cases_tracking
+  label: Servo AF Case selection and tracking adjustments
+- id: r5_quick_reference
+  label: When to use 1.6× crop mode

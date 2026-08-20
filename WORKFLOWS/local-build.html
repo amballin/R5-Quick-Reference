@@ -38,6 +38,7 @@
       padding: 22px clamp(18px, 4vw, 34px) 28px;
     }
     h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    h3 { margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }
     li + li { margin-top: 8px; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
     p code, li code, aside code {
@@ -125,6 +126,11 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <li>The final validator checks the generated result.</li>
 </ul>
 <p>Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.</p>
+</section>
+<section class="step"><h2>Baseline impact before the build</h2>
+<p>When <code>00 Master/baseline.yaml</code> changed outside a reviewed Profile Editor migration, run:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/baseline_impact_check.py&quot;</code></pre></div>
+<p>The command compares worktree defaults with <code>HEAD</code>. Use <code>--base-ref origin/main</code> when reviewing a branch for integration. Status 1 is a review result, not a migration: open the Profile Editor and complete the guarded Baseline Impact workflow before continuing. Metadata-only and formatting-only baseline differences return status 0.</p>
 <p>If spreadsheet definitions or layout changed and no valid prepared replacement exists, the normal build stops rather than preserve stale downloads. Use the affected workbook family&#x27;s dedicated command in <a href="spreadsheets.html">Spreadsheet Workflows</a>, then rerun the same normal local build; it detects and includes the verified replacement automatically. The dedicated commands are only needed when workbook inputs change or replacement workbook files are wanted.</p>
 </section>
 <section class="step"><h2>Which website copy to open</h2>

@@ -1,0 +1,15 @@
+schema_version: 1
+tabs:
+- name: SWITCH
+  items:
+  - af1_subject_to_detect
+  - shoot6_shutter_mode
+  - shoot5_focus_bracketing
+  - shoot7_is_mode
+  - shoot1_cropping_aspect_ratio
+- name: AF Case
+  items:
+  - af3_servo_af_characteristics
+  - af3_tracking_sensitivity
+  - af3_accel_decel_tracking
+  - af4_switching_tracked_subjects

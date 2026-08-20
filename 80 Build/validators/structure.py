@@ -28,6 +28,7 @@ REQUIRED_FILES = [
     "60 Assets/icon-map.yaml",
     "build.py",
     "80 Build/verify_publication.py",
+    "80 Build/baseline_impact_check.py",
     "80 Build/release_notes.py",
     "80 Build/validators/release_notes_validator.py",
     "80 Build/validators/project_identity_validator.py",

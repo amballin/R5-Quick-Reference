@@ -147,6 +147,14 @@ function cardContent(data) {
     y += 30;
   }
   for (const row of data.rows) {
+    if (row.row_type === "section") {
+      y += 8;
+      content += `<line x1="22" y1="${y + 4}" x2="371" y2="${y + 4}" class="rule"/>`;
+      content += `<text x="22" y="${y + 24}" class="section-kicker">${esc(row.label)}</text>`;
+      content += `<text x="371" y="${y + 24}" class="section-name" style="fill:${esc(row.section_color || data.colors.text)}" text-anchor="end">${esc(row.value)}</text>`;
+      y += 38;
+      continue;
+    }
     const icon = path.extname(row.icon || "").toLowerCase() === ".svg" ? iconSvg(row.icon) : rasterIcon(row.icon, y);
     if (icon) {
       content += `<g transform="translate(22 ${y - 15})">${icon}</g>`;
@@ -157,12 +165,25 @@ function cardContent(data) {
     content += renderedLabel[0];
     const valueClass = row.access_color ? "value field-value" : "value";
     const valueColor = row.access_color ? ` style="fill:${esc(row.access_color)}"` : "";
-    const renderedValue = textBlock(row.value, 371, y, valueClass, 22, {
+    const valueRight = data.change_legend ? 348 : 371;
+    const renderedValue = textBlock(row.value, valueRight, y, valueClass, data.change_legend ? 20 : 22, {
       anchor: "end",
       lineHeight: 17,
     });
     content += valueColor ? renderedValue[0].replace(/<text /g, `<text${valueColor} `) : renderedValue[0];
-    y = Math.max(y + 24, renderedLabel[1] + 5, renderedValue[1] + 5);
+    if (row.change_required) {
+      content += `<text x="371" y="${y}" class="change" style="fill:${esc(row.change_color)}" text-anchor="end">Δ</text>`;
+    }
+    y = Math.max(y + (row.detail ? 34 : 24), renderedLabel[1] + 5, renderedValue[1] + 5);
+    if (row.detail) {
+      const detail = textBlock(row.detail, valueRight, y - 12, "detail", 26, {anchor: "end", lineHeight: 13});
+      content += detail[0];
+      y = Math.max(y, detail[1] + 4);
+    }
+  }
+  if (data.change_legend) {
+    content += `<text x="371" y="${y + 2}" class="legend" text-anchor="end"><tspan class="change">Δ</tspan> ${esc(data.change_legend)}</text>`;
+    y += 20;
   }
   y += data.rows.length ? 18 : 0;
   for (const [title, items] of [
@@ -192,9 +213,14 @@ function cardSvg(data, options = {}) {
     .sub{fill:#b7d2e8;font:400 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .field-route{fill:#dbe8f2;font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .h2{fill:#8dc8ff;font:700 20px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .section-kicker{fill:#b7d2e8;font:700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.08em}
+    .section-name{font:800 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .detail{fill:#b7d2e8;font:400 10px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .rule{stroke:#53738c;stroke-width:1}
     .label{fill:#b7d2e8;font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .value{fill:${esc(layout.colors.text)};font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .change{fill:${esc(layout.colors.text)};font:800 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .legend{fill:#b7d2e8;font:500 11px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .li{fill:${esc(layout.colors.text)};font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   </style>
   ${body}

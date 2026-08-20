@@ -1,11 +1,10 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-03
+  last_updated: 2026-08-20
   release: false
 title: Sports
 inherits: baseline
-
 card:
   icons:
     left: sports
@@ -13,26 +12,27 @@ card:
     start: C2
     source_profile: Birds in Flight
     my_menus:
-      - name: SWITCH
-        settings:
-          - autofocus.subject_detection
-      - name: AF Case
-        settings:
-          - autofocus.servo_af_case
-          - autofocus.tracking_sensitivity
-          - autofocus.accel_decel_tracking
-          - autofocus.switching_tracked_subjects
+    - name: SWITCH
+      settings:
+      - autofocus.subject_detection
+      - shutter.type
+      - stabilization.image_stabilization.mode
+    - name: AF Case
+      settings:
+      - autofocus.servo_af_case
+      - autofocus.tracking_sensitivity
+      - autofocus.accel_decel_tracking
+      - autofocus.switching_tracked_subjects
   colors:
-    background:
-    text:
-
+    background: null
+    text: null
 overrides:
   exposure:
     mode: Tv
   autofocus:
     servo_af_case: Case 1 (Custom)
-    tracking_sensitivity: "-1"
-    accel_decel_tracking: "+1"
+    tracking_sensitivity: '-1'
+    accel_decel_tracking: '+1'
     subject_detection: People
   drive:
     mode: High Speed Continuous+
@@ -43,23 +43,23 @@ overrides:
     image_stabilization:
       mode: Mode 3
 checklist:
-  - Servo AF
-  - Subject acquired
-  - Check flicker/banding under artificial light
+- Servo AF
+- Subject acquired
+- Check flicker/banding under artificial light
 watch_for:
-  - Motion blur
-  - Artificial-light flicker or banding
+- Motion blur
+- Artificial-light flicker or banding
 common_mistakes:
-  - Shutter too slow
+- Shutter too slow
 notes:
-  - Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
-  - Use People detection and Face + Tracking for people sports.
-  - For motorsports or other vehicle-based sports, change Subject Detection situationally from People to Vehicles; this is a field change within Sports, not a separate profile.
-  - Switch to Expand AF Area if detection is unreliable.
-  - Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
-  - Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.
+- Case 1 is the project-customized -1 / +1 preset, not Canon's factory 0 / 0 Case 1.
+- Use People detection and Face + Tracking for people sports.
+- For motorsports or other vehicle-based sports, change Subject Detection situationally from People to Vehicles; this is a field change within Sports, not a separate profile.
+- Switch to Expand AF Area if detection is unreliable.
+- Use faster shutter speeds for very fast action and slower speeds when indoor light requires a compromise.
+- Use IS Mode 3 for erratic action; switch to Mode 2 only for deliberate panning.
 appendix_links:
-  - id: af_cases_tracking
-    label: Servo AF Case selection and tracking adjustments
-  - id: r5_quick_reference
-    label: When to use 1.6× crop mode
+- id: af_cases_tracking
+  label: Servo AF Case selection and tracking adjustments
+- id: r5_quick_reference
+  label: When to use 1.6× crop mode

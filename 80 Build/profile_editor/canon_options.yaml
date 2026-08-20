@@ -1,0 +1,489 @@
+metadata:
+  version: 1
+  camera: Canon EOS R5
+  firmware_scope: "2.2.0 or later"
+  capture_scope: still photos
+  authority: Canon EOS R5 Advanced User Guide
+  authority_url: https://cam.start.canon/en/C003/manual/html/index.html
+  status: Prototype reference; not a replacement for on-camera verification
+  default_status: Menu topology is Canon-verified; individual reset defaults remain working references unless the linked Canon page states them explicitly
+
+settings:
+  exposure.mode:
+    section: exposure
+    label: Mode
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/index.html
+    choices:
+      - {value: "A+", label: "A+ — Scene Intelligent Auto", origin: canon}
+      - {value: Fv, label: "Fv — Flexible-priority AE", origin: canon}
+      - {value: P, label: "P — Program AE", origin: canon}
+      - {value: Tv, label: "Tv — Shutter-priority AE", origin: canon}
+      - {value: Av, label: "Av — Aperture-priority AE", origin: canon}
+      - {value: M, label: "M — Manual exposure", origin: canon}
+      - {value: Manual, label: "M — Manual exposure", origin: project_alias, canon_value: M}
+      - {value: BULB, label: "BULB — Long exposure", origin: canon}
+      - {value: C1, label: "C1 — Custom shooting mode 1", origin: canon, conditional: registered mode}
+      - {value: C2, label: "C2 — Custom shooting mode 2", origin: canon, conditional: registered mode}
+      - {value: C3, label: "C3 — Custom shooting mode 3", origin: canon, conditional: registered mode}
+
+  exposure.metering:
+    section: exposure
+    label: Metering
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0400.html
+    choices:
+      - {value: Evaluative, label: Evaluative metering, origin: canon}
+      - {value: Partial, label: Partial metering, origin: canon}
+      - {value: Spot, label: Spot metering, origin: canon}
+      - {value: Center-weighted average, label: Center-weighted average, origin: canon}
+
+  exposure.iso.mode:
+    section: exposure
+    label: ISO
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0070.html
+    note: Project model separating Canon AUTO from a manually selected ISO value.
+    choices:
+      - {value: Auto, label: AUTO, origin: canon}
+      - {value: Fixed, label: Manual ISO value, origin: project_model}
+
+  exposure.iso.value:
+    section: exposure
+    label: ISO Value
+    control: combo
+    allow_custom: true
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0070.html
+    note: Canon values use 1/3-stop increments by default; custom profile targets may contain a range.
+    choices:
+      - {value: 50, label: "L (equivalent to ISO 50)", origin: canon, conditional: ISO expansion enabled}
+      - {value: 100, label: ISO 100, origin: canon}
+      - {value: 125, label: ISO 125, origin: canon}
+      - {value: 160, label: ISO 160, origin: canon}
+      - {value: 200, label: ISO 200, origin: canon}
+      - {value: 250, label: ISO 250, origin: canon}
+      - {value: 320, label: ISO 320, origin: canon}
+      - {value: 400, label: ISO 400, origin: canon}
+      - {value: 500, label: ISO 500, origin: canon}
+      - {value: 640, label: ISO 640, origin: canon}
+      - {value: 800, label: ISO 800, origin: canon}
+      - {value: 1000, label: ISO 1000, origin: canon}
+      - {value: 1250, label: ISO 1250, origin: canon}
+      - {value: 1600, label: ISO 1600, origin: canon}
+      - {value: 2000, label: ISO 2000, origin: canon}
+      - {value: 2500, label: ISO 2500, origin: canon}
+      - {value: 3200, label: ISO 3200, origin: canon}
+      - {value: 4000, label: ISO 4000, origin: canon}
+      - {value: 5000, label: ISO 5000, origin: canon}
+      - {value: 6400, label: ISO 6400, origin: canon}
+      - {value: 8000, label: ISO 8000, origin: canon}
+      - {value: 10000, label: ISO 10000, origin: canon}
+      - {value: 12800, label: ISO 12800, origin: canon}
+      - {value: 16000, label: ISO 16000, origin: canon}
+      - {value: 20000, label: ISO 20000, origin: canon}
+      - {value: 25600, label: ISO 25600, origin: canon}
+      - {value: 32000, label: ISO 32000, origin: canon}
+      - {value: 40000, label: ISO 40000, origin: canon}
+      - {value: 51200, label: ISO 51200, origin: canon}
+      - {value: 102400, label: "H (equivalent to ISO 102400)", origin: canon, conditional: ISO expansion enabled}
+
+  exposure.auto_iso.maximum:
+    section: exposure
+    label: Auto ISO Max
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0070.html
+    note: Canon Auto ISO maximum choices use 1-stop increments.
+    choices:
+      - {value: 200, label: ISO 200, origin: canon}
+      - {value: 400, label: ISO 400, origin: canon}
+      - {value: 800, label: ISO 800, origin: canon}
+      - {value: 1600, label: ISO 1600, origin: canon}
+      - {value: 3200, label: ISO 3200, origin: canon}
+      - {value: 6400, label: ISO 6400, origin: canon}
+      - {value: 12800, label: ISO 12800, origin: canon}
+      - {value: 25600, label: ISO 25600, origin: canon}
+      - {value: 51200, label: ISO 51200, origin: canon}
+
+  exposure.exposure_compensation:
+    section: exposure
+    label: Exposure Comp
+    control: combo
+    allow_custom: true
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0410.html
+    note: Default 1/3-stop values are shown; Custom Function exposure increments can instead use 1/2-stop steps. Descriptive profile targets remain allowed.
+    choices:
+      - {value: "-3", label: "−3 EV", origin: canon}
+      - {value: "-2 2/3", label: "−2⅔ EV", origin: canon}
+      - {value: "-2 1/3", label: "−2⅓ EV", origin: canon}
+      - {value: "-2", label: "−2 EV", origin: canon}
+      - {value: "-1 2/3", label: "−1⅔ EV", origin: canon}
+      - {value: "-1 1/3", label: "−1⅓ EV", origin: canon}
+      - {value: "-1", label: "−1 EV", origin: canon}
+      - {value: "-2/3", label: "−⅔ EV", origin: canon}
+      - {value: "-1/3", label: "−⅓ EV", origin: canon}
+      - {value: "0", label: "0 EV", origin: canon}
+      - {value: "+1/3", label: "+⅓ EV", origin: canon}
+      - {value: "+2/3", label: "+⅔ EV", origin: canon}
+      - {value: "+1", label: "+1 EV", origin: canon}
+      - {value: "+1 1/3", label: "+1⅓ EV", origin: canon}
+      - {value: "+1 2/3", label: "+1⅔ EV", origin: canon}
+      - {value: "+2", label: "+2 EV", origin: canon}
+      - {value: "+2 1/3", label: "+2⅓ EV", origin: canon}
+      - {value: "+2 2/3", label: "+2⅔ EV", origin: canon}
+      - {value: "+3", label: "+3 EV", origin: canon}
+
+  autofocus.operation:
+    section: autofocus
+    label: AF Operation
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0040.html
+    note: Manual Focus is retained as a project compatibility value; Canon treats MF as focus mode, not AF Operation.
+    choices:
+      - {value: One-Shot AF, label: One-Shot AF, origin: canon}
+      - {value: Servo AF, label: Servo AF, origin: canon}
+      - {value: Manual Focus, label: Manual Focus, origin: project_extension}
+
+  autofocus.servo_af_case:
+    section: autofocus
+    label: Servo AF Case
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0100.html
+    choices:
+      - {value: Case 1, label: "Case 1 — Versatile multi-purpose", origin: canon}
+      - {value: Case 2, label: "Case 2 — Ignore possible obstacles", origin: canon}
+      - {value: Case 3, label: "Case 3 — Subjects entering AF points", origin: canon}
+      - {value: Case 4, label: "Case 4 — Acceleration/deceleration", origin: canon}
+      - {value: Case A (Auto), label: "Case A — Automatic", origin: canon, canon_value: Case A}
+      - {value: Case 1 (Custom), label: "Case 1 (Custom) — Project −1/+1 preset", origin: project_extension}
+
+  autofocus.tracking_sensitivity:
+    section: autofocus
+    label: Tracking Sensitivity
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0100.html
+    choices:
+      - {value: Auto, label: Auto, origin: canon, conditional: Case A}
+      - {value: "-2", label: "−2 — Locked on", origin: canon}
+      - {value: "-1", label: "−1 — Locked on", origin: canon}
+      - {value: "0", label: "0 — Standard", origin: canon}
+      - {value: "+1", label: "+1 — Responsive", origin: canon}
+      - {value: "+2", label: "+2 — Responsive", origin: canon}
+
+  autofocus.accel_decel_tracking:
+    section: autofocus
+    label: Accel./Decel. Tracking
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0100.html
+    choices:
+      - {value: Auto, label: Auto, origin: canon, conditional: Case A}
+      - {value: "-2", label: "−2 — Steady speed/obstruction", origin: canon}
+      - {value: "-1", label: "−1 — Steady speed/obstruction", origin: canon}
+      - {value: "0", label: "0 — Standard", origin: canon}
+      - {value: "+1", label: "+1 — Speed changes", origin: canon}
+      - {value: "+2", label: "+2 — Dramatic speed changes", origin: canon}
+
+  autofocus.switching_tracked_subjects:
+    section: autofocus
+    label: Switching Tracked Subjects
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0110.html
+    choices:
+      - {value: Initial priority, label: Initial priority, origin: canon}
+      - {value: On subject, label: On subject, origin: canon}
+      - {value: Switch subject, label: Switch subject, origin: canon}
+
+  autofocus.method:
+    section: autofocus
+    label: AF Method
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+    choices:
+      - {value: Face + Tracking, label: Face+Tracking, origin: canon, canon_value: Face+Tracking}
+      - {value: Spot AF, label: Spot AF, origin: canon}
+      - {value: 1-Point AF, label: 1-point AF, origin: canon, canon_value: 1-point AF}
+      - {value: Expand AF Area, label: Expand AF area, origin: canon, canon_value: Expand AF area}
+      - {value: Expand AF Area Around, label: "Expand AF area: Around", origin: canon, canon_value: "Expand AF area: Around"}
+      - {value: Zone AF, label: Zone AF, origin: canon}
+      - {value: Large Zone AF (Vertical), label: "Large Zone AF: Vertical", origin: canon}
+      - {value: Large Zone AF (Horizontal), label: "Large Zone AF: Horizontal", origin: canon}
+      - {value: Not Used, label: Not Used (manual-focus profile), origin: project_extension}
+
+  autofocus.subject_detection:
+    section: autofocus
+    label: Subject Detection
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+    choices:
+      - {value: People, label: People, origin: canon}
+      - {value: Animals, label: Animals, origin: canon}
+      - {value: Vehicles, label: Vehicles, origin: canon}
+      - {value: None, label: None, origin: canon}
+
+  autofocus.eye_detection:
+    section: autofocus
+    label: Eye Detection
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+    choices:
+      - {value: Enable, label: Enable, origin: canon}
+      - {value: Disable, label: Disable, origin: canon}
+
+  autofocus.touch_drag_af:
+    section: autofocus
+    label: Touch & Drag AF
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html
+    choices:
+      - {value: Enable, label: Enable, origin: canon}
+      - {value: Disable, label: Disable, origin: canon}
+
+  autofocus.touch_drag_positioning_method:
+    section: autofocus
+    label: Touch & Drag AF — Positioning Method
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html
+    choices:
+      - {value: Absolute, label: Absolute, origin: canon}
+      - {value: Relative, label: Relative, origin: canon}
+
+  autofocus.touch_drag_active_area:
+    section: autofocus
+    label: Touch & Drag AF — Active Touch Area
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html
+    choices:
+      - {value: Whole panel, label: Whole panel, origin: canon}
+      - {value: Left, label: Left, origin: canon}
+      - {value: Right, label: Right, origin: canon}
+      - {value: Top left, label: Top left, origin: canon}
+      - {value: Top right, label: Top right, origin: canon}
+      - {value: Bottom left, label: Bottom left, origin: canon}
+      - {value: Bottom right, label: Bottom right, origin: canon}
+
+  drive.mode:
+    section: drive
+    label: Drive
+    control: select
+    allow_custom: false
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0120.html
+    choices:
+      - {value: Single Shot, label: Single shooting, origin: canon, canon_value: Single shooting}
+      - {value: High Speed Continuous+, label: High-speed continuous shooting +, origin: canon}
+      - {value: High Speed Continuous, label: High-speed continuous shooting, origin: canon}
+      - {value: Low Speed Continuous, label: Low-speed continuous shooting, origin: canon}
+      - {value: "Self-timer: 10 sec./remote control", label: "Self-timer: 10 sec./remote control", origin: canon}
+      - {value: "Self-timer: 2 sec./remote control", label: "Self-timer: 2 sec./remote control", origin: canon}
+
+my_menu:
+  source: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0050.html
+  max_tabs: 5
+  max_items_per_tab: 6
+  recommended_tabs:
+    - name: SWITCH
+      items: [af1_subject_to_detect, shoot6_shutter_mode, shoot5_focus_bracketing, shoot7_is_mode, shoot1_cropping_aspect_ratio]
+    - name: AF Case
+      items: [af3_servo_af_characteristics, af3_tracking_sensitivity, af3_accel_decel_tracking, af4_switching_tracked_subjects]
+
+reference_sections:
+  - key: shooting
+    label: Shooting 1–8
+    source: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0020.html
+    items:
+      - {id: shoot1_image_quality, label: Image quality, menu_location: "SHOOT1 → Image quality", canon_default: JPEG Large/Fine, recommended: cRAW, classification: Set Once, visit_again: When a job requires another format, note: "The project baseline uses cRAW for Lightroom processing.", my_menu_eligible: true}
+      - {id: shoot1_dual_pixel_raw, label: Dual Pixel RAW, menu_location: "SHOOT1 → Dual Pixel RAW", canon_default: Disable, recommended: Disable, classification: Ignore, visit_again: Only for a tested DPRAW workflow, my_menu_eligible: true}
+      - {id: shoot1_cropping_aspect_ratio, label: Cropping/aspect ratio, menu_location: "SHOOT1 → Cropping/aspect ratio", canon_default: Full-frame, recommended: Full-frame, classification: Situational, visit_again: Temporarily for predictable distant framing; restore afterward, note: "RF-S and EF-S lenses force 1.6× crop.", my_menu_eligible: true}
+      - {id: shoot2_exposure_comp_aeb, label: Expo.comp./AEB, menu_location: "SHOOT2 → Expo.comp./AEB", canon_default: 0 EV / no bracketing, recommended: 0 EV / no bracketing, classification: Situational, visit_again: For deliberate compensation or exposure bracketing, my_menu_eligible: true}
+      - {id: shoot2_iso_speed_settings, label: ISO speed settings, setting_path: exposure.iso.mode, menu_location: "SHOOT2 → ISO speed settings", canon_default: Auto range varies by reset state, recommended: Auto ISO maximum 12800, classification: Set Once, visit_again: When noise or motion requirements change, my_menu_eligible: true}
+      - {id: shoot2_hdr_pq, label: HDR PQ settings, menu_location: "SHOOT2 → HDR PQ settings", canon_default: Disable, recommended: Disable, classification: Ignore, visit_again: Only for an intentional HDR PQ/HEIF workflow, my_menu_eligible: true}
+      - {id: shoot2_auto_lighting_optimizer, label: Auto Lighting Optimizer, menu_location: "SHOOT2 → Auto Lighting Optimizer", canon_default: Standard, recommended: Disable for RAW-first workflow, classification: Ignore, visit_again: For camera-generated JPEG/HEIF output, my_menu_eligible: true}
+      - {id: shoot2_highlight_tone_priority, label: Highlight tone priority, menu_location: "SHOOT2 → Highlight tone priority", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: For deliberate highlight protection after testing ISO constraints, my_menu_eligible: true}
+      - {id: shoot2_anti_flicker, label: Anti-flicker shoot., menu_location: "SHOOT2 → Anti-flicker shoot.", canon_default: Disable, recommended: Disable until needed, classification: Situational, visit_again: Under flickering artificial light, my_menu_eligible: true}
+      - {id: shoot2_speedlite_control, label: External Speedlite control, menu_location: "SHOOT2 → External Speedlite control", canon_default: Varies with attached flash, recommended: Configure for the active flash workflow, classification: Situational, visit_again: Whenever flash equipment changes, my_menu_eligible: true}
+      - {id: shoot3_white_balance, label: White balance, menu_location: "SHOOT3 → White balance", canon_default: AWB, recommended: AWB, classification: Situational, visit_again: For controlled color or a fixed-light sequence, my_menu_eligible: true}
+      - {id: shoot3_custom_white_balance, label: Custom White Balance, menu_location: "SHOOT3 → Custom White Balance", canon_default: Not registered, recommended: Leave unregistered until needed, classification: Situational, visit_again: For measured custom white balance, my_menu_eligible: true}
+      - {id: shoot3_wb_shift_bracket, label: WB Shift/Bkt., menu_location: "SHOOT3 → WB Shift/Bkt.", canon_default: 0 / no bracketing, recommended: 0 / no bracketing, classification: Ignore, visit_again: Only for deliberate JPEG/HEIF color bracketing, my_menu_eligible: true}
+      - {id: shoot3_color_space, label: Color space, menu_location: "SHOOT3 → Color space", canon_default: sRGB, recommended: sRGB, classification: Set Once, visit_again: Only when a managed Adobe RGB workflow requires it, my_menu_eligible: true}
+      - {id: shoot3_picture_style, label: Picture Style, menu_location: "SHOOT3 → Picture Style", canon_default: Auto, recommended: Neutral, classification: Set Once, visit_again: For JPEG/HEIF output or preview rendering needs, my_menu_eligible: true}
+      - {id: shoot3_clarity, label: Clarity, menu_location: "SHOOT3 → Clarity", canon_default: "0", recommended: "0", classification: Ignore, visit_again: Only for deliberate in-camera rendering, my_menu_eligible: true}
+      - {id: shoot3_lens_aberration, label: Lens aberration correction, menu_location: "SHOOT3 → Lens aberration correction", canon_default: Corrections vary, recommended: Leave Canon defaults; verify per lens and RAW workflow, classification: Situational, visit_again: After changing lenses or output workflow, my_menu_eligible: true}
+      - {id: shoot4_long_exposure_nr, label: Long exp. noise reduction, menu_location: "SHOOT4 → Long exp. noise reduction", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: Enable only when dark-frame processing is worth the matching wait, my_menu_eligible: true}
+      - {id: shoot4_high_iso_nr, label: High ISO speed NR, menu_location: "SHOOT4 → High ISO speed NR", canon_default: Standard, recommended: Disable, classification: Set Once, visit_again: For camera-generated JPEG/HEIF output, my_menu_eligible: true}
+      - {id: shoot4_dust_delete_data, label: Dust Delete Data, menu_location: "SHOOT4 → Dust Delete Data", canon_default: No current acquisition, recommended: Leave unused for Lightroom-first workflow, classification: Ignore, visit_again: If adopting Canon dust-removal software, my_menu_eligible: true}
+      - {id: shoot5_multiple_exposure, label: Multiple exposure, menu_location: "SHOOT5 → Multiple exposure", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: For a planned in-camera composite; disable afterward, my_menu_eligible: true}
+      - {id: shoot5_hdr_mode, label: HDR Mode, menu_location: "SHOOT5 → HDR Mode", canon_default: Disable HDR, recommended: Disable HDR, classification: Situational, visit_again: For a planned in-camera HDR result; disable afterward, my_menu_eligible: true}
+      - {id: shoot5_focus_bracketing, label: Focus bracketing, setting_path: image.focus_bracketing, menu_location: "SHOOT5 → Focus bracketing", canon_default: Disable, recommended: Disable until a bracketed stack, classification: Situational, visit_again: Macro or landscape focus stacks; disable afterward, my_menu_eligible: true}
+      - {id: shoot5_ibis_high_res, label: IBIS High resolution shot, menu_location: "SHOOT5 → IBIS High resolution shot", canon_default: Disable, recommended: Disable, classification: Ignore, visit_again: Only for a fully static tested JPEG workflow, my_menu_eligible: true}
+      - {id: shoot6_interval_timer, label: Interval timer, menu_location: "SHOOT6 → Interval timer", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: For planned interval sequences; disable afterward, my_menu_eligible: true}
+      - {id: shoot6_bulb_timer, label: Bulb timer, menu_location: "SHOOT6 → Bulb timer", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: For timed Bulb exposures; disable afterward, my_menu_eligible: true}
+      - {id: shoot6_shutter_mode, label: Shutter mode, setting_path: shutter.type, menu_location: "SHOOT6 → Shutter mode", canon_default: Electronic 1st-curtain, recommended: Electronic 1st-curtain, classification: Situational, visit_again: Mechanical for specified fast-lens or flash profiles; Electronic only when its risks are acceptable, my_menu_eligible: true}
+      - {id: shoot6_release_without_card, label: Release shutter without card, menu_location: "SHOOT6 → Release shutter without card", canon_default: Enable, recommended: Disable, classification: Set Once, visit_again: "No", note: "Disabling prevents an apparently successful exposure when no card is recording.", my_menu_eligible: true}
+      - {id: shoot7_is_mode, label: IS (Image Stabilizer) mode, setting_path: stabilization.image_stabilization.mode, menu_location: "SHOOT7 → IS (Image Stabilizer) mode", canon_default: On / Still photo IS Always, recommended: Mode 1 / On, classification: Situational, visit_again: Tripod and lens-specific workflows, my_menu_eligible: true}
+      - {id: shoot7_touch_shutter, label: Touch Shutter, menu_location: "SHOOT7 → Touch Shutter", canon_default: Disable, recommended: Disable, classification: Set Once, visit_again: Only for deliberate screen-triggered shooting, my_menu_eligible: true}
+      - {id: shoot7_image_review, label: Image review, menu_location: "SHOOT7 → Image review", canon_default: 2 sec., recommended: 2 sec., classification: Set Once, visit_again: If review delay interrupts fast shooting, my_menu_eligible: true}
+      - {id: shoot7_high_speed_display, label: High speed display, menu_location: "SHOOT7 → High speed display", canon_default: Disable, recommended: Enable, classification: Set Once, visit_again: If battery/display behavior is unsuitable, my_menu_eligible: true}
+      - {id: shoot7_metering_timer, label: Metering timer, menu_location: "SHOOT7 → Metering timer", canon_default: 8 sec., recommended: 8 sec., classification: Set Once, visit_again: If controls time out too quickly or remain active too long, my_menu_eligible: true}
+      - {id: shoot7_exposure_simulation, label: Expo. simulation, menu_location: "SHOOT7 → Expo. simulation", canon_default: Enable, recommended: Enable, classification: Set Once, visit_again: Disable situationally for studio flash visibility, my_menu_eligible: true}
+      - {id: shoot7_shooting_info_display, label: Shooting info. disp., menu_location: "SHOOT7 → Shooting info. disp.", canon_default: Canon screen defaults, recommended: Screen modes 1–5 enabled; RGB histogram, classification: Set Once, visit_again: When refining INFO-screen workflow, my_menu_eligible: true}
+      - {id: shoot8_vf_display_format, label: VF display format, menu_location: "SHOOT8 → VF display format", canon_default: Display 1, recommended: Display 1, classification: Set Once, visit_again: If a reduced image area improves visibility, my_menu_eligible: true}
+      - {id: shoot8_display_performance, label: Disp. performance, menu_location: "SHOOT8 → Disp. performance", canon_default: Power saving, recommended: Smooth when responsiveness matters; Power saving otherwise, classification: Situational, visit_again: When battery life or motion rendering matters more, my_menu_eligible: true}
+
+  - key: autofocus
+    label: AF 1–5
+    source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0020.html
+    items:
+      - {id: af1_af_operation, label: AF operation, setting_path: autofocus.operation, menu_location: "AF1 → AF operation", canon_default: One-Shot AF, recommended: Servo AF baseline, classification: Situational, visit_again: Per subject profile, my_menu_eligible: true}
+      - {id: af1_af_method, label: AF method, menu_location: "AF1 → AF method", canon_default: Face + Tracking, recommended: Face + Tracking baseline, classification: Situational, visit_again: Per subject and focusing task, my_menu_eligible: true}
+      - {id: af1_subject_to_detect, label: Subject to detect, setting_path: autofocus.subject_detection, menu_location: "AF1 → Subject to detect", canon_default: People, recommended: Animals baseline; profile-specific overrides, classification: Situational, visit_again: Whenever the tracked subject class changes, my_menu_eligible: true}
+      - {id: af1_eye_detection, label: Eye detection, setting_path: autofocus.eye_detection, menu_location: "AF1 → Eye detection", canon_default: Enable, recommended: Enable, classification: Situational, visit_again: Disable only when it interferes with deliberate placement, my_menu_eligible: true}
+      - {id: af1_continuous_af, label: Continuous AF, menu_location: "AF1 → Continuous AF", canon_default: Disable, recommended: Disable, classification: Set Once, visit_again: Only for continuous pre-focus with its battery cost, my_menu_eligible: true}
+      - {id: af1_touch_drag_enable, label: Touch & Drag AF, menu_location: "AF1 → Touch & drag AF settings → Touch & drag AF", canon_default: Disable, recommended: Enable, classification: Set Once, visit_again: If unintended screen contact moves the AF point, source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html, my_menu_eligible: true}
+      - {id: af1_touch_drag_positioning, label: Touch & Drag AF — Positioning method, menu_location: "AF1 → Touch & drag AF settings → Positioning method", canon_default: Absolute, recommended: Relative, classification: Set Once, visit_again: If direct screen-position mapping feels more natural, source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html, my_menu_eligible: false}
+      - {id: af1_touch_drag_area, label: Touch & Drag AF — Active touch area, menu_location: "AF1 → Touch & drag AF settings → Active touch area", canon_default: Whole panel, recommended: Right, classification: Set Once, visit_again: If handedness or camera grip causes accidental movement, source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0080.html, my_menu_eligible: false}
+      - {id: af2_mf_peaking, label: MF peaking settings, menu_location: "AF2 → MF peaking settings", canon_default: Peaking Off, recommended: On / Low / Red, classification: Set Once, visit_again: When edge visibility or subject color warrants another display, my_menu_eligible: true}
+      - {id: af2_focus_guide, label: Focus guide, menu_location: "AF2 → Focus guide", canon_default: "Off", recommended: "On", classification: Set Once, visit_again: If the guide obstructs composition, my_menu_eligible: true}
+      - {id: af2_af_assist_beam, label: AF-assist beam firing, menu_location: "AF2 → AF-assist beam firing", canon_default: Enable, recommended: Enable, classification: Set Once, visit_again: Disable where visible assist light is disruptive or prohibited, my_menu_eligible: true}
+      - {id: af3_servo_af_characteristics, label: Servo AF characteristics, setting_path: autofocus.servo_af_case, menu_location: "AF3 → Servo AF characteristics", canon_default: Case A, recommended: Case A baseline; profile-specific cases, classification: Situational, visit_again: Per moving-subject profile, note: "My Menu registers Canon's Servo AF entry to open the complete Case selector.", my_menu_eligible: true}
+      - {id: af3_tracking_sensitivity, label: Tracking sensitivity, setting_path: autofocus.tracking_sensitivity, menu_location: "AF3 → Servo AF characteristics → Tracking sensitivity", canon_default: Case-dependent, recommended: Auto with Case A; profile-specific otherwise, classification: Situational, visit_again: When troubleshooting subject retention, my_menu_eligible: true}
+      - {id: af3_accel_decel_tracking, label: Accel./decel. tracking, setting_path: autofocus.accel_decel_tracking, menu_location: "AF3 → Servo AF characteristics → Accel./decel. tracking", canon_default: Case-dependent, recommended: Auto with Case A; profile-specific otherwise, classification: Situational, visit_again: When subject speed changes are not handled well, my_menu_eligible: true}
+      - {id: af4_lens_electronic_mf, label: Lens electronic MF, menu_location: "AF4 → Lens electronic MF", canon_default: Disable after One-Shot, recommended: Leave Canon default unless a lens workflow requires it, classification: Situational, visit_again: With compatible electronic-focus lenses, my_menu_eligible: true}
+      - {id: af4_one_shot_release_priority, label: One-Shot AF release prior., menu_location: "AF4 → One-Shot AF release prior.", canon_default: Focus, recommended: Focus, classification: Set Once, visit_again: Only when release timing must override focus confirmation, my_menu_eligible: true}
+      - {id: af4_switching_tracked_subjects, label: Switching tracked subjects, setting_path: autofocus.switching_tracked_subjects, menu_location: "AF4 → Switching tracked subjects", canon_default: Initial priority, recommended: On subject, classification: Set Once, visit_again: When subject switching behavior needs refinement, my_menu_eligible: true}
+      - {id: af4_lens_drive_impossible, label: Lens drive when AF impossible, menu_location: "AF4 → Lens drive when AF impossible", canon_default: Continue focus search, recommended: Continue focus search, classification: Set Once, visit_again: Long-lens situations where hunting is costly, my_menu_eligible: true}
+      - {id: af4_limit_af_methods, label: Limit AF methods, menu_location: "AF4 → Limit AF methods", canon_default: All methods available, recommended: Keep only methods you deliberately use, classification: Set Once, visit_again: After adding or removing an AF workflow, my_menu_eligible: true}
+      - {id: af4_af_method_control, label: AF method selection control, menu_location: "AF4 → AF method selection control", canon_default: Canon default control, recommended: Main Dial after AF point selection, classification: Set Once, visit_again: When button workflow changes, my_menu_eligible: true}
+      - {id: af4_orientation_linked_point, label: Orientation linked AF point, menu_location: "AF4 → Orientation linked AF point", canon_default: Same for vertical/horizontal, recommended: Same for vertical/horizontal, classification: Set Once, visit_again: If separate portrait/landscape AF positions are useful, my_menu_eligible: true}
+      - {id: af5_initial_servo_point, label: Initial Servo AF pt for Face + Tracking, menu_location: "AF5 → Initial Servo AF pt for Face + Tracking", canon_default: Auto, recommended: Auto, classification: Situational, visit_again: If a selected starting point improves acquisition, my_menu_eligible: true}
+      - {id: af5_focus_ring_rotation, label: Focus ring rotation, menu_location: "AF5 → Focus ring rotation", canon_default: Clockwise, recommended: Canon default, classification: Set Once, visit_again: If adapting from another lens system, my_menu_eligible: true}
+      - {id: af5_rf_ring_sensitivity, label: RF lens MF focus ring sensitivity, menu_location: "AF5 → RF lens MF focus ring sensitivity", canon_default: Varies by compatible lens, recommended: Varies with rotation speed, classification: Set Once, visit_again: If precision or speed feels wrong, my_menu_eligible: true}
+      - {id: af5_af_point_sensitivity, label: Sensitivity — AF point select, menu_location: "AF5 → Sensitivity — AF point select", canon_default: Standard, recommended: Standard, classification: Set Once, visit_again: If the multi-controller feels too slow or fast, my_menu_eligible: true}
+      - {id: af5_electronic_full_time_mf, label: Electronic full-time MF, menu_location: "AF5 → Electronic full-time MF", canon_default: Disable, recommended: Disable, classification: Set Once, visit_again: With a compatible lens and deliberate full-time MF workflow, my_menu_eligible: true}
+
+  - key: playback
+    label: Playback 1–5
+    source: https://cam.start.canon/en/C003/manual/html/UG-05_Playback_0020.html
+    items:
+      - {id: play1_protect, label: Protect images, menu_location: "PLAY1 → Protect images", canon_default: No images protected, recommended: Use only for deliberate card-side protection, classification: Situational, visit_again: Before a selective erase or card handoff, my_menu_eligible: true}
+      - {id: play1_erase, label: Erase images, menu_location: "PLAY1 → Erase images", canon_default: Action only, recommended: Prefer computer culling; verify card and selection first, classification: Avoid, visit_again: Only for an intentional card-space recovery, my_menu_eligible: false}
+      - {id: play1_rotate_stills, label: Rotate stills, menu_location: "PLAY1 → Rotate stills", canon_default: Action only, recommended: Leave to metadata/software workflow, classification: Ignore, visit_again: When an image needs camera-side rotation, my_menu_eligible: true}
+      - {id: play1_movie_rotation, label: Change mov rotate info, menu_location: "PLAY1 → Change mov rotate info", canon_default: Action only, recommended: Leave unchanged, classification: Ignore, visit_again: For a movie with incorrect orientation metadata, my_menu_eligible: true}
+      - {id: play1_rating, label: Rating, menu_location: "PLAY1 → Rating", canon_default: Unrated, recommended: Optional field-marking tool, classification: Situational, visit_again: When field ratings fit the import workflow, my_menu_eligible: true}
+      - {id: play1_protect_rating, label: Protect when setting the rating, menu_location: "PLAY1 → Protect when setting the rating", canon_default: Disable, recommended: Disable, classification: Ignore, visit_again: If ratings should also protect files, my_menu_eligible: true}
+      - {id: play1_image_copy, label: Image copy, menu_location: "PLAY1 → Image copy", canon_default: Action only, recommended: Use deliberately between cards, classification: Situational, visit_again: For an intentional in-camera card copy, my_menu_eligible: true}
+      - {id: play2_print_order, label: Print order, menu_location: "PLAY2 → Print order", canon_default: None, recommended: Leave unused, classification: Ignore, visit_again: Only for a DPOF print workflow, my_menu_eligible: true}
+      - {id: play2_photobook, label: Photobook Set-up, menu_location: "PLAY2 → Photobook Set-up", canon_default: None, recommended: Leave unused, classification: Ignore, visit_again: Only for a compatible photobook workflow, my_menu_eligible: true}
+      - {id: play3_raw_processing, label: RAW processing (RAW/DPRAW), menu_location: "PLAY3 → RAW processing (RAW/DPRAW)", canon_default: Action only, recommended: Process in Lightroom, classification: Ignore, visit_again: For an urgent camera-generated JPEG/HEIF, my_menu_eligible: true}
+      - {id: play3_dpraw_processing, label: DPRAW processing, menu_location: "PLAY3 → DPRAW processing", canon_default: Action only, recommended: Leave unused, classification: Ignore, visit_again: Only when Dual Pixel RAW files exist, my_menu_eligible: true}
+      - {id: play3_resize, label: Resize, menu_location: "PLAY3 → Resize", canon_default: Action only, recommended: Resize after import, classification: Ignore, visit_again: For an urgent smaller camera-generated copy, my_menu_eligible: true}
+      - {id: play3_cropping, label: Cropping, menu_location: "PLAY3 → Cropping", canon_default: Action only, recommended: Crop after import, classification: Ignore, visit_again: For an urgent camera-generated crop, my_menu_eligible: true}
+      - {id: play3_heif_jpeg, label: HEIF→JPEG conversion, menu_location: "PLAY3 → HEIF→JPEG conversion", canon_default: Action only, recommended: Leave unused in cRAW workflow, classification: Ignore, visit_again: When a camera-side conversion is required, my_menu_eligible: true}
+      - {id: play4_slide_show, label: Slide show, menu_location: "PLAY4 → Slide show", canon_default: All images / standard timing, recommended: Leave unused, classification: Ignore, visit_again: For camera-hosted playback, my_menu_eligible: true}
+      - {id: play4_search, label: Set image search conditions, menu_location: "PLAY4 → Set image search conditions", canon_default: Conditions cleared, recommended: Clear after temporary filtering, classification: Situational, visit_again: When finding a subset on card, my_menu_eligible: true}
+      - {id: play4_magnification, label: Magnificatn (apx), menu_location: "PLAY4 → Magnificatn (apx)", canon_default: Canon default magnification, recommended: Actual size / selected point if useful, classification: Set Once, visit_again: If focus-check workflow changes, my_menu_eligible: true}
+      - {id: play4_image_jump, label: Image jump w/ Main Dial, menu_location: "PLAY4 → Image jump w/ Main Dial", canon_default: 10 images, recommended: 10 images, classification: Set Once, visit_again: If date/folder/rating jumps are more useful, my_menu_eligible: true}
+      - {id: play4_switch_dials, label: Switch Main/Quick Control Dial 2, menu_location: "PLAY4 → Switch Main/Quick Control Dial 2", canon_default: Disable, recommended: Disable, classification: Set Once, visit_again: If playback dial roles feel backward, my_menu_eligible: true}
+      - {id: play4_rate_button, label: Rate/Voice memo button function, menu_location: "PLAY4 → Rate/Voice memo button function", canon_default: Rating, recommended: Rating, classification: Set Once, visit_again: If voice memos become part of the workflow, my_menu_eligible: true}
+      - {id: play4_memo_quality, label: Memo audio quality, menu_location: "PLAY4 → Memo audio quality", canon_default: Standard, recommended: Standard, classification: Ignore, visit_again: If voice memo quality matters, my_menu_eligible: true}
+      - {id: play5_info_display, label: Playback information display, menu_location: "PLAY5 → Playback information display", canon_default: Canon display defaults, recommended: Enable useful exposure and RGB histogram screens, classification: Set Once, visit_again: When refining review workflow, my_menu_eligible: true}
+      - {id: play5_highlight_alert, label: Highlight alert, menu_location: "PLAY5 → Highlight alert", canon_default: Disable, recommended: Enable, classification: Set Once, visit_again: If blinking warnings interfere with review, my_menu_eligible: true}
+      - {id: play5_af_point_display, label: AF point disp., menu_location: "PLAY5 → AF point disp.", canon_default: Disable, recommended: Enable for focus diagnosis, classification: Set Once, visit_again: If overlays obstruct normal review, my_menu_eligible: true}
+      - {id: play5_grid, label: Playback grid, menu_location: "PLAY5 → Playback grid", canon_default: "Off", recommended: "Off", classification: Situational, visit_again: For alignment checks, my_menu_eligible: true}
+      - {id: play5_movie_count, label: Movie play count, menu_location: "PLAY5 → Movie play count", canon_default: Rec time, recommended: Rec time, classification: Ignore, visit_again: For time-code workflows, my_menu_eligible: true}
+      - {id: play5_hdmi_hdr, label: HDMI HDR output, menu_location: "PLAY5 → HDMI HDR output", canon_default: "Off", recommended: "Off", classification: Ignore, visit_again: With a compatible HDR display workflow, my_menu_eligible: true}
+
+  - key: wireless
+    label: Wireless Features 1–2
+    source: https://cam.start.canon/en/C003/manual/html/UG-06_Network_0020.html
+    items:
+      - {id: wireless1_connection, label: Wi-Fi/Bluetooth connection, menu_location: "WIRELESS1 → Wi-Fi/Bluetooth connection", canon_default: No connection configured, recommended: Configure only the connections actively used, classification: Situational, visit_again: When pairing a new phone computer remote FTP server or Web service, my_menu_eligible: true}
+      - {id: wireless1_airplane, label: Airplane mode, menu_location: "WIRELESS1 → Airplane mode", canon_default: Disable, recommended: Disable until radio silence or battery conservation is required, classification: Situational, visit_again: Travel restricted locations or wireless troubleshooting, my_menu_eligible: true}
+      - {id: wireless1_wifi_settings, label: Wi-Fi settings, menu_location: "WIRELESS1 → Wi-Fi settings", canon_default: Canon network defaults, recommended: Change only for a known network requirement, classification: Situational, visit_again: Network compatibility or security changes, my_menu_eligible: true}
+      - {id: wireless1_bluetooth_settings, label: Bluetooth settings, menu_location: "WIRELESS1 → Bluetooth settings", canon_default: Disable until paired, recommended: Enable only for an active paired workflow, classification: Situational, visit_again: Pairing or battery-use changes, my_menu_eligible: true}
+      - {id: wireless1_nickname, label: Nickname, menu_location: "WIRELESS1 → Nickname", canon_default: Camera-generated name, recommended: Use a recognizable unique camera name, classification: Set Once, visit_again: When managing multiple bodies or ownership changes, my_menu_eligible: true}
+      - {id: wireless1_gps, label: GPS device settings, menu_location: "WIRELESS1 → GPS device settings", canon_default: Disable / no device, recommended: Disable until geotagging is intentionally used, classification: Situational, visit_again: When connecting a phone or compatible GPS device, my_menu_eligible: true}
+      - {id: wireless1_image_transfer, label: Image transfer, menu_location: "WIRELESS1 → Image transfer", canon_default: No transfer configured, recommended: Use only in a deliberate secured transfer workflow, classification: Situational, visit_again: Transfer destination or security changes, my_menu_eligible: true}
+      - {id: wireless2_save_load, label: Save/load comm. settings on card, menu_location: "WIRELESS2 → Save/load comm. settings on card", canon_default: No saved file, recommended: Save only when complex communication settings need controlled backup, classification: Situational, visit_again: After intentional network configuration changes, my_menu_eligible: true}
+      - {id: wireless2_reset, label: Reset communication settings, menu_location: "WIRELESS2 → Reset communication settings", canon_default: Action only, recommended: Avoid unless intentionally rebuilding wireless connections, classification: Avoid, visit_again: Wireless recovery only, my_menu_eligible: false}
+
+  - key: setup
+    label: Set-up 1–6
+    source: https://cam.start.canon/en/C003/manual/html/UG-07_Set-up_0020.html
+    items:
+      - {id: setup1_card_folder, label: Record func+card/folder sel., menu_location: "SET UP1 → Record func+card/folder sel.", canon_default: Standard / Card 1, recommended: Configure deliberately for installed cards, classification: Set Once, visit_again: When card arrangement or redundancy needs change, my_menu_eligible: true}
+      - {id: setup1_file_numbering, label: File numbering, menu_location: "SET UP1 → File numbering", canon_default: Continuous, recommended: Continuous, classification: Set Once, visit_again: At a deliberate numbering reset, my_menu_eligible: true}
+      - {id: setup1_file_name, label: File name, menu_location: "SET UP1 → File name", canon_default: Camera default prefix, recommended: Keep default unless multiple bodies need identification, classification: Set Once, visit_again: When camera/file organization changes, my_menu_eligible: true}
+      - {id: setup1_format_card, label: Format card, menu_location: "SET UP1 → Format card", canon_default: Action only, recommended: Format in camera after verified backup and correct-card check, classification: Situational, visit_again: At the start of a cleared-card cycle, my_menu_eligible: true}
+      - {id: setup1_auto_rotate, label: Auto rotate, menu_location: "SET UP1 → Auto rotate", canon_default: On camera and computer, recommended: On camera and computer, classification: Set Once, visit_again: If rotated playback is inconvenient, my_menu_eligible: true}
+      - {id: setup1_add_rotate, label: Add rotate info, menu_location: "SET UP1 → Add rotate info", canon_default: Enable, recommended: Enable, classification: Set Once, visit_again: If orientation metadata causes workflow problems, my_menu_eligible: true}
+      - {id: setup1_date_time_zone, label: Date/Time/Zone, menu_location: "SET UP1 → Date/Time/Zone", canon_default: Requires initial setup, recommended: Correct local time and zone, classification: Set Once, visit_again: "Travel, daylight-saving change, or clock drift", my_menu_eligible: true}
+      - {id: setup2_language, label: Language, menu_location: "SET UP2 → Language", canon_default: Requires regional setup, recommended: Preferred language, classification: Set Once, visit_again: "No", my_menu_eligible: true}
+      - {id: setup2_video_system, label: Video system, menu_location: "SET UP2 → Video system", canon_default: Region-dependent, recommended: Match region and output devices, classification: Set Once, visit_again: Travel or video-delivery change, my_menu_eligible: true}
+      - {id: setup2_help_text, label: Help text size, menu_location: "SET UP2 → Help text size", canon_default: Small, recommended: Personal preference, classification: Set Once, visit_again: If readability is poor, my_menu_eligible: true}
+      - {id: setup2_beep, label: Beep, menu_location: "SET UP2 → Beep", canon_default: Enable, recommended: Enable touch beep only if useful, classification: Set Once, visit_again: Quiet environments, my_menu_eligible: true}
+      - {id: setup2_headphone_volume, label: Headphone volume, menu_location: "SET UP2 → Headphone volume", canon_default: Midpoint, recommended: Set safely when monitoring video, classification: Situational, visit_again: With different headphones or environment, my_menu_eligible: true}
+      - {id: setup2_power_saving, label: Power saving, menu_location: "SET UP2 → Power saving", canon_default: Canon timed defaults, recommended: Keep moderate timeouts, classification: Set Once, visit_again: If battery life or wake-up delay is problematic, my_menu_eligible: true}
+      - {id: setup2_eco_mode, label: Eco mode, menu_location: "SET UP2 → Eco mode", canon_default: "Off", recommended: "Off", classification: Situational, visit_again: When extending battery life matters more than display continuity, my_menu_eligible: true}
+      - {id: setup3_display_selection, label: Screen/viewfinder display, menu_location: "SET UP3 → Screen/viewfinder display", canon_default: Auto, recommended: Auto, classification: Set Once, visit_again: If the eye sensor switches displays unexpectedly, my_menu_eligible: true}
+      - {id: setup3_screen_brightness, label: Screen brightness, menu_location: "SET UP3 → Screen brightness", canon_default: Midpoint, recommended: Midpoint, classification: Situational, visit_again: Ambient light changes; do not judge exposure from brightness alone, my_menu_eligible: true}
+      - {id: setup3_vf_brightness, label: Viewfinder brightness, menu_location: "SET UP3 → Viewfinder brightness", canon_default: Auto, recommended: Auto, classification: Set Once, visit_again: If the viewfinder is consistently uncomfortable, my_menu_eligible: true}
+      - {id: setup3_color_tone, label: Screen/viewfinder color tone, menu_location: "SET UP3 → Screen/viewfinder color tone", canon_default: Standard, recommended: Standard, classification: Set Once, visit_again: Only after controlled comparison, my_menu_eligible: true}
+      - {id: setup3_vf_color_tune, label: Fine-tune VF color tone, menu_location: "SET UP3 → Fine-tune VF color tone", canon_default: 0 / 0, recommended: 0 / 0, classification: Ignore, visit_again: Only to correct a verified viewfinder cast, my_menu_eligible: true}
+      - {id: setup3_ui_magnification, label: UI magnification, menu_location: "SET UP3 → UI magnification", canon_default: Disable, recommended: Personal preference, classification: Set Once, visit_again: If menu text is difficult to read, my_menu_eligible: true}
+      - {id: setup4_hdmi_resolution, label: HDMI resolution, menu_location: "SET UP4 → HDMI resolution", canon_default: Auto, recommended: Auto, classification: Set Once, visit_again: With an incompatible recorder/display, my_menu_eligible: true}
+      - {id: setup4_touch_control, label: Touch control, menu_location: "SET UP4 → Touch control", canon_default: Standard, recommended: Standard, classification: Set Once, visit_again: If touches register too easily or poorly, my_menu_eligible: true}
+      - {id: setup4_multi_function_lock, label: Multi function lock, menu_location: "SET UP4 → Multi function lock", canon_default: Main Dial excluded; other defaults vary, recommended: Lock only controls commonly bumped, classification: Set Once, visit_again: After customizing dials, my_menu_eligible: true}
+      - {id: setup4_shutter_shutdown, label: Shutter at shutdown, menu_location: "SET UP4 → Shutter at shutdown", canon_default: Closed, recommended: Closed, classification: Set Once, visit_again: If sensor-dust versus shutter-damage priorities change, my_menu_eligible: true}
+      - {id: setup4_sensor_cleaning, label: Sensor cleaning, menu_location: "SET UP4 → Sensor cleaning", canon_default: Auto cleaning enabled, recommended: Auto cleaning enabled; manual clean only with care, classification: Situational, visit_again: When dust is visible, my_menu_eligible: true}
+      - {id: setup4_manage_password, label: Manage password, menu_location: "SET UP4 → Manage password", canon_default: No password, recommended: Configure only if the security workflow requires it, classification: Ignore, visit_again: When password protection is adopted, my_menu_eligible: true}
+      - {id: setup5_reset_camera, label: Reset camera, menu_location: "SET UP5 → Reset camera", canon_default: Action only, recommended: Avoid unless intentionally rebuilding configuration from records, classification: Avoid, visit_again: Recovery or deliberate clean setup only, my_menu_eligible: false}
+      - {id: setup5_custom_modes, label: Custom shooting mode (C1-C3), menu_location: "SET UP5 → Custom shooting mode (C1-C3)", canon_default: Unregistered / Auto update disabled, recommended: "Register C1 Wildlife, C2 Birds in Flight, C3 Landscape; Auto update Disable", classification: Set Once, visit_again: After approved profile changes or a reset, my_menu_eligible: true}
+      - {id: setup5_save_load, label: Save/load cam settings on card, menu_location: "SET UP5 → Save/load cam settings on card", canon_default: No saved file, recommended: Save named backups after setup and C1-C3 verification, classification: Set Once, visit_again: After intentional configuration changes, my_menu_eligible: true}
+      - {id: setup6_battery_info, label: Battery info., menu_location: "SET UP6 → Battery info.", canon_default: Status display, recommended: Review when runtime or recharge performance declines, classification: Situational, visit_again: Before important shoots and with aging batteries, my_menu_eligible: true}
+      - {id: setup6_copyright, label: Copyright information, menu_location: "SET UP6 → Copyright information", canon_default: Blank, recommended: Add owner/copyright details, classification: Set Once, visit_again: When ownership or year changes, my_menu_eligible: true}
+      - {id: setup6_show_log, label: Show log, menu_location: "SET UP6 → Show log", canon_default: Status display, recommended: Leave unused unless diagnosing supported transfer activity, classification: Ignore, visit_again: Troubleshooting, my_menu_eligible: true}
+      - {id: setup6_manual_url, label: Manual/software URL, menu_location: "SET UP6 → Manual/software URL", canon_default: Reference action, recommended: Use as needed, classification: Ignore, visit_again: When documentation is needed, my_menu_eligible: false}
+      - {id: setup6_certification, label: Certification Logo Display, menu_location: "SET UP6 → Certification Logo Display", canon_default: Reference display, recommended: Leave unchanged, classification: Ignore, visit_again: "No", my_menu_eligible: false}
+      - {id: setup6_firmware, label: Firmware, menu_location: "SET UP6 → Firmware", canon_default: Installed version, recommended: Verify before a planned update; follow Canon instructions, classification: Situational, visit_again: When Canon releases relevant firmware, my_menu_eligible: true}
+
+  - key: custom_functions
+    label: Custom Functions 1–5
+    source: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0020.html
+    items:
+      - {id: cfn1_exposure_increments, label: Exposure level increments, menu_location: "C.Fn1 → Exposure level increments", canon_default: 1/3-stop, recommended: 1/3-stop, classification: Set Once, visit_again: If a 1/2-stop workflow is strongly preferred, my_menu_eligible: true}
+      - {id: cfn1_iso_increments, label: ISO speed setting increments, menu_location: "C.Fn1 → ISO speed setting increments", canon_default: 1/3-stop, recommended: 1/3-stop, classification: Set Once, visit_again: If whole-stop ISO selection is preferred, my_menu_eligible: true}
+      - {id: cfn1_speed_metering_auto_iso, label: Speed from metering/ISO Auto, menu_location: "C.Fn1 → Speed from metering/ISO Auto", canon_default: Restore after metering, recommended: Canon default, classification: Set Once, visit_again: If Auto ISO shutter behavior conflicts with the field workflow, my_menu_eligible: true}
+      - {id: cfn1_bracket_cancel, label: Bracketing auto cancel, menu_location: "C.Fn1 → Bracketing auto cancel", canon_default: Enable, recommended: Enable, classification: Set Once, visit_again: Only when bracketing should persist after power-off, my_menu_eligible: true}
+      - {id: cfn1_bracket_sequence, label: Bracketing sequence, menu_location: "C.Fn1 → Bracketing sequence", canon_default: 0 → − → +, recommended: 0 → − → +, classification: Set Once, visit_again: If processing workflow expects another order, my_menu_eligible: true}
+      - {id: cfn1_bracket_shots, label: Number of bracketed shots, menu_location: "C.Fn1 → Number of bracketed shots", canon_default: 3 shots, recommended: 3 shots, classification: Situational, visit_again: For a planned wider bracket sequence, my_menu_eligible: true}
+      - {id: cfn1_safety_shift, label: Safety shift, menu_location: "C.Fn1 → Safety shift", canon_default: Disable, recommended: Disable, classification: Situational, visit_again: When preserving exposure matters more than a fixed Tv/Av target, my_menu_eligible: true}
+      - {id: cfn2_same_exposure_aperture, label: Same expo. for new aperture, menu_location: "C.Fn2 → Same expo. for new aperture", canon_default: Disable, recommended: Disable, classification: Ignore, visit_again: Only for specialized lens/aperture-change continuity, my_menu_eligible: true}
+      - {id: cfn2_ae_lock_metering, label: AE lock meter. mode after focus, menu_location: "C.Fn2 → AE lock meter. mode after focus", canon_default: No modes selected, recommended: No modes selected, classification: Ignore, visit_again: If focus-linked AE lock is deliberately required, my_menu_eligible: true}
+      - {id: cfn2_restrict_modes, label: Restrict shooting modes, menu_location: "C.Fn2 → Restrict shooting modes", canon_default: All modes available, recommended: Keep required modes available, classification: Set Once, visit_again: When simplifying MODE-button choices, my_menu_eligible: true}
+      - {id: cfn2_shutter_range, label: Set shutter speed range, menu_location: "C.Fn2 → Set shutter speed range", canon_default: Full range, recommended: Full range, classification: Ignore, visit_again: Only for a constrained professional workflow, my_menu_eligible: true}
+      - {id: cfn2_aperture_range, label: Set aperture range, menu_location: "C.Fn2 → Set aperture range", canon_default: Lens full range, recommended: Lens full range, classification: Ignore, visit_again: Only for a constrained professional workflow, my_menu_eligible: true}
+      - {id: cfn3_dial_direction, label: Dial direction during Tv/Av, menu_location: "C.Fn3 → Dial direction during Tv/Av", canon_default: Normal, recommended: Normal, classification: Set Once, visit_again: If dial direction feels reversed, my_menu_eligible: true}
+      - {id: cfn3_control_ring_rotation, label: Control ring rotation, menu_location: "C.Fn3 → Control ring rotation", canon_default: Normal, recommended: Normal, classification: Set Once, visit_again: If control-ring direction feels reversed, my_menu_eligible: true}
+      - {id: cfn3_customize_buttons, label: Customize buttons, menu_location: "C.Fn3 → Customize buttons", canon_default: Canon assignments, recommended: Use the approved Camera Buttons configuration, classification: Set Once, visit_again: After a deliberate control-workflow change or reset, my_menu_eligible: true}
+      - {id: cfn3_customize_dials, label: Customize dials, menu_location: "C.Fn3 → Customize dials", canon_default: Canon assignments, recommended: Use the approved dial configuration, classification: Set Once, visit_again: After a deliberate control-workflow change or reset, my_menu_eligible: true}
+      - {id: cfn3_clear_custom, label: Clear customized settings, menu_location: "C.Fn3 → Clear customized settings", canon_default: Action only, recommended: Avoid unless intentionally rebuilding controls, classification: Avoid, visit_again: Recovery only, my_menu_eligible: false}
+      - {id: cfn4_crop_info, label: Add cropping information, menu_location: "C.Fn4 → Add cropping information", canon_default: "Off", recommended: "Off", classification: Ignore, visit_again: Only for a downstream crop-metadata workflow, my_menu_eligible: true}
+      - {id: cfn4_audio_compression, label: Audio compression, menu_location: "C.Fn4 → Audio compression", canon_default: Enable, recommended: Enable, classification: Ignore, visit_again: For video/audio production requirements, my_menu_eligible: true}
+      - {id: cfn4_default_erase, label: Default Erase option, menu_location: "C.Fn4 → Default Erase option", canon_default: Cancel selected, recommended: Cancel selected, classification: Set Once, visit_again: "No", note: "Keeping Cancel selected reduces accidental deletion risk.", my_menu_eligible: true}
+      - {id: cfn4_release_without_lens, label: Release shutter w/o lens, menu_location: "C.Fn4 → Release shutter w/o lens", canon_default: Disable, recommended: Disable, classification: Set Once, visit_again: Enable only for an intentional adapted/manual lens workflow, my_menu_eligible: true}
+      - {id: cfn4_retract_lens, label: Retract lens on power off, menu_location: "C.Fn4 → Retract lens on power off", canon_default: Enable, recommended: Enable, classification: Set Once, visit_again: If a compatible lens must remain extended, my_menu_eligible: true}
+      - {id: cfn4_iptc, label: Add IPTC information, menu_location: "C.Fn4 → Add IPTC information", canon_default: Off / no registration, recommended: Leave off unless using a managed IPTC workflow, classification: Ignore, visit_again: For agency/editorial metadata requirements, my_menu_eligible: true}
+      - {id: cfn5_clear_all, label: Clear all Custom Func. (C.Fn), menu_location: "C.Fn5 → Clear all Custom Func. (C.Fn)", canon_default: Action only, recommended: Avoid unless intentionally rebuilding all Custom Functions, classification: Avoid, visit_again: Recovery only, my_menu_eligible: false}

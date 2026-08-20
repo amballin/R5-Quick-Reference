@@ -17,12 +17,17 @@ This specification defines the system boundaries and ownership of data, content,
 - Present proposed changes and affected files for review before modifying the reference.
 - For each new change task, present a clear recommendation, rationale, and affected files, then request approval as a separate explicit question. Once approved, treat that recommended scope as authorized without requiring the project owner to repeat it. Read-only questions and status checks do not require change approval.
 - Shared behavior and shared camera settings belong in `00 Master/baseline.yaml`.
+- Baseline/profile impact classification belongs to the shared repository module `80 Build/baseline_impact.py`, not exclusively to the local browser UI. Both guided and command-line review paths must call that engine rather than reimplement its rules.
+- `80 Build/baseline_impact_check.py` is the read-only repository boundary for detecting semantic worktree baseline-default changes relative to `HEAD` or another explicit Git ref. It reports impact and directs semantic changes to the guarded Profile Editor migration; it must not write source, generated output, Git state, or publication state.
 - The operational baseline and Camera Defaults card are the general-purpose starting state: Fv with shutter and aperture on Auto, Servo AF with Case A (Auto), Tracking Sensitivity and Accel./Decel. tracking on Auto, Switching tracked subjects set to On subject, Face + Tracking, Animals, Eye Detection enabled, High Speed Continuous, High speed display enabled, EFCS, and Mode 1 stabilization. Registered C1 Wildlife intentionally overrides only its specialized Servo Case values; neutral, deliberate-point, static, manual-focus, or other specialized profiles express their differences as overrides.
 - Subject profiles inherit the baseline and contain only necessary overrides.
 - The build resolves baseline and profile data before rendering.
 - Presentation and rendering decisions belong in build code and templates, not profile YAML.
+- `00 Master/my_menu_colors.yaml` owns the curated card-color palette and named My Menu tab assignments. These project presentation settings are global and must not be duplicated in profiles or treated as proof of the physical camera's tab configuration.
+- `00 Master/my_menu.yaml` owns the approved EOS R5 My Menu tab names and ordered item identities. It is separate from presentation colors and from proof of the physical camera's current state.
 - Explanatory and educational content belongs in field-guide appendices; profiles reference it rather than duplicate it.
 - Permanent reference cards remain separate from shooting profiles.
+- A permanent reference card may declare `reference_source: my_menu`; its rows are derived from `00 Master/my_menu.yaml` and the Canon settings catalog at render time so persisted My Menu content is not duplicated in profile YAML.
 - The physical button and dial layout is shared across subject profiles.
 - Subject profiles define complete shooting environments. C1, C2, and C3 are camera-side implementations of the canonical `Wildlife`, `Birds in Flight`, and `Landscape` profiles rather than independent AF presets. Field labels such as **General Wildlife** and **Birds in Flight / Action** may describe use, but machine-readable mappings retain the exact canonical profile title.
 - The selected profile owns the initial AF Operation, Subject Detection, Eye Detection, exposure, drive, stabilization, and other subject-specific settings.
@@ -50,8 +55,11 @@ baseline.yaml + profile overrides
 - `80 Build/validators/project_identity_validator.py` checks the Git root, current working directory, prohibited path markers, required authoritative components, identity fields, and baseline camera agreement.
 - `00 Master/baseline.yaml` is the shared-default source.
 - `00 Master/schema.yaml` documents the intended YAML fields and value shapes.
+- `00 Master/my_menu_colors.yaml` defines reusable named-tab card colors; `80 Build/my_menu_colors.py` validates and resolves them for renderers and the editor.
+- `00 Master/my_menu.yaml` and `80 Build/my_menu.py` define and validate the persisted My Menu layout; `80 Build/my_menu_reference.py` materializes that layout for HTML, PDF, and editor reference previews.
 - `80 Build/validators/baseline_validator.py` checks baseline shape.
 - `80 Build/validators/profile_validator.py` checks inheritance, override paths, and compatible types.
+- `80 Build/baseline_impact.py` owns baseline/profile impact classification; `80 Build/baseline_impact_check.py` exposes that same analysis for command-line review outside the UI.
 - `80 Build/validators/structure.py` checks required architectural files and folders.
 - `80 Build/validators/yaml_validator.py` checks parseability and top-level YAML shape.
 - `build.py` and files under `80 Build/` implement merging, rendering, and output flow.

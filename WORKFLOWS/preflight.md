@@ -18,6 +18,7 @@ Run preflight before editing on any Mac:
 - **Diverged:** stop for manual review. Do not pull, merge, or reset automatically.
 - **Wrong branch, no upstream, or fetch failure:** resolve that condition before editing.
 - **Stale derived artifacts:** run `./80\ Build/scripts/build-all-spreadsheet-downloads.sh`; if the verification tracker contains manual edits, import them first as directed.
+- **Baseline source differs from the review base:** run `python3 "80 Build/baseline_impact_check.py" --base-ref REF` with the applicable Git ref. A semantic change requires the guarded Profile Editor migration workflow.
 
 ## What preflight does
 

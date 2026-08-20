@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Editor Prototype</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Canon Camera Reference</p>
+      <h1>Profile Editor</h1>
+    </div>
+    <div class="build-badges">
+      <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
+      <span class="prototype-badge">Stage 2 · Guarded saves</span>
+      <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="safety-note" aria-label="Prototype safety notice">
+      <strong>Review before every save.</strong>
+      Profile and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
+      Reference cards, direct baseline edits, deletion, builds, Git, and publishing remain read-only or unavailable here. My Menu layout and color changes use their own guarded save.
+    </section>
+
+    <nav class="view-tabs" aria-label="Prototype sections">
+      <button class="view-tab is-active" type="button" data-view="dictionary">1. Camera setup</button>
+      <button class="view-tab" type="button" data-view="my-menu">2. Configure My Menu</button>
+      <button class="view-tab" type="button" data-view="profiles">3. Profiles</button>
+      <button class="view-tab" type="button" data-view="baseline">4. Baseline impact</button>
+    </nav>
+
+    <section id="dictionary-view" class="app-view">
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Canon EOS R5 · still photos</p>
+          <h2>Camera settings dictionary</h2>
+          <p class="muted">Menu names and locations are Canon-verified. Reset defaults are working references unless the linked Canon page states them explicitly. Recommendations are project guidance, not verified current camera state.</p>
+        </div>
+        <a id="dictionary-source" class="source-link" href="" target="_blank" rel="noreferrer">Canon manual</a>
+      </div>
+      <div class="dictionary-tools">
+        <label>Find a setting <input id="dictionary-search" type="search" placeholder="Try Touch &amp; drag, format, shutter…"></label>
+        <label>Classification
+          <select id="dictionary-classification">
+            <option value="">All classifications</option>
+            <option>Set Once</option>
+            <option>Situational</option>
+            <option>Ignore</option>
+            <option>Avoid</option>
+            <option>Unresolved</option>
+          </select>
+        </label>
+      </div>
+      <p id="dictionary-count" class="dictionary-count"></p>
+      <div id="dictionary-sections" class="settings" aria-live="polite"></div>
+    </section>
+
+    <section id="my-menu-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Saved navigation layer</p>
+          <h2>Configure My Menu</h2>
+          <p class="muted">Edit the saved tab names, ordered shortcuts, and distinct card colors. The generated My Menu reference card follows every saved used tab.</p>
+        </div>
+        <div class="my-menu-actions">
+          <button id="load-saved-menus" class="secondary" type="button">Reload saved layout</button>
+          <button id="load-recommended-menus" class="secondary" type="button">Restore recommended tabs</button>
+          <button id="analyze-my-menu" class="primary" type="button" disabled>Analyze profile impact</button>
+          <button id="review-my-menu-colors" class="save-action" type="button">Review My Menu changes</button>
+        </div>
+      </div>
+      <div class="configuration-state"><strong>Guarded persistence</strong> · Used tabs, ordered items, and card colors are saved together only after exact diff review.</div>
+      <div id="my-menu-color-message" class="message" role="status" hidden></div>
+      <div id="my-menu-tabs" class="my-menu-tabs"></div>
+    </section>
+
+    <section id="profiles-view" class="app-view" hidden>
+
+    <section class="toolbar" aria-label="Profile controls">
+      <label for="profile-select">Profile</label>
+      <select id="profile-select" disabled>
+        <option>Loading profiles…</option>
+      </select>
+      <button id="new-button" class="secondary" type="button">New from baseline</button>
+      <button id="duplicate-button" class="secondary" type="button" disabled>Duplicate profile</button>
+      <button id="reload-button" class="secondary" type="button" disabled>Discard draft &amp; reload profile</button>
+      <button id="preview-button" class="primary" type="button" disabled>Preview card</button>
+      <button id="review-button" class="save-action" type="button" disabled>Review YAML changes</button>
+    </section>
+
+    <section id="profile-metadata" class="profile-metadata" aria-label="Profile identity and release state" hidden>
+      <div class="metadata-heading">
+        <div>
+          <p class="eyebrow">Profile source fields</p>
+          <h2 id="operation-title">Update existing profile</h2>
+        </div>
+        <p id="operation-note" class="muted"></p>
+      </div>
+      <div class="metadata-grid">
+        <label>Title <input id="title-input" type="text" maxlength="120"></label>
+        <label>Subtitle <input id="subtitle-input" type="text" maxlength="200"></label>
+        <label>YAML filename <span class="filename-control"><input id="filename-input" type="text" maxlength="80"><span>.yaml</span></span></label>
+        <label>Status
+          <select id="status-input">
+            <option>Draft</option>
+            <option>Review</option>
+            <option>Final</option>
+          </select>
+        </label>
+        <label class="release-control"><input id="release-input" type="checkbox"> Include in released card bundle</label>
+      </div>
+    </section>
+
+    <section class="profile-summary" aria-live="polite">
+      <div>
+        <p class="eyebrow">Selected source</p>
+        <h2 id="profile-title">Loading…</h2>
+        <p id="source-file" class="muted"></p>
+      </div>
+      <div class="summary-counts">
+        <span><strong id="custom-count">0</strong> customized</span>
+        <span><strong id="inherited-count">0</strong> inherited</span>
+      </div>
+    </section>
+
+    <div id="message" class="message" role="status" hidden></div>
+    <div id="reference-card" class="reference-card" hidden></div>
+    <div id="settings" class="settings" aria-live="polite"></div>
+
+    <section id="preview-panel" class="preview-panel" hidden>
+      <div class="preview-heading">
+        <div>
+          <p class="eyebrow">Temporary output</p>
+          <h2>Card preview</h2>
+        </div>
+        <p id="preview-path" class="muted"></p>
+      </div>
+      <iframe id="preview-frame" title="Temporary profile card preview"></iframe>
+    </section>
+    </section>
+
+    <section id="baseline-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Guarded migration workspace</p>
+          <h2>Baseline impact</h2>
+          <p class="muted">Propose baseline values, inspect profile and route impact, then apply only a complete migration after reviewing the exact multi-file YAML diff.</p>
+        </div>
+        <div class="baseline-actions">
+          <button id="baseline-reset" class="secondary" type="button" disabled>Discard baseline draft</button>
+          <button id="baseline-analyze" class="primary" type="button" disabled>Analyze draft</button>
+        </div>
+      </div>
+      <div class="configuration-state"><strong>Session-only proposal</strong> · Nothing is written until both warning reports are acknowledged and the exact migration diff is reviewed and applied.</div>
+      <div id="baseline-message" class="message" role="status" hidden></div>
+      <section id="baseline-summary" class="baseline-summary" aria-label="Baseline impact summary" hidden></section>
+      <section id="baseline-decision-tools" class="baseline-decision-tools" hidden>
+        <div>
+          <strong id="baseline-decision-status">No decisions selected.</strong>
+          <p class="muted">Every inherited change needs an explicit choice. Bulk actions apply only to unresolved inherited changes.</p>
+        </div>
+        <div class="baseline-decision-actions">
+          <button id="baseline-follow-all" class="secondary" type="button">Follow baseline for unresolved</button>
+          <button id="baseline-preserve-all" class="secondary" type="button">Preserve previous for unresolved</button>
+          <button id="baseline-build-plan" class="primary" type="button">Build migration plan</button>
+        </div>
+      </section>
+      <div id="baseline-results" class="baseline-results" aria-live="polite"></div>
+      <section id="baseline-build-plan-bottom-row" class="baseline-decision-tools" hidden>
+        <div>
+          <strong>Finished reviewing the setting preferences?</strong>
+          <p class="muted">Validate the decisions, add missing My Menu card cues, and remove obsolete cues as planned profile changes.</p>
+        </div>
+        <div class="baseline-decision-actions">
+          <button id="baseline-build-plan-bottom" class="primary" type="button">Build migration plan</button>
+        </div>
+      </section>
+      <section id="baseline-plan" class="baseline-plan" aria-live="polite" hidden></section>
+      <div id="baseline-settings" class="settings" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <dialog id="review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required save review</p>
+        <h2>Exact YAML changes</h2>
+        <p id="review-summary" class="muted"></p>
+      </div>
+      <button id="review-close" class="secondary" type="button" aria-label="Close review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Only the YAML shown below will be saved.</strong> If the source changes before save, this review is rejected.</p>
+    <pre id="review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="review-cancel" class="secondary" type="button">Continue editing</button>
+      <button id="save-button" class="save-action" type="button">Save reviewed YAML</button>
+    </div>
+  </dialog>
+
+  <dialog id="my-menu-color-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required My Menu review</p>
+        <h2>Exact saved My Menu YAML</h2>
+        <p id="my-menu-color-review-summary" class="muted"></p>
+      </div>
+      <button id="my-menu-color-review-close" class="secondary" type="button" aria-label="Close My Menu review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Only the shown My Menu layout and presentation files are saved.</strong> The generated reference card reads this saved layout.</p>
+    <pre id="my-menu-color-review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="my-menu-color-review-cancel" class="secondary" type="button">Continue editing</button>
+      <button id="save-my-menu-colors" class="save-action" type="button">Save reviewed My Menu</button>
+    </div>
+  </dialog>
+
+  <dialog id="migration-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required baseline migration review</p>
+        <h2>Exact multi-file YAML changes</h2>
+        <p id="migration-review-summary" class="muted"></p>
+      </div>
+      <button id="migration-review-close" class="secondary" type="button" aria-label="Close migration review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Every file shown below is one protected transaction.</strong> If any source changes or validation fails, the migration is rejected or all written files are restored.</p>
+    <pre id="migration-review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="migration-review-cancel" class="secondary" type="button">Continue planning</button>
+      <button id="migration-save-button" class="save-action" type="button">Apply reviewed migration</button>
+    </div>
+  </dialog>
+
+  <button id="return-to-top" class="floating-return" type="button" aria-label="Return to top" title="Return to top" hidden>
+    <span aria-hidden="true">↑</span>
+  </button>
+
+  <template id="section-template">
+    <section class="setting-section">
+      <div class="section-heading">
+        <h2></h2>
+        <button class="reset-section secondary" type="button">Use baseline for section</button>
+      </div>
+      <div class="setting-list"></div>
+    </section>
+  </template>
+
+  <template id="setting-template">
+    <div class="setting-row">
+      <div class="setting-copy">
+        <div class="setting-label-line">
+          <img class="field-icon" src="" alt="" aria-hidden="true" hidden>
+          <label></label>
+        </div>
+        <code></code>
+      </div>
+      <div class="setting-control"></div>
+      <div class="setting-state">
+        <span class="state-badge"></span>
+        <small class="baseline-value"></small>
+        <a class="canon-source" href="" target="_blank" rel="noreferrer" hidden>Canon options</a>
+      </div>
+      <button class="reset-setting secondary icon-button" type="button">Use baseline</button>
+    </div>
+  </template>
+
+  <template id="dictionary-section-template">
+    <section class="setting-section dictionary-section">
+      <div class="section-heading">
+        <h2></h2>
+        <a class="section-source" href="" target="_blank" rel="noreferrer">Canon menu reference</a>
+      </div>
+      <div class="dictionary-list"></div>
+    </section>
+  </template>
+
+  <template id="dictionary-item-template">
+    <article class="dictionary-item">
+      <div class="dictionary-heading">
+        <div><h3></h3><code class="menu-location"></code></div>
+        <span class="classification-badge"></span>
+      </div>
+      <dl>
+        <div><dt>Canon default</dt><dd class="canon-default"></dd></div>
+        <div><dt>Recommended</dt><dd class="recommended"></dd></div>
+        <div><dt>Visit again?</dt><dd class="visit-again"></dd></div>
+        <div class="shortcut-detail" hidden><dt>Configured shortcut</dt><dd class="shortcut-path"></dd></div>
+      </dl>
+      <p class="dictionary-note"></p>
+      <a class="item-source" href="" target="_blank" rel="noreferrer">Open Canon instructions</a>
+    </article>
+  </template>
+
+  <template id="my-menu-tab-template">
+    <section class="my-menu-card">
+      <div class="my-menu-card-heading">
+        <label>Tab name <input class="my-menu-name" type="text" maxlength="16"></label>
+        <label class="my-menu-color-control">Card color
+          <span><span class="my-menu-color-swatch" aria-hidden="true"></span><select class="my-menu-color"></select></span>
+        </label>
+        <span class="my-menu-number"></span>
+      </div>
+      <div class="my-menu-items"></div>
+    </section>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

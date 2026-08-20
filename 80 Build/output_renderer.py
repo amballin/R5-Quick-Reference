@@ -5,10 +5,13 @@ import re
 import shutil
 import subprocess
 
+from cx_route_analysis import row_requires_change
+
 from html_renderer import (
     card_colors,
     card_icon_paths,
     card_note_items,
+    field_setup_change_summary,
     field_setup_summary,
     field_setup_value_colors,
     profile_subtitle,
@@ -56,22 +59,30 @@ def _node_modules(paths):
 
 def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
     rows = []
-    value_colors = field_setup_value_colors(profile)
+    value_colors = field_setup_value_colors(profile, merged, paths)
+    change_summary = field_setup_change_summary(profile, merged, baseline, paths)
+    changed_paths = (change_summary or {}).get("changed_paths") or set()
     for row in settings_rows(profile, merged, paths):
         icon_path = icon_manager.icon_path(row["key"], row["value"])
         rows.append(
             {
                 "label": row["label"],
                 "value": str(row["value"]),
+                "detail": str(row.get("detail") or ""),
+                "row_type": row.get("row_type", "item"),
+                "section_color": row.get("section_color", ""),
                 "icon": str(icon_path) if icon_path else "",
                 "access_color": value_colors.get(row["key"], ""),
+                "change_required": bool(change_summary and row_requires_change(row["key"], changed_paths)),
+                "change_color": value_colors.get(row["key"], "") or card_colors(profile, baseline)["text"],
             }
         )
     header_icons = card_icon_paths(paths, profile, baseline)
     return {
         "title": profile.get("title", profile_name),
         "subtitle": profile_subtitle(profile, baseline),
-        "field_setup": field_setup_summary(profile),
+        "field_setup": field_setup_summary(profile, merged, paths),
+        "change_legend": (change_summary or {}).get("legend_label", ""),
         "colors": card_colors(profile, baseline),
         "header_icons": {
             "left": str(header_icons["left"]) if header_icons["left"] else "",
@@ -82,7 +93,7 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
         "checklist": _plain_text_items(profile.get("checklist") or []),
         "watch_for": _plain_text_items(profile.get("watch_for") or []),
         "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),
-        "notes": _plain_text_items(card_note_items(profile, paths)),
+        "notes": _plain_text_items(card_note_items(profile, paths, merged)),
     }
 
 

@@ -12,6 +12,8 @@ Open [Preflight](preflight.html) to confirm this Mac has the current source and 
 
 Make the intended source changes. Open [Local Build](local-build.html) to validate before generation, build the complete local result, and validate the generated result. For routine review, open the completed website at `Canon Camera Reference Local/Build Output/merged-build/index.html`, not the intermediate card files or the Git-tracked `docs/` publication mirror.
 
+For guarded local profile authoring, open [Profile Editor](profile-editor.html). It can create, duplicate, or update shooting profiles only after exact YAML review, recovery backup, concurrent-change checks, and validation. Builds, Git actions, and publishing remain separate workflows.
+
 ## 3. Record spreadsheet testing status
 
 For camera setup and physical testing, open [On-Camera Verification Testing](verification-testing.html). It opens or creates the correct machine-local tracker, explains the required test order and evidence rules, and covers the complete import and two-Mac handoff cycle.

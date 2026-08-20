@@ -11,7 +11,8 @@ from urllib.parse import quote, unquote, urlparse
 
 from validators.common import load_yaml_checked
 from generated_output import clean_generated_tree, mirror_tree
-from html_renderer import FIELD_ACCESS_COLORS, shared_header_icon_path
+from html_renderer import shared_header_icon_path
+from my_menu_colors import load_my_menu_colors, menu_color
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
 
@@ -21,12 +22,23 @@ QUICK_ACCESS_TOKEN_CLASSES = {
     "My Menu: AF Case": "access-menu-2",
     "M-Fn": "access-mfn",
 }
-QUICK_ACCESS_TOKEN_CSS = f"""
+def _quick_access_token_css(paths):
+    if paths is None:
+        switch = "#72dda8"
+        af_case = "#f0bf69"
+    else:
+        colors = load_my_menu_colors(paths)
+        switch = menu_color(colors, "SWITCH", 0)
+        af_case = menu_color(colors, "AF Case", 1)
+    return f"""
 .access-token{{display:inline-block;padding:1px 6px;border-radius:999px;font-size:.93em;line-height:1.35;white-space:nowrap;vertical-align:baseline;-webkit-box-decoration-break:clone;box-decoration-break:clone}}
-.access-token.access-switch{{background:{FIELD_ACCESS_COLORS["access-switch"]};color:#123047}}
-.access-token.access-menu-2{{background:{FIELD_ACCESS_COLORS["access-menu-2"]};color:#342400}}
+.access-token.access-switch{{background:{switch};color:#123047}}
+.access-token.access-menu-2{{background:{af_case};color:#342400}}
 .access-token.access-mfn{{background:{QUICK_ACCESS_MFN_COLOR};color:#fff}}
 """
+
+
+QUICK_ACCESS_TOKEN_CSS = _quick_access_token_css(None)
 
 
 def render_appendices(paths, include_pdf=False):
@@ -192,7 +204,7 @@ table{{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;wid
 th,td{{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}}
 code{{background:#eef2f7;padding:2px 4px;border-radius:4px}}
 a{{color:#165d9c}}
-{QUICK_ACCESS_TOKEN_CSS}
+{_quick_access_token_css(paths)}
 .appendix-index-return{{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9;display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #b8c7d9;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(23,32,51,.18);font-size:14px;font-weight:700;text-decoration:none}}
 .appendix-index-return__short{{display:none}}
 .appendix-index-return:focus-visible{{outline:2px solid #165d9c;outline-offset:2px}}

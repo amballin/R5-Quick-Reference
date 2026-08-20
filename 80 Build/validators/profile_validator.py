@@ -61,7 +61,14 @@ def validate(root):
                 issues.append(error("profiles", path, "Reference cards must not inherit the shooting baseline."))
             if "overrides" in data:
                 issues.append(error("profiles", path, "Reference cards must not define shooting-profile overrides."))
-            issues.extend(_validate_reference_settings(path, data.get("reference_settings")))
+            reference_source = data.get("reference_source")
+            if reference_source == "my_menu":
+                if "reference_settings" in data:
+                    issues.append(error("profiles", path, "My Menu reference rows are derived and must not be authored."))
+            else:
+                if reference_source is not None:
+                    issues.append(error("profiles", path, f"Unknown reference_source: {reference_source}."))
+                issues.extend(_validate_reference_settings(path, data.get("reference_settings")))
         elif not isinstance(overrides, dict):
             issues.append(error("profiles", path, "overrides must be a mapping."))
         else:
@@ -129,12 +136,16 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
         if "start" in setup or "source_profile" in setup:
             issues.append(error("profiles", path, "Access-only field setup must omit start and source_profile."))
     else:
-        if setup.get("start") not in FIELD_SETUP_STARTS:
+        start_present = "start" in setup
+        source_present = "source_profile" in setup
+        if start_present != source_present:
+            issues.append(error("profiles", path, "card.field_setup.start and source_profile must be provided together."))
+        if start_present and setup.get("start") not in FIELD_SETUP_STARTS:
             issues.append(error("profiles", path, "card.field_setup.start must be C1, C2, or C3."))
         source_profile = setup.get("source_profile")
-        if not isinstance(source_profile, str) or not source_profile.strip():
+        if source_present and (not isinstance(source_profile, str) or not source_profile.strip()):
             issues.append(error("profiles", path, "card.field_setup.source_profile must be a non-empty string."))
-        elif source_profile not in profile_titles:
+        elif source_present and source_profile not in profile_titles:
             issues.append(error("profiles", path, f"card.field_setup.source_profile does not match a profile title: {source_profile}"))
     menus = setup.get("my_menus", [])
     if not isinstance(menus, list):
@@ -144,6 +155,10 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
         issues.append(error("profiles", path, "card.field_setup.my_menus supports at most five tabs."))
     if access_only and not menus:
         issues.append(error("profiles", path, "Access-only field setup requires at least one My Menu tab."))
+    if not access_only and "start" not in setup and not menus:
+        issues.append(error("profiles", path, "Field setup without a Cx foundation requires at least one My Menu tab."))
+    if display_category == "reference" and "start" not in setup and menus and not access_only:
+        issues.append(error("profiles", path, "Reference-category field setup without a Cx foundation requires access_only: true."))
     names = []
     assigned_settings = []
     for index, menu in enumerate(menus, start=1):

@@ -2,6 +2,104 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Main-Owned Baseline Impact Invariant
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Keep baseline/profile impact analysis in the shared repository module `80 Build/baseline_impact.py`. The Profile Editor remains the guided interface for proposing values, choosing per-profile outcomes, reviewing exact source changes, and applying a guarded migration, but the invariant does not belong exclusively to the browser application.
+
+Provide `80 Build/baseline_impact_check.py` as a read-only command-line check for baseline changes made or reviewed outside the UI. By default it compares the worktree baseline defaults with `HEAD`; `--base-ref REF` selects another Git baseline such as `origin/main`. It must load the current authored profiles, call the same shared impact engine as the UI, ignore metadata-only or YAML-formatting differences, print every semantic baseline-setting change and its profile classifications, return success when no semantic baseline-default change exists, return status 1 when review is required, and return status 2 when the comparison cannot be completed. It must never modify baseline, profile, generated, Git, or publication state.
+
+Use the CLI as a review boundary, not as an alternate migration writer. A semantic change reported by the command still belongs in the guarded Profile Editor migration workflow. Main owns the shared engine, CLI, tests, and specifications; the UI owns the guided transaction.
+
+## Cx Foundation Change Indicators
+
+**Status:** Accepted
+**Date:** 2026-08-19
+
+On every profile card with an authored C1–C3 route, derive whether each visible field value differs from the effective profile named by `card.field_setup.source_profile`. Reserve a fixed rightmost table column and place a `Δ` in that column only when the row requires a change from the selected foundation; leave the cell blank when it already matches. Combined rows require the marker when any represented underlying setting differs. Keep the C1/C2/C3 route token white.
+
+Keep My Menu value colors independent from whether a change is required. Every visible setting assigned to a named My Menu tab retains that tab's color whether or not it matches the Cx foundation. The color answers where the setting is available; the rightmost `Δ` answers whether it must change. Render each `Δ` in the same color as its setting value, including the normal card text color for non-My-Menu rows. Include an accessible, print-safe legend and change description. Derive this presentation during rendering rather than storing duplicated change flags in profile YAML.
+
+Display the local profile editor's semantic version and a short deterministic build identifier in its header. Calculate the build identifier from the relevant editor, renderer, comparison-engine, and card-template source bytes rather than a timestamp so the same sources produce the same identifier.
+
+## Field Setup Without a Cx Foundation
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Permit every editable profile card to carry named My Menu setting cues without requiring a C1–C3 starting route. My Menu color answers where a displayed setting can be found and therefore remains useful independently of any registered-mode foundation. Automatically plan a missing cue for every displayed setting whose configured My Menu item resolves to one unique tab, including subject cards without a Cx route and profile-based reference cards. Permanent reference cards remain read-only and excluded.
+
+Keep derived Cx comparisons when both `card.field_setup.start` and `source_profile` identify a valid foundation. When an editable profile card has no Cx foundation, reserve the same change-indicator column and mark every visible settings row with `Δ` because the current camera state cannot be proven from project data; the marker directs the user to verify or set the target value. Use a legend and accessible label that state **Verify/set — no Cx foundation** rather than claiming a calculated difference. This decision supersedes only the authored-Cx limitation on planned My Menu cues and the prior omission of change indicators from access-only or other non-Cx profile cards. My Menu colors remain independent from change indicators.
+
+## Guarded Removal of Obsolete My Menu Card Cues
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+When the current My Menu draft removes a named tab or removes a supported shortcut from its declared tab, identify every matching profile-card cue as obsolete and include its removal automatically in the guarded migration plan. This applies whether or not the setting is currently visible on that card because the authored access route is no longer true. A tab rename or shortcut move is represented explicitly as removal from the old tab plus addition to the uniquely resolved new tab.
+
+Remove only the reviewed setting cue. Delete its tab block when no settings remain, and clean up empty migration-created access-only routing scaffolding when the last cue is removed. Keep C1–C3 registrations, starting modes, source profiles, unrelated card cues, the session My Menu draft, and declarations without enough setting identity to prove obsolescence unchanged. Require the existing analysis, acknowledgement, exact multi-file diff, source fingerprints, recovery backup, validation, atomic replacement, and rollback safeguards.
+
+This decision supersedes the warnings-only treatment of known unavailable My Menu routes in **Always-Available My Menu Profile Impact and Global Return Control** and **Guarded Local Profile Authoring**. Advisory treatment remains in force for unresolved identities and for configured shortcuts not displayed on any card.
+
+## Guarded My Menu Card Colors
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Store the reusable named-tab card palette and assignments in `00 Master/my_menu_colors.yaml`, never in individual profiles. Allow the My Menu page to select one distinct curated palette color for each named tab. Tab names and camera menu items remain session-only, but a color assignment may be persisted only through an exact YAML diff, one-use review token, concurrent-change check, machine-local recovery backup, atomic replacement, source validation, and automatic rollback.
+
+Use the saved named-tab color consistently for route tokens, setting values, matching change indicators, PDF cards, and field-guide My Menu access tokens. Keep a visible tab label so color is never the sole access cue. This decision supersedes the fixed requirement that SWITCH must always remain green and the earlier amber-only change-marker treatment; the initial assignments retain green for SWITCH and gold for AF Case until deliberately changed through the guarded editor action.
+
+## Persisted My Menu Layout and Field Reference Card
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Persist the approved EOS R5 My Menu tab names and ordered item identities in `00 Master/my_menu.yaml`. The Profile Editor's My Menu page is the only guided editor for this source. Save the layout and matching named-tab color assignments as one reviewed two-file transaction with exact diffs, one-use token, concurrent-change checks, a machine-local recovery backup, atomic replacement, source validation, and all-file rollback.
+
+Create a released, read-only **My Menu** reference card beside **Camera Buttons**. Its displayed sections and ordered items are derived at render time from the saved My Menu configuration rather than duplicated in profile YAML. Every used tab becomes one section; adding, renaming, reordering, or removing a saved tab changes the next reference-card preview and build. The card records the approved project layout as a field reminder and does not claim that the physical camera has been verified. Reference-card edits remain unavailable; changes go through **Configure My Menu**. Permit reference-card previews in the editor and provide a Return to top action after any preview.
+
+Rename the former Pink palette choice to **Light Red** and use a visibly red tone distinct from the more orange **Coral** choice. This decision supersedes earlier session-only/no-persistence My Menu editor requirements and the color-only save boundary, but retains guarded persistence and the separation between approved project configuration and verified physical-camera state.
+
+## Always-Available My Menu Profile Impact and Global Return Control
+
+**Status:** Accepted
+**Date:** 2026-08-20
+
+Keep Baseline Impact analysis available after the baseline loads even when no baseline setting has changed. Add **Analyze profile impact** to Configure My Menu; it runs the same read-only server analysis against the complete current My Menu draft, switches to Baseline Impact, and focuses the My Menu coverage report. A separately saved My Menu remains structurally valid, while unavailable old tab names and missing profile-card cues remain visible warnings rather than silent profile rewrites.
+
+Give each supported configured shortcut a stable profile-setting identity independent of whether it belongs to the recommended tabs. In particular, the saved AF Operation, Eye Detection, and ISO speed settings shortcuts resolve to `autofocus.operation`, `autofocus.eye_detection`, and the combined ISO card row rooted at `exposure.iso.mode`. This lets newly added used tabs participate in coverage analysis rather than limiting analysis to the initial recommendation.
+
+Permit a complete migration plan containing only planned My Menu card cues to produce and review profile candidates without manufacturing an unrelated baseline change. Omit `00 Master/baseline.yaml` from that transaction when the proposed baseline equals the current baseline. Keep the usual acknowledgements, exact diff, source fingerprints, recovery backup, atomic writes, validation, and rollback for the affected profile files. If neither baseline nor profile source needs a change, show that no migration is required and provide no write action.
+
+Replace the preview-local Return to top button with one global, fixed circular up-arrow control available across all four editor views. Show it only after meaningful scrolling, place it within the lower-right safe area, give it an accessible Return to top label, and hide it for print. Match the established Reference Guide floating-return treatment.
+
+## Guarded Local Profile Authoring
+
+**Status:** Accepted
+**Date:** 2026-08-17
+
+Allow the loopback-only profile editor to update an existing shooting profile, create a baseline-derived shooting profile, or duplicate an existing shooting profile. Keep permanent reference cards, camera My Menu persistence, and profile deletion outside the ordinary profile-editing scope; named-tab card colors are the only separately guarded My Menu-related source write. New and duplicated profiles must begin with `metadata.status: Draft` and `metadata.release: false`.
+
+Require an exact YAML diff before every save. Bind the reviewed candidate bytes to a short-lived one-time token so the browser cannot save different content from what was reviewed. Before writing, confirm the loaded source fingerprint still matches and that a new target name remains available. Validate the complete candidate profile in an isolated temporary source layout, create a timestamped machine-local recovery backup, replace the target atomically, and run source validation after the write. Automatically restore the prior source state when post-save validation fails.
+
+Allow a session-only **Baseline impact** workspace to propose value changes for existing baseline setting paths and calculate their effect on every inheriting profile. Keep the draft in browser memory and reject added or removed paths and incompatible values at the server boundary. Classify inherited effective-value changes, protected overrides, newly redundant overrides, removed paths, and incompatible override types through one repository-owned read-only impact engine.
+
+Allow that workspace to build a migration plan. Require an explicit per-profile choice for each inherited effective-value change: follow the proposed baseline or preserve the previous effective value as a proposed override. Permit deliberate bulk choices across the complete proposal or within one changed setting, but apply them only to unresolved inherited changes and never replace an existing individual choice. Automatically include newly redundant overrides as proposed removals, retain protected overrides, and keep missing choices or invalid overrides visibly unresolved. Also include each displayed configured My Menu setting on an authored C1–C3 route that lacks a card cue as an explicit planned profile change, resolved to its unique configured tab. Describe those changes as color-coding existing card rows for My Menu access, and state visibly that they add neither setting rows to cards nor items to the camera's My Menu. Provide the same migration-plan action above and below the preference report. Recompute and validate the proposal, choices, and current session My Menu draft on the server; reject stale, duplicate, invalid, ambiguous, or inapplicable input.
+
+Permit a complete plan to become one guarded baseline-migration transaction. Require explicit acknowledgement of the C1–C3 and My Menu warning reports, validate all candidate sources in isolation, and show one exact multi-file YAML diff. Bind the candidate bytes and every original source fingerprint to a short-lived one-use review token. Before writing, reconfirm every fingerprint, create a timestamped backup containing the prior and candidate baseline/profile sources, atomically replace each source, and run source validation. On any write or validation failure, restore every file already written. Apply the proposed baseline, add preservation overrides, remove newly redundant overrides, retain protected overrides, and add only planned My Menu card cues. Do not rewrite C1–C3 registrations, starting routes, source-profile declarations, unavailable routes, unnecessary routes, or the session My Menu configuration.
+
+Extend baseline impact analysis to the canonical C1–C3 registration definitions. For every proposed baseline setting change, show the effective value before and after in **C1 Wildlife**, **C2 Birds in Flight**, and **C3 Landscape**, including when an explicit registration value protects a mode from the baseline change. Warn for every shooting profile whose declared `card.field_setup.start` uses an affected registered mode, and identify its declared source profile and affected settings. These are warnings only: analysis must not rewrite registrations, starting-mode routes, source-profile declarations, My Menu routes, or profile YAML.
+
+Extend that report with read-only My Menu card-coverage analysis. Treat My Menu as a stable fast-access configuration rather than a transition recipe: a declared shortcut does not become unnecessary merely because a profile value matches its C1–C3 starting environment. Evaluate the fully merged rows that each profile card actually displays, including access-only cards. Show a named My Menu tab on a card whenever at least one setting assigned to that tab is displayed, and omit that tab from the card only when none of its assigned settings are displayed. Report displayed settings whose Canon item is unavailable in the named tab and displayed configured shortcuts that lack a card cue. Identify a configured shortcut as a possible removal candidate only when no card displays its setting. These findings are advisory and must not rewrite profile routing or My Menu configuration.
+
+Initialize the session-only My Menu configurator with the approved **SWITCH** and **AF Case** recommended tabs after the settings dictionary loads. Leave the remaining tabs and slots empty. Users may modify the browser draft, and **Restore recommended tabs** replaces it with the approved recommendation. Refreshing or reopening the editor starts from the recommendation again. This initial camera-layout draft remains unverified, does not claim the physical camera matches it, and creates no tab-name or menu-item persistence; the separately guarded named-tab card-color transaction is the only My Menu-related write endpoint.
+
+The editor must not run builds, commit, push, publish, rename existing profiles, delete profiles, or persist the camera My Menu configuration. Its only non-profile writes are `00 Master/baseline.yaml` through the guarded migration transaction and `00 Master/my_menu_colors.yaml` through the guarded color transaction. Git and publication remain separate operator-authorized workflows.
+
 ## Consolidated Spreadsheet-Derived Artifact Recovery
 
 **Status:** Accepted

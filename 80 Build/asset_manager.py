@@ -36,6 +36,14 @@ class ProjectPaths:
         return self.root / "00 Master" / "setting_access.yaml"
 
     @property
+    def my_menu_colors_file(self):
+        return self.root / "00 Master" / "my_menu_colors.yaml"
+
+    @property
+    def my_menu_file(self):
+        return self.root / "00 Master" / "my_menu.yaml"
+
+    @property
     def spreadsheet_layouts_file(self):
         return self.root / "00 Master" / "spreadsheet_layouts.yaml"
 
