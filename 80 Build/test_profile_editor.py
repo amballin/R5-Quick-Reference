@@ -5,6 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -102,6 +103,87 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(saved["title"], "Fireworks Review Test")
         self.assertEqual(result["validation"], "passed")
         self.assertTrue(Path(result["backup"]).is_dir())
+
+    def test_review_shows_effective_value_when_blank_override_returns_to_auto_baseline(self):
+        payload = self.payload("Travel")
+        overrides = dict(payload["overrides"])
+        self.assertEqual(overrides.pop("lens.aperture.target"), "")
+        review = self.model.review_profile({**payload, "overrides": overrides})
+
+        aperture = next(
+            change for change in review["effectiveChanges"]
+            if change["path"] == "lens.aperture.target"
+        )
+        self.assertEqual(aperture["beforeDisplay"], "Blank")
+        self.assertEqual(aperture["beforeSource"], "profile customization")
+        self.assertEqual(aperture["afterDisplay"], "Auto")
+        self.assertEqual(aperture["afterSource"], "inherited from baseline")
+        self.assertIn("-      target: ''", review["diff"])
+
+    def test_profile_review_dialog_renders_effective_changes_before_exact_yaml(self):
+        html = (self.root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+
+        self.assertIn('id="review-effective-list"', html)
+        self.assertLess(html.index("Effective setting changes"), html.index("Exact YAML changes"))
+        self.assertIn("review.effectiveChanges || []", script)
+        self.assertIn("change.afterDisplay", script)
+
+    def test_recognized_text_values_use_canonical_case_for_every_setting(self):
+        checked = []
+        for path, baseline in self.model.default_fields.items():
+            if not isinstance(baseline, str) or not any(character.isalpha() for character in baseline):
+                continue
+            mixed_case = baseline.swapcase()
+            clean = self.model._validate_overrides({path: mixed_case})
+            self.assertEqual(clean, {}, f"{path} did not normalize {mixed_case!r} to {baseline!r}")
+            checked.append(path)
+        self.assertIn("lens.aperture.target", checked)
+        self.assertIn("autofocus.method", checked)
+        self.assertIn("drive.mode", checked)
+
+    def test_case_normalization_preserves_unrecognized_custom_values(self):
+        clean = self.model._validate_overrides({"lens.aperture.target": "f/8"})
+        self.assertEqual(clean, {"lens.aperture.target": "f/8"})
+
+    def test_blank_restores_baseline_for_every_setting_type(self):
+        checked = []
+        for path in self.model.default_fields:
+            clean = self.model._validate_overrides({path: ""})
+            self.assertEqual(clean, {}, f"{path} retained a blank override")
+            checked.append(path)
+        self.assertIn("lens.aperture.target", checked)
+        self.assertIn("exposure.auto_iso.maximum", checked)
+        self.assertIn("exposure.iso.value", checked)
+
+    def test_mixed_case_auto_review_is_inherited_not_an_override(self):
+        payload = self.payload("Travel")
+        overrides = dict(payload["overrides"])
+        overrides["lens.aperture.target"] = "AUto"
+        review = self.model.review_profile({**payload, "overrides": overrides})
+
+        aperture = next(
+            change for change in review["effectiveChanges"]
+            if change["path"] == "lens.aperture.target"
+        )
+        self.assertEqual(aperture["afterDisplay"], "Auto")
+        self.assertEqual(aperture["afterSource"], "inherited from baseline")
+        self.assertNotIn("AUto", review["candidateYaml"])
+        self.assertNotIn("aperture:", review["candidateYaml"])
+
+    def test_browser_normalizes_recognized_free_text_choices_before_override_comparison(self):
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('choice.value.toLocaleLowerCase("en-US")', script)
+        self.assertIn('control.value.toLocaleLowerCase("en-US")', script)
+        self.assertIn("return canonical ? canonical.value : control.value", script)
+        self.assertIn("updateSetting(setting, value, blanked || recognizedSpellingChanged)", script)
+
+    def test_blank_input_repopulates_the_baseline_and_stage_label_is_removed(self):
+        html = (self.root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("Stage 3 · Review &amp; Build", html)
+        self.assertIn('if (control.value === "") return setting.baseline', script)
+        self.assertIn("updateSetting(setting, value, blanked || recognizedSpellingChanged)", script)
 
     def test_creates_baseline_derived_profile_as_unreleased_draft(self):
         detail = self.model.profile_draft("create")
@@ -273,6 +355,69 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         readiness = failing.build_readiness(0)
         self.assertFalse(readiness["ready"])
         self.assertEqual(readiness["sourceValidation"], "failed")
+
+    def test_build_readiness_reports_safe_conditional_spreadsheet_refresh(self):
+        model = ProfileEditorModel(
+            self.root,
+            source_validator=lambda _root: [],
+            derived_artifact_checker=lambda: {
+                "status": "refresh-needed",
+                "refreshNeeded": True,
+                "details": ["Matrix/settings requires refresh."],
+                "blockers": [],
+            },
+        )
+        readiness = model.build_readiness(0)
+        self.assertTrue(readiness["ready"])
+        self.assertTrue(readiness["derivedArtifacts"]["refreshNeeded"])
+
+        with patch("profile_editor.subprocess.run") as run:
+            run.return_value.returncode = 0
+            run.return_value.stdout = "passed"
+            result = model.run_local_build(0, True)
+        self.assertEqual([step["step"] for step in result["steps"]], [
+            "Source validation",
+            "Spreadsheet refresh",
+            "Development build",
+            "Full validation",
+        ])
+        self.assertTrue(run.call_args_list[1].args[0][0].endswith("build-all-spreadsheet-downloads.sh"))
+
+    def test_derived_artifact_diagnostics_distinguish_stale_from_unsafe(self):
+        for relative in ("80 Build/verification_status.py", "80 Build/spreadsheet_downloads.py"):
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# test fixture\n", encoding="utf-8")
+        with patch("profile_editor.subprocess.run") as run:
+            run.side_effect = [
+                SimpleNamespace(returncode=2, stdout="Verification working copy is safely stale."),
+                SimpleNamespace(returncode=2, stdout="Matrix/settings requires refresh."),
+            ]
+            stale = self.model._inspect_derived_artifacts()
+            run.side_effect = [
+                SimpleNamespace(returncode=3, stdout="Verification workbook has unimported edits."),
+                SimpleNamespace(returncode=0, stdout="Spreadsheet downloads are current."),
+            ]
+            unsafe = self.model._inspect_derived_artifacts()
+        self.assertEqual(stale["status"], "refresh-needed")
+        self.assertTrue(stale["refreshNeeded"])
+        self.assertEqual(unsafe["status"], "blocked")
+        self.assertIn("unimported edits", unsafe["blockers"][0])
+
+    def test_build_readiness_blocks_unsafe_spreadsheet_refresh(self):
+        model = ProfileEditorModel(
+            self.root,
+            source_validator=lambda _root: [],
+            derived_artifact_checker=lambda: {
+                "status": "blocked",
+                "refreshNeeded": False,
+                "details": [],
+                "blockers": ["Verification workbook has unimported edits."],
+            },
+        )
+        readiness = model.build_readiness(0)
+        self.assertFalse(readiness["ready"])
+        self.assertIn("unimported edits", readiness["blockers"][0])
 
     def test_local_build_requires_confirmation_and_runs_only_documented_steps(self):
         with self.assertRaisesRegex(PrototypeError, "confirmation"):

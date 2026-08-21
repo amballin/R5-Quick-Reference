@@ -15,7 +15,6 @@
     </div>
     <div class="build-badges">
       <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
-      <span class="prototype-badge">Stage 3 · Review &amp; Build</span>
       <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
     </div>
   </header>
@@ -287,7 +286,7 @@
         <div>
           <p class="eyebrow">Canonical source</p>
           <h2>Validation and local build</h2>
-          <p class="muted">The build button remains locked until every pending browser draft is saved or explicitly discarded and a fresh readiness check passes.</p>
+          <p class="muted">The build button remains locked until every pending browser draft is saved or explicitly discarded and a fresh readiness check passes. Any safely stale spreadsheet-derived artifacts are refreshed automatically during the confirmed build.</p>
         </div>
         <div class="local-build-actions">
           <button id="validate-readiness" class="primary" type="button">Validate readiness</button>
@@ -303,12 +302,17 @@
     <div class="review-heading">
       <div>
         <p class="eyebrow">Required save review</p>
-        <h2>Exact YAML changes</h2>
+        <h2>Review current changes</h2>
         <p id="review-summary" class="muted"></p>
       </div>
       <button id="review-close" class="secondary" type="button" aria-label="Close review">Close</button>
     </div>
+    <section id="review-effective" class="review-effective" hidden>
+      <h3>Effective setting changes</h3>
+      <ul id="review-effective-list"></ul>
+    </section>
     <p class="review-warning"><strong>Only the YAML shown below will be saved.</strong> If the source changes before save, this review is rejected.</p>
+    <h3 class="review-diff-heading">Exact YAML changes</h3>
     <pre id="review-diff" class="review-diff" tabindex="0"></pre>
     <div class="review-actions">
       <button id="review-cancel" class="secondary" type="button">Continue editing</button>
@@ -355,11 +359,11 @@
       <div>
         <p class="eyebrow">Local build confirmation</p>
         <h2>Regenerate local output and docs?</h2>
-        <p class="muted">This runs source validation, the normal development build, and full validation.</p>
+        <p class="muted">This runs source validation, refreshes only spreadsheet-derived artifacts that are safely stale, then runs the normal development build and full validation.</p>
       </div>
       <button id="build-confirm-close" class="secondary" type="button" aria-label="Close build confirmation">Close</button>
     </div>
-    <p class="review-warning"><strong>This changes generated local output and tracked docs.</strong> It does not commit, push, publish, or change website version metadata.</p>
+    <p class="review-warning"><strong>This may launch Apple Numbers and changes generated local output and tracked docs.</strong> It stops before overwriting a verification tracker with unimported edits. It does not commit, push, publish, or change website version metadata.</p>
     <div class="review-actions">
       <button id="build-confirm-cancel" class="secondary" type="button">Cancel</button>
       <button id="build-confirm-run" class="save-action" type="button">Run validated local build</button>

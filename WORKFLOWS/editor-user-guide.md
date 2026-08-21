@@ -1,6 +1,6 @@
 # Profile Editor User Guide
 
-Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Use the specialized workflow pages for Git handoff, spreadsheets, physical-camera testing, recovery, and publication.
+Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages for Git handoff, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.
 
 ## Start the editor
 
@@ -79,10 +79,10 @@ For an editable profile:
 4. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
 5. Use the state beside each field to see whether the value is inherited or customized.
 6. Change only the fields needed for this profile.
-7. Use **Use baseline** for a field or section when the profile should inherit the shared value again.
+7. Use **Use baseline** for a field or section when the profile should inherit the shared value again. Clearing any editable field has the same result and immediately redisplays the baseline value. C1/C2/C3 foundations remain starting and comparison references rather than inheritance sources.
 8. Use **Render preview** in the right-hand preview panel. The panel remains visible while the settings column scrolls independently.
 9. Choose **Review changes** from the persistent action bar when the draft is ready.
-10. Save only after the exact review matches the intended result.
+10. Save only after the effective before-and-after settings and the exact YAML review match the intended result. When a customization is removed, the review names the resulting inherited baseline value explicitly instead of showing only the YAML deletion. Recognized text choices use their standard capitalization across every setting, so a case-only variation such as `AUto` is treated as `Auto`, while a genuine custom value such as `f/8` is preserved.
 
 After a setting changes, the existing preview remains available but is labeled as out of date. Choose **Refresh preview** before relying on it. On narrower windows, use the **Settings** and **Preview** controls to switch between the two panes.
 
@@ -124,12 +124,12 @@ Open **Review & Build** before finishing:
 
 1. Review every pending profile, My Menu, and baseline draft.
 2. Open each draft and save it through its exact-diff review, or choose **Discard** and confirm that decision.
-3. When the pending list is empty, choose **Validate readiness**.
-4. After readiness passes, choose **Run local build**, read the final warning, and confirm.
+3. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
+4. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm.
 5. Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.
 6. Stop the editor with **Control-C** in its Terminal window.
 
-The guarded action runs source-only validation, the normal development build, and full validation. It may refresh local output and tracked documentation, but it does not delete or rename profiles, edit permanent reference cards, commit, push, publish, or change website version metadata.
+The guarded action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. The action may refresh local output and tracked documentation, but it does not delete or rename profiles, edit permanent reference cards, commit, push, publish, or change website version metadata.
 
 ## Get more help
 

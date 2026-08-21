@@ -147,7 +147,7 @@ def same_value(left, right):
 
 
 class ProfileEditorModel:
-    def __init__(self, root=PROJECT_ROOT, source_validator=None):
+    def __init__(self, root=PROJECT_ROOT, source_validator=None, derived_artifact_checker=None):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         self.baseline = load_baseline(self.paths)
@@ -168,6 +168,7 @@ class ProfileEditorModel:
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
         self._source_validator = source_validator or self._validate_project_sources
+        self._derived_artifact_checker = derived_artifact_checker or self._inspect_derived_artifacts
         self._pending_reviews = {}
         self._pending_migration_reviews = {}
         self._pending_color_reviews = {}
@@ -750,16 +751,69 @@ class ProfileEditorModel:
         if pending < 0:
             raise PrototypeError("Pending-change count cannot be negative.")
         source_errors = list(self._source_validator(self.paths.root))
+        derived_artifacts = self._derived_artifact_checker()
         blockers = []
         if pending:
             blockers.append(
                 f"Resolve {pending} unsaved browser {('draft' if pending == 1 else 'drafts')} before building."
             )
         blockers.extend(source_errors)
+        blockers.extend(derived_artifacts["blockers"])
         return {
             "ready": not blockers,
             "pendingChanges": pending,
             "sourceValidation": "passed" if not source_errors else "failed",
+            "derivedArtifacts": derived_artifacts,
+            "blockers": blockers,
+        }
+
+    def _inspect_derived_artifacts(self):
+        verification_script = self.paths.root / "80 Build" / "verification_status.py"
+        spreadsheet_script = self.paths.root / "80 Build" / "spreadsheet_downloads.py"
+        if not verification_script.exists() and not spreadsheet_script.exists():
+            # Minimal test fixtures do not include the workbook subsystem.
+            return {"status": "current", "refreshNeeded": False, "details": [], "blockers": []}
+        if not verification_script.is_file() or not spreadsheet_script.is_file():
+            return {
+                "status": "blocked",
+                "refreshNeeded": False,
+                "details": [],
+                "blockers": ["Spreadsheet readiness cannot be checked because a required build script is missing."],
+            }
+
+        checks = (
+            ("Verification", [sys.executable, str(verification_script), "check"], {0: "current", 2: "stale"}),
+            ("Matrix/settings and Setup", [sys.executable, str(spreadsheet_script), "all", "diagnose"], {0: "current", 2: "stale"}),
+        )
+        details = []
+        blockers = []
+        refresh_needed = False
+        for label, command, outcomes in checks:
+            try:
+                completed = subprocess.run(
+                    command,
+                    cwd=self.paths.root,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                blockers.append(f"{label} spreadsheet readiness check failed: {exc}")
+                continue
+            output = completed.stdout.strip()
+            outcome = outcomes.get(completed.returncode)
+            if outcome == "stale":
+                refresh_needed = True
+                details.append(output or f"{label} artifacts require refresh.")
+            elif outcome != "current":
+                blockers.append(output or f"{label} spreadsheet readiness check failed.")
+
+        return {
+            "status": "blocked" if blockers else ("refresh-needed" if refresh_needed else "current"),
+            "refreshNeeded": refresh_needed,
+            "details": details,
             "blockers": blockers,
         }
 
@@ -771,14 +825,26 @@ class ProfileEditorModel:
             raise PrototypeError("Local build confirmation is required.")
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("A local build is already running.")
-        commands = (
-            ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"]),
-            ("Development build", [sys.executable, "80 Build/build.py"]),
-            ("Full validation", [sys.executable, "80 Build/validator.py"]),
+        commands = [
+            ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"], 15 * 60),
+        ]
+        if readiness["derivedArtifacts"]["refreshNeeded"]:
+            commands.append(
+                (
+                    "Spreadsheet refresh",
+                    [str(self.paths.root / "80 Build" / "scripts" / "build-all-spreadsheet-downloads.sh")],
+                    30 * 60,
+                )
+            )
+        commands.extend(
+            [
+                ("Development build", [sys.executable, "80 Build/build.py"], 15 * 60),
+                ("Full validation", [sys.executable, "80 Build/validator.py"], 15 * 60),
+            ]
         )
         results = []
         try:
-            for label, command in commands:
+            for label, command, timeout in commands:
                 try:
                     completed = subprocess.run(
                         command,
@@ -786,13 +852,13 @@ class ProfileEditorModel:
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         text=True,
-                        timeout=15 * 60,
+                        timeout=timeout,
                         check=False,
                     )
                 except subprocess.TimeoutExpired as exc:
-                    raise PrototypeError(f"{label} timed out after 15 minutes.") from exc
+                    raise PrototypeError(f"{label} timed out after {timeout // 60} minutes.") from exc
                 output = completed.stdout[-80_000:]
-                results.append({"step": label, "status": "passed" if completed.returncode == 0 else "failed", "output": output})
+                results.append({"step": label, "label": label, "status": "passed" if completed.returncode == 0 else "failed", "output": output})
                 if completed.returncode:
                     raise PrototypeError(f"{label} failed.\n{output}")
             return {"status": "passed", "steps": results}
@@ -1271,6 +1337,7 @@ class ProfileEditorModel:
             "diff": review["diff"],
             "candidateYaml": review["candidate"].decode("utf-8"),
             "summary": review["summary"],
+            "effectiveChanges": review["effective_changes"],
         }
 
     def save_profile(self, review_token):
@@ -1352,7 +1419,45 @@ class ProfileEditorModel:
             "candidate_sha256": self._sha256(candidate),
             "diff": diff,
             "summary": self._review_summary(operation, source_name, target_name),
+            "effective_changes": self._effective_setting_changes(operation, source_name, profile),
         }
+
+    def _effective_setting_changes(self, operation, source_name, candidate_profile):
+        """Describe effective before/after values represented by this exact review."""
+        if operation == "create" or not source_name:
+            return []
+        source_profile = self._profile(source_name)
+        source_overrides = flatten(source_profile.get("overrides") or {})
+        candidate_overrides = flatten(candidate_profile.get("overrides") or {})
+        before = flatten(merge(self.defaults, source_profile.get("overrides") or {}))
+        after = flatten(merge(self.defaults, candidate_profile.get("overrides") or {}))
+        changes = []
+        for path in self.setting_order:
+            if path not in self.default_fields or same_value(before.get(path), after.get(path)):
+                continue
+            changes.append(
+                {
+                    "path": path,
+                    "label": self._catalog_value(path, "label", friendly_label(path)),
+                    "beforeValue": json_value(before.get(path)),
+                    "beforeDisplay": self._review_value_display(before.get(path)),
+                    "beforeSource": "profile customization" if path in source_overrides else "baseline",
+                    "afterValue": json_value(after.get(path)),
+                    "afterDisplay": self._review_value_display(after.get(path)),
+                    "afterSource": "profile customization" if path in candidate_overrides else "inherited from baseline",
+                }
+            )
+        return changes
+
+    @staticmethod
+    def _review_value_display(value):
+        if value == "":
+            return "Blank"
+        if value is None:
+            return "Not set"
+        if isinstance(value, bool):
+            return "True" if value else "False"
+        return str(value)
 
     def _candidate_profile(self, payload):
         if not isinstance(payload, dict):
@@ -1679,6 +1784,8 @@ class ProfileEditorModel:
 
     def _coerce_value(self, path, value):
         baseline = self.default_fields[path]
+        if value == "":
+            return baseline
         if baseline is None:
             if value is None or isinstance(value, (str, int, float, bool)):
                 return value
@@ -1705,6 +1812,9 @@ class ProfileEditorModel:
             raise PrototypeError(f"{path} must be text.")
         if "<" in value or ">" in value:
             raise PrototypeError(f"{path} cannot contain HTML angle brackets in this prototype.")
+        for choice in self.choices.get(path, []):
+            if isinstance(choice, str) and choice.casefold() == value.casefold():
+                return choice
         return value
 
     def _rewrite_preview_links(self, html):

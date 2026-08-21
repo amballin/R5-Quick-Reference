@@ -62,6 +62,8 @@ const elements = {
   returnToTop: document.querySelector("#return-to-top"),
   reviewDialog: document.querySelector("#review-dialog"),
   reviewSummary: document.querySelector("#review-summary"),
+  reviewEffective: document.querySelector("#review-effective"),
+  reviewEffectiveList: document.querySelector("#review-effective-list"),
   reviewDiff: document.querySelector("#review-diff"),
   reviewClose: document.querySelector("#review-close"),
   reviewCancel: document.querySelector("#review-cancel"),
@@ -471,8 +473,11 @@ async function validateBuildReadiness() {
     });
     state.buildReadiness = readiness;
     elements.localBuildOutput.hidden = false;
+    const refreshDetails = readiness.derivedArtifacts?.refreshNeeded
+      ? `\n\nSpreadsheet refresh will run automatically:\n${readiness.derivedArtifacts.details.join("\n")}`
+      : "\n\nSpreadsheet-derived artifacts are current; no workbook refresh is needed.";
     elements.localBuildOutput.textContent = readiness.ready
-      ? "Readiness passed. No pending browser drafts and source validation passed."
+      ? `Readiness passed. No pending browser drafts and source validation passed.${refreshDetails}`
       : readiness.blockers.join("\n");
     showReviewBuildMessage(
       readiness.ready ? "Readiness passed. Review the confirmation before running the local build." : "Build remains locked. Resolve the items below and validate again.",
@@ -492,7 +497,7 @@ async function runLocalBuild() {
   elements.runLocalBuild.disabled = true;
   elements.buildConfirmDialog.close();
   elements.localBuildOutput.hidden = false;
-  elements.localBuildOutput.textContent = "Running source validation, local build, and full validation…";
+  elements.localBuildOutput.textContent = "Running source validation, any required spreadsheet refresh, local build, and full validation…";
   showReviewBuildMessage("Local build is running. Keep this page open.");
   try {
     const result = await request("/api/local-build", {
@@ -504,7 +509,7 @@ async function runLocalBuild() {
       .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
       .join("\n\n");
     state.buildReadiness = null;
-    showReviewBuildMessage("Local build and full validation passed. Git and publishing were not run.");
+    showReviewBuildMessage("Spreadsheet readiness, local build, and full validation passed. Git and publishing were not run.");
   } catch (error) {
     state.buildReadiness = null;
     elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
@@ -987,7 +992,14 @@ function renderSetting(setting) {
   control.id = controlId;
   label.htmlFor = controlId;
   control.addEventListener("change", () => updateSetting(setting, readControl(control, setting)));
-  if (control.tagName === "INPUT") control.addEventListener("input", () => updateSetting(setting, readControl(control, setting), false));
+  if (control.tagName === "INPUT") {
+    control.addEventListener("input", () => {
+      const blanked = control.value === "";
+      const value = readControl(control, setting);
+      const recognizedSpellingChanged = typeof value === "string" && value !== control.value;
+      updateSetting(setting, value, blanked || recognizedSpellingChanged);
+    });
+  }
   controlHost.append(control);
   if (datalist) controlHost.append(datalist);
   if (setting.catalogNote) {
@@ -1965,9 +1977,15 @@ function iconForValue(setting, value) {
 
 function readControl(control, setting) {
   if (control.tagName === "SELECT") return JSON.parse(control.value);
-  if (setting.valueType === "integer") return control.value === "" ? null : Number.parseInt(control.value, 10);
-  if (setting.valueType === "number") return control.value === "" ? null : Number(control.value);
-  return control.value;
+  if (control.value === "") return setting.baseline;
+  if (setting.valueType === "integer") return Number.parseInt(control.value, 10);
+  if (setting.valueType === "number") return Number(control.value);
+  if (typeof control.value !== "string") return control.value;
+  const canonical = (setting.choiceDetails || []).find((choice) => (
+    typeof choice.value === "string"
+    && choice.value.toLocaleLowerCase("en-US") === control.value.toLocaleLowerCase("en-US")
+  ));
+  return canonical ? canonical.value : control.value;
 }
 
 function updateSetting(setting, value, rerender = true) {
@@ -2018,6 +2036,17 @@ async function reviewChanges() {
     });
     state.reviewToken = review.reviewToken;
     elements.reviewSummary.textContent = review.summary;
+    elements.reviewEffectiveList.replaceChildren();
+    for (const change of review.effectiveChanges || []) {
+      const item = document.createElement("li");
+      const label = document.createElement("strong");
+      label.textContent = `${change.label}: `;
+      const values = document.createElement("span");
+      values.textContent = `${change.beforeDisplay} → ${change.afterDisplay} (${change.afterSource})`;
+      item.append(label, values);
+      elements.reviewEffectiveList.append(item);
+    }
+    elements.reviewEffective.hidden = elements.reviewEffectiveList.children.length === 0;
     elements.reviewDiff.textContent = review.diff;
     elements.reviewDialog.showModal();
     setWorkflowStep(4);

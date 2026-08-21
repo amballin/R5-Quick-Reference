@@ -22,6 +22,15 @@ Keep the card preview beside the independently scrolling settings panel. Order *
 
 Permit **Review & Build** to run the documented local sequence only after every browser draft has been saved or explicitly discarded, a fresh source-readiness check passes, and the user confirms that generated local output and tracked documentation may change. The server must serialize build requests and run source-only validation, the normal development build, and full validation in that order, stopping at the first failure. It must not commit, push, publish, change website version metadata, rename, or delete. This decision supersedes only the prior prohibition on editor-initiated local builds in **Guarded Local Profile Authoring**; all guarded-save, Git, and publication boundaries remain in force.
 
+## Automatic Safe Spreadsheet Refresh in Editor Builds
+
+**Status:** Accepted
+**Date:** 2026-08-21
+
+After a fresh Profile Editor readiness check and the existing local-build confirmation, automatically run the consolidated spreadsheet-derived artifact recovery step when source fingerprints show that one or more artifacts are stale. Diagnose verification, Matrix/settings, and Setup state during readiness; report the affected artifacts before confirmation; skip the refresh step when everything is current; and retain the consolidated recovery workflow's rule that no files are modified when the verification working copy may contain unimported edits.
+
+The confirmed editor sequence is source-only validation, conditional safe spreadsheet refresh, normal development build, and full validation. Spreadsheet refresh may launch Apple Numbers, but it must not commit, push, publish, change website version metadata, or weaken the verification import boundary. Source fingerprints remain authoritative so changes made outside the browser are detected too. This decision supersedes the three-step command sequence in **Guarded Session Review and Local Build** only; the rule that standalone preflight is diagnostic and never refreshes automatically remains unchanged.
+
 ## Main-Owned Baseline Impact Invariant
 
 **Status:** Accepted

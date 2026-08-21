@@ -2,7 +2,7 @@
 
 Profile Editor 1.0 is the project's main local interface for routine work: shooting profiles, persisted My Menu organization and card colors, baseline setup, session review, local builds, and camera reference. It provides a Canon-sourced EOS R5 still-photo settings dictionary, loads and saves the reviewed My Menu layout, renders isolated shooting and reference-card previews, can create, duplicate, or update shooting-profile YAML, can apply a complete reviewed baseline migration, and can run the guarded normal local build after every browser draft is resolved.
 
-Use the specialized workflow pages—not the editor—for Git preflight and handoff, spreadsheet preparation and testing-status import, physical-camera verification, recovery, commits and pushes, and publication.
+Use the specialized workflow pages—not the editor—for Git preflight and handoff, manual spreadsheet preparation or recovery, testing-status import, physical-camera verification, commits and pushes, and publication. The editor's confirmed local build automatically refreshes safely stale spreadsheet-derived artifacts.
 
 The header shows the editor version and a deterministic short build identifier. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.
 
@@ -121,11 +121,11 @@ Status 0 means there is no semantic baseline-default change. Status 1 prints the
 4. Review **Shown on this card** first. Its controls use the renderer's actual visible-setting rules and the same path order as `00 Master/card_layout.yaml`. Combined card rows, including ISO and tracking/acceleration, expose each underlying camera control together in that order.
 5. Expand **Additional profile settings** for controls that are not currently rendered on the card. They remain grouped by camera-setting category.
 6. Look for the **Inherited** or **Customized** label beside each setting.
-7. Edit the title, optional subtitle, status, release state, and available setting controls.
+7. Edit the title, optional subtitle, status, release state, and available setting controls. Clearing any editable setting restores and immediately redisplays its inherited baseline value; an empty string is not stored as a profile override. C1/C2/C3 foundations remain comparison and field-start references, not inheritance sources.
 8. Use **Use baseline** for one setting or **Use baseline for section** for an additional-settings group. Open **Profile actions** and choose **Discard draft & reload** to restore the selected profile's saved source values.
 9. Choose **Render preview** in the right-hand panel. On a desktop-width window, the settings and preview scroll independently so the card remains visible while settings are reviewed. On a narrower window, use the **Settings** and **Preview** pane controls.
 10. After an edit, treat the retained preview as out of date until **Refresh preview** completes.
-11. Choose **Review changes** in the persistent action bar only when the draft is ready to save.
+11. Choose **Review changes** in the persistent action bar only when the draft is ready to save. The review lists each effective setting change as its saved value and latest draft value before the exact YAML diff. When a customization is removed, the resulting inherited baseline value is named explicitly, such as **Aperture: Blank → Auto (inherited from baseline)**. For every setting, recognized text choices are case-insensitive and return to their canonical spelling before comparison, so `AUto` is treated as `Auto`; unrecognized custom values such as `f/8` remain unchanged.
 
 On a preview or generated profile card, the C1/C2/C3 token remains white. My Menu-colored values keep their saved tab color whether or not they already match the selected foundation. A fixed rightmost column shows `Δ` in the same color as the setting value. With a Cx foundation, `Δ` compares the draft with the effective saved foundation profile—not with the baseline—and appears only when that row differs. Therefore **Use baseline** clears `Δ` only when the baseline value also matches the saved foundation. Without a Cx foundation, every visible settings row shows `Δ` because the project cannot prove the camera's current state; the legend says **Verify/set — no Cx foundation**. Permanent reference cards do not render the indicator column.
 
@@ -183,9 +183,9 @@ Restarting the server is not required to discard a draft. A successful editor sa
 
 ## Review and build locally
 
-Open **Review & Build** to validate the editing session before generation. Save each intended draft through its guarded review or choose **Discard** and confirm. The local build remains locked while the pending list is nonempty. When the list is clear, choose **Validate readiness**, then **Run local build** and confirm that generated local output and tracked documentation may change.
+Open **Review & Build** to validate the editing session before generation. Save each intended draft through its guarded review or choose **Discard** and confirm. The local build remains locked while the pending list is nonempty. When the list is clear, choose **Validate readiness**. Readiness reports any stale verification, Matrix/settings, or Setup artifacts detected from their source fingerprints. Then choose **Run local build** and confirm that Apple Numbers may launch and generated local output and tracked documentation may change.
 
-The guarded build runs source-only validation, the normal development build, and full validation in that order, stopping on the first failure and showing its output. It does not run Git, publish, or change website version metadata.
+The guarded build runs source-only validation, conditionally refreshes only safely stale spreadsheet-derived artifacts, then runs the normal development build and full validation. It stops on the first failure and shows its output. If the verification working copy may contain unimported edits, readiness blocks before the build; import those edits through the testing workflow first. The build does not run Git, publish, or change website version metadata.
 
 ## Boundaries
 

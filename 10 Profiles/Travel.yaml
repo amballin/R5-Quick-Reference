@@ -1,7 +1,7 @@
 metadata:
   version: 1.0
   status: Draft
-  last_updated: 2026-08-20
+  last_updated: 2026-08-21
   release: false
 title: Travel
 inherits: baseline
@@ -30,9 +30,6 @@ overrides:
     eye_detection: Disable
   drive:
     mode: Single Shot
-  lens:
-    aperture:
-      target: '5.8'
 checklist:
 - Battery
 - Spare card
