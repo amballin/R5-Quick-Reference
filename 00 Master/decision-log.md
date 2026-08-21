@@ -16,7 +16,7 @@ Keep specialized workflows outside the editor where their scope or authorization
 **Status:** Accepted
 **Date:** 2026-08-20
 
-Order the Profile Editor workspace as **Profiles**, **My Menu**, **Baseline Setup**, **Review & Build**, and **Camera Reference**. Preserve unsaved profile drafts when the user selects another profile or workspace, show per-workspace and total pending-change badges, and collect every unsaved profile, My Menu, and baseline draft in **Review & Build**. Require explicit confirmation before discarding a draft, and use the browser's leave warning while any session draft remains.
+Order the Profile Editor workspace as **Profiles**, **Cx Foundation**, **My Menu**, **Baseline Setup**, **Review & Build**, and **Camera Reference**. Preserve unsaved profile drafts when the user selects another profile or workspace, show per-workspace and total pending-change badges, and collect every unsaved profile, Cx Foundation, My Menu, and baseline draft in **Review & Build**. Require explicit confirmation before discarding a draft, and use the browser's leave warning while any session draft remains.
 
 Keep the card preview beside the independently scrolling settings panel. Order **Shown on this card** by the renderer's card rows, followed by collapsed additional settings. Explain beside the preview that `Δ` compares the current card with its saved C1/C2/C3 foundation, not with the baseline; using a baseline value clears `Δ` only when that value also matches the saved foundation.
 
@@ -52,6 +52,19 @@ On every profile card with an authored C1–C3 route, derive whether each visibl
 Keep My Menu value colors independent from whether a change is required. Every visible setting assigned to a named My Menu tab retains that tab's color whether or not it matches the Cx foundation. The color answers where the setting is available; the rightmost `Δ` answers whether it must change. Render each `Δ` in the same color as its setting value, including the normal card text color for non-My-Menu rows. Include an accessible, print-safe legend and change description. Derive this presentation during rendering rather than storing duplicated change flags in profile YAML.
 
 Display the local profile editor's semantic version and a short deterministic build identifier in its header. Calculate the build identifier from the relevant editor, renderer, comparison-engine, and card-template source bytes rather than a timestamp so the same sources produce the same identifier.
+
+## Guarded Cx Foundation Workspace
+
+**Status:** Accepted
+**Date:** 2026-08-21
+
+Place a dedicated **Cx Foundation** workspace immediately after **Profiles** because C1–C3 assignment and card-foundation decisions are occasional work rather than ordinary profile editing. Show the global C1, C2, and C3 assignments there as three distinct editable shooting-profile choices. Treat each assignment as an approved registration target pending physical verification, never as evidence that the physical camera contains or has verified that profile.
+
+For the selected editable card, compare its effective draft values with C1, C2, and C3 simultaneously. Count required changes by visible rendered card row using the same comparison semantics as the card `Δ` markers; a combined row counts once when any represented setting differs. Mark every lowest-count result as **Recommended**, distinguish it from the explicitly selected foundation, and never select or save a recommendation automatically. Permit the owner to select any C1–C3 foundation or **No Cx**.
+
+Keep the matrix and registration tracker responsible for concrete C1–C3 camera values. A global assignment change synchronizes the two control-record mappings, registration headings and matching workflow labels, and every authored card route using the affected slot, but it must not infer or overwrite concrete registration-row values from a profile that may contain ranges or field guidance. A card selection changes only that card's `start` and matching assigned `source_profile`, preserving its My Menu cues.
+
+Require both assignment and card-selection saves to use an exact YAML diff, short-lived one-use review token, concurrent-source checks, machine-local recovery backup, atomic replacement, source validation, and complete rollback. Track unsaved Cx assignment and card-selection drafts in the session ledger and keep local build locked until they are saved or discarded. This decision supersedes the fixed canonical-profile enforcement and the prior workspace order only; the current approved assignments remain C1 Wildlife, C2 Birds in Flight, and C3 Landscape until deliberately changed through this guarded workspace.
 
 ## Field Setup Without a Cx Foundation
 
@@ -104,7 +117,7 @@ Give each supported configured shortcut a stable profile-setting identity indepe
 
 Permit a complete migration plan containing only planned My Menu card cues to produce and review profile candidates without manufacturing an unrelated baseline change. Omit `00 Master/baseline.yaml` from that transaction when the proposed baseline equals the current baseline. Keep the usual acknowledgements, exact diff, source fingerprints, recovery backup, atomic writes, validation, and rollback for the affected profile files. If neither baseline nor profile source needs a change, show that no migration is required and provide no write action.
 
-Replace the preview-local Return to top button with one global, fixed circular up-arrow control available across all four editor views. Show it only after meaningful scrolling, place it within the lower-right safe area, give it an accessible Return to top label, and hide it for print. Match the established Reference Guide floating-return treatment.
+Replace the preview-local Return to top button with one global, fixed circular up-arrow control available across all editor views. Show it only after meaningful scrolling, place it within the lower-right safe area, give it an accessible Return to top label, and hide it for print. Match the established Reference Guide floating-return treatment.
 
 ## Guarded Local Profile Authoring
 

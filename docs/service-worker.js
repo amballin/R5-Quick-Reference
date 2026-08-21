@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "photography-reference";
-const CACHE_NAME = "photography-reference-1786057932";
+const CACHE_NAME = "photography-reference-1787331169";
 const CACHE_URLS = [
   "./",
   ".nojekyll",
@@ -10,6 +10,7 @@ const CACHE_URLS = [
   "Cards/Camera%20Setup%20Essentials.html",
   "Cards/Fireworks.html",
   "Cards/Landscape.html",
+  "Cards/My%20Menu.html",
   "Cards/People.html",
   "Cards/Wildlife.html",
   "app-assets/apple-touch-icon.png",
@@ -43,6 +44,7 @@ const CACHE_URLS = [
   "web-assets/Card%20Logos/png/People.png",
   "web-assets/Card%20Logos/png/Silver%20Logo.png",
   "web-assets/Card%20Logos/png/Wildlife.png",
+  "web-assets/icons/canon_r5_official/autofocus_tab.svg",
   "web-assets/icons/canon_r5_official/cropping_images.svg",
   "web-assets/icons/canon_r5_official/evaluative_metering.svg",
   "web-assets/icons/canon_r5_official/eye_detection.svg",

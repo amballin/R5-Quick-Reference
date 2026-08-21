@@ -11,11 +11,12 @@ card:
   icons:
     left: camera_default
   field_setup:
-    access_only: true
     my_menus:
     - name: SWITCH
       settings:
       - shutter.type
+    start: C1
+    source_profile: Wildlife
 inherits: baseline
 overrides: {}
 checklist:

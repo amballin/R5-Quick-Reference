@@ -20,7 +20,7 @@ if str(BUILD_DIR) not in sys.path:
 
 from profile_editor import ProfileConflictError, ProfileEditorModel, PrototypeError
 from profile_loader import load_yaml
-from validators import spreadsheet_spec_validator
+from validators import control_validator, profile_validator, spreadsheet_spec_validator
 
 
 class ProfileEditorTransactionTests(unittest.TestCase):
@@ -28,8 +28,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="profile-editor-tests-")
         self.root = Path(self.temporary.name) / "repository"
         self.root.mkdir()
-        for directory in ("00 Master", "10 Profiles", "20 Templates", "50 Field Guide", "60 Assets", "90 Testing"):
+        for directory in ("00 Master", "10 Profiles", "20 Templates", "50 Field Guide", "60 Assets", "90 Testing", "data"):
             shutil.copytree(PROJECT_ROOT / directory, self.root / directory)
+        shutil.copy2(PROJECT_ROOT / "controls.yaml", self.root / "controls.yaml")
         catalog = self.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         catalog.parent.mkdir(parents=True)
         shutil.copy2(PROJECT_ROOT / "80 Build" / "profile_editor" / "canon_options.yaml", catalog)
@@ -104,21 +105,127 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(result["validation"], "passed")
         self.assertTrue(Path(result["backup"]).is_dir())
 
-    def test_review_shows_effective_value_when_blank_override_returns_to_auto_baseline(self):
-        payload = self.payload("Travel")
+    def test_cx_foundation_fit_recommends_lowest_visible_row_count_without_selecting_it(self):
+        detail = self.model.cx_foundation_detail("Wildlife")
+        by_start = {item["start"]: item for item in detail["fit"]}
+
+        self.assertEqual(detail["assignments"]["C1"], "Wildlife")
+        self.assertEqual(by_start["C1"]["change_count"], 0)
+        self.assertTrue(by_start["C1"]["recommended"])
+        self.assertEqual(detail["selectedStart"], "C1")
+        self.assertTrue(all(item["total_rows"] > 0 for item in detail["fit"]))
+
+    def test_cx_assignments_require_three_distinct_editable_profiles(self):
+        with self.assertRaisesRegex(PrototypeError, "three different profiles"):
+            self.model.review_cx_assignments(
+                {"C1": "Wildlife", "C2": "Wildlife", "C3": "Landscape"}
+            )
+
+    def test_cx_selection_review_changes_only_the_selected_card_route(self):
+        review = self.model.review_cx_selection("Fireworks", "C1")
+
+        self.assertEqual(review["reviewKind"], "selection")
+        self.assertIn("10 Profiles/Fireworks.yaml", review["diff"])
+        self.assertIn("start: C1", review["diff"])
+        self.assertIn("source_profile: Wildlife", review["diff"])
+
+        result = self.model.save_cx_review(review["reviewToken"])
+        saved = load_yaml(self.root / "10 Profiles" / "Fireworks.yaml")
+        self.assertEqual(saved["card"]["field_setup"]["start"], "C1")
+        self.assertEqual(saved["card"]["field_setup"]["source_profile"], "Wildlife")
+        self.assertEqual(result["validation"], "passed")
+
+    def test_cx_assignment_save_synchronizes_controls_registration_and_card_routes(self):
+        assignments = {"C1": "Landscape", "C2": "Birds in Flight", "C3": "Wildlife"}
+        rows_before = deepcopy(load_yaml(self.root / "90 Testing" / "eos_r5_verification_tracker.yaml")["registration"]["rows"])
+        review = self.model.review_cx_assignments(assignments)
+
+        self.assertEqual(review["reviewKind"], "assignments")
+        self.assertIn("controls.yaml", review["diff"])
+        self.assertIn("90 Testing/eos_r5_verification_tracker.yaml", review["diff"])
+        result = self.model.save_cx_review(review["reviewToken"])
+
+        controls = load_yaml(self.root / "controls.yaml")
+        current = load_yaml(self.root / "data" / "canon_r5_custom_controls_current.yaml")
+        tracker = load_yaml(self.root / "90 Testing" / "eos_r5_verification_tracker.yaml")
+        wildlife = load_yaml(self.root / "10 Profiles" / "Wildlife.yaml")
+        landscape = load_yaml(self.root / "10 Profiles" / "Landscape.yaml")
+        self.assertEqual(controls["custom_shooting_modes"]["C1"]["profile_title"], "Landscape")
+        self.assertEqual(current["custom_shooting_modes"]["C3"]["profile_title"], "Wildlife")
+        self.assertEqual(
+            [item["heading"] for item in tracker["registration"]["profiles"]],
+            ["C1 Landscape", "C2 Birds in Flight", "C3 Wildlife"],
+        )
+        self.assertEqual(tracker["registration"]["rows"], rows_before)
+        self.assertEqual(wildlife["card"]["field_setup"]["source_profile"], "Landscape")
+        self.assertEqual(landscape["card"]["field_setup"]["source_profile"], "Wildlife")
+        self.assertEqual(result["assignments"], assignments)
+        self.assertFalse([issue for issue in control_validator.validate(self.root) if issue.level == "error"])
+        self.assertFalse([issue for issue in profile_validator.validate(self.root) if issue.level == "error"])
+        with self.assertRaisesRegex(ProfileConflictError, "expired or was already used"):
+            self.model.save_cx_review(review["reviewToken"])
+
+    def test_no_cx_selection_preserves_my_menu_routes(self):
+        before = load_yaml(self.root / "10 Profiles" / "People.yaml")
+        menus = deepcopy(before["card"]["field_setup"]["my_menus"])
+        review = self.model.review_cx_selection("People", "")
+        self.model.save_cx_review(review["reviewToken"])
+        saved = load_yaml(self.root / "10 Profiles" / "People.yaml")
+
+        self.assertNotIn("start", saved["card"]["field_setup"])
+        self.assertNotIn("source_profile", saved["card"]["field_setup"])
+        self.assertEqual(saved["card"]["field_setup"]["my_menus"], menus)
+
+    def test_cx_assignment_validation_failure_rolls_back_every_written_file(self):
+        model = ProfileEditorModel(self.root, source_validator=lambda _root: ["forced failure"])
+        assignments = {"C1": "Landscape", "C2": "Birds in Flight", "C3": "Wildlife"}
+        paths = [
+            self.root / "controls.yaml",
+            self.root / "data" / "canon_r5_custom_controls_current.yaml",
+            self.root / "90 Testing" / "eos_r5_verification_tracker.yaml",
+            self.root / "10 Profiles" / "Wildlife.yaml",
+            self.root / "10 Profiles" / "Landscape.yaml",
+        ]
+        before = {path: path.read_bytes() for path in paths}
+        review = model.review_cx_assignments(assignments)
+
+        with self.assertRaisesRegex(PrototypeError, "prior source was restored"):
+            model.save_cx_review(review["reviewToken"])
+        self.assertEqual({path: path.read_bytes() for path in paths}, before)
+
+    def test_cx_foundation_is_a_separate_workspace_after_profiles(self):
+        html = (self.root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+
+        self.assertLess(html.index('data-view="profiles"'), html.index('data-view="cx-foundation"'))
+        self.assertLess(html.index('data-view="cx-foundation"'), html.index('data-view="my-menu"'))
+        self.assertIn('id="cx-fit-results"', html)
+        self.assertIn("item.recommended", script)
+        self.assertIn('badge.textContent = "Your selection"', script)
+        self.assertIn("if (occupiedStart) state.cxAssignments[occupiedStart] = previous", script)
+        self.assertIn("The lowest-change result is a recommendation only", script)
+
+        styles = (self.root / "80 Build" / "profile_editor" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn('.cx-fit-option input[type="radio"]', styles)
+        self.assertIn("width: 1.2rem", styles)
+        self.assertIn("@media (max-width: 1450px)", styles)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", styles)
+
+    def test_review_shows_effective_value_when_override_returns_to_auto_baseline(self):
+        payload = self.payload("Fireworks")
         overrides = dict(payload["overrides"])
-        self.assertEqual(overrides.pop("lens.aperture.target"), "")
+        self.assertEqual(overrides.pop("lens.aperture.target"), "f/8–f/11")
         review = self.model.review_profile({**payload, "overrides": overrides})
 
         aperture = next(
             change for change in review["effectiveChanges"]
             if change["path"] == "lens.aperture.target"
         )
-        self.assertEqual(aperture["beforeDisplay"], "Blank")
+        self.assertEqual(aperture["beforeDisplay"], "f/8–f/11")
         self.assertEqual(aperture["beforeSource"], "profile customization")
         self.assertEqual(aperture["afterDisplay"], "Auto")
         self.assertEqual(aperture["afterSource"], "inherited from baseline")
-        self.assertIn("-      target: ''", review["diff"])
+        self.assertIn("-      target: f/8–f/11", review["diff"])
 
     def test_profile_review_dialog_renders_effective_changes_before_exact_yaml(self):
         html = (self.root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
@@ -160,14 +267,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         payload = self.payload("Travel")
         overrides = dict(payload["overrides"])
         overrides["lens.aperture.target"] = "AUto"
-        review = self.model.review_profile({**payload, "overrides": overrides})
+        review = self.model.review_profile({**payload, "title": "Travel normalization test", "overrides": overrides})
 
-        aperture = next(
-            change for change in review["effectiveChanges"]
-            if change["path"] == "lens.aperture.target"
-        )
-        self.assertEqual(aperture["afterDisplay"], "Auto")
-        self.assertEqual(aperture["afterSource"], "inherited from baseline")
+        self.assertFalse(any(
+            change["path"] == "lens.aperture.target"
+            for change in review["effectiveChanges"]
+        ))
         self.assertNotIn("AUto", review["candidateYaml"])
         self.assertNotIn("aperture:", review["candidateYaml"])
 

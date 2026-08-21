@@ -9,24 +9,6 @@ EVIDENCE_STATUSES = {
     "unresolved",
 }
 
-CANONICAL_CUSTOM_MODES = {
-    "C1": {
-        "profile_title": "Wildlife",
-        "field_label": "General Wildlife",
-        "status": "approved_target_pending_camera_verification",
-    },
-    "C2": {
-        "profile_title": "Birds in Flight",
-        "field_label": "Birds in Flight / Action",
-        "status": "approved_target_pending_camera_verification",
-    },
-    "C3": {
-        "profile_title": "Landscape",
-        "field_label": "Landscape",
-        "status": "approved_target_pending_camera_verification",
-    },
-}
-
 DEPRECATED_SETTING_VALUES = {
     "One Shot AF": "One-Shot AF",
     "Single Shooting": "Single Shot",
@@ -66,8 +48,8 @@ def validate(root):
     current_modes = _mode_mapping(current.get("custom_shooting_modes"))
     if project_modes != current_modes:
         issues.append(error("controls", current_path, "C1-C3 mappings do not agree with controls.yaml."))
-    if project_modes != CANONICAL_CUSTOM_MODES:
-        issues.append(error("controls", project_path, "C1-C3 mappings do not match the accepted canonical profiles and field labels."))
+    if set(project_modes) != {"C1", "C2", "C3"}:
+        issues.append(error("controls", project_path, "C1-C3 mappings must define C1, C2, and C3."))
 
     owner_scope = (
         current.get("evidence", {})
@@ -84,10 +66,38 @@ def validate(root):
         )
 
     profile_titles = _profile_titles(root)
+    assigned_titles = []
     for mode, mapping in project_modes.items():
         profile_title = mapping.get("profile_title")
         if profile_title not in profile_titles:
             issues.append(error("controls", project_path, f"{mode} references missing canonical profile: {profile_title}"))
+        else:
+            assigned_titles.append(profile_title)
+        if not isinstance(mapping.get("field_label"), str) or not mapping["field_label"].strip():
+            issues.append(error("controls", project_path, f"{mode} requires a non-empty field label."))
+        if mapping.get("status") != "approved_target_pending_camera_verification":
+            issues.append(error("controls", project_path, f"{mode} must remain an approved target pending camera verification."))
+    if len(assigned_titles) == 3 and len(set(assigned_titles)) != 3:
+        issues.append(error("controls", project_path, "C1, C2, and C3 must use three different profiles."))
+
+    for profile_path in sorted((root / "10 Profiles").glob("*.yaml")):
+        try:
+            profile = load_yaml_checked(profile_path)
+        except Exception:
+            continue
+        setup = ((profile.get("card") or {}).get("field_setup") or {}) if isinstance(profile, dict) else {}
+        start = setup.get("start") if isinstance(setup, dict) else None
+        if start not in project_modes:
+            continue
+        expected = project_modes[start].get("profile_title")
+        if setup.get("source_profile") != expected:
+            issues.append(
+                error(
+                    "controls",
+                    profile_path,
+                    f"card.field_setup.source_profile must match the global {start} assignment: {expected}",
+                )
+            )
 
     issues.extend(_canonical_setting_issues(root))
     return issues

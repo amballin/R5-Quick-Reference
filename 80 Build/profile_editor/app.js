@@ -3,6 +3,7 @@ const elements = {
   viewTabs: [...document.querySelectorAll(".view-tab")],
   views: [...document.querySelectorAll(".app-view")],
   profileDraftBadge: document.querySelector("#profile-draft-badge"),
+  cxFoundationDraftBadge: document.querySelector("#cx-foundation-draft-badge"),
   myMenuDraftBadge: document.querySelector("#my-menu-draft-badge"),
   baselineDraftBadge: document.querySelector("#baseline-draft-badge"),
   pendingDraftBadge: document.querySelector("#pending-draft-badge"),
@@ -17,6 +18,21 @@ const elements = {
   reviewMyMenuColors: document.querySelector("#review-my-menu-colors"),
   myMenuColorMessage: document.querySelector("#my-menu-color-message"),
   myMenuTabs: document.querySelector("#my-menu-tabs"),
+  reloadCxFoundation: document.querySelector("#reload-cx-foundation"),
+  cxFoundationMessage: document.querySelector("#cx-foundation-message"),
+  cxAssignmentGrid: document.querySelector("#cx-assignment-grid"),
+  reviewCxAssignments: document.querySelector("#review-cx-assignments"),
+  cxProfileSelect: document.querySelector("#cx-profile-select"),
+  cxFitSummary: document.querySelector("#cx-fit-summary"),
+  cxFitResults: document.querySelector("#cx-fit-results"),
+  cxSelectionStatus: document.querySelector("#cx-selection-status"),
+  reviewCxSelection: document.querySelector("#review-cx-selection"),
+  cxFoundationReviewDialog: document.querySelector("#cx-foundation-review-dialog"),
+  cxFoundationReviewSummary: document.querySelector("#cx-foundation-review-summary"),
+  cxFoundationReviewDiff: document.querySelector("#cx-foundation-review-diff"),
+  cxFoundationReviewClose: document.querySelector("#cx-foundation-review-close"),
+  cxFoundationReviewCancel: document.querySelector("#cx-foundation-review-cancel"),
+  saveCxFoundation: document.querySelector("#save-cx-foundation"),
   myMenuColorReviewDialog: document.querySelector("#my-menu-color-review-dialog"),
   myMenuColorReviewSummary: document.querySelector("#my-menu-color-review-summary"),
   myMenuColorReviewDiff: document.querySelector("#my-menu-color-review-diff"),
@@ -123,6 +139,14 @@ const state = {
   baselineDecisions: {},
   baselinePlan: null,
   migrationReviewToken: null,
+  cxFoundation: null,
+  cxAssignments: {},
+  cxSelectedProfile: null,
+  cxSelectedStart: "",
+  cxSavedSelectedStart: "",
+  cxSelectionDrafts: new Map(),
+  cxReviewToken: null,
+  cxReviewKind: null,
 };
 
 function clone(value) {
@@ -172,6 +196,12 @@ function showMyMenuColorMessage(text, error = false) {
   elements.myMenuColorMessage.textContent = text;
   elements.myMenuColorMessage.classList.toggle("error", error);
   elements.myMenuColorMessage.hidden = !text;
+}
+
+function showCxFoundationMessage(text, error = false) {
+  elements.cxFoundationMessage.textContent = text;
+  elements.cxFoundationMessage.classList.toggle("error", error);
+  elements.cxFoundationMessage.hidden = !text;
 }
 
 async function loadProfiles(selectedName = null, loadSelection = true) {
@@ -226,11 +256,275 @@ async function loadBaseline() {
   }
 }
 
+function hasCxAssignmentChanges() {
+  return Boolean(state.cxFoundation) && !equal(state.cxAssignments, state.cxFoundation.assignments);
+}
+
+function hasCxSelectionChanges() {
+  return state.cxSelectionDrafts.size > 0;
+}
+
+function cxSelectedProfileTitle() {
+  return state.cxFoundation?.profiles?.find((profile) => profile.name === state.cxSelectedProfile)?.title
+    || state.cxSelectedProfile
+    || "Profile";
+}
+
+async function loadCxFoundations(preserveDraft = false) {
+  showCxFoundationMessage("Loading saved C1-C3 assignments…");
+  try {
+    const detail = await request("/api/cx-foundations");
+    state.cxFoundation = detail;
+    if (!preserveDraft) {
+      state.cxAssignments = clone(detail.assignments);
+      state.cxSelectionDrafts.clear();
+    }
+    state.cxSelectedProfile = detail.selectedProfile;
+    state.cxSelectedStart = detail.selectedStart || "";
+    state.cxSavedSelectedStart = detail.selectedStart || "";
+    state.cxReviewToken = null;
+    populateCxProfileSelect();
+    renderCxAssignments();
+    renderCxFit(detail);
+    renderSessionStatus();
+    showCxFoundationMessage("Saved foundations loaded. Recommendations are advisory until you explicitly review and save.");
+  } catch (error) {
+    showCxFoundationMessage(error.message, true);
+  }
+}
+
+function populateCxProfileSelect() {
+  elements.cxProfileSelect.replaceChildren();
+  for (const profile of state.cxFoundation?.profiles || []) {
+    const option = document.createElement("option");
+    option.value = profile.name;
+    option.textContent = profile.title;
+    elements.cxProfileSelect.append(option);
+  }
+  elements.cxProfileSelect.value = state.cxSelectedProfile || "";
+  elements.cxProfileSelect.disabled = !elements.cxProfileSelect.options.length;
+}
+
+function renderCxAssignments() {
+  elements.cxAssignmentGrid.replaceChildren();
+  const profiles = state.cxFoundation?.profiles || [];
+  for (const start of ["C1", "C2", "C3"]) {
+    const card = document.createElement("article");
+    card.className = "cx-assignment-card";
+    const title = document.createElement("strong");
+    title.textContent = start;
+    const label = document.createElement("label");
+    label.textContent = "Assigned complete profile";
+    const select = document.createElement("select");
+    select.dataset.start = start;
+    for (const profile of profiles) {
+      const option = document.createElement("option");
+      option.value = profile.title;
+      option.textContent = profile.title;
+      option.selected = state.cxAssignments[start] === profile.title;
+      select.append(option);
+    }
+    select.addEventListener("change", async () => {
+      const previous = state.cxAssignments[start];
+      const occupiedStart = ["C1", "C2", "C3"].find(
+        (candidate) => candidate !== start && state.cxAssignments[candidate] === select.value,
+      );
+      if (occupiedStart) state.cxAssignments[occupiedStart] = previous;
+      state.cxAssignments[start] = select.value;
+      state.cxReviewToken = null;
+      invalidateBuildReadiness();
+      renderCxAssignments();
+      renderSessionStatus();
+      await refreshCxFoundationFit();
+    });
+    const note = document.createElement("small");
+    note.textContent = "Approved registration target pending physical verification.";
+    label.append(select);
+    card.append(title, label, note);
+    elements.cxAssignmentGrid.append(card);
+  }
+  elements.reviewCxAssignments.disabled = !hasCxAssignmentChanges();
+}
+
+async function refreshCxFoundationFit() {
+  if (!state.cxSelectedProfile || !state.cxFoundation) return;
+  const profileDraft = state.profileDrafts.get(`profile:${state.cxSelectedProfile}`);
+  showCxFoundationMessage("Comparing the selected card with all three foundations…");
+  try {
+    const detail = await request("/api/cx-foundation-fit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        profile: state.cxSelectedProfile,
+        assignments: state.cxAssignments,
+        overrides: profileDraft?.payload?.overrides,
+      }),
+    });
+    state.cxFoundation = { ...state.cxFoundation, ...detail, assignments: state.cxFoundation.assignments };
+    state.cxSavedSelectedStart = detail.selectedStart || "";
+    state.cxSelectedStart = state.cxSelectionDrafts.has(state.cxSelectedProfile)
+      ? state.cxSelectionDrafts.get(state.cxSelectedProfile)
+      : state.cxSavedSelectedStart;
+    renderCxFit(detail);
+    showCxFoundationMessage(
+      profileDraft
+        ? "Fit refreshed from the unsaved profile draft. Save or discard that profile draft before saving its Cx selection."
+        : "Fit refreshed. The lowest-change result is a recommendation only."
+    );
+  } catch (error) {
+    showCxFoundationMessage(error.message, true);
+  }
+}
+
+function renderCxFit(detail = state.cxFoundation) {
+  if (!detail) return;
+  const fit = detail.fit || [];
+  const recommended = fit.filter((item) => item.recommended);
+  elements.cxFitSummary.textContent = recommended.length
+    ? `Recommended: ${recommended.map((item) => `${item.foundation_label} — ${item.change_count} ${item.change_count === 1 ? "field change" : "field changes"}`).join("; ")}. You make the final selection.`
+    : "No foundation recommendation is available.";
+  elements.cxFitResults.replaceChildren();
+  for (const item of [...fit, { start: "", foundation_label: "No Cx", source_profile: "No registered foundation", change_count: fit[0]?.total_rows || 0, total_rows: fit[0]?.total_rows || 0, recommended: false }]) {
+    const label = document.createElement("label");
+    label.className = "cx-fit-option";
+    label.classList.toggle("is-recommended", item.recommended);
+    label.classList.toggle("is-selected", state.cxSelectedStart === item.start);
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "cx-foundation-choice";
+    radio.value = item.start;
+    radio.checked = state.cxSelectedStart === item.start;
+    radio.addEventListener("change", () => selectCxFoundation(item.start));
+    const name = document.createElement("strong");
+    name.textContent = item.foundation_label;
+    const count = document.createElement("span");
+    count.className = "cx-fit-count";
+    count.textContent = String(item.change_count);
+    const detailText = document.createElement("small");
+    detailText.textContent = item.start
+      ? `${item.change_count === 1 ? "field change" : "field changes"} across ${item.total_rows} visible card rows`
+      : `verify/set all ${item.total_rows} visible card rows`;
+    label.append(radio, name);
+    const badges = document.createElement("span");
+    badges.className = "cx-fit-badges";
+    if (item.recommended) {
+      const badge = document.createElement("span");
+      badge.className = "cx-recommendation";
+      badge.textContent = "Recommended";
+      badges.append(badge);
+    }
+    if (state.cxSelectedStart === item.start) {
+      const badge = document.createElement("span");
+      badge.className = "cx-selected-badge";
+      badge.textContent = "Your selection";
+      badges.append(badge);
+    }
+    if (badges.childElementCount) label.append(badges);
+    label.append(count, detailText);
+    elements.cxFitResults.append(label);
+  }
+  updateCxSelectionState();
+}
+
+function selectCxFoundation(start) {
+  state.cxSelectedStart = start;
+  if (start === state.cxSavedSelectedStart) state.cxSelectionDrafts.delete(state.cxSelectedProfile);
+  else state.cxSelectionDrafts.set(state.cxSelectedProfile, start);
+  state.cxReviewToken = null;
+  invalidateBuildReadiness();
+  renderCxFit();
+  renderSessionStatus();
+}
+
+function updateCxSelectionState() {
+  const selectedFit = state.cxFoundation?.fit?.find((item) => item.start === state.cxSelectedStart);
+  const selection = state.cxSelectedStart
+    ? `${state.cxSelectedStart} · ${state.cxAssignments[state.cxSelectedStart]}`
+    : "No Cx";
+  elements.cxSelectionStatus.textContent = `Currently selected: ${selection}${selectedFit ? ` — ${selectedFit.change_count} field changes` : ""}.`;
+  const profileDraft = state.profileDrafts.has(`profile:${state.cxSelectedProfile}`);
+  elements.reviewCxSelection.disabled = !state.cxSelectionDrafts.has(state.cxSelectedProfile) || profileDraft;
+}
+
+async function reviewCxAssignments() {
+  elements.reviewCxAssignments.disabled = true;
+  showCxFoundationMessage("Preparing the exact synchronized assignment diff…");
+  try {
+    const review = await request("/api/cx-assignment-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assignments: state.cxAssignments }),
+    });
+    showCxReview(review);
+  } catch (error) {
+    showCxFoundationMessage(error.message, true);
+  } finally {
+    elements.reviewCxAssignments.disabled = !hasCxAssignmentChanges();
+  }
+}
+
+async function reviewCxSelection() {
+  elements.reviewCxSelection.disabled = true;
+  showCxFoundationMessage("Preparing the exact card-route diff…");
+  try {
+    const review = await request("/api/cx-selection-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile: state.cxSelectedProfile, start: state.cxSelectedStart }),
+    });
+    showCxReview(review);
+  } catch (error) {
+    showCxFoundationMessage(error.message, true);
+  } finally {
+    updateCxSelectionState();
+  }
+}
+
+function showCxReview(review) {
+  state.cxReviewToken = review.reviewToken;
+  state.cxReviewKind = review.reviewKind;
+  elements.cxFoundationReviewSummary.textContent = review.summary;
+  elements.cxFoundationReviewDiff.textContent = review.diff;
+  elements.cxFoundationReviewDialog.showModal();
+  showCxFoundationMessage("Candidate validation passed. Review the exact YAML before saving.");
+}
+
+async function saveCxFoundation() {
+  if (!state.cxReviewToken) return;
+  elements.saveCxFoundation.disabled = true;
+  showCxFoundationMessage("Creating a recovery backup and saving the reviewed Cx Foundation changes…");
+  try {
+    const result = await request("/api/cx-foundation-saves", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.cxReviewToken }),
+    });
+    state.cxReviewToken = null;
+    const savedKind = state.cxReviewKind;
+    state.cxReviewKind = null;
+    elements.cxFoundationReviewDialog.close();
+    await loadProfiles(state.detail?.name, false);
+    if (savedKind === "selection") state.cxSelectionDrafts.delete(state.cxSelectedProfile);
+    await loadCxFoundations(true);
+    invalidateBuildReadiness();
+    renderSessionStatus();
+    showCxFoundationMessage(`Cx Foundation saved and validated. Recovery backup: ${result.backup}`);
+  } catch (error) {
+    state.cxReviewToken = null;
+    state.cxReviewKind = null;
+    elements.cxFoundationReviewDialog.close();
+    showCxFoundationMessage(error.message, true);
+  } finally {
+    elements.saveCxFoundation.disabled = false;
+  }
+}
+
 function switchView(viewName) {
   const profilesView = document.querySelector("#profiles-view");
   if (viewName !== "profiles" && profilesView && !profilesView.hidden) captureCurrentProfileDraft();
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
   for (const view of elements.views) view.hidden = view.id !== `${viewName}-view`;
+  if (viewName === "cx-foundation" && state.cxFoundation) refreshCxFoundationFit();
   if (viewName === "review-build") renderReviewBuild();
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -326,6 +620,17 @@ function pendingSessionItems() {
     detail: "Unsaved profile draft",
   }));
   if (hasMyMenuDraftChanges()) items.push({ type: "my-menu", key: "my-menu", label: "My Menu", detail: "Unsaved tab, shortcut, or color changes" });
+  if (hasCxAssignmentChanges()) items.push({ type: "cx-foundation", key: "cx-assignments", label: "Cx assignments", detail: "Unsaved C1-C3 profile assignments" });
+  for (const [profile, start] of state.cxSelectionDrafts) {
+    const item = state.cxFoundation?.profiles?.find((candidate) => candidate.name === profile);
+    items.push({
+      type: "cx-foundation",
+      key: `cx-selection:${profile}`,
+      profile,
+      label: `${item?.title || profile} foundation`,
+      detail: `Unsaved card foundation selection: ${start || "No Cx"}`,
+    });
+  }
   const baselineChanges = baselineChangedPaths();
   if (baselineChanges.length) {
     items.push({
@@ -352,10 +657,12 @@ function renderSessionStatus() {
   const profileCount = state.profileDrafts.size;
   const menuCount = hasMyMenuDraftChanges() ? 1 : 0;
   const baselineCount = baselineChangedPaths().length ? 1 : 0;
+  const cxCount = Number(hasCxAssignmentChanges()) + state.cxSelectionDrafts.size;
   setBadge(elements.profileDraftBadge, profileCount);
   setBadge(elements.myMenuDraftBadge, menuCount);
   setBadge(elements.baselineDraftBadge, baselineCount);
-  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount);
+  setBadge(elements.cxFoundationDraftBadge, cxCount);
+  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount);
   if (!document.querySelector("#review-build-view")?.hidden) renderReviewBuild();
 }
 
@@ -380,6 +687,7 @@ function renderReviewBuild() {
   const profileCount = items.filter((item) => item.type === "profile").length;
   elements.sessionSummary.replaceChildren(
     sessionSummaryCard(profileCount, profileCount === 1 ? "profile draft" : "profile drafts"),
+    sessionSummaryCard(items.filter((item) => item.type === "cx-foundation").length, "Cx Foundation drafts"),
     sessionSummaryCard(items.some((item) => item.type === "my-menu") ? 1 : 0, "My Menu draft"),
     sessionSummaryCard(items.some((item) => item.type === "baseline") ? 1 : 0, "baseline draft"),
     sessionSummaryCard(state.buildReadiness?.ready ? "Ready" : "Locked", "local build"),
@@ -421,6 +729,15 @@ function renderReviewBuild() {
 }
 
 async function openPendingItem(item) {
+  if (item.type === "cx-foundation") {
+    switchView("cx-foundation");
+    if (item.profile) {
+      state.cxSelectedProfile = item.profile;
+      elements.cxProfileSelect.value = item.profile;
+      await refreshCxFoundationFit();
+    }
+    return;
+  }
   if (item.type === "my-menu") {
     switchView("my-menu");
     return;
@@ -444,6 +761,11 @@ async function discardPendingItem(item) {
   if (!window.confirm(`Discard ${item.label}? These unsaved browser changes cannot be recovered.`)) return;
   if (item.type === "my-menu") {
     loadSavedMenus(true);
+  } else if (item.type === "cx-foundation") {
+    if (item.key === "cx-assignments") state.cxAssignments = clone(state.cxFoundation.assignments);
+    if (item.profile) state.cxSelectionDrafts.delete(item.profile);
+    state.cxReviewToken = null;
+    await refreshCxFoundationFit();
   } else if (item.type === "baseline") {
     discardBaselineDraft();
   } else {
@@ -2170,6 +2492,19 @@ elements.reviewMyMenuColors.addEventListener("click", reviewMyMenuColors);
 elements.saveMyMenuColors.addEventListener("click", saveMyMenuColors);
 elements.myMenuColorReviewClose.addEventListener("click", () => elements.myMenuColorReviewDialog.close());
 elements.myMenuColorReviewCancel.addEventListener("click", () => elements.myMenuColorReviewDialog.close());
+elements.reloadCxFoundation.addEventListener("click", () => {
+  if ((hasCxAssignmentChanges() || hasCxSelectionChanges()) && !window.confirm("Discard all unsaved Cx Foundation changes and reload saved source?")) return;
+  loadCxFoundations(false);
+});
+elements.reviewCxAssignments.addEventListener("click", reviewCxAssignments);
+elements.cxProfileSelect.addEventListener("change", async () => {
+  state.cxSelectedProfile = elements.cxProfileSelect.value;
+  await refreshCxFoundationFit();
+});
+elements.reviewCxSelection.addEventListener("click", reviewCxSelection);
+elements.cxFoundationReviewClose.addEventListener("click", () => elements.cxFoundationReviewDialog.close());
+elements.cxFoundationReviewCancel.addEventListener("click", () => elements.cxFoundationReviewDialog.close());
+elements.saveCxFoundation.addEventListener("click", saveCxFoundation);
 elements.baselineAnalyze.addEventListener("click", () => analyzeBaselineDraft(false));
 elements.baselineFollowAll.addEventListener("click", () => setUnresolvedBaselineDecisions("follow_baseline"));
 elements.baselinePreserveAll.addEventListener("click", () => setUnresolvedBaselineDecisions("preserve_previous"));
@@ -2198,5 +2533,5 @@ window.addEventListener("beforeunload", (event) => {
   event.returnValue = "";
 });
 
-Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline()]);
+Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(), loadCxFoundations()]);
 updateFloatingReturn();

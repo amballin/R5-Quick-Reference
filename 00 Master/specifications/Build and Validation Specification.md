@@ -30,6 +30,8 @@
 
 ## Output and Release Behavior
 
+References below to **C1 Wildlife**, **C2 Birds in Flight**, and **C3 Landscape** describe the currently approved assignments, not permanently fixed slot names. Matrix and Setup headings must derive from the synchronized C1–C3 mappings. The guarded Cx Foundation assignment transaction may update those headings and matching workflow labels, but concrete registration-row values remain deliberate matrix/tracker inputs and must not be inferred from profile ranges or field guidance.
+
 - Disposable generated artifacts belong in the machine-local workspace's `Build Output/` folder. The default workspace is the sibling folder `<repository name> Local/`; `PRS_LOCAL_WORKSPACE` may set a different absolute or user-relative location.
 - `Build Output/merged-build/` is the canonical generated web/PWA bundle. It contains released responsive cards under `Cards/*.html` and copied card assets under `web-assets/`.
 - `Build Output/Card Candidates/` is a disposable machine-local review mini-site for unreleased cards. It is not a publishing source and must not be copied into `merged-build`, `docs`, or optional website staging.

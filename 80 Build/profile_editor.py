@@ -49,6 +49,7 @@ from baseline_migration import (
     migration_diff,
 )
 from build_validator import discover_profiles, is_reference_card
+from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
 from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
@@ -94,10 +95,13 @@ REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
 EDITOR_VERSION = "1.0.0"
 EDITOR_BUILD_FILES = (
+    "controls.yaml",
+    "data/canon_r5_custom_controls_current.yaml",
     "00 Master/my_menu.yaml",
     "00 Master/my_menu_colors.yaml",
     "10 Profiles/My Menu.yaml",
     "20 Templates/card.html",
+    "90 Testing/eos_r5_verification_tracker.yaml",
     "80 Build/baseline_impact.py",
     "80 Build/baseline_migration.py",
     "80 Build/cx_route_analysis.py",
@@ -172,6 +176,7 @@ class ProfileEditorModel:
         self._pending_reviews = {}
         self._pending_migration_reviews = {}
         self._pending_color_reviews = {}
+        self._pending_cx_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
 
@@ -354,6 +359,329 @@ class ProfileEditorModel:
                 }
             )
         return sorted(items, key=lambda item: (item["cardType"] == "reference", item["title"].casefold()))
+
+    def cx_foundation_detail(self, profile_name=None, assignments=None, flat_overrides=None):
+        """Return global assignments and advisory fit for one shooting profile."""
+        saved_assignments = self._cx_assignments()
+        candidate_assignments = self._validate_cx_assignments(assignments or saved_assignments)
+        shooting = [item for item in self.profile_list() if item["editableDraft"]]
+        if not shooting:
+            raise PrototypeError("No editable shooting profiles are available.")
+        names = {item["name"] for item in shooting}
+        if profile_name not in names:
+            profile_name = shooting[0]["name"]
+        profile = copy.deepcopy(self._profile(profile_name))
+        if flat_overrides is not None:
+            profile["overrides"] = nested_from_flat(self._validate_overrides(flat_overrides))
+        setting_paths = self._card_setting_paths(profile)
+        try:
+            fit = analyze_foundation_fit(
+                profile,
+                self.profiles,
+                self.baseline,
+                setting_paths,
+                candidate_assignments,
+            )
+        except CxRouteAnalysisError as exc:
+            raise PrototypeError(str(exc)) from exc
+        setup = ((profile.get("card") or {}).get("field_setup") or {})
+        selected = str(setup.get("start") or "")
+        return {
+            "sourceFiles": [
+                "controls.yaml",
+                "data/canon_r5_custom_controls_current.yaml",
+                "90 Testing/eos_r5_verification_tracker.yaml",
+            ],
+            "assignments": saved_assignments,
+            "candidateAssignments": candidate_assignments,
+            "profiles": shooting,
+            "selectedProfile": profile_name,
+            "selectedStart": selected if selected in {"C1", "C2", "C3"} else "",
+            "fit": fit,
+        }
+
+    def review_cx_assignments(self, assignments):
+        clean = self._validate_cx_assignments(assignments)
+        candidates = self._cx_assignment_candidates(clean)
+        return self._create_cx_review(
+            candidates,
+            f"Update C1-C3 assignments and synchronized routes ({len(candidates)} files).",
+            "assignments",
+        )
+
+    def review_cx_selection(self, profile_name, start):
+        if not isinstance(profile_name, str) or profile_name not in self.profiles:
+            raise PrototypeError("Select an editable profile.")
+        profile = copy.deepcopy(self._profile(profile_name))
+        if is_reference_card(profile):
+            raise PrototypeError("Reference cards cannot select a Cx foundation.")
+        start = str(start or "").upper()
+        if start not in {"", "C1", "C2", "C3"}:
+            raise PrototypeError("Cx foundation must be C1, C2, C3, or No Cx.")
+        setup = profile.setdefault("card", {}).setdefault("field_setup", {})
+        if start:
+            setup["start"] = start
+            setup["source_profile"] = self._cx_assignments()[start]
+            setup.pop("access_only", None)
+        else:
+            setup.pop("start", None)
+            setup.pop("source_profile", None)
+            if not setup:
+                profile.get("card", {}).pop("field_setup", None)
+        relative = f"10 Profiles/{profile_name}.yaml"
+        return self._create_cx_review(
+            {relative: self._dump_profile(profile)},
+            f"Set {profile.get('title', profile_name)} card foundation to {start or 'No Cx'}.",
+            "selection",
+        )
+
+    def save_cx_review(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed Cx Foundation token is required.")
+        with self._write_lock:
+            self._expire_cx_reviews()
+            review = self._pending_cx_reviews.pop(review_token, None)
+            if review is None:
+                raise ProfileConflictError(
+                    "This Cx Foundation review expired or was already used. Review the current draft again."
+                )
+            before = {}
+            for relative, expected_sha in review["source_sha256"].items():
+                data = (self.paths.root / relative).read_bytes()
+                if self._sha256(data) != expected_sha:
+                    raise ProfileConflictError(
+                        f"{relative} changed after review. Reload Cx Foundation and review again."
+                    )
+                before[relative] = data
+            backup = self._create_cx_backup(review, before)
+            written = []
+            try:
+                for relative, candidate in review["candidates"].items():
+                    if self._sha256(candidate) != review["candidate_sha256"][relative]:
+                        raise ProfileConflictError("The reviewed Cx Foundation candidate is no longer valid.")
+                    if candidate == before[relative]:
+                        continue
+                    target = self.paths.root / relative
+                    self._atomic_write(target, candidate, before[relative])
+                    written.append(relative)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_errors = []
+                for relative in reversed(written):
+                    target = self.paths.root / relative
+                    try:
+                        self._atomic_write(target, before[relative], target.read_bytes())
+                    except Exception as rollback_exc:  # pragma: no cover
+                        rollback_errors.append(f"{relative}: {rollback_exc}")
+                if rollback_errors:
+                    raise PrototypeError(
+                        f"Cx Foundation save failed and rollback was incomplete. Recovery backup: {backup}. "
+                        + "; ".join(rollback_errors)
+                    ) from exc
+                raise PrototypeError(
+                    f"Cx Foundation save failed; prior source was restored. Recovery backup: {backup}. {exc}"
+                ) from exc
+            self.verification_tracker = load_yaml(self.paths.verification_tracker_source_file) or {}
+            self.registration = self.verification_tracker.get("registration") or {}
+            self._reload_profiles()
+            return {
+                "sourceFiles": written,
+                "backup": str(backup),
+                "validation": "passed",
+                "reviewKind": review["kind"],
+                "assignments": self._cx_assignments(),
+            }
+
+    def _cx_assignments(self):
+        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        modes = controls.get("custom_shooting_modes") or {}
+        return {
+            start: str((modes.get(start) or {}).get("profile_title") or "").strip()
+            for start in ("C1", "C2", "C3")
+        }
+
+    def _validate_cx_assignments(self, assignments):
+        if not isinstance(assignments, dict):
+            raise PrototypeError("C1-C3 assignments must be an object.")
+        eligible = {
+            profile.get("title", name)
+            for name, profile in self.profiles.items()
+            if not is_reference_card(profile)
+        }
+        clean = {}
+        for start in ("C1", "C2", "C3"):
+            title = assignments.get(start)
+            if not isinstance(title, str) or title not in eligible:
+                raise PrototypeError(f"{start} must identify an editable shooting profile.")
+            clean[start] = title
+        if len(set(clean.values())) != 3:
+            raise PrototypeError("C1, C2, and C3 must use three different profiles.")
+        return clean
+
+    def _cx_assignment_candidates(self, assignments):
+        relative_controls = "controls.yaml"
+        relative_current = "data/canon_r5_custom_controls_current.yaml"
+        relative_tracker = "90 Testing/eos_r5_verification_tracker.yaml"
+        controls_path = self.paths.root / relative_controls
+        current_path = self.paths.root / relative_current
+        tracker_path = self.paths.root / relative_tracker
+        controls = load_yaml(controls_path) or {}
+        current = load_yaml(current_path) or {}
+        tracker = load_yaml(self.paths.root / relative_tracker) or {}
+        old_assignments = self._cx_assignments()
+        registration = tracker.setdefault("registration", {})
+        profile_entries = registration.get("profiles") or []
+        by_key = {str(item.get("key") or "").upper(): item for item in profile_entries if isinstance(item, dict)}
+        for start, title in assignments.items():
+            entry = by_key.get(start)
+            if entry is None:
+                raise PrototypeError(f"Registration tracker is missing {start.lower()}.")
+            entry["heading"] = f"{start} {title}"
+        replacements = {
+            f"{start} {old_assignments[start]}": f"{start} {assignments[start]}"
+            for start in ("C1", "C2", "C3")
+            if old_assignments[start] != assignments[start]
+        }
+        tracker_text = tracker_path.read_text(encoding="utf-8")
+        for start in ("C1", "C2", "C3"):
+            if old_assignments[start] != assignments[start]:
+                tracker_text = self._replace_tracker_assignment_labels(
+                    tracker_text,
+                    start,
+                    old_assignments[start],
+                    assignments[start],
+                )
+        for start, title in assignments.items():
+            tracker_text = re.sub(
+                rf"(^    - key: {start.lower()}\n      heading: ).*$",
+                rf"\g<1>{title if title.startswith(start + ' ') else start + ' ' + title}",
+                tracker_text,
+                count=1,
+                flags=re.MULTILINE,
+            )
+        candidates = {
+            relative_controls: self._replace_cx_mode_assignments(
+                controls_path.read_text(encoding="utf-8"), assignments, old_assignments
+            ).encode("utf-8"),
+            relative_current: self._replace_cx_mode_assignments(
+                current_path.read_text(encoding="utf-8"), assignments, old_assignments
+            ).encode("utf-8"),
+            relative_tracker: tracker_text.encode("utf-8"),
+        }
+        for name, profile in self.profiles.items():
+            if is_reference_card(profile):
+                continue
+            candidate = copy.deepcopy(profile)
+            setup = ((candidate.get("card") or {}).get("field_setup") or {})
+            start = str(setup.get("start") or "").upper()
+            if start not in assignments:
+                continue
+            setup["source_profile"] = assignments[start]
+            relative = f"10 Profiles/{name}.yaml"
+            candidates[relative] = self._dump_profile(candidate)
+        return candidates
+
+    @staticmethod
+    def _replace_tracker_assignment_labels(text, start, old_title, new_title):
+        text = text.replace(f"{start} {old_title}", f"{start} {new_title}")
+        for suffix in ("CONFIG", "REG", "READ", "OPS"):
+            pattern = rf"(^  - test_id: {start}-{suffix}-01\n)(.*?)(?=^  - test_id:|^registration:)"
+            match = re.search(pattern, text, flags=re.MULTILINE | re.DOTALL)
+            if not match:
+                raise PrototypeError(f"Cannot locate the {start}-{suffix} verification workflow block.")
+            block = match.group(0).replace(old_title, new_title)
+            if suffix == "OPS":
+                block = re.sub(
+                    r"(^    expected_result: )[^\n]*$",
+                    rf"\g<1>{start} recalls the complete approved {new_title} registration target and controls behave as intended.",
+                    block,
+                    count=1,
+                    flags=re.MULTILINE,
+                )
+            text = text[:match.start()] + block + text[match.end():]
+        return text
+
+    @staticmethod
+    def _replace_cx_mode_assignments(text, assignments, old_assignments):
+        for start, title in assignments.items():
+            if title == old_assignments.get(start):
+                continue
+            block_pattern = rf"(^  {start}:\n)(.*?)(?=^  C[123]:\n|^  notes:|^  restriction:)"
+            match = re.search(block_pattern, text, flags=re.MULTILINE | re.DOTALL)
+            if not match:
+                raise PrototypeError(f"Cannot locate the {start} control mapping.")
+            block = match.group(0)
+            block = re.sub(r"(^    profile_title: ).*$", rf"\g<1>{title}", block, count=1, flags=re.MULTILINE)
+            block = re.sub(r"(^    field_label: ).*$", rf"\g<1>{title}", block, count=1, flags=re.MULTILINE)
+            text = text[:match.start()] + block + text[match.end():]
+        return text
+
+    def _profile_by_title(self, title):
+        matches = [profile for profile in self.profiles.values() if profile.get("title") == title]
+        if len(matches) != 1:
+            raise PrototypeError(f"Cx foundation title must resolve once: {title}")
+        return matches[0]
+
+    def _create_cx_review(self, candidates, summary, kind):
+        before = {relative: (self.paths.root / relative).read_bytes() for relative in candidates}
+        changed = {relative: data for relative, data in candidates.items() if data != before[relative]}
+        if not changed:
+            raise PrototypeError("The Cx Foundation draft matches the saved source.")
+        before = {relative: before[relative] for relative in changed}
+        diff = "".join(
+            "".join(
+                difflib.unified_diff(
+                    before[relative].decode("utf-8").splitlines(keepends=True),
+                    candidate.decode("utf-8").splitlines(keepends=True),
+                    fromfile=f"a/{relative}",
+                    tofile=f"b/{relative}",
+                )
+            )
+            for relative, candidate in changed.items()
+        )
+        review = {
+            "created": time.monotonic(),
+            "kind": kind,
+            "candidates": changed,
+            "source_sha256": {relative: self._sha256(data) for relative, data in before.items()},
+            "candidate_sha256": {relative: self._sha256(data) for relative, data in changed.items()},
+            "diff": diff,
+        }
+        with self._write_lock:
+            self._expire_cx_reviews()
+            token = secrets.token_urlsafe(24)
+            self._pending_cx_reviews[token] = review
+        if kind == "assignments":
+            summary = f"Update C1-C3 assignments and synchronized routes ({len(changed)} files)."
+        return {"reviewToken": token, "reviewKind": kind, "summary": summary, "diff": diff}
+
+    def _create_cx_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-cx-foundation"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        for relative, data in before.items():
+            target = backup / "before" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        for relative, data in review["candidates"].items():
+            target = backup / "candidate" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": f"cx-foundation-{review['kind']}",
+            "source_sha256": review["source_sha256"],
+            "candidate_sha256": review["candidate_sha256"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
 
     def dictionary_detail(self):
         sections = copy.deepcopy(self.reference_sections)
@@ -1735,6 +2063,16 @@ class ProfileEditorModel:
         for token in expired:
             del self._pending_color_reviews[token]
 
+    def _expire_cx_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_cx_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_cx_reviews[token]
+
     @staticmethod
     def _validate_project_sources(root):
         from validator import run
@@ -1842,6 +2180,8 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.dictionary_detail())
             if path == "/api/baseline":
                 return self._json(self.model.baseline_detail())
+            if path == "/api/cx-foundations":
+                return self._json(self.model.cx_foundation_detail())
             if path == "/api/editor-info":
                 return self._json(self.model.editor_info())
             if path.startswith("/api/profiles/"):
@@ -1875,6 +2215,10 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/my-menu-color-saves",
             "/api/my-menu-reviews",
             "/api/my-menu-saves",
+            "/api/cx-foundation-fit",
+            "/api/cx-assignment-reviews",
+            "/api/cx-selection-reviews",
+            "/api/cx-foundation-saves",
             "/api/build-readiness",
             "/api/local-build",
         }:
@@ -1914,6 +2258,22 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.review_my_menu_configuration(payload.get("tabs")))
             if parsed.path == "/api/my-menu-saves":
                 return self._json(self.model.save_my_menu_configuration(payload.get("reviewToken")))
+            if parsed.path == "/api/cx-foundation-fit":
+                return self._json(
+                    self.model.cx_foundation_detail(
+                        payload.get("profile"),
+                        payload.get("assignments"),
+                        payload.get("overrides"),
+                    )
+                )
+            if parsed.path == "/api/cx-assignment-reviews":
+                return self._json(self.model.review_cx_assignments(payload.get("assignments")))
+            if parsed.path == "/api/cx-selection-reviews":
+                return self._json(
+                    self.model.review_cx_selection(payload.get("profile"), payload.get("start"))
+                )
+            if parsed.path == "/api/cx-foundation-saves":
+                return self._json(self.model.save_cx_review(payload.get("reviewToken")))
             if parsed.path == "/api/build-readiness":
                 return self._json(self.model.build_readiness(payload.get("pendingChanges")))
             if parsed.path == "/api/local-build":

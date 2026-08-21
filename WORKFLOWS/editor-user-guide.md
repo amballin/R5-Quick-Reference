@@ -32,6 +32,7 @@ If source files change outside the editor, restart the editor before continuing.
 Use the workspace sidebar:
 
 - **Profiles** — Preview, create, duplicate, or update shooting profiles.
+- **Cx Foundation** — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
 - **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
 - **Review & Build** — Resolve all browser drafts, validate source, and run the guarded local build.
@@ -40,6 +41,16 @@ Use the workspace sidebar:
 On narrower windows, the sidebar becomes a compact navigation row above the workspace.
 
 Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session.
+
+## Choose a Cx foundation
+
+Open **Cx Foundation** when the C1–C3 arrangement or a card's starting route needs deliberate review. This workspace is separate from Profiles because these decisions should change less often than ordinary card settings.
+
+Under **C1–C3 assignments**, select three different editable shooting profiles. Choosing a profile already assigned to another slot swaps the two assignments, so all three remain distinct. The assignment describes the approved profile target for each camera slot; it does not prove that the physical camera has been updated or verified. Reviewing an assignment change shows every synchronized control record, registration heading, workflow label, and affected card route. Concrete C1–C3 setting values are intentionally left unchanged—use the Subject Settings Matrix and registration tracker to decide and finalize those values.
+
+Under **Cx Foundation Fit**, select a profile card. C1, C2, and C3 are compared simultaneously using the card's effective visible rows. Combined rows count as one field change when any represented setting differs. The lowest count is marked **Recommended**; ties remain equally recommended. The editor never makes the selection for you. Choose C1, C2, C3, or **No Cx**, then review and save that explicit choice.
+
+If an unsaved Profiles draft exists for the selected card, the recommendation reflects that draft. Save or discard the Profiles draft before saving the card's foundation so the two reviewed changes cannot conflict. Cx Foundation drafts appear in **Review & Build** and keep the local build locked until saved or discarded.
 
 ## Review the camera reference
 
@@ -122,7 +133,7 @@ If validation or a concurrent-change check fails, stop and read the message. Rel
 
 Open **Review & Build** before finishing:
 
-1. Review every pending profile, My Menu, and baseline draft.
+1. Review every pending profile, Cx Foundation, My Menu, and baseline draft.
 2. Open each draft and save it through its exact-diff review, or choose **Discard** and confirm that decision.
 3. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
 4. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm.

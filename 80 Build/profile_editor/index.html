@@ -27,6 +27,10 @@
           <span class="nav-label-line"><span class="nav-label">Profiles</span><span id="profile-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Create and review cards</span>
         </button>
+        <button class="view-tab" type="button" data-view="cx-foundation">
+          <span class="nav-label-line"><span class="nav-label">Cx Foundation</span><span id="cx-foundation-draft-badge" class="nav-badge" hidden></span></span>
+          <span class="nav-note">Assign and choose C1–C3</span>
+        </button>
         <button class="view-tab" type="button" data-view="my-menu">
           <span class="nav-label-line"><span class="nav-label">My Menu</span><span id="my-menu-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Arrange camera shortcuts</span>
@@ -50,7 +54,7 @@
     <div class="app-workspace">
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
-      Profile and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
+      Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
       Reference cards, direct baseline edits, deletion, Git, and publishing remain unavailable here. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes.
     </section>
 
@@ -97,6 +101,50 @@
       <div class="configuration-state"><strong>Guarded persistence</strong> · Used tabs, ordered items, and card colors are saved together only after exact diff review.</div>
       <div id="my-menu-color-message" class="message" role="status" hidden></div>
       <div id="my-menu-tabs" class="my-menu-tabs"></div>
+    </section>
+
+    <section id="cx-foundation-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Occasional routing decisions</p>
+          <h2>Cx Foundation</h2>
+          <p class="muted">Assign the complete profile represented by each camera slot, compare one card with all three foundations, then make the final selection yourself.</p>
+        </div>
+        <button id="reload-cx-foundation" class="secondary" type="button">Reload saved foundations</button>
+      </div>
+      <div class="configuration-state"><strong>Recommendation only</strong> · The lowest-change foundation is highlighted, but it is never selected or saved automatically.</div>
+      <div id="cx-foundation-message" class="message" role="status" hidden></div>
+
+      <section class="cx-assignment-panel">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">Global camera slots</p>
+            <h2>C1–C3 assignments</h2>
+          </div>
+          <button id="review-cx-assignments" class="save-action" type="button" disabled>Review assignment changes</button>
+        </div>
+        <p class="collection-note">Each slot represents one complete shooting profile. Assignments must be distinct and remain approved targets pending physical camera verification.</p>
+        <div id="cx-assignment-grid" class="cx-assignment-grid"></div>
+      </section>
+
+      <section class="cx-fit-panel">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">Selected card</p>
+            <h2>Cx Foundation Fit</h2>
+          </div>
+          <label class="cx-profile-picker">Profile <select id="cx-profile-select" disabled></select></label>
+        </div>
+        <p id="cx-fit-summary" class="collection-note">Choose a profile to compare its visible card rows with C1, C2, and C3 simultaneously.</p>
+        <div id="cx-fit-results" class="cx-fit-results" aria-live="polite"></div>
+        <div class="cx-selection-bar">
+          <div>
+            <strong id="cx-selection-status">No foundation selected.</strong>
+            <span>Your selection controls the card route and Δ comparison; the recommendation remains advisory.</span>
+          </div>
+          <button id="review-cx-selection" class="save-action" type="button" disabled>Review foundation selection</button>
+        </div>
+      </section>
     </section>
 
     <section id="profiles-view" class="app-view">
@@ -351,6 +399,23 @@
     <div class="review-actions">
       <button id="migration-review-cancel" class="secondary" type="button">Continue planning</button>
       <button id="migration-save-button" class="save-action" type="button">Apply reviewed migration</button>
+    </div>
+  </dialog>
+
+  <dialog id="cx-foundation-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required Cx Foundation review</p>
+        <h2>Exact synchronized YAML changes</h2>
+        <p id="cx-foundation-review-summary" class="muted"></p>
+      </div>
+      <button id="cx-foundation-review-close" class="secondary" type="button" aria-label="Close Cx Foundation review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Only the reviewed Cx assignment or card-route files are saved.</strong> Concrete registration values do not change here, and this does not claim that the physical camera has been updated or verified.</p>
+    <pre id="cx-foundation-review-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="cx-foundation-review-cancel" class="secondary" type="button">Continue editing</button>
+      <button id="save-cx-foundation" class="save-action" type="button">Save reviewed Cx Foundation</button>
     </div>
   </dialog>
 

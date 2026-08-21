@@ -69,6 +69,26 @@ def validate(root):
         extra_colors = sorted(name for name in assignments if name not in saved_names)
         if missing_colors or extra_colors:
             issues.append(error("profile_editor", root / "00 Master" / "my_menu_colors.yaml", "Saved My Menu tabs and color assignments must have identical names."))
+        cx_detail = model.cx_foundation_detail()
+        cx_assignments = cx_detail.get("assignments") or {}
+        if set(cx_assignments) != {"C1", "C2", "C3"} or len(set(cx_assignments.values())) != 3:
+            issues.append(error("profile_editor", root / "controls.yaml", "Cx Foundation requires three distinct C1-C3 profile assignments."))
+        fit = cx_detail.get("fit") or []
+        if len(fit) != 3 or {item.get("start") for item in fit} != {"C1", "C2", "C3"}:
+            issues.append(error("profile_editor", root / "80 Build" / "cx_route_analysis.py", "Cx Foundation Fit must compare C1, C2, and C3 simultaneously."))
+        elif not all(isinstance(item.get("change_count"), int) and isinstance(item.get("recommended"), bool) for item in fit):
+            issues.append(error("profile_editor", root / "80 Build" / "cx_route_analysis.py", "Cx Foundation Fit counts and recommendations are incomplete."))
+        html = (root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
+        script = (root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+        if not (
+            html.find('data-view="profiles"')
+            < html.find('data-view="cx-foundation"')
+            < html.find('data-view="my-menu"')
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Cx Foundation must follow Profiles and precede My Menu."))
+        for endpoint in ("/api/cx-foundation-fit", "/api/cx-assignment-reviews", "/api/cx-selection-reviews", "/api/cx-foundation-saves"):
+            if endpoint not in script:
+                issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Cx Foundation browser endpoint is missing: {endpoint}"))
     except Exception as exc:
         issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", f"Profile editor readiness failed: {exc}"))
     return issues

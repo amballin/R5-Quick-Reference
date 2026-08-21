@@ -11,7 +11,6 @@ card:
   icons:
     left: camera_default
   field_setup:
-    access_only: true
     my_menus:
     - name: SWITCH
       settings:
@@ -22,6 +21,8 @@ card:
       settings:
       - autofocus.servo_af_case
       - autofocus.switching_tracked_subjects
+    start: C1
+    source_profile: Wildlife
 inherits: baseline
 overrides: {}
 checklist:

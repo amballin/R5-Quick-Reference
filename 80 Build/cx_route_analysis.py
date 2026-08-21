@@ -99,6 +99,74 @@ def row_requires_change(row_key, changed_paths):
     return bool(represented_paths(row_key) & set(changed_paths or []))
 
 
+def analyze_foundation_fit(profile, profiles, baseline, setting_paths, assignments):
+    """Compare one editable card with every configured C1-C3 foundation.
+
+    Counts follow rendered card rows rather than raw YAML leaves. A combined
+    Track/Accel, IBIS/Lens IS, or ISO row therefore counts as one field change.
+    The lowest count is advisory only; callers remain responsible for the
+    user's explicit foundation selection.
+    """
+
+    if not isinstance(profile, Mapping) or profile.get("card_type") == "reference":
+        raise CxRouteAnalysisError("Cx foundation fit requires an editable profile card.")
+    if not isinstance(assignments, Mapping):
+        raise CxRouteAnalysisError("C1-C3 assignments must be a mapping.")
+    visible_rows = _visible_row_keys(setting_paths)
+    results = []
+    for start in ("C1", "C2", "C3"):
+        source_title = assignments.get(start)
+        if not isinstance(source_title, str) or not source_title.strip():
+            raise CxRouteAnalysisError(f"{start} requires an assigned profile.")
+        candidate = copy.deepcopy(profile)
+        setup = candidate.setdefault("card", {}).setdefault("field_setup", {})
+        setup["start"] = start
+        setup["source_profile"] = source_title.strip()
+        merged = _deep_merge(_baseline_defaults(baseline), candidate.get("overrides") or {})
+        analysis = analyze_selected_foundation(
+            candidate,
+            merged,
+            profiles,
+            baseline,
+            setting_paths,
+        )
+        changed_rows = [
+            row_key
+            for row_key in visible_rows
+            if row_requires_change(row_key, analysis["changed_paths"])
+        ]
+        results.append(
+            {
+                "start": start,
+                "source_profile": source_title.strip(),
+                "foundation_label": analysis["foundation_label"],
+                "change_count": len(changed_rows),
+                "total_rows": len(visible_rows),
+                "changed_rows": changed_rows,
+            }
+        )
+    minimum = min((item["change_count"] for item in results), default=0)
+    for item in results:
+        item["recommended"] = item["change_count"] == minimum
+    return results
+
+
+def _visible_row_keys(setting_paths):
+    rows = []
+    for path in setting_paths or []:
+        row_key = next(
+            (
+                combined_key
+                for combined_key, represented in COMBINED_ROW_PATHS.items()
+                if path in represented
+            ),
+            path,
+        )
+        if row_key not in rows:
+            rows.append(row_key)
+    return rows
+
+
 def _profile_by_title(profiles, title):
     if isinstance(profiles, Mapping):
         candidates = [

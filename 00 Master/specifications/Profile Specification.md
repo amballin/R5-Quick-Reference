@@ -32,7 +32,7 @@ The applied migration must set the proposed baseline values, add overrides selec
 
 ### C1–C3 Impact Warnings
 
-Baseline impact analysis must also calculate effective before-and-after values for the canonical **C1 Wildlife**, **C2 Birds in Flight**, and **C3 Landscape** registrations defined in `90 Testing/eos_r5_verification_tracker.yaml`. The report must include every proposed baseline setting path for all three modes and distinguish values that change with the baseline from values protected by an explicit registration entry.
+Baseline impact analysis must also calculate effective before-and-after values for the three currently assigned C1–C3 registrations defined by the synchronized control mappings and `90 Testing/eos_r5_verification_tracker.yaml`. The report must identify each slot with its current assigned profile, include every proposed baseline setting path for all three modes, and distinguish values that change with the baseline from values protected by an explicit registration entry.
 
 For each registered mode whose effective value changes, the report must warn about every shooting profile whose `card.field_setup.start` declares that C-mode. Each warning identifies the profile, declared source profile, and affected settings. The migration may apply separately planned baseline/profile changes, but it must not modify C1–C3 registration definitions, profile starting-mode metadata, source-profile declarations, or My Menu routes in response to these warnings.
 
@@ -46,7 +46,7 @@ The report must include access-only profile cards and exclude permanent referenc
 
 ## Guarded Local Editor Transactions
 
-Profile Editor 1.0 is the primary local interface for routine profile, My Menu, baseline, camera-reference, readiness, and local-build work. Workflow documentation must lead with this interface for those tasks and reserve terminal-first instructions for startup, troubleshooting, Git/handoff, spreadsheets, testing import, recovery, and publication.
+Profile Editor 1.0 is the primary local interface for routine profile, Cx Foundation, My Menu, baseline, camera-reference, readiness, and local-build work. Workflow documentation must lead with this interface for those tasks and reserve terminal-first instructions for startup, troubleshooting, Git/handoff, spreadsheets, testing import, recovery, and publication.
 
 The local loopback profile editor may perform only these writes under `10 Profiles/`:
 
@@ -54,7 +54,7 @@ The local loopback profile editor may perform only these writes under `10 Profil
 - create a new baseline-derived shooting profile; or
 - duplicate an existing shooting profile into a new file.
 
-Reference cards and profile deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. New and duplicated profiles must begin as `Draft` with `metadata.release: false`.
+Reference cards and profile deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. The dedicated Cx Foundation transaction may update `controls.yaml`, its synchronized current-control record, C1–C3 registration headings and matching workflow labels, and the `card.field_setup.start`/`source_profile` declarations needed to keep routes aligned. New and duplicated profiles must begin as `Draft` with `metadata.release: false`.
 
 Every editor save must follow one guarded transaction:
 
@@ -69,7 +69,11 @@ Every editor save must follow one guarded transaction:
 
 The editor does not commit, push, publish, change website version metadata, rename, or delete. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
 
-The workspace order is **Profiles**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+The workspace order is **Profiles**, **Cx Foundation**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, Cx Foundation, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+
+The Cx Foundation workspace provides two explicitly separate decisions. **C1–C3 assignments** selects three distinct editable shooting profiles, one per slot. **Cx Foundation Fit** selects one editable card, compares its effective values with all three candidate foundations simultaneously, and counts differences by rendered visible card row using the same combined-row semantics as the card change markers. Every lowest-count foundation is marked Recommended, but the editor must never select or save it automatically. The owner may explicitly select any C1–C3 slot or No Cx. Fit uses an unsaved browser profile draft when one exists, but saving that card's foundation remains blocked until the ordinary profile draft is saved or discarded.
+
+An assignment review must synchronize both control mappings, registration headings and matching workflow labels, and every card route using an affected slot. It must not alter concrete C1–C3 registration row values; those remain deliberate matrix/tracker inputs because profile fields may contain ranges or guidance rather than one camera-ready value. A card-foundation review changes only that card's `start` and assigned `source_profile`, or removes both for No Cx, while preserving My Menu routes. Both operations require exact multi-file diff review, byte-bound one-use tokens, concurrent-source checks, a machine-local recovery backup, atomic writes, source validation, and complete rollback.
 
 The editable settings panel presents card-visible controls first in renderer order and keeps other controls in a collapsed secondary group. Its independently scrolling preview remains visible beside desktop settings. The preview must state that `Δ` compares with the saved C1/C2/C3 foundation rather than the baseline, so removing an override does not imply that the indicator will clear.
 
@@ -81,7 +85,7 @@ Coverage uses stable `setting_path` identities on supported My Menu catalog item
 
 A My Menu save must validate both complete candidates, show one exact two-file YAML diff, bind every candidate byte and source fingerprint to a short-lived one-use token, create a recovery backup containing prior and candidate files, replace only reviewed changed files atomically, run source validation, and roll back every written file on failure. Saved colors apply globally to matching named-tab tokens, values, change markers, PDFs, and field-guide access tokens. The persisted layout drives the dynamic read-only My Menu reference card. Reference previews are permitted without overrides or source writes, and every displayed card preview must provide a Return to top action in the editor.
 
-The editor provides one global Return to top control rather than a preview-local action. It is a fixed circular up arrow available in Profiles, My Menu, Baseline Setup, Review & Build, and Camera Reference, appears only after meaningful vertical scrolling, respects lower-right safe-area insets, carries an accessible text label, and is hidden for print.
+The editor provides one global Return to top control rather than a preview-local action. It is a fixed circular up arrow available in Profiles, Cx Foundation, My Menu, Baseline Setup, Review & Build, and Camera Reference, appears only after meaningful vertical scrolling, respects lower-right safe-area insets, carries an accessible text label, and is hidden for print.
 
 The editor header must display its semantic editor version and a short deterministic build identifier. The server derives the build identifier from the relevant editor, renderer, Cx-comparison, and card-template source bytes; it must not use a timestamp that changes without a source change.
 
@@ -100,7 +104,8 @@ Profiles use the existing keys documented by `00 Master/schema.yaml`, including 
 - `80 Build/validators/profile_editor_validator.py` verifies editor readiness, source fingerprints, read-only reference-card behavior, unreleased-draft defaults, and complete My Menu setting identities for declared routes.
 - `80 Build/my_menu_colors.py` validates the curated palette and named-tab assignments used by both renderers and guarded editor saves.
 - `80 Build/my_menu.py` validates persisted tab names and ordered Canon item identities; `80 Build/my_menu_reference.py` derives the read-only reference-card rows.
-- `80 Build/test_profile_editor.py` exercises guarded update, create, duplicate, baseline migration, one-use review, conflict, all-file rollback, acknowledgement, reference-card boundaries, session My Menu availability analysis, draft-ledger UI, Cx-foundation change-indicator semantics, and local-build gating in temporary repositories.
+- `80 Build/cx_route_analysis.py` owns both selected-foundation change markers and simultaneous C1–C3 visible-row fit counts.
+- `80 Build/test_profile_editor.py` exercises guarded update, create, duplicate, Cx assignment and selection transactions, foundation-fit recommendations, baseline migration, one-use review, conflict, all-file rollback, acknowledgement, reference-card boundaries, session My Menu availability analysis, draft-ledger UI, Cx-foundation change-indicator semantics, and local-build gating in temporary repositories.
 - `80 Build/baseline_impact.py` provides deterministic, read-only profile comparison, C1–C3 registration and starting-route warnings, My Menu card-coverage analysis, and validated migration planning for current and proposed baseline values.
 - `80 Build/test_baseline_impact.py` covers inherited choices, protected and redundant overrides, C1–C3 effective values, visible-card My Menu coverage and availability, newly visible cue gaps, obsolete cues from removed tabs and shortcuts, tab moves, globally unreferenced configured shortcuts, invalid paths and types, stale-decision rejection, reference-card exclusion, and input immutability.
 - `80 Build/baseline_migration.py` converts a complete plan into deterministic baseline/profile candidate bytes without mutating its inputs.

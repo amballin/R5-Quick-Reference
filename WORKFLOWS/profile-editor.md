@@ -28,7 +28,15 @@ The editor is available only on this Mac while that command is running. Press **
 
 ## Follow the workspace order
 
-The sidebar follows the normal editing flow: **Profiles**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Numbered badges identify pending browser drafts. Moving to another profile or workspace preserves profile drafts in this browser session instead of silently discarding them. Review & Build collects every profile, My Menu, and baseline draft in one list. Refreshing or closing the page still clears session drafts, so the browser warns before leaving while any remain.
+The sidebar follows the normal editing flow: **Profiles**, **Cx Foundation**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Numbered badges identify pending browser drafts. Moving to another profile or workspace preserves drafts in this browser session instead of silently discarding them. Review & Build collects every profile, Cx Foundation, My Menu, and baseline draft in one list. Refreshing or closing the page still clears session drafts, so the browser warns before leaving while any remain.
+
+## Choose Cx foundations
+
+Open **Cx Foundation** for the occasional decision about which complete shooting profile C1, C2, and C3 represent, or which slot a particular card should start from. Under **C1–C3 assignments**, choose three distinct editable profiles. Choosing a profile already used by another slot swaps the two assignments. Assignment changes remain approved targets pending physical camera verification; they do not claim that the camera has been reconfigured.
+
+Under **Cx Foundation Fit**, choose a card. The editor compares its effective visible card rows with all three assignments simultaneously. Each result shows the number of field changes; combined card rows count once when any represented camera setting differs. Every lowest-count result is marked **Recommended**, but the editor never selects it automatically. Deliberately select C1, C2, C3, or **No Cx** as the final card route.
+
+If the selected card has an unsaved Profiles draft, the fit uses those draft values, but save or discard that ordinary profile draft before saving its foundation choice. **Review assignment changes** synchronizes the two control mappings, registration headings and matching workflow labels, and affected card routes. It does not rewrite concrete C1–C3 registration values; use the Subject Settings Matrix and registration tracker to finalize those values. **Review foundation selection** changes only the selected card's Cx route and preserves its My Menu cues. Both actions show an exact diff and use the normal backup, concurrent-change, validation, and rollback safeguards.
 
 ## Work through camera reference
 
@@ -62,7 +70,7 @@ The saved layout is the approved project reference, not proof that the physical 
 
 The released **My Menu** card appears under **Camera Setup & Controls** beside **Camera Buttons** and is read-only in the Profiles view. Choose it and select **Render reference preview** to see the current field reminder without saving anything. Each used saved tab becomes a separate section in `MY MENU1`–`MY MENU5` order, followed by its saved shortcuts in item order. Adding, renaming, reordering, or removing a used tab through **My Menu** changes the next preview and normal build automatically.
 
-After scrolling down in any editor tab, use the floating circular **↑** control at the lower right to return to the top. It is available throughout Profiles, My Menu, Baseline Setup, Review & Build, and Camera Reference and disappears near the top.
+After scrolling down in any editor tab, use the floating circular **↑** control at the lower right to return to the top. It is available throughout Profiles, Cx Foundation, My Menu, Baseline Setup, Review & Build, and Camera Reference and disappears near the top.
 
 ## Use Baseline Setup
 
