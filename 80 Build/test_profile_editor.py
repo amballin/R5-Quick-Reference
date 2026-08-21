@@ -809,7 +809,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             for profile in result["my_menu_impact"]["profiles"]
             if profile["name"] == "Camera Defaults"
         )
-        self.assertTrue(camera_defaults["access_only"])
+        self.assertFalse(camera_defaults["access_only"])
+        self.assertEqual(camera_defaults["start"], "C1")
+        self.assertEqual(camera_defaults["source_profile"], "Wildlife")
         self.assertEqual({path: path.read_bytes() for path in before}, before)
 
     def test_baseline_impact_checks_session_my_menu_availability_without_writes(self):
