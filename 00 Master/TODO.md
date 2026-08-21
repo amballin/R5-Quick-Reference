@@ -55,6 +55,7 @@ Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does n
 
 - Generate duplicate control tables from one authoritative machine-readable control source.
 - Add validation that rejects the deprecated registered-AF workflow terminology.
+- Evaluate assigning every profile and reference card an immutable UUID. Store machine references by UUID rather than mutable title, and have the editor and renderers resolve the current title from that identity so a title rename does not require rewriting every reference. Any implementation must define a backward-compatible migration for existing profiles and references, generate a new UUID when creating or duplicating a card, and validate UUID presence, uniqueness, and referential integrity. Deletion remains a separate dependency-aware guarded operation; stable identity makes renaming safer but does not make deletion inherently safe.
 
 ### Feature Interaction Rules
 
