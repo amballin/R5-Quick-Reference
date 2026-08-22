@@ -517,6 +517,36 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertNotIn("af1_eye_detection", configured)
         self.assertNotIn("shoot2_iso_speed_settings", configured)
 
+    def test_profile_review_synchronizes_saved_my_menu_cues_without_menu_editing(self):
+        payload = self.payload("Fireworks", title="Fireworks cue sync")
+        profile, *_rest = self.model._candidate_profile(payload)
+        menus = profile["card"]["field_setup"]["my_menus"]
+        by_name = {tab["name"]: tab["settings"] for tab in menus}
+
+        self.assertIn("shutter.type", by_name["SWITCH"])
+        self.assertIn("stabilization.image_stabilization.mode", by_name["SWITCH"])
+
+    def test_new_profile_review_adds_saved_my_menu_cues_automatically(self):
+        draft = self.model.profile_draft("create")
+        profile, *_rest = self.model._candidate_profile(
+            {
+                "operation": "create",
+                "sourceProfile": None,
+                "targetName": "Automatic Menu Test",
+                "sourceFingerprint": None,
+                "title": "Automatic Menu Test",
+                "subtitle": "",
+                "status": "Draft",
+                "displayCategory": "subject",
+                "release": False,
+                "overrides": draft["originalOverrides"],
+            }
+        )
+
+        menus = profile["card"]["field_setup"]["my_menus"]
+        self.assertTrue(menus)
+        self.assertEqual([tab["name"] for tab in menus], ["SWITCH", "AF Case"])
+
     def test_editor_info_exposes_version_and_source_derived_build(self):
         first = self.model.editor_info()
         second = self.model.editor_info()
@@ -583,6 +613,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="discard-profile-dialog"', html)
         self.assertIn('id="deleted-cards-view"', html)
         self.assertIn('id="restore-profile-dialog"', html)
+        self.assertIn('id="profile-removal-reason"', html)
+        self.assertIn("How to move a card here", html)
+        self.assertIn("Silver%20Logo.png", html)
+        self.assertIn("Restore saved profile", html)
         self.assertIn('id="import-verification-tracker"', html)
         self.assertIn('window.addEventListener("beforeunload"', javascript)
         self.assertIn("profileDrafts: new Map()", javascript)
@@ -590,6 +624,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/profile-removal-reviews"', javascript)
         self.assertIn('request("/api/profile-restore-reviews"', javascript)
         self.assertIn("state.cxSelectionDrafts.has(state.detail.name)", javascript)
+        self.assertIn("state.activeProfileName = name", javascript)
+        self.assertIn("profile.name === state.activeProfileName", javascript)
+        self.assertIn("elements.profileActionMenu.open = false", javascript)
+        self.assertIn("Permanent reference cards cannot be moved", javascript)
 
     def test_build_readiness_blocks_pending_drafts_and_source_errors(self):
         pending = self.model.build_readiness(2)

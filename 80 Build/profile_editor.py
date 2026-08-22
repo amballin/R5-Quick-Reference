@@ -2133,7 +2133,50 @@ class ProfileEditorModel:
             profile["subtitle"] = subtitle
         else:
             profile.pop("subtitle", None)
+        self._synchronize_profile_my_menu_cues(profile)
         return profile, target_name, operation, source_name or None, source_fingerprint or None
+
+    def _synchronize_profile_my_menu_cues(self, profile):
+        """Match this card's visible setting cues to the persisted My Menu layout."""
+        merged = merge(self.defaults, profile.get("overrides") or {})
+        visible = set(displayed_card_setting_paths(profile, merged, self.paths))
+        route_catalog = self._my_menu_route_catalog()
+        desired = []
+        for tab in used_tabs(self.my_menu):
+            item_ids = set(tab.get("items") or [])
+            settings = [
+                path
+                for path in self.setting_order
+                if path in visible and route_catalog.get(path) in item_ids
+            ]
+            if settings:
+                desired.append({"name": tab["name"], "settings": settings})
+
+        card = profile.get("card")
+        setup = card.get("field_setup") if isinstance(card, dict) else None
+        if desired:
+            if not isinstance(card, dict):
+                card = profile.setdefault("card", {})
+            if not isinstance(setup, dict):
+                setup = card.setdefault("field_setup", {})
+            setup["my_menus"] = desired
+            if (
+                profile.get("display_category") == "reference"
+                and not setup.get("start")
+                and not setup.get("source_card_id")
+            ):
+                setup["access_only"] = True
+            return
+
+        if not isinstance(setup, dict):
+            return
+        setup.pop("my_menus", None)
+        if setup.get("access_only") is True and not setup.get("start") and not setup.get("source_card_id"):
+            setup.pop("access_only", None)
+        if not setup:
+            card.pop("field_setup", None)
+        if isinstance(card, dict) and not card:
+            profile.pop("card", None)
 
     def _confirm_review_source(self, review):
         self._confirm_target_state(

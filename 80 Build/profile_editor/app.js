@@ -1,5 +1,6 @@
 const elements = {
   editorBuild: document.querySelector("#editor-build"),
+  profileActionMenu: document.querySelector(".profile-action-menu"),
   viewTabs: [...document.querySelectorAll(".view-tab")],
   views: [...document.querySelectorAll(".app-view")],
   profileDraftBadge: document.querySelector("#profile-draft-badge"),
@@ -44,6 +45,7 @@ const elements = {
   duplicateButton: document.querySelector("#duplicate-button"),
   reloadButton: document.querySelector("#reload-button"),
   discardProfileButton: document.querySelector("#discard-profile-button"),
+  profileRemovalReason: document.querySelector("#profile-removal-reason"),
   previewButton: document.querySelector("#preview-button"),
   reviewButton: document.querySelector("#review-button"),
   profileMetadata: document.querySelector("#profile-metadata"),
@@ -168,6 +170,7 @@ const state = {
   cxSelectionDrafts: new Map(),
   cxReviewToken: null,
   cxReviewKind: null,
+  activeProfileName: null,
 };
 
 function clone(value) {
@@ -545,7 +548,14 @@ function switchView(viewName) {
   if (viewName !== "profiles" && profilesView && !profilesView.hidden) captureCurrentProfileDraft();
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
   for (const view of elements.views) view.hidden = view.id !== `${viewName}-view`;
-  if (viewName === "cx-foundation" && state.cxFoundation) refreshCxFoundationFit();
+  if (viewName === "cx-foundation" && state.cxFoundation) {
+    const carried = state.cxFoundation.profiles?.some((profile) => profile.name === state.activeProfileName);
+    if (carried) {
+      state.cxSelectedProfile = state.activeProfileName;
+      elements.cxProfileSelect.value = state.activeProfileName;
+    }
+    refreshCxFoundationFit();
+  }
   if (viewName === "deleted-cards") loadDeletedCards();
   if (viewName === "review-build") renderReviewBuild();
   requestAnimationFrame(updateFloatingReturn);
@@ -1156,6 +1166,7 @@ async function loadProfile(name) {
   try {
     const detail = await request(`/api/profiles/${encodeURIComponent(name)}`);
     if (loadSequence !== state.loadSequence) return;
+    state.activeProfileName = name;
     elements.profileSelect.value = name;
     applyProfileDetail(detail, state.profileDrafts.get(`profile:${name}`));
   } catch (error) {
@@ -1190,6 +1201,7 @@ async function loadProfileDraft(operation) {
 
 function applyProfileDetail(detail, restoredDraft = null) {
   state.detail = detail;
+  if ((detail.operation || "update") === "update") state.activeProfileName = detail.name;
   state.currentDraftKey = profileDraftKey(detail);
   state.originalOverrides = clone(detail.originalOverrides || {});
   state.draftOverrides = clone(restoredDraft?.payload?.overrides || state.originalOverrides);
@@ -1307,23 +1319,28 @@ function renderMetadataState() {
 }
 
 function updateDiscardProfileAction() {
-  const eligible = Boolean(
-    state.detail?.editableDraft
-    && (state.detail.operation || "update") === "update"
-    && !state.detail.metadata?.release
-  );
-  elements.discardProfileButton.hidden = !eligible;
-  if (!eligible) return;
-  const browserBlocker = profileDiscardBrowserBlocker();
-  const sourceBlocker = (state.detail.discardBlockers || []).join("; ");
-  const blocker = browserBlocker || sourceBlocker;
+  const saved = Boolean(state.detail && (state.detail.operation || "update") === "update");
+  elements.discardProfileButton.hidden = !saved;
+  elements.profileRemovalReason.hidden = true;
+  elements.profileRemovalReason.textContent = "";
+  if (!saved) return;
+  let blocker = "";
+  if (!state.detail.editableDraft || state.detail.cardType === "reference") {
+    blocker = "Permanent reference cards cannot be moved to Deleted Cards.";
+  } else if (state.detail.metadata?.release) {
+    blocker = "Uncheck Include in released card bundle, then review and save that change first.";
+  } else {
+    blocker = profileDiscardBrowserBlocker() || (state.detail.discardBlockers || []).join("; ");
+  }
   elements.discardProfileButton.disabled = Boolean(blocker);
   elements.discardProfileButton.title = blocker;
+  elements.profileRemovalReason.textContent = blocker;
+  elements.profileRemovalReason.hidden = !blocker;
 }
 
 function profileDiscardBrowserBlocker() {
   if (profilePayloadChanged(profileDraftPayload())) {
-    return "Save or discard the current profile edits before removing this card.";
+    return "Review and save the current profile edits, or restore the saved profile, before moving this card.";
   }
   if (state.cxSelectionDrafts.has(state.detail.name)) {
     return "Save or discard this card's Cx Foundation draft before removing it.";
@@ -2713,9 +2730,16 @@ async function preview() {
 
 elements.profileSelect.addEventListener("change", () => loadProfile(elements.profileSelect.value));
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
-elements.duplicateButton.addEventListener("click", () => loadProfileDraft("duplicate"));
-elements.discardProfileButton.addEventListener("click", reviewProfileDiscard);
+elements.duplicateButton.addEventListener("click", () => {
+  elements.profileActionMenu.open = false;
+  loadProfileDraft("duplicate");
+});
+elements.discardProfileButton.addEventListener("click", () => {
+  elements.profileActionMenu.open = false;
+  reviewProfileDiscard();
+});
 elements.reloadButton.addEventListener("click", async () => {
+  elements.profileActionMenu.open = false;
   if (!window.confirm("Discard this browser draft? These unsaved changes cannot be recovered.")) return;
   const detail = state.detail;
   state.profileDrafts.delete(state.currentDraftKey);

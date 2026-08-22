@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Active Profile Context and Automatic Saved My Menu Cues
+
+**Status:** Accepted
+**Date:** 2026-08-22
+
+Carry the currently selected saved shooting profile from Profiles into Cx Foundation and preserve its browser draft across workspace navigation. During every ordinary profile create, duplicate, or update review, deterministically synchronize that card's visible My Menu cues with the persisted global My Menu layout; include any cue additions, removals, or moves in the ordinary exact profile YAML diff. The owner therefore opens My Menu only to change the global camera layout, names, shortcuts, or colors. This extends, without replacing, the profile-only migration used to synchronize multiple existing cards after a global My Menu change.
+
+Keep Profile actions self-explanatory and transient: close the menu after an enabled action is selected, label source reversion **Restore saved profile**, and show a visible actionable reason whenever **Move to Deleted Cards** is disabled. Explain the removal sequence and reference blockers on the Deleted Cards page. Reuse the established silver camera logo immediately after the editor version/build indicator.
+
 ## Immutable Card Identity and Recoverable Removal
 
 **Status:** Accepted

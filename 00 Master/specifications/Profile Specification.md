@@ -13,7 +13,7 @@ This specification governs subject/profile YAML under `10 Profiles/`.
 - Profile data retains camera concepts as separate fields, including ISO mode, fixed ISO value, Auto ISO maximum, Servo AF Case, Tracking Sensitivity, Accel./Decel. tracking, Switching tracked subjects, stabilization mode, IBIS, Lens IS, and High speed display.
 - Profiles contain shooting settings and concise field-use content, not duplicated educational explanations. Reference applicable appendices instead.
 - Preserve existing profile filenames, titles, YAML structure, data, and backward compatibility unless explicitly approved.
-- `metadata.release: true` selects the profile/card for the offline iPhone/PWA bundle. Absence or false does not select it.
+- `metadata.release: true` selects the profile/card for the offline iPhone/PWA bundle. Absence or false does not select it, but changing this flag never removes active profile source or moves it to Deleted Cards.
 
 ## Baseline Impact and Guarded Migration
 
@@ -43,7 +43,7 @@ Baseline impact analysis must inspect the fully merged rows displayed by each pr
 
 My Menu is a stable fast-access configuration, not a transition recipe. Matching a C1–C3 starting value must not make a shortcut unnecessary. For both the current and proposed baseline, the engine must use the card renderer's conditional visibility rules to determine whether each declared route setting is displayed. The report must show whether its identified Canon item is available in the named configured tab and whether a displayed configured shortcut lacks a card cue. A cue gap introduced because a conditional row becomes visible after the proposal must be identified as newly visible.
 
-The report must include access-only profile cards and exclude permanent reference cards. A card tab assignment with no displayed settings is informational and is omitted from that rendered card; hidden status alone is not a recommendation to remove the shortcut from My Menu. A configured shortcut whose setting is not displayed on any card remains only a possible camera-configuration removal candidate. By contrast, an authored card cue is obsolete when its named tab is absent, or when its known setting identity is absent from that named tab, and must be listed as a planned profile-cue removal. A declaration whose setting identity is unknown remains an unresolved warning unless its entire named tab is absent. Findings must not mutate the browser's My Menu draft, C1–C3 registrations, or profile routes. Only a complete reviewed migration may add missing cues and remove obsolete cues. Editing or restoring the session My Menu draft invalidates an existing coverage report and review token and requires a new analysis.
+The report must include access-only profile cards and exclude permanent reference cards. A card tab assignment with no displayed settings is informational and is omitted from that rendered card; hidden status alone is not a recommendation to remove the shortcut from My Menu. A configured shortcut whose setting is not displayed on any card remains only a possible camera-configuration removal candidate. By contrast, an authored card cue is obsolete when its named tab is absent, or when its known setting identity is absent from that named tab, and must be listed as a planned profile-cue removal. A declaration whose setting identity is unknown remains an unresolved warning unless its entire named tab is absent. Findings must not mutate the browser's My Menu draft, C1–C3 registrations, or profile routes. A complete reviewed migration may synchronize multiple existing cards; an ordinary guarded profile review synchronizes its one candidate against the persisted global My Menu layout. Editing or restoring the session My Menu draft invalidates an existing coverage report and review token and requires a new analysis.
 
 ## Guarded Local Editor Transactions
 
@@ -51,7 +51,7 @@ Profile Editor 1.0 is the primary local interface for routine profile, Cx Founda
 
 The local loopback profile editor may perform only these writes under `10 Profiles/`:
 
-- update the title, optional subtitle, metadata status, release flag, and baseline overrides of an existing shooting profile without renaming its file;
+- update the title, optional subtitle, metadata status, release flag, baseline overrides, and saved-My-Menu card cues of an existing shooting profile without renaming its file;
 - create a new baseline-derived shooting profile; or
 - duplicate an existing shooting profile into a new file;
 - restore an exact held shooting-profile source from the machine-local Deleted Cards area after reviewed conflict checks; or
@@ -61,7 +61,7 @@ Reference cards and permanent deletion remain read-only. The shared baseline is 
 
 Every editor save must follow one guarded transaction:
 
-1. Validate structured input and remove overrides equal to the baseline.
+1. Validate structured input, remove overrides equal to the baseline, and deterministically synchronize the candidate's visible card cues with the persisted global My Menu layout.
 2. Confirm the source fingerprint and target-name availability.
 3. Build and validate the complete candidate in an isolated temporary source layout.
 4. Show the exact YAML diff and bind those candidate bytes to a short-lived one-time review token.
@@ -72,7 +72,9 @@ Every editor save must follow one guarded transaction:
 
 The editor does not commit, push, publish, change website version metadata, rename, or permanently delete. It may move an eligible unreleased card into recoverable Deleted Cards and restore it through the dedicated guarded transactions. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
 
-The workspace order is **Profiles**, **Cx Foundation**, **Deleted Cards**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, Cx Foundation, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+The workspace order is **Profiles**, **Cx Foundation**, **Deleted Cards**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The currently selected saved editable profile is the active profile context and must become the Profile to evaluate when the owner moves from Profiles into Cx Foundation. The sidebar shows pending badges for profile, Cx Foundation, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+
+Profile actions closes after any enabled submenu action is selected. **Restore saved profile** discards only unsaved browser edits and reloads active source. **Move to Deleted Cards** remains visible for every saved card; when disabled, the menu must state the actionable reason, including release state, unsaved changes, structured inbound references, or permanent-reference status. The Deleted Cards page must summarize the unrelease-save-move sequence, distinguish never-saved browser drafts from saved active cards, and state that structured references and permanent reference-card status block removal.
 
 The Cx Foundation workspace provides two explicitly separate decisions. **C1–C3 assignments** selects three distinct editable shooting profiles, one per slot. **Cx Foundation Fit** selects one editable card, compares its effective values with all three candidate foundations simultaneously, and counts differences by rendered visible card row using the same combined-row semantics as the card change markers. Every lowest-count foundation is marked Recommended, but the editor must never select or save it automatically. The owner may explicitly select any C1–C3 slot or No Cx. Fit uses an unsaved browser profile draft when one exists, but saving that card's foundation remains blocked until the ordinary profile draft is saved or discarded.
 
@@ -80,7 +82,7 @@ An assignment review must synchronize both control mappings, registration headin
 
 The editable settings panel presents card-visible controls first in renderer order and keeps other controls in a collapsed secondary group. Its independently scrolling preview remains visible beside desktop settings. The preview must state that `Δ` compares with the saved C1/C2/C3 foundation rather than the baseline, so removing an override does not imply that the indicator will clear.
 
-The My Menu page loads the persisted used tabs and ordered item identities from `00 Master/my_menu.yaml` and the curated palette/current named-tab assignments from `00 Master/my_menu_colors.yaml`. It supports up to five tabs and six ordered items per tab, omits unused tabs when saving, requires every used tab to have a name and at least one unique catalog item, and requires a distinct palette choice for each used tab. Light Red and Coral must remain visually distinguishable, with Light Red reading as red and Coral as orange-red.
+The My Menu page loads the persisted used tabs and ordered item identities from `00 Master/my_menu.yaml` and the curated palette/current named-tab assignments from `00 Master/my_menu_colors.yaml`. It is required only when changing the global camera tab layout, shortcuts, names, or colors. Ordinary profile create, duplicate, and update review derives that one candidate's visible `card.field_setup.my_menus` cues automatically from this persisted configuration and includes cue changes in the exact profile diff. The page supports up to five tabs and six ordered items per tab, omits unused tabs when saving, requires every used tab to have a name and at least one unique catalog item, and requires a distinct palette choice for each used tab. Light Red and Coral must remain visually distinguishable, with Light Red reading as red and Coral as orange-red.
 
 The My Menu page must provide **Analyze profile impact** whenever baseline data is loaded. It submits the complete current My Menu draft with an unchanged or edited baseline draft to the same impact endpoint used by Baseline Impact, switches to that view, and focuses the My Menu coverage result. Saving My Menu remains a separate guarded transaction and does not silently rewrite profiles; the analysis and optional reviewed profile-only migration handle resulting missing and obsolete card cues.
 
@@ -90,7 +92,7 @@ A My Menu save must validate both complete candidates, show one exact two-file Y
 
 The editor provides one global Return to top control rather than a preview-local action. It is a fixed circular up arrow available in Profiles, Cx Foundation, My Menu, Baseline Setup, Review & Build, and Camera Reference, appears only after meaningful vertical scrolling, respects lower-right safe-area insets, carries an accessible text label, and is hidden for print.
 
-The editor header must display its semantic editor version and a short deterministic build identifier. The server derives the build identifier from the relevant editor, renderer, Cx-comparison, and card-template source bytes; it must not use a timestamp that changes without a source change.
+The editor header must display its semantic editor version and a short deterministic build identifier followed immediately by the established silver camera logo used by card navigation. The server derives the build identifier from the relevant editor, renderer, Cx-comparison, and card-template source bytes; it must not use a timestamp that changes without a source change.
 
 Baseline migrations use the same safety principles across multiple files: isolated candidate validation, explicit warning acknowledgements, exact diff review, byte and fingerprint binding, a recovery backup containing every affected source, atomic per-file replacement, post-write source validation, and all-file rollback.
 

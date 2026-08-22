@@ -81,6 +81,7 @@ h2 { margin-bottom: .25rem; }
   font-weight: 700;
   white-space: nowrap;
 }
+.editor-camera-logo { display: block; width: 42px; height: 42px; object-fit: contain; }
 
 .app-shell {
   display: grid;
@@ -341,6 +342,11 @@ h2 { margin-bottom: .25rem; }
   box-shadow: 0 16px 35px rgba(23,37,54,.18);
 }
 .profile-action-menu-items button { width: 100%; text-align: left; }
+.profile-removal-reason { margin: .05rem .15rem .15rem; color: var(--danger); font-size: .72rem; line-height: 1.35; }
+.deleted-cards-help { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.deleted-cards-help h3 { margin: 0 0 .6rem; }
+.deleted-cards-help ol { margin: 0 0 .7rem; padding-left: 1.35rem; }
+.deleted-cards-help p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.5; }
 .profile-workflow {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

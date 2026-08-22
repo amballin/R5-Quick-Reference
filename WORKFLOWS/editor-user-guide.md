@@ -41,7 +41,7 @@ Use the workspace sidebar:
 
 On narrower windows, the sidebar becomes a compact navigation row above the workspace.
 
-Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session.
+Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into **Profile to evaluate** automatically.
 
 ## Choose a Cx foundation
 
@@ -63,7 +63,7 @@ This section is for review and navigation. It does not write settings to the cam
 
 ## Configure My Menu
 
-Open **My Menu** to work with the saved navigation layout.
+Open **My Menu** only when you intend to change the saved global camera navigation layout, its shortcuts, tab names, or colors. Ordinary profile review/save automatically maps that card's visible rows to the persisted My Menu layout and includes any cue changes in the exact profile diff.
 
 - Edit a tab name, select its ordered shortcuts, and choose its card color.
 - Keep each used tab valid and each selected shortcut unique where the editor requires it.
@@ -86,7 +86,7 @@ Open **Profiles**, then select a profile from the menu. Reference cards can be p
 For an editable profile:
 
 1. Follow the profile workflow shown above the workspace: choose, edit, preview, then review and save.
-2. Review the profile title, release information, and **Card section**. Choose **Subjects** or **Camera Setup & Controls** to control where the released card appears in the index.
+2. Review the profile title, release information, and **Card section**. Choose **Subjects** or **Camera Setup & Controls** to control where the released card appears in the index. Unchecking release excludes the card from the bundle after review/save; it does not remove active source.
 3. Work through **Shown on this card** in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.
 4. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
 5. Use the state beside each field to see whether the value is inherited or customized.
@@ -98,11 +98,11 @@ For an editable profile:
 
 After a setting changes, the existing preview remains available but is labeled as out of date. Choose **Refresh preview** before relying on it. On narrower windows, use the **Settings** and **Preview** controls to switch between the two panes.
 
-Open **Profile actions** and choose **Discard draft & reload** to return the selected profile to its saved state.
+Open **Profile actions** and choose **Restore saved profile** to abandon unsaved browser edits and return the selected profile to its saved source state. Choosing an enabled Profile action closes the menu.
 
-For a saved card that is still unreleased, **Profile actions → Move to Deleted Cards** provides a recoverable removal workflow. It is unavailable while browser edits are pending. The editor checks UUID-based C1–C3 assignments, other card foundations, appendix associations, and every other registered structured reference. Any dependency blocks removal. Narrative document mentions appear separately as warnings for review. Confirming preserves the exact source and an integrity manifest in machine-local Deleted Cards, removes the active source, and validates the project; any failure restores active source automatically.
+For a saved card that is still unreleased, **Profile actions → Move to Deleted Cards** provides a recoverable removal workflow. When disabled, the menu explains exactly what must be saved, restored, or unreferenced first. The editor checks UUID-based C1–C3 assignments, other card foundations, appendix associations, and every other registered structured reference. Any dependency blocks removal. Narrative document mentions appear separately as warnings for review. Confirming preserves the exact source and an integrity manifest in machine-local Deleted Cards, removes the active source, and validates the project; any failure restores active source automatically.
 
-Open **Deleted Cards** to review inactive held cards. **Review restore** shows the exact YAML addition. Restore is blocked if the original filename or immutable card identity is already active, and a successful reviewed restore returns the exact held bytes to active source and removes the holding entry. The normal editor provides no permanent purge action. Released and permanent reference cards cannot be moved here.
+Open **Deleted Cards** to see the complete removal sequence and review inactive held cards. A saved card must first be unchecked for release, reviewed, and saved; then use **Profile actions → Move to Deleted Cards**. Never-saved browser drafts are discarded through Review & Build instead and never enter this holding area. Structured references block removal until resolved, and permanent reference cards are never eligible. **Review restore** shows the exact YAML addition. Restore is blocked if the original filename or immutable card identity is already active, and a successful reviewed restore returns the exact held bytes to active source and removes the holding entry. The normal editor provides no permanent purge action.
 
 On cards with a declared C1–C3 foundation, `Δ` identifies a value that differs from that saved foundation—not from the baseline. Choosing **Use baseline** clears `Δ` only when the baseline value also matches the saved foundation. On editable profile cards without a Cx foundation, every visible settings row uses `Δ` as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.
 

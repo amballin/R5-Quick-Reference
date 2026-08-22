@@ -16,6 +16,7 @@
     <div class="build-badges">
       <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
       <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
+      <img class="editor-camera-logo" src="/source/60%20Assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true">
     </div>
   </header>
 
@@ -170,8 +171,9 @@
           <summary>Profile actions</summary>
           <div class="profile-action-menu-items">
             <button id="duplicate-button" class="secondary" type="button" disabled>Duplicate profile</button>
-            <button id="reload-button" class="secondary" type="button" disabled>Discard draft &amp; reload</button>
+            <button id="reload-button" class="secondary" type="button" disabled>Restore saved profile</button>
             <button id="discard-profile-button" class="secondary danger-action" type="button" hidden>Move to Deleted Cards</button>
+            <p id="profile-removal-reason" class="profile-removal-reason" hidden></p>
           </div>
         </details>
       </section>
@@ -287,6 +289,15 @@
         <button id="refresh-deleted-cards" class="secondary" type="button">Refresh</button>
       </div>
       <div class="configuration-state"><strong>No permanent delete</strong> · The normal editor can restore these cards but cannot purge them.</div>
+      <section class="deleted-cards-help" aria-labelledby="deleted-cards-help-title">
+        <h3 id="deleted-cards-help-title">How to move a card here</h3>
+        <ol>
+          <li>In Profiles, uncheck <strong>Include in released card bundle</strong>.</li>
+          <li>Review and save that release-state change.</li>
+          <li>Open <strong>Profile actions</strong>, choose <strong>Move to Deleted Cards</strong>, then review and confirm.</li>
+        </ol>
+        <p>A never-saved browser draft is discarded from Review &amp; Build and never enters Deleted Cards. Cards referenced by C1–C3 assignments, another card, an appendix, or another registered structured relationship are not eligible until those references are removed. Permanent reference cards are never eligible.</p>
+      </section>
       <div id="deleted-cards-message" class="message" role="status" hidden></div>
       <div id="deleted-cards-list" class="deleted-cards-list" aria-live="polite"></div>
     </section>
