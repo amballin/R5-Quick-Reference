@@ -159,7 +159,8 @@ Each preview replaces the prior disposable preview. No file under `10 Profiles/`
 
 - Choose **New from baseline** to begin with no overrides.
 - Choose **Duplicate profile** to copy the selected shooting profile's authored content and current overrides.
-- Enter a new YAML filename without the `.yaml` suffix.
+- For **New from baseline**, the YAML filename follows the card title automatically. Editing the filename directly stops that automatic link so a custom filename is preserved. Enter filenames without the `.yaml` suffix.
+- The editor rejects an existing filename during review and checks again immediately before saving; matching is case-insensitive.
 - New and duplicated profiles always begin as **Draft** and **not released**. Save once, then deliberately change those fields in a later update if appropriate.
 - Reference cards cannot be duplicated or edited.
 

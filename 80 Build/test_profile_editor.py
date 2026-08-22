@@ -336,6 +336,30 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(saved["inherits"], "baseline")
         self.assertEqual(saved["overrides"], {"drive": {"mode": "Single Shot"}})
 
+    def test_new_profile_filename_follows_title_until_manually_changed(self):
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function profileFilenameFromTitle(title)", script)
+        self.assertIn('state.filenameFollowsTitle = detail.operation === "create"', script)
+        self.assertIn("elements.filenameInput.value = profileFilenameFromTitle(elements.titleInput.value)", script)
+        self.assertIn("state.filenameFollowsTitle = false", script)
+
+    def test_rejects_an_existing_new_profile_filename_case_insensitively(self):
+        detail = self.model.profile_draft("create")
+        payload = {
+            "operation": "create",
+            "sourceProfile": None,
+            "targetName": "fireworks",
+            "sourceFingerprint": None,
+            "title": "Another Fireworks Card",
+            "subtitle": "",
+            "status": "Draft",
+            "displayCategory": "subject",
+            "release": False,
+            "overrides": detail["originalOverrides"],
+        }
+        with self.assertRaisesRegex(ProfileConflictError, "already exists"):
+            self.model.review_profile(payload)
+
     def test_profile_section_is_editable_and_new_profile_appears_in_cx_foundation(self):
         detail = self.model.profile_draft("create")
         payload = {

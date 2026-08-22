@@ -110,7 +110,7 @@ On cards with a declared C1–C3 foundation, `Δ` identifies a value that differ
 
 Use **New from baseline** for a profile that should begin with shared values and no custom fields. Open **Profile actions** and choose **Duplicate profile** when a new profile should begin from an existing editable profile.
 
-Provide a unique filename and complete the same preview, review, and save process. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.
+For **New from baseline**, the proposed YAML filename follows the card title automatically. Edit the filename directly when a different name is needed; further title edits then leave that custom filename unchanged. Provide a unique filename and complete the same preview, review, and save process. The editor checks for an existing filename during review and checks again immediately before saving. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.
 
 The **Shooting Mode** field describes the exposure program used inside the profile, such as Fv, Tv, Av, M, or Bulb. C1, C2, and C3 are saved recall slots and are assigned separately in **Cx Foundation**.
 

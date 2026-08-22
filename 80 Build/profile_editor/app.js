@@ -153,6 +153,7 @@ const state = {
   profileDrafts: new Map(),
   currentDraftKey: null,
   nextDraftId: 1,
+  filenameFollowsTitle: false,
   buildReadiness: null,
   loadSequence: 0,
   baselineDetail: null,
@@ -185,6 +186,16 @@ function displayValue(value) {
   if (value === null || value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "True" : "False";
   return String(value);
+}
+
+function profileFilenameFromTitle(title) {
+  return title
+    .replace(/[^A-Za-z0-9 .&+()'_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[^A-Za-z0-9]+/, "")
+    .slice(0, 80)
+    .replace(/[. ]+$/, "");
 }
 
 async function request(url, options) {
@@ -1212,6 +1223,8 @@ function applyProfileDetail(detail, restoredDraft = null) {
   elements.titleInput.value = restoredDraft?.payload?.title ?? detail.title ?? "";
   elements.subtitleInput.value = restoredDraft?.payload?.subtitle ?? detail.subtitle ?? "";
   elements.filenameInput.value = restoredDraft?.payload?.targetName ?? detail.targetName ?? detail.name ?? "";
+  state.filenameFollowsTitle = detail.operation === "create"
+    && (!restoredDraft || elements.filenameInput.value === profileFilenameFromTitle(elements.titleInput.value));
   elements.statusInput.value = restoredDraft?.payload?.status ?? detail.metadata?.status ?? "Draft";
   elements.displayCategoryInput.value = restoredDraft?.payload?.displayCategory ?? detail.displayCategory ?? "subject";
   elements.releaseInput.checked = restoredDraft?.payload?.release ?? Boolean(detail.metadata?.release);
@@ -2769,10 +2782,20 @@ elements.migrationReviewClose.addEventListener("click", closeMigrationReview);
 elements.migrationReviewCancel.addEventListener("click", closeMigrationReview);
 for (const input of [elements.titleInput, elements.subtitleInput, elements.filenameInput, elements.statusInput, elements.displayCategoryInput, elements.releaseInput]) {
   input.addEventListener("input", () => {
+    if (input === elements.filenameInput && state.detail?.operation === "create") {
+      state.filenameFollowsTitle = false;
+    } else if (input === elements.titleInput && state.filenameFollowsTitle) {
+      elements.filenameInput.value = profileFilenameFromTitle(elements.titleInput.value);
+    }
     draftChanged();
     renderMetadataState();
   });
   input.addEventListener("change", () => {
+    if (input === elements.filenameInput && state.detail?.operation === "create") {
+      state.filenameFollowsTitle = false;
+    } else if (input === elements.titleInput && state.filenameFollowsTitle) {
+      elements.filenameInput.value = profileFilenameFromTitle(elements.titleInput.value);
+    }
     draftChanged();
     renderMetadataState();
   });
