@@ -33,6 +33,7 @@ Use the workspace sidebar:
 
 - **Profiles** — Preview, create, duplicate, or update shooting profiles.
 - **Cx Foundation** — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.
+- **Deleted Cards** — Review and restore unreleased cards removed from active source.
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
 - **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
 - **Review & Build** — Resolve all browser drafts, validate source, and run the guarded local build.
@@ -48,7 +49,7 @@ Open **Cx Foundation** when the C1–C3 arrangement or a card's starting route n
 
 Under **C1–C3 assignments**, select three different editable shooting profiles. Choosing a profile already assigned to another slot swaps the two assignments, so all three remain distinct. The assignment describes the approved profile target for each camera slot; it does not prove that the physical camera has been updated or verified. Reviewing an assignment change shows every synchronized control record, registration heading, workflow label, and affected card route. Concrete C1–C3 setting values are intentionally left unchanged—use the Subject Settings Matrix and registration tracker to decide and finalize those values.
 
-Under **Cx Foundation Fit**, select a profile card. C1, C2, and C3 are compared simultaneously using the card's effective visible rows. Combined rows count as one field change when any represented setting differs. The lowest count is marked **Recommended**; ties remain equally recommended. The editor never makes the selection for you. Choose C1, C2, C3, or **No Cx**, then review and save that explicit choice.
+Under **Cx Foundation Fit**, use the prominent **Profile to evaluate** selector. Every saved editable card, including a newly created profile, is available immediately after it is saved. C1, C2, and C3 are compared simultaneously using the card's effective visible rows. Combined rows count as one field change when any represented setting differs. The lowest count is marked **Recommended**; ties remain equally recommended. The editor never makes the selection for you. Choose C1, C2, C3, or **No Cx**, then review and save that explicit choice.
 
 If an unsaved Profiles draft exists for the selected card, the recommendation reflects that draft. Save or discard the Profiles draft before saving the card's foundation so the two reviewed changes cannot conflict. Cx Foundation drafts appear in **Review & Build** and keep the local build locked until saved or discarded.
 
@@ -85,7 +86,7 @@ Open **Profiles**, then select a profile from the menu. Reference cards can be p
 For an editable profile:
 
 1. Follow the profile workflow shown above the workspace: choose, edit, preview, then review and save.
-2. Review the profile title and release information.
+2. Review the profile title, release information, and **Card section**. Choose **Subjects** or **Camera Setup & Controls** to control where the released card appears in the index.
 3. Work through **Shown on this card** in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.
 4. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
 5. Use the state beside each field to see whether the value is inherited or customized.
@@ -99,6 +100,10 @@ After a setting changes, the existing preview remains available but is labeled a
 
 Open **Profile actions** and choose **Discard draft & reload** to return the selected profile to its saved state.
 
+For a saved card that is still unreleased, **Profile actions → Move to Deleted Cards** provides a recoverable removal workflow. It is unavailable while browser edits are pending. The editor checks UUID-based C1–C3 assignments, other card foundations, appendix associations, and every other registered structured reference. Any dependency blocks removal. Narrative document mentions appear separately as warnings for review. Confirming preserves the exact source and an integrity manifest in machine-local Deleted Cards, removes the active source, and validates the project; any failure restores active source automatically.
+
+Open **Deleted Cards** to review inactive held cards. **Review restore** shows the exact YAML addition. Restore is blocked if the original filename or immutable card identity is already active, and a successful reviewed restore returns the exact held bytes to active source and removes the holding entry. The normal editor provides no permanent purge action. Released and permanent reference cards cannot be moved here.
+
 On cards with a declared C1–C3 foundation, `Δ` identifies a value that differs from that saved foundation—not from the baseline. Choosing **Use baseline** clears `Δ` only when the baseline value also matches the saved foundation. On editable profile cards without a Cx foundation, every visible settings row uses `Δ` as a reminder to verify or set the target on the camera. My Menu colors identify where to find a setting and do not depend on a Cx foundation.
 
 ### Create or duplicate a profile
@@ -106,6 +111,8 @@ On cards with a declared C1–C3 foundation, `Δ` identifies a value that differ
 Use **New from baseline** for a profile that should begin with shared values and no custom fields. Open **Profile actions** and choose **Duplicate profile** when a new profile should begin from an existing editable profile.
 
 Provide a unique filename and complete the same preview, review, and save process. New and duplicated profiles begin as unreleased drafts so they can be reviewed before release.
+
+The **Shooting Mode** field describes the exposure program used inside the profile, such as Fv, Tv, Av, M, or Bulb. C1, C2, and C3 are saved recall slots and are assigned separately in **Cx Foundation**.
 
 ## Evaluate Baseline Setup
 
@@ -135,12 +142,13 @@ Open **Review & Build** before finishing:
 
 1. Review every pending profile, Cx Foundation, My Menu, and baseline draft.
 2. Open each draft and save it through its exact-diff review, or choose **Discard** and confirm that decision.
-3. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
-4. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm.
-5. Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.
-6. Stop the editor with **Control-C** in its Terminal window.
+3. If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose **Import verification tracker** and confirm. The editor uses the existing importer and displays its result; it never imports automatically.
+4. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
+5. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm.
+6. Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.
+7. Stop the editor with **Control-C** in its Terminal window.
 
-The guarded action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. The action may refresh local output and tracked documentation, but it does not delete or rename profiles, edit permanent reference cards, commit, push, publish, or change website version metadata.
+The guarded action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. The action may refresh local output and tracked documentation, but it does not rename profiles, edit permanent reference cards, permanently delete cards, commit, push, publish, or change website version metadata. Recoverable unreleased-card removal is available only through the separate reviewed Deleted Cards action described above.
 
 ## Get more help
 

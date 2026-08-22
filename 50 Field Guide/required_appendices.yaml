@@ -6,12 +6,12 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 40
-    profiles:
-      - Birds Perched
-      - Birds in Flight
-      - People
-      - Sports
-      - Wildlife
+    profile_ids:
+      - 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+      - d2609cc6-8056-5632-932d-45dcb4416185
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 355bb069-fb1e-520f-8a4d-e992925bee0b
+      - 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     related_appendices:
       - back_button_af_custom_button_strategies
       - r5_quick_reference
@@ -40,9 +40,9 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 20
-    profiles:
-      - Landscape
-      - Macro
+    profile_ids:
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
     related_appendices:
       - flash_photography
     required_topics:
@@ -80,19 +80,19 @@ appendices:
     file: "Appendices/Lens Capabilities.md"
     release: true
     display_order: 30
-    profiles:
-      - Birds in Flight
-      - Birds Perched
-      - Camera Defaults
-      - Camera Setup Essentials
-      - Fireworks
-      - Landscape
-      - Macro
-      - People
-      - Sports
-      - Travel
-      - Waterdrops
-      - Wildlife
+    profile_ids:
+      - d2609cc6-8056-5632-932d-45dcb4416185
+      - 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+      - 24499188-e352-5bc4-b51b-2c54b50da333
+      - 468084df-890b-5b91-882e-221d2a61ab8e
+      - 4c14a449-ef29-5769-a4fd-a595b0b8209d
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 355bb069-fb1e-520f-8a4d-e992925bee0b
+      - 03b72e12-ee0e-5cbc-afd0-c13261db4611
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
+      - 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     related_appendices:
       - focus_bracketing_depth_compositing
       - r5_quick_reference
@@ -126,12 +126,12 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 60
-    profiles:
-      - Camera Defaults
-      - Fireworks
-      - Landscape
-      - Macro
-      - Waterdrops
+    profile_ids:
+      - 24499188-e352-5bc4-b51b-2c54b50da333
+      - 4c14a449-ef29-5769-a4fd-a595b0b8209d
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
     related_appendices:
       - focus_bracketing_depth_compositing
       - flash_photography
@@ -162,12 +162,12 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 50
-    profiles:
-      - Fireworks
-      - Macro
-      - People
-      - Travel
-      - Waterdrops
+    profile_ids:
+      - 4c14a449-ef29-5769-a4fd-a595b0b8209d
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 03b72e12-ee0e-5cbc-afd0-c13261db4611
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
     related_appendices:
       - r5_quick_reference
       - water_drop_collision_photography
@@ -190,8 +190,8 @@ appendices:
     file: "Appendices/Water Drop Collision Photography.md"
     release: false
     display_order: 70
-    profiles:
-      - Waterdrops
+    profile_ids:
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
     related_appendices:
       - flash_photography
       - r5_quick_reference
@@ -214,16 +214,16 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 30
-    profiles:
-      - Birds in Flight
-      - Birds Perched
-      - Camera Buttons
-      - Camera Setup Essentials
-      - Landscape
-      - Macro
-      - People
-      - Sports
-      - Wildlife
+    profile_ids:
+      - d2609cc6-8056-5632-932d-45dcb4416185
+      - 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+      - 3f2f9197-1aff-54cf-a526-32cac18daee8
+      - 468084df-890b-5b91-882e-221d2a61ab8e
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 355bb069-fb1e-520f-8a4d-e992925bee0b
+      - 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     related_appendices:
       - af_cases_tracking
       - r5_quick_reference
@@ -258,18 +258,18 @@ appendices:
     file: "Appendices/Canon EOS R5 Official Icon Reference.md"
     release: false
     display_order: 999
-    profiles:
-      - Birds in Flight
-      - Birds Perched
-      - Camera Defaults
-      - Fireworks
-      - Landscape
-      - Macro
-      - People
-      - Sports
-      - Travel
-      - Waterdrops
-      - Wildlife
+    profile_ids:
+      - d2609cc6-8056-5632-932d-45dcb4416185
+      - 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+      - 24499188-e352-5bc4-b51b-2c54b50da333
+      - 4c14a449-ef29-5769-a4fd-a595b0b8209d
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 355bb069-fb1e-520f-8a4d-e992925bee0b
+      - 03b72e12-ee0e-5cbc-afd0-c13261db4611
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
+      - 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     related_appendices:
       - r5_quick_reference
       - af_cases_tracking
@@ -300,18 +300,18 @@ appendices:
     file: "Appendices/R5 Quick Reference.md"
     release: true
     display_order: 10
-    profiles:
-      - Birds in Flight
-      - Birds Perched
-      - Camera Defaults
-      - Fireworks
-      - Landscape
-      - Macro
-      - People
-      - Sports
-      - Travel
-      - Waterdrops
-      - Wildlife
+    profile_ids:
+      - d2609cc6-8056-5632-932d-45dcb4416185
+      - 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+      - 24499188-e352-5bc4-b51b-2c54b50da333
+      - 4c14a449-ef29-5769-a4fd-a595b0b8209d
+      - c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+      - 48850916-669d-592f-9e3f-defc3994445e
+      - 24553406-f5c7-535b-9822-706b50a87dce
+      - 355bb069-fb1e-520f-8a4d-e992925bee0b
+      - 03b72e12-ee0e-5cbc-afd0-c13261db4611
+      - e12e4a0f-4591-5920-ab0d-6ca307aa7066
+      - 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     related_appendices:
       - af_cases_tracking
       - focus_bracketing_depth_compositing
@@ -348,7 +348,7 @@ appendices:
     content_type: setting_deep_dive
     release: true
     display_order: 10
-    profiles: []
+    profile_ids: []
     related_appendices:
       - r5_quick_reference
     skip_required_sections:

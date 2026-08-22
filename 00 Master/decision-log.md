@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Immutable Card Identity and Recoverable Removal
+
+**Status:** Accepted
+**Date:** 2026-08-21
+
+Assign every shooting profile and permanent reference card an immutable canonical UUID in `card_id`. Existing cards receive deterministic migration UUIDs; every newly created or duplicated card receives a new UUID. Store structured card relationships by UUID, including C1–C3 assignments, Cx foundations, and appendix associations, and resolve current titles only for display. Validate UUID syntax, uniqueness, and every structured reference.
+
+Replace hard profile deletion with a recoverable machine-local **Deleted Cards** holding area. The editor may move only saved editable cards whose `metadata.release` is `false`, after browser-draft checks, a complete structured inbound-reference check, narrative-mention reporting, exact active-source removal review, concurrent-source verification, and recovery backup. A move writes the exact source and integrity manifest to Deleted Cards before removing active source, validates afterward, and restores active source automatically on failure. Restoration requires its own exact-addition review, conflict checks, validation, backup, and rollback. The normal editor provides no permanent purge action. This decision supersedes only the earlier prohibition on removing profiles from active source; released-card removal, permanent reference-card removal, hard deletion, Git, and publication remain unavailable.
+
 ## Profile Editor as the Main Local Interface
 
 **Status:** Accepted

@@ -173,6 +173,7 @@
 <section class="step"><h2>Close and import after testing</h2>
 <p>Save and close Numbers or Excel before importing:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/import-verification-status.sh</code></pre></div>
+<p>The same existing importer is available as <strong>Import verification tracker</strong> in the Profile Editor&#x27;s <strong>Review &amp; Build</strong> workspace. It requires explicit confirmation, is blocked by unsaved browser drafts, and shows the import result before readiness is checked. Import is never automatic.</p>
 <p>The importer chooses the most recently modified local Numbers or Excel tracker, matches stable Test IDs and registration settings, records history, and updates <code>90 Testing/eos_r5_verification_status.yaml</code>. Finish Day stops if a local tracker changed after its last successful import.</p>
 </section>
 <section class="step"><h2>Continue on the other Mac</h2>

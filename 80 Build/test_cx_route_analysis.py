@@ -34,12 +34,14 @@ class CxRouteAnalysisTests(unittest.TestCase):
             }
         }
         self.foundation = {
+            "card_id": "11111111-1111-4111-8111-111111111111",
             "title": "Wildlife",
             "overrides": {"autofocus": {"subject_detection": "Animals"}},
         }
         self.profile = {
+            "card_id": "22222222-2222-4222-8222-222222222222",
             "title": "People",
-            "card": {"field_setup": {"start": "C1", "source_profile": "Wildlife"}},
+            "card": {"field_setup": {"start": "C1", "source_card_id": "11111111-1111-4111-8111-111111111111"}},
             "overrides": {
                 "autofocus": {"subject_detection": "People"},
                 "drive": {"mode": "Low Speed Continuous"},
@@ -73,7 +75,7 @@ class CxRouteAnalysisTests(unittest.TestCase):
     def test_foundation_profile_has_no_changes(self):
         source = {
             **self.foundation,
-            "card": {"field_setup": {"start": "C1", "source_profile": "Wildlife"}},
+            "card": {"field_setup": {"start": "C1", "source_card_id": "11111111-1111-4111-8111-111111111111"}},
         }
         merged = merge(self.baseline["defaults"], source["overrides"])
         profiles = {**self.profiles, "Wildlife": source}
@@ -112,7 +114,7 @@ class CxRouteAnalysisTests(unittest.TestCase):
     def test_rejects_unknown_foundation_without_mutating_inputs(self):
         before = deepcopy((self.profile, self.merged, self.profiles, self.baseline))
         broken = deepcopy(self.profile)
-        broken["card"]["field_setup"]["source_profile"] = "Missing"
+        broken["card"]["field_setup"]["source_card_id"] = "33333333-3333-4333-8333-333333333333"
         with self.assertRaisesRegex(CxRouteAnalysisError, "exactly one profile"):
             analyze_selected_foundation(
                 broken, self.merged, self.profiles, self.baseline, {"drive.mode"}

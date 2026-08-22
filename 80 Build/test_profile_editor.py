@@ -37,6 +37,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         for relative in (
             "80 Build/baseline_impact.py",
             "80 Build/baseline_migration.py",
+            "80 Build/card_identity.py",
             "80 Build/cx_route_analysis.py",
             "80 Build/html_renderer.py",
             "80 Build/my_menu.py",
@@ -65,11 +66,31 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "title": detail["title"],
             "subtitle": detail["subtitle"],
             "status": detail["metadata"]["status"],
+            "displayCategory": detail["displayCategory"],
             "release": detail["metadata"]["release"],
             "overrides": detail["originalOverrides"],
         }
         payload.update(changes)
         return payload
+
+    def create_unreleased_profile(self, name):
+        draft = self.model.profile_draft("create")
+        review = self.model.review_profile(
+            {
+                "operation": "create",
+                "sourceProfile": None,
+                "targetName": name,
+                "sourceFingerprint": None,
+                "title": name,
+                "subtitle": "",
+                "status": "Draft",
+                "displayCategory": "subject",
+                "release": False,
+                "overrides": draft["originalOverrides"],
+            }
+        )
+        self.model.save_profile(review["reviewToken"])
+        return self.model.profile_detail(name)
 
     def migration_payload(self, model=None, **changes):
         model = model or self.model
@@ -127,12 +148,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(review["reviewKind"], "selection")
         self.assertIn("10 Profiles/Fireworks.yaml", review["diff"])
         self.assertIn("start: C1", review["diff"])
-        self.assertIn("source_profile: Wildlife", review["diff"])
+        wildlife_id = load_yaml(self.root / "10 Profiles" / "Wildlife.yaml")["card_id"]
+        self.assertIn(f"source_card_id: {wildlife_id}", review["diff"])
 
         result = self.model.save_cx_review(review["reviewToken"])
         saved = load_yaml(self.root / "10 Profiles" / "Fireworks.yaml")
         self.assertEqual(saved["card"]["field_setup"]["start"], "C1")
-        self.assertEqual(saved["card"]["field_setup"]["source_profile"], "Wildlife")
+        self.assertEqual(saved["card"]["field_setup"]["source_card_id"], wildlife_id)
         self.assertEqual(result["validation"], "passed")
 
     def test_cx_assignment_save_synchronizes_controls_registration_and_card_routes(self):
@@ -150,15 +172,15 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         tracker = load_yaml(self.root / "90 Testing" / "eos_r5_verification_tracker.yaml")
         wildlife = load_yaml(self.root / "10 Profiles" / "Wildlife.yaml")
         landscape = load_yaml(self.root / "10 Profiles" / "Landscape.yaml")
-        self.assertEqual(controls["custom_shooting_modes"]["C1"]["profile_title"], "Landscape")
-        self.assertEqual(current["custom_shooting_modes"]["C3"]["profile_title"], "Wildlife")
+        self.assertEqual(controls["custom_shooting_modes"]["C1"]["profile_id"], landscape["card_id"])
+        self.assertEqual(current["custom_shooting_modes"]["C3"]["profile_id"], wildlife["card_id"])
         self.assertEqual(
             [item["heading"] for item in tracker["registration"]["profiles"]],
             ["C1 Landscape", "C2 Birds in Flight", "C3 Wildlife"],
         )
         self.assertEqual(tracker["registration"]["rows"], rows_before)
-        self.assertEqual(wildlife["card"]["field_setup"]["source_profile"], "Landscape")
-        self.assertEqual(landscape["card"]["field_setup"]["source_profile"], "Wildlife")
+        self.assertEqual(wildlife["card"]["field_setup"]["source_card_id"], landscape["card_id"])
+        self.assertEqual(landscape["card"]["field_setup"]["source_card_id"], wildlife["card_id"])
         self.assertEqual(result["assignments"], assignments)
         self.assertFalse([issue for issue in control_validator.validate(self.root) if issue.level == "error"])
         self.assertFalse([issue for issue in profile_validator.validate(self.root) if issue.level == "error"])
@@ -300,6 +322,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "title": "Rainy Day",
             "subtitle": "Baseline test",
             "status": "Final",
+            "displayCategory": "subject",
             "release": True,
             "overrides": {"drive.mode": "Single Shot"},
         }
@@ -309,8 +332,111 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         saved = load_yaml(self.root / "10 Profiles" / "Rainy Day.yaml")
         self.assertEqual(saved["metadata"]["status"], "Draft")
         self.assertFalse(saved["metadata"]["release"])
+        self.assertRegex(saved["card_id"], r"^[0-9a-f-]{36}$")
         self.assertEqual(saved["inherits"], "baseline")
         self.assertEqual(saved["overrides"], {"drive": {"mode": "Single Shot"}})
+
+    def test_profile_section_is_editable_and_new_profile_appears_in_cx_foundation(self):
+        detail = self.model.profile_draft("create")
+        payload = {
+            "operation": "create",
+            "sourceProfile": None,
+            "targetName": "Test Setup Card",
+            "sourceFingerprint": None,
+            "title": "Test Setup Card",
+            "subtitle": "",
+            "status": "Draft",
+            "displayCategory": "reference",
+            "release": False,
+            "overrides": detail["originalOverrides"],
+        }
+        review = self.model.review_profile(payload)
+        self.model.save_profile(review["reviewToken"])
+        saved = load_yaml(self.root / "10 Profiles" / "Test Setup Card.yaml")
+        self.assertEqual(saved["display_category"], "reference")
+        cx_profiles = {item["name"] for item in self.model.cx_foundation_detail()["profiles"]}
+        self.assertIn("Test Setup Card", cx_profiles)
+
+    def test_shooting_mode_catalog_does_not_offer_cx_recall_slots(self):
+        detail = self.model.profile_detail("Fireworks")
+        mode = next(
+            setting
+            for section in detail["sections"]
+            for setting in section["settings"]
+            if setting["path"] == "exposure.mode"
+        )
+        self.assertEqual(mode["label"], "Shooting Mode")
+        self.assertNotIn("C1", mode["choices"])
+        self.assertNotIn("C2", mode["choices"])
+        self.assertNotIn("C3", mode["choices"])
+        self.assertIn("Cx Foundation", mode["catalogNote"])
+
+    def test_moves_unreleased_profile_to_deleted_cards_and_restores_exact_source(self):
+        detail = self.create_unreleased_profile("Removal Test")
+        source = self.root / "10 Profiles" / "Removal Test.yaml"
+        before = source.read_bytes()
+        review = self.model.review_profile_removal("Removal Test", detail["sourceFingerprint"])
+        self.assertIn("--- a/10 Profiles/Removal Test.yaml", review["diff"])
+        self.assertIn("+++ /dev/null", review["diff"])
+        result = self.model.save_profile_removal(review["reviewToken"])
+        self.assertFalse(source.exists())
+        self.assertTrue(Path(result["backup"]).is_dir())
+        self.assertTrue((Path(result["backup"]) / "before" / "10 Profiles" / "Removal Test.yaml").is_file())
+        self.assertEqual(self.model.deleted_cards()[0]["cardId"], detail["cardId"])
+        cx_profiles = {item["name"] for item in self.model.cx_foundation_detail()["profiles"]}
+        self.assertNotIn("Removal Test", cx_profiles)
+
+        restore = self.model.review_profile_restore(detail["cardId"])
+        self.assertIn("--- /dev/null", restore["diff"])
+        self.model.save_profile_restore(restore["reviewToken"])
+        self.assertEqual(source.read_bytes(), before)
+        self.assertEqual(self.model.deleted_cards(), [])
+
+    def test_discard_blocks_released_assigned_and_routed_profiles(self):
+        wildlife = self.model.profile_detail("Wildlife")
+        with self.assertRaisesRegex(PrototypeError, "Only unreleased"):
+            self.model.review_profile_removal("Wildlife", wildlife["sourceFingerprint"])
+
+        macro = self.model.profile_detail("Macro")
+        with self.assertRaisesRegex(PrototypeError, "associated with appendices"):
+            self.model.review_profile_removal("Macro", macro["sourceFingerprint"])
+
+        controls_path = self.root / "controls.yaml"
+        controls_text = controls_path.read_text(encoding="utf-8")
+        landscape_id = self.model.profiles["Landscape"]["card_id"]
+        macro_id = self.model.profiles["Macro"]["card_id"]
+        controls_path.write_text(
+            controls_text.replace(f"profile_id: {landscape_id}", f"profile_id: {macro_id}", 1),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(PrototypeError, "assigned to C3"):
+            self.model.review_profile_removal("Macro", macro["sourceFingerprint"])
+
+        controls_path.write_text(controls_text, encoding="utf-8")
+        people = self.model.profiles["People"]
+        people.setdefault("card", {})["field_setup"] = {
+            "start": "C3",
+            "source_card_id": macro_id,
+        }
+        with self.assertRaisesRegex(PrototypeError, "used as Cx foundation by People"):
+            self.model.review_profile_removal("Macro", macro["sourceFingerprint"])
+
+    def test_discard_rejects_concurrent_change_and_restores_on_validation_failure(self):
+        detail = self.create_unreleased_profile("Removal Failure Test")
+        review = self.model.review_profile_removal("Removal Failure Test", detail["sourceFingerprint"])
+        source = self.root / "10 Profiles" / "Removal Failure Test.yaml"
+        source.write_text(source.read_text(encoding="utf-8") + "\n# external change\n", encoding="utf-8")
+        with self.assertRaisesRegex(ProfileConflictError, "changed after review"):
+            self.model.save_profile_removal(review["reviewToken"])
+
+        source.write_text(source.read_text(encoding="utf-8").replace("\n# external change\n", ""), encoding="utf-8")
+        failing = ProfileEditorModel(self.root, source_validator=lambda _root: ["forced validation failure"])
+        detail = failing.profile_detail("Removal Failure Test")
+        review = failing.review_profile_removal("Removal Failure Test", detail["sourceFingerprint"])
+        before = source.read_bytes()
+        with self.assertRaisesRegex(PrototypeError, "restored automatically"):
+            failing.save_profile_removal(review["reviewToken"])
+        self.assertEqual(source.read_bytes(), before)
 
     def test_duplicates_existing_profile_as_unreleased_draft(self):
         detail = self.model.profile_draft("duplicate", "Wildlife")
@@ -322,6 +448,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "title": "Wildlife Alternate",
             "subtitle": "",
             "status": "Final",
+            "displayCategory": "subject",
             "release": True,
             "overrides": detail["originalOverrides"],
         }
@@ -332,6 +459,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(saved["overrides"], source["overrides"])
         self.assertEqual(saved["metadata"]["status"], "Draft")
         self.assertFalse(saved["metadata"]["release"])
+        self.assertNotEqual(saved["card_id"], source["card_id"])
 
     def test_blocks_save_when_source_changes_after_review(self):
         review = self.model.review_profile(self.payload(title="Conflict Test"))
@@ -352,6 +480,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "title": "Rollback Test",
             "subtitle": detail["subtitle"],
             "status": detail["metadata"]["status"],
+            "displayCategory": detail["displayCategory"],
             "release": detail["metadata"]["release"],
             "overrides": detail["originalOverrides"],
         }
@@ -449,8 +578,18 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertLess(html.index('data-view="review-build"'), html.index('data-view="dictionary"'))
         self.assertIn('id="pending-change-list"', html)
         self.assertIn('id="build-confirm-dialog"', html)
+        self.assertIn('id="display-category-input"', html)
+        self.assertIn('id="discard-profile-button"', html)
+        self.assertIn('id="discard-profile-dialog"', html)
+        self.assertIn('id="deleted-cards-view"', html)
+        self.assertIn('id="restore-profile-dialog"', html)
+        self.assertIn('id="import-verification-tracker"', html)
         self.assertIn('window.addEventListener("beforeunload"', javascript)
         self.assertIn("profileDrafts: new Map()", javascript)
+        self.assertIn("await loadCxFoundations(true)", javascript)
+        self.assertIn('request("/api/profile-removal-reviews"', javascript)
+        self.assertIn('request("/api/profile-restore-reviews"', javascript)
+        self.assertIn("state.cxSelectionDrafts.has(state.detail.name)", javascript)
 
     def test_build_readiness_blocks_pending_drafts_and_source_errors(self):
         pending = self.model.build_readiness(2)
@@ -546,6 +685,20 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             ["80 Build/validator.py"],
         ])
         self.assertFalse(any("git" in command or "publish" in command for command in commands))
+
+    def test_verification_tracker_import_is_confirmed_and_serialized(self):
+        with self.assertRaisesRegex(PrototypeError, "confirmation"):
+            self.model.import_verification_tracker(0, False)
+        with self.assertRaisesRegex(PrototypeError, "unsaved browser draft"):
+            self.model.import_verification_tracker(1, True)
+        with patch("profile_editor.subprocess.run") as run:
+            run.return_value = SimpleNamespace(returncode=0, stdout="Verification status imported")
+            result = self.model.import_verification_tracker(0, True)
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual(
+            run.call_args.args[0][1:],
+            ["80 Build/verification_status.py", "import"],
+        )
 
     def test_change_indicator_compares_with_saved_foundation_not_baseline(self):
         detail = self.model.profile_detail("Birds in Flight")

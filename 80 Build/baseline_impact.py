@@ -346,7 +346,7 @@ def analyze_cx_impact(current_baseline, proposed_baseline, profiles, registratio
                 "name": name,
                 "title": profile.get("title") or name,
                 "start": start,
-                "source_profile": field_setup.get("source_profile") or "",
+                "source_profile": _source_title(profile_map, field_setup),
                 "affected_paths": list(affected_paths),
             }
         )
@@ -516,7 +516,7 @@ def analyze_my_menu_routes(
                     "name": name,
                     "title": profile.get("title") or name,
                     "start": start,
-                    "source_profile": field_setup.get("source_profile") or "",
+                    "source_profile": _source_title(profiles, field_setup),
                     "access_only": field_setup.get("access_only") is True,
                     "warning_count": warnings,
                     "declared_settings": declaration_results,
@@ -858,6 +858,18 @@ def _profiles(profiles):
         if not isinstance(profile, Mapping):
             raise BaselineImpactError(f"Profile must be a mapping: {name}")
     return profiles
+
+
+def _source_title(profiles, field_setup):
+    source_card_id = field_setup.get("source_card_id") if isinstance(field_setup, Mapping) else None
+    if not source_card_id:
+        return ""
+    matches = [
+        profile.get("title") or name
+        for name, profile in profiles.items()
+        if profile.get("card_id") == source_card_id
+    ]
+    return matches[0] if len(matches) == 1 else ""
 
 
 def _flatten(values, prefix=""):

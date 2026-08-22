@@ -7,7 +7,7 @@ This specification governs Field Guides and Setting Deep Dives. Both are core ex
 ## Manifest and Required Content
 
 - Required appendices are declared in `50 Field Guide/required_appendices.yaml` and are not optional.
-- Every manifest entry must have a unique `id`, title, and source file. Its referenced profiles and related appendix IDs must exist.
+- Every manifest entry must have a unique `id`, title, and source file. Its `profile_ids` must resolve to active immutable card UUIDs, and its related appendix IDs must exist.
 - A missing required appendix or an unparseable/invalid manifest fails validation.
 - Filenames and titles do not need numbers. Legacy appendix numbers may remain as manifest metadata for continuity.
 - Appendices should cross-reference relevant profiles, camera settings, lens notes, and related appendices. Profiles should reference appendices instead of duplicating their explanations.

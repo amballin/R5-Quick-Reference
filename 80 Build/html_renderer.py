@@ -542,9 +542,18 @@ def field_setup_summary(profile, merged=None, paths=None):
     setup = field_setup(profile)
     if not setup:
         return None
+    source_profile = ""
+    source_card_id = setup.get("source_card_id", "")
+    if source_card_id and paths is not None:
+        for source in sorted(paths.profiles_dir.glob("*.yaml")):
+            loaded = load_yaml_checked(source) or {}
+            if loaded.get("card_id") == source_card_id:
+                source_profile = loaded.get("title") or source.stem
+                break
     return {
         "start": setup.get("start", ""),
-        "source_profile": setup.get("source_profile", ""),
+        "source_card_id": source_card_id,
+        "source_profile": source_profile,
         "access_only": setup.get("access_only") is True,
         "menus": field_setup_menus(profile, merged, paths),
     }

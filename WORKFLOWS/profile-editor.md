@@ -6,7 +6,7 @@ Use the specialized workflow pages—not the editor—for Git preflight and hand
 
 The header shows the editor version and a deterministic short build identifier. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.
 
-It cannot edit permanent reference cards, rename or delete profiles, commit, push, merge, publish, or change website version metadata. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction. **Review & Build** may refresh generated local output and tracked `docs/` only after all session drafts are resolved, readiness validation passes, and the user confirms the build.
+It cannot edit permanent reference cards, rename profiles, remove released cards, permanently delete cards, commit, push, merge, publish, or change website version metadata. It may move an unreleased editable card into recoverable Deleted Cards only through the dependency-checked, reviewed transaction described below. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction. **Review & Build** may refresh generated local output and tracked `docs/` only after all session drafts are resolved, readiness validation passes, and the user confirms the build.
 
 ## Start the editor
 
@@ -28,13 +28,13 @@ The editor is available only on this Mac while that command is running. Press **
 
 ## Follow the workspace order
 
-The sidebar follows the normal editing flow: **Profiles**, **Cx Foundation**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Numbered badges identify pending browser drafts. Moving to another profile or workspace preserves drafts in this browser session instead of silently discarding them. Review & Build collects every profile, Cx Foundation, My Menu, and baseline draft in one list. Refreshing or closing the page still clears session drafts, so the browser warns before leaving while any remain.
+The sidebar follows the normal editing flow: **Profiles**, **Cx Foundation**, **Deleted Cards**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Numbered badges identify pending browser drafts. Moving to another profile or workspace preserves drafts in this browser session instead of silently discarding them. Review & Build collects every profile, Cx Foundation, My Menu, and baseline draft in one list. Refreshing or closing the page still clears session drafts, so the browser warns before leaving while any remain.
 
 ## Choose Cx foundations
 
 Open **Cx Foundation** for the occasional decision about which complete shooting profile C1, C2, and C3 represent, or which slot a particular card should start from. Under **C1–C3 assignments**, choose three distinct editable profiles. Choosing a profile already used by another slot swaps the two assignments. Assignment changes remain approved targets pending physical camera verification; they do not claim that the camera has been reconfigured.
 
-Under **Cx Foundation Fit**, choose a card. The editor compares its effective visible card rows with all three assignments simultaneously. Each result shows the number of field changes; combined card rows count once when any represented camera setting differs. Every lowest-count result is marked **Recommended**, but the editor never selects it automatically. Deliberately select C1, C2, C3, or **No Cx** as the final card route.
+Under **Cx Foundation Fit**, use the full-width **Profile to evaluate** selector. A newly saved editable profile is added to this selector immediately. The editor compares its effective visible card rows with all three assignments simultaneously. Each result shows the number of field changes; combined card rows count once when any represented camera setting differs. Every lowest-count result is marked **Recommended**, but the editor never selects it automatically. Deliberately select C1, C2, C3, or **No Cx** as the final card route.
 
 If the selected card has an unsaved Profiles draft, the fit uses those draft values, but save or discard that ordinary profile draft before saving its foundation choice. **Review assignment changes** synchronizes the two control mappings, registration headings and matching workflow labels, and affected card routes. It does not rewrite concrete C1–C3 registration values; use the Subject Settings Matrix and registration tracker to finalize those values. **Review foundation selection** changes only the selected card's Cx route and preserves its My Menu cues. Both actions show an exact diff and use the normal backup, concurrent-change, validation, and rollback safeguards.
 
@@ -129,7 +129,7 @@ Status 0 means there is no semantic baseline-default change. Status 1 prints the
 4. Review **Shown on this card** first. Its controls use the renderer's actual visible-setting rules and the same path order as `00 Master/card_layout.yaml`. Combined card rows, including ISO and tracking/acceleration, expose each underlying camera control together in that order.
 5. Expand **Additional profile settings** for controls that are not currently rendered on the card. They remain grouped by camera-setting category.
 6. Look for the **Inherited** or **Customized** label beside each setting.
-7. Edit the title, optional subtitle, status, release state, and available setting controls. Clearing any editable setting restores and immediately redisplays its inherited baseline value; an empty string is not stored as a profile override. C1/C2/C3 foundations remain comparison and field-start references, not inheritance sources.
+7. Edit the title, optional subtitle, status, release state, **Card section**, and available setting controls. Card section chooses **Subjects** or **Camera Setup & Controls** index placement. Clearing any editable setting restores and immediately redisplays its inherited baseline value; an empty string is not stored as a profile override. C1/C2/C3 foundations remain comparison and field-start references, not inheritance sources.
 8. Use **Use baseline** for one setting or **Use baseline for section** for an additional-settings group. Open **Profile actions** and choose **Discard draft & reload** to restore the selected profile's saved source values.
 9. Choose **Render preview** in the right-hand panel. On a desktop-width window, the settings and preview scroll independently so the card remains visible while settings are reviewed. On a narrower window, use the **Settings** and **Preview** pane controls.
 10. After an edit, treat the retained preview as out of date until **Refresh preview** completes.
@@ -140,6 +140,8 @@ On a preview or generated profile card, the C1/C2/C3 token remains white. My Men
 Exposure, Autofocus, and Drive controls use the editor's Canon EOS R5 options catalog. Each cataloged setting links to the applicable Canon manual page and uses the same approved setting/value icon system as the subject cards. The catalog is scoped to still photos on EOS R5 firmware 2.2.0 or later.
 
 Canon choices, conditional Canon choices, and project compatibility values are labeled separately. For example, Canon defines One-Shot AF and Servo AF as AF Operation choices; this project retains Manual Focus in that field only for compatibility with existing profile data.
+
+**Shooting Mode** is the exposure program used inside the profile. C1–C3 are registered recall slots, so they are intentionally selected in **Cx Foundation** rather than offered as Shooting Mode values.
 
 Some fields allow both Canon choices and custom profile targets. ISO and exposure compensation profiles may contain a descriptive range or field instruction rather than one camera value, so those controls provide Canon suggestions without discarding the existing free-form behavior.
 
@@ -160,6 +162,12 @@ Each preview replaces the prior disposable preview. No file under `10 Profiles/`
 - Enter a new YAML filename without the `.yaml` suffix.
 - New and duplicated profiles always begin as **Draft** and **not released**. Save once, then deliberately change those fields in a later update if appropriate.
 - Reference cards cannot be duplicated or edited.
+
+### Move and restore a saved unreleased card
+
+Open **Profile actions → Move to Deleted Cards** only after saving or discarding any browser edits for that card. The editor checks immutable UUID relationships and blocks removal when the card is assigned to C1–C3, used as another card's Cx foundation, associated with an appendix, or named by any other registered structured reference. Narrative mentions are shown separately as review warnings. After dependency checks pass, the exact active-source removal is shown. **Move reviewed card** creates a recovery backup, writes the exact YAML and integrity manifest into machine-local Deleted Cards, removes active source, runs source validation, and restores active source automatically on failure.
+
+Open **Deleted Cards** to restore a held card. Restore shows an exact YAML addition and requires a new one-use review. Filename or UUID conflicts block it. A successful restore validates active source before removing the holding entry. The editor provides no permanent purge action; released cards and permanent reference cards remain protected from removal.
 
 ## Review and save
 
@@ -191,13 +199,13 @@ Restarting the server is not required to discard a draft. A successful editor sa
 
 ## Review and build locally
 
-Open **Review & Build** to validate the editing session before generation. Save each intended draft through its guarded review or choose **Discard** and confirm. The local build remains locked while the pending list is nonempty. When the list is clear, choose **Validate readiness**. Readiness reports any stale verification, Matrix/settings, or Setup artifacts detected from their source fingerprints. Then choose **Run local build** and confirm that Apple Numbers may launch and generated local output and tracked documentation may change.
+Open **Review & Build** to validate the editing session before generation. Save each intended draft through its guarded review or choose **Discard** and confirm. The local build remains locked while the pending list is nonempty. When the verification working tracker contains results to retain, save and close Numbers or Excel, choose **Import verification tracker**, and confirm the deliberate import into canonical YAML status. The editor never imports workbook edits automatically. When the list is clear, choose **Validate readiness**. Readiness reports any stale verification, Matrix/settings, or Setup artifacts detected from their source fingerprints. Then choose **Run local build** and confirm that Apple Numbers may launch and generated local output and tracked documentation may change.
 
 The guarded build runs source-only validation, conditionally refreshes only safely stale spreadsheet-derived artifacts, then runs the normal development build and full validation. It stops on the first failure and shows its output. If the verification working copy may contain unimported edits, readiness blocks before the build; import those edits through the testing workflow first. The build does not run Git, publish, or change website version metadata.
 
 ## Boundaries
 
-The editor intentionally provides no profile deletion, existing-profile rename, direct baseline edit, reference-card edit, commit, push, merge, publish, or website-version action. Baseline writes are available only through a complete reviewed migration. My Menu layout and colors are available only through their exact-diff guarded transaction. The only build action is the guarded local sequence in Review & Build; Git checkpoints and publication remain separate established workflows.
+The editor intentionally provides no released-profile removal, permanent deletion, existing-profile rename, direct baseline edit, reference-card edit, commit, push, merge, publish, or website-version action. Unreleased editable profiles may be moved only through the UUID dependency-checked, exact-diff, backed-up Deleted Cards transaction and restored through its matching guarded review. Baseline writes are available only through a complete reviewed migration. My Menu layout and colors are available only through their exact-diff guarded transaction. Review & Build offers the existing guarded tracker importer plus the guarded local build sequence; Git checkpoints and publication remain separate established workflows.
 
 ## Quick readiness check
 

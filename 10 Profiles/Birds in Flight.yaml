@@ -1,3 +1,4 @@
+card_id: d2609cc6-8056-5632-932d-45dcb4416185
 metadata:
   version: 1.0
   status: Draft
@@ -9,7 +10,7 @@ card:
     left: bird_in_flight
   field_setup:
     start: C2
-    source_profile: Birds in Flight
+    source_card_id: d2609cc6-8056-5632-932d-45dcb4416185
     my_menus:
     - name: AF Case
       settings:

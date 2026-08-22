@@ -1,4 +1,5 @@
 from collections import Counter
+from uuid import UUID
 
 from .common import error, flatten_paths, load_yaml_checked
 
@@ -25,7 +26,7 @@ def validate(root):
 
     profile_paths = sorted((root / "10 Profiles").glob("*.yaml"))
     stems = [path.stem.lower() for path in profile_paths]
-    profile_titles = _profile_titles(profile_paths)
+    profile_ids = _profile_ids(profile_paths)
     card_setting_paths = _card_setting_paths(root)
     titles = []
     appendix_ids = _appendix_ids(root)
@@ -81,7 +82,7 @@ def validate(root):
             _validate_field_setup(
                 path,
                 data.get("card"),
-                profile_titles,
+                profile_ids,
                 card_setting_paths,
                 card_type,
                 display_category,
@@ -114,7 +115,7 @@ def _validate_card_icons(path, card):
     return issues
 
 
-def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_type, display_category):
+def _validate_field_setup(path, card, profile_ids, card_setting_paths, card_type, display_category):
     if card is None or not isinstance(card, dict) or "field_setup" not in card:
         return []
     if card_type == "reference":
@@ -123,7 +124,7 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
     if not isinstance(setup, dict):
         return [error("profiles", path, "card.field_setup must be a mapping.")]
     issues = []
-    unknown = sorted(set(setup) - {"start", "source_profile", "access_only", "my_menus"})
+    unknown = sorted(set(setup) - {"start", "source_card_id", "access_only", "my_menus"})
     if unknown:
         issues.append(error("profiles", path, f"Unknown card.field_setup keys: {', '.join(unknown)}."))
     access_only = setup.get("access_only", False)
@@ -133,20 +134,20 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
     if access_only:
         if display_category != "reference":
             issues.append(error("profiles", path, "Access-only field setup requires display_category: reference."))
-        if "start" in setup or "source_profile" in setup:
-            issues.append(error("profiles", path, "Access-only field setup must omit start and source_profile."))
+        if "start" in setup or "source_card_id" in setup:
+            issues.append(error("profiles", path, "Access-only field setup must omit start and source_card_id."))
     else:
         start_present = "start" in setup
-        source_present = "source_profile" in setup
+        source_present = "source_card_id" in setup
         if start_present != source_present:
-            issues.append(error("profiles", path, "card.field_setup.start and source_profile must be provided together."))
+            issues.append(error("profiles", path, "card.field_setup.start and source_card_id must be provided together."))
         if start_present and setup.get("start") not in FIELD_SETUP_STARTS:
             issues.append(error("profiles", path, "card.field_setup.start must be C1, C2, or C3."))
-        source_profile = setup.get("source_profile")
-        if source_present and (not isinstance(source_profile, str) or not source_profile.strip()):
-            issues.append(error("profiles", path, "card.field_setup.source_profile must be a non-empty string."))
-        elif source_present and source_profile not in profile_titles:
-            issues.append(error("profiles", path, f"card.field_setup.source_profile does not match a profile title: {source_profile}"))
+        source_card_id = setup.get("source_card_id")
+        if source_present and not _valid_uuid(source_card_id):
+            issues.append(error("profiles", path, "card.field_setup.source_card_id must be a canonical UUID."))
+        elif source_present and source_card_id not in profile_ids:
+            issues.append(error("profiles", path, f"card.field_setup.source_card_id does not match a card: {source_card_id}"))
     menus = setup.get("my_menus", [])
     if not isinstance(menus, list):
         issues.append(error("profiles", path, "card.field_setup.my_menus must be a list."))
@@ -205,17 +206,26 @@ def _validate_field_setup(path, card, profile_titles, card_setting_paths, card_t
     return issues
 
 
-def _profile_titles(profile_paths):
-    titles = set()
+def _profile_ids(profile_paths):
+    values = set()
     for path in profile_paths:
         try:
             data = load_yaml_checked(path) or {}
         except Exception:
             continue
-        title = data.get("title")
-        if isinstance(title, str):
-            titles.add(title)
-    return titles
+        card_id = data.get("card_id")
+        if isinstance(card_id, str):
+            values.add(card_id)
+    return values
+
+
+def _valid_uuid(value):
+    if not isinstance(value, str):
+        return False
+    try:
+        return str(UUID(value)) == value
+    except (ValueError, AttributeError):
+        return False
 
 
 def _card_setting_paths(root):

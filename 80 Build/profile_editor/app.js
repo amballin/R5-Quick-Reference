@@ -43,6 +43,7 @@ const elements = {
   newButton: document.querySelector("#new-button"),
   duplicateButton: document.querySelector("#duplicate-button"),
   reloadButton: document.querySelector("#reload-button"),
+  discardProfileButton: document.querySelector("#discard-profile-button"),
   previewButton: document.querySelector("#preview-button"),
   reviewButton: document.querySelector("#review-button"),
   profileMetadata: document.querySelector("#profile-metadata"),
@@ -52,6 +53,7 @@ const elements = {
   subtitleInput: document.querySelector("#subtitle-input"),
   filenameInput: document.querySelector("#filename-input"),
   statusInput: document.querySelector("#status-input"),
+  displayCategoryInput: document.querySelector("#display-category-input"),
   releaseInput: document.querySelector("#release-input"),
   profileTitle: document.querySelector("#profile-title"),
   sourceFile: document.querySelector("#source-file"),
@@ -84,6 +86,22 @@ const elements = {
   reviewClose: document.querySelector("#review-close"),
   reviewCancel: document.querySelector("#review-cancel"),
   saveButton: document.querySelector("#save-button"),
+  discardProfileDialog: document.querySelector("#discard-profile-dialog"),
+  discardProfileSummary: document.querySelector("#discard-profile-summary"),
+  discardProfileDiff: document.querySelector("#discard-profile-diff"),
+  discardProfileMentions: document.querySelector("#discard-profile-mentions"),
+  discardProfileClose: document.querySelector("#discard-profile-close"),
+  discardProfileCancel: document.querySelector("#discard-profile-cancel"),
+  discardProfileConfirm: document.querySelector("#discard-profile-confirm"),
+  refreshDeletedCards: document.querySelector("#refresh-deleted-cards"),
+  deletedCardsMessage: document.querySelector("#deleted-cards-message"),
+  deletedCardsList: document.querySelector("#deleted-cards-list"),
+  restoreProfileDialog: document.querySelector("#restore-profile-dialog"),
+  restoreProfileSummary: document.querySelector("#restore-profile-summary"),
+  restoreProfileDiff: document.querySelector("#restore-profile-diff"),
+  restoreProfileClose: document.querySelector("#restore-profile-close"),
+  restoreProfileCancel: document.querySelector("#restore-profile-cancel"),
+  restoreProfileConfirm: document.querySelector("#restore-profile-confirm"),
   migrationReviewDialog: document.querySelector("#migration-review-dialog"),
   migrationReviewSummary: document.querySelector("#migration-review-summary"),
   migrationReviewDiff: document.querySelector("#migration-review-diff"),
@@ -109,6 +127,7 @@ const elements = {
   reviewBuildMessage: document.querySelector("#review-build-message"),
   pendingChangeCount: document.querySelector("#pending-change-count"),
   pendingChangeList: document.querySelector("#pending-change-list"),
+  importVerificationTracker: document.querySelector("#import-verification-tracker"),
   validateReadiness: document.querySelector("#validate-readiness"),
   runLocalBuild: document.querySelector("#run-local-build"),
   localBuildOutput: document.querySelector("#local-build-output"),
@@ -126,6 +145,8 @@ const state = {
   originalOverrides: {},
   draftOverrides: {},
   reviewToken: null,
+  discardReviewToken: null,
+  restoreReviewToken: null,
   previewLoaded: false,
   profileDrafts: new Map(),
   currentDraftKey: null,
@@ -525,6 +546,7 @@ function switchView(viewName) {
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
   for (const view of elements.views) view.hidden = view.id !== `${viewName}-view`;
   if (viewName === "cx-foundation" && state.cxFoundation) refreshCxFoundationFit();
+  if (viewName === "deleted-cards") loadDeletedCards();
   if (viewName === "review-build") renderReviewBuild();
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -568,6 +590,7 @@ function profilePayloadChanged(payload, detail = state.detail) {
   return payload.title !== (detail.title || "")
     || payload.subtitle !== (detail.subtitle || "")
     || payload.status !== (detail.metadata?.status || "Draft")
+    || payload.displayCategory !== (detail.displayCategory || "subject")
     || payload.release !== Boolean(detail.metadata?.release)
     || !equal(payload.overrides, detail.originalOverrides || {});
 }
@@ -810,6 +833,37 @@ async function validateBuildReadiness() {
     showReviewBuildMessage(error.message, true);
   } finally {
     elements.validateReadiness.disabled = false;
+    renderReviewBuild();
+  }
+}
+
+async function importVerificationTracker() {
+  captureCurrentProfileDraft();
+  const pending = pendingSessionItems().length;
+  if (pending) {
+    showReviewBuildMessage(`Resolve ${pending} pending browser ${pending === 1 ? "change" : "changes"} before importing the verification tracker.`, true);
+    return;
+  }
+  if (!window.confirm("Import the most recently modified local verification tracker into canonical project status? Save and close Numbers or Excel first.")) return;
+  elements.importVerificationTracker.disabled = true;
+  elements.localBuildOutput.hidden = false;
+  elements.localBuildOutput.textContent = "Importing verification tracker…";
+  showReviewBuildMessage("Importing the most recently modified local verification tracker. Keep this page open.");
+  try {
+    const result = await request("/api/verification-tracker-import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: 0, confirmImport: true }),
+    });
+    state.buildReadiness = null;
+    elements.localBuildOutput.textContent = result.output || "Verification tracker import completed.";
+    showReviewBuildMessage("Verification tracker imported. Run a fresh readiness check before building.");
+  } catch (error) {
+    state.buildReadiness = null;
+    elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    showReviewBuildMessage(error.message, true);
+  } finally {
+    elements.importVerificationTracker.disabled = false;
     renderReviewBuild();
   }
 }
@@ -1140,12 +1194,14 @@ function applyProfileDetail(detail, restoredDraft = null) {
   state.originalOverrides = clone(detail.originalOverrides || {});
   state.draftOverrides = clone(restoredDraft?.payload?.overrides || state.originalOverrides);
   state.reviewToken = null;
+  state.discardReviewToken = null;
   elements.profileTitle.textContent = restoredDraft?.payload?.title || detail.title;
   elements.sourceFile.textContent = detail.sourceFile;
   elements.titleInput.value = restoredDraft?.payload?.title ?? detail.title ?? "";
   elements.subtitleInput.value = restoredDraft?.payload?.subtitle ?? detail.subtitle ?? "";
   elements.filenameInput.value = restoredDraft?.payload?.targetName ?? detail.targetName ?? detail.name ?? "";
   elements.statusInput.value = restoredDraft?.payload?.status ?? detail.metadata?.status ?? "Draft";
+  elements.displayCategoryInput.value = restoredDraft?.payload?.displayCategory ?? detail.displayCategory ?? "subject";
   elements.releaseInput.checked = restoredDraft?.payload?.release ?? Boolean(detail.metadata?.release);
   state.previewLoaded = false;
   elements.previewFrame.hidden = true;
@@ -1158,6 +1214,7 @@ function applyProfileDetail(detail, restoredDraft = null) {
   setProfilePane("settings");
   setWorkflowStep(detail.editableDraft ? 2 : 1);
   if (elements.reviewDialog.open) elements.reviewDialog.close();
+  if (elements.discardProfileDialog.open) elements.discardProfileDialog.close();
   render();
   renderSessionStatus();
 }
@@ -1168,6 +1225,8 @@ function disableProfileActions(disabled) {
   elements.reloadButton.disabled = disabled || !state.detail?.editableDraft;
   elements.previewButton.disabled = disabled || !state.detail;
   elements.reviewButton.disabled = disabled || !state.detail?.editableDraft;
+  updateDiscardProfileAction();
+  if (disabled) elements.discardProfileButton.disabled = true;
 }
 
 function render() {
@@ -1186,6 +1245,7 @@ function render() {
     ? "Refresh preview"
     : editable ? "Render preview" : "Render reference preview";
   elements.reviewButton.disabled = !editable;
+  updateDiscardProfileAction();
   if (!editable) {
     renderReference();
     elements.customCount.textContent = "0";
@@ -1237,11 +1297,41 @@ function renderMetadataState() {
     : "New profiles are saved as Draft and excluded from release.";
   elements.filenameInput.disabled = !creating;
   elements.statusInput.disabled = creating;
+  elements.displayCategoryInput.disabled = false;
   elements.releaseInput.disabled = creating;
   elements.profileTitle.textContent = elements.titleInput.value.trim() || "Untitled profile";
   elements.sourceFile.textContent = operation === "update"
     ? `10 Profiles/${state.detail.name}.yaml`
     : `Proposed: 10 Profiles/${elements.filenameInput.value.trim() || "Untitled"}.yaml`;
+  updateDiscardProfileAction();
+}
+
+function updateDiscardProfileAction() {
+  const eligible = Boolean(
+    state.detail?.editableDraft
+    && (state.detail.operation || "update") === "update"
+    && !state.detail.metadata?.release
+  );
+  elements.discardProfileButton.hidden = !eligible;
+  if (!eligible) return;
+  const browserBlocker = profileDiscardBrowserBlocker();
+  const sourceBlocker = (state.detail.discardBlockers || []).join("; ");
+  const blocker = browserBlocker || sourceBlocker;
+  elements.discardProfileButton.disabled = Boolean(blocker);
+  elements.discardProfileButton.title = blocker;
+}
+
+function profileDiscardBrowserBlocker() {
+  if (profilePayloadChanged(profileDraftPayload())) {
+    return "Save or discard the current profile edits before removing this card.";
+  }
+  if (state.cxSelectionDrafts.has(state.detail.name)) {
+    return "Save or discard this card's Cx Foundation draft before removing it.";
+  }
+  if (hasCxAssignmentChanges() && Object.values(state.cxAssignments).includes(state.detail.title)) {
+    return "Save or discard the pending C1-C3 assignment changes before removing this card.";
+  }
+  return "";
 }
 
 function renderReference() {
@@ -2342,6 +2432,7 @@ function profileDraftPayload() {
     title: elements.titleInput.value.trim(),
     subtitle: elements.subtitleInput.value.trim(),
     status: elements.statusInput.value,
+    displayCategory: elements.displayCategoryInput.value,
     release: elements.releaseInput.checked,
     overrides: state.draftOverrides,
   };
@@ -2402,6 +2493,7 @@ async function saveReviewedProfile() {
     invalidateBuildReadiness();
     elements.reviewDialog.close();
     await loadProfiles(result.savedProfile);
+    await loadCxFoundations(true);
     showMessage(`Saved ${result.sourceFile}. Validation passed. Recovery backup: ${result.backup}`);
   } catch (error) {
     state.reviewToken = null;
@@ -2409,6 +2501,178 @@ async function saveReviewedProfile() {
     showMessage(error.message, true);
   } finally {
     elements.saveButton.disabled = false;
+  }
+}
+
+async function reviewProfileDiscard() {
+  if (!state.detail?.editableDraft || state.detail.metadata?.release) return;
+  const browserBlocker = profileDiscardBrowserBlocker();
+  if (browserBlocker) {
+    showMessage(browserBlocker, true);
+    return;
+  }
+  elements.discardProfileButton.disabled = true;
+  showMessage("Checking structured references and preparing the exact removal diff…");
+  try {
+    const review = await request("/api/profile-removal-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        profile: state.detail.name,
+        sourceFingerprint: state.detail.sourceFingerprint,
+      }),
+    });
+    state.discardReviewToken = review.reviewToken;
+    elements.discardProfileSummary.textContent = review.summary;
+    elements.discardProfileDiff.textContent = review.diff;
+    elements.discardProfileMentions.replaceChildren();
+    const mentions = review.narrativeMentions || [];
+    elements.discardProfileMentions.hidden = mentions.length === 0;
+    if (mentions.length) {
+      const heading = document.createElement("h3");
+      heading.textContent = `Narrative mentions to review (${mentions.length})`;
+      const list = document.createElement("ul");
+      for (const mention of mentions.slice(0, 40)) {
+        const item = document.createElement("li");
+        item.textContent = `${mention.file}:${mention.line} — ${mention.text}`;
+        list.append(item);
+      }
+      elements.discardProfileMentions.append(heading, list);
+    }
+    elements.discardProfileDialog.showModal();
+    showMessage("Structured dependency checks passed. Review the active-source removal and narrative warnings.");
+  } catch (error) {
+    state.discardReviewToken = null;
+    showMessage(error.message, true);
+  } finally {
+    updateDiscardProfileAction();
+  }
+}
+
+function closeProfileDiscardReview() {
+  state.discardReviewToken = null;
+  elements.discardProfileDialog.close();
+}
+
+async function saveProfileDiscard() {
+  if (!state.discardReviewToken) {
+    showMessage("This removal review is no longer current. Review the card again.", true);
+    elements.discardProfileDialog.close();
+    return;
+  }
+  elements.discardProfileConfirm.disabled = true;
+  showMessage("Moving the card into the recoverable holding area and validating source…");
+  try {
+    const result = await request("/api/profile-removals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.discardReviewToken }),
+    });
+    state.discardReviewToken = null;
+    state.profileDrafts.delete(state.currentDraftKey);
+    state.cxSelectionDrafts.delete(state.detail.name);
+    state.currentDraftKey = null;
+    state.detail = null;
+    invalidateBuildReadiness();
+    elements.discardProfileDialog.close();
+    await loadProfiles();
+    await loadCxFoundations(true);
+    showMessage(`Moved ${result.sourceFile} to Deleted Cards. Validation passed. Recovery backup: ${result.backup}`);
+  } catch (error) {
+    state.discardReviewToken = null;
+    elements.discardProfileDialog.close();
+    showMessage(error.message, true);
+  } finally {
+    elements.discardProfileConfirm.disabled = false;
+  }
+}
+
+async function loadDeletedCards() {
+  elements.deletedCardsList.replaceChildren();
+  elements.deletedCardsMessage.hidden = false;
+  elements.deletedCardsMessage.classList.remove("error");
+  elements.deletedCardsMessage.textContent = "Loading Deleted Cards…";
+  try {
+    const payload = await request("/api/deleted-cards");
+    const cards = payload.cards || [];
+    elements.deletedCardsMessage.hidden = cards.length > 0;
+    if (!cards.length) {
+      elements.deletedCardsMessage.hidden = false;
+      elements.deletedCardsMessage.textContent = "Deleted Cards is empty.";
+      return;
+    }
+    for (const card of cards) {
+      const row = document.createElement("article");
+      row.className = "deleted-card-item";
+      const copy = document.createElement("div");
+      const title = document.createElement("h3");
+      title.textContent = card.title || card.name;
+      const detail = document.createElement("p");
+      detail.textContent = `${card.sourceFile} · removed ${card.removed || "date unavailable"}`;
+      const identity = document.createElement("code");
+      identity.textContent = card.cardId;
+      copy.append(title, detail, identity);
+      const restore = document.createElement("button");
+      restore.type = "button";
+      restore.className = "save-action";
+      restore.textContent = "Review restore";
+      restore.addEventListener("click", () => reviewProfileRestore(card.cardId));
+      row.append(copy, restore);
+      elements.deletedCardsList.append(row);
+    }
+  } catch (error) {
+    elements.deletedCardsMessage.hidden = false;
+    elements.deletedCardsMessage.classList.add("error");
+    elements.deletedCardsMessage.textContent = error.message;
+  }
+}
+
+async function reviewProfileRestore(cardId) {
+  try {
+    const review = await request("/api/profile-restore-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId }),
+    });
+    state.restoreReviewToken = review.reviewToken;
+    elements.restoreProfileSummary.textContent = review.summary;
+    elements.restoreProfileDiff.textContent = review.diff;
+    elements.restoreProfileDialog.showModal();
+  } catch (error) {
+    elements.deletedCardsMessage.hidden = false;
+    elements.deletedCardsMessage.classList.add("error");
+    elements.deletedCardsMessage.textContent = error.message;
+  }
+}
+
+function closeProfileRestoreReview() {
+  state.restoreReviewToken = null;
+  elements.restoreProfileDialog.close();
+}
+
+async function saveProfileRestore() {
+  if (!state.restoreReviewToken) return;
+  elements.restoreProfileConfirm.disabled = true;
+  try {
+    const result = await request("/api/profile-restores", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.restoreReviewToken }),
+    });
+    state.restoreReviewToken = null;
+    elements.restoreProfileDialog.close();
+    invalidateBuildReadiness();
+    await Promise.all([loadProfiles(result.restoredProfile), loadCxFoundations(true), loadDeletedCards()]);
+    elements.deletedCardsMessage.hidden = false;
+    elements.deletedCardsMessage.textContent = `Restored ${result.sourceFile}. Validation passed.`;
+  } catch (error) {
+    state.restoreReviewToken = null;
+    elements.restoreProfileDialog.close();
+    elements.deletedCardsMessage.hidden = false;
+    elements.deletedCardsMessage.classList.add("error");
+    elements.deletedCardsMessage.textContent = error.message;
+  } finally {
+    elements.restoreProfileConfirm.disabled = false;
   }
 }
 
@@ -2450,6 +2714,7 @@ async function preview() {
 elements.profileSelect.addEventListener("change", () => loadProfile(elements.profileSelect.value));
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => loadProfileDraft("duplicate"));
+elements.discardProfileButton.addEventListener("click", reviewProfileDiscard);
 elements.reloadButton.addEventListener("click", async () => {
   if (!window.confirm("Discard this browser draft? These unsaved changes cannot be recovered.")) return;
   const detail = state.detail;
@@ -2468,10 +2733,17 @@ elements.reviewButton.addEventListener("click", reviewChanges);
 elements.saveButton.addEventListener("click", saveReviewedProfile);
 elements.reviewClose.addEventListener("click", () => elements.reviewDialog.close());
 elements.reviewCancel.addEventListener("click", () => elements.reviewDialog.close());
+elements.discardProfileClose.addEventListener("click", closeProfileDiscardReview);
+elements.discardProfileCancel.addEventListener("click", closeProfileDiscardReview);
+elements.discardProfileConfirm.addEventListener("click", saveProfileDiscard);
+elements.refreshDeletedCards.addEventListener("click", loadDeletedCards);
+elements.restoreProfileClose.addEventListener("click", closeProfileRestoreReview);
+elements.restoreProfileCancel.addEventListener("click", closeProfileRestoreReview);
+elements.restoreProfileConfirm.addEventListener("click", saveProfileRestore);
 elements.migrationSaveButton.addEventListener("click", saveReviewedBaselineMigration);
 elements.migrationReviewClose.addEventListener("click", closeMigrationReview);
 elements.migrationReviewCancel.addEventListener("click", closeMigrationReview);
-for (const input of [elements.titleInput, elements.subtitleInput, elements.filenameInput, elements.statusInput, elements.releaseInput]) {
+for (const input of [elements.titleInput, elements.subtitleInput, elements.filenameInput, elements.statusInput, elements.displayCategoryInput, elements.releaseInput]) {
   input.addEventListener("input", () => {
     draftChanged();
     renderMetadataState();
@@ -2520,6 +2792,7 @@ elements.refreshReviewBuild.addEventListener("click", () => {
   showReviewBuildMessage("Session status refreshed.");
 });
 elements.validateReadiness.addEventListener("click", validateBuildReadiness);
+elements.importVerificationTracker.addEventListener("click", importVerificationTracker);
 elements.runLocalBuild.addEventListener("click", () => {
   if (state.buildReadiness?.ready && pendingSessionItems().length === 0) elements.buildConfirmDialog.showModal();
 });

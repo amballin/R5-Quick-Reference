@@ -65,19 +65,19 @@ def validate(root):
             )
         )
 
-    profile_titles = _profile_titles(root)
-    assigned_titles = []
+    profile_ids = _profile_ids(root)
+    assigned_ids = []
     for mode, mapping in project_modes.items():
-        profile_title = mapping.get("profile_title")
-        if profile_title not in profile_titles:
-            issues.append(error("controls", project_path, f"{mode} references missing canonical profile: {profile_title}"))
+        profile_id = mapping.get("profile_id")
+        if profile_id not in profile_ids:
+            issues.append(error("controls", project_path, f"{mode} references missing canonical profile_id: {profile_id}"))
         else:
-            assigned_titles.append(profile_title)
+            assigned_ids.append(profile_id)
         if not isinstance(mapping.get("field_label"), str) or not mapping["field_label"].strip():
             issues.append(error("controls", project_path, f"{mode} requires a non-empty field label."))
         if mapping.get("status") != "approved_target_pending_camera_verification":
             issues.append(error("controls", project_path, f"{mode} must remain an approved target pending camera verification."))
-    if len(assigned_titles) == 3 and len(set(assigned_titles)) != 3:
+    if len(assigned_ids) == 3 and len(set(assigned_ids)) != 3:
         issues.append(error("controls", project_path, "C1, C2, and C3 must use three different profiles."))
 
     for profile_path in sorted((root / "10 Profiles").glob("*.yaml")):
@@ -89,13 +89,13 @@ def validate(root):
         start = setup.get("start") if isinstance(setup, dict) else None
         if start not in project_modes:
             continue
-        expected = project_modes[start].get("profile_title")
-        if setup.get("source_profile") != expected:
+        expected = project_modes[start].get("profile_id")
+        if setup.get("source_card_id") != expected:
             issues.append(
                 error(
                     "controls",
                     profile_path,
-                    f"card.field_setup.source_profile must match the global {start} assignment: {expected}",
+                    f"card.field_setup.source_card_id must match the global {start} assignment: {expected}",
                 )
             )
 
@@ -147,17 +147,17 @@ def _mode_mapping(data):
     }
 
 
-def _profile_titles(root):
-    titles = set()
+def _profile_ids(root):
+    values = set()
     for path in sorted((root / "10 Profiles").glob("*.yaml")):
         try:
             profile = load_yaml_checked(path)
         except Exception:
             continue
-        title = profile.get("title") if isinstance(profile, dict) else None
-        if isinstance(title, str):
-            titles.add(title)
-    return titles
+        card_id = profile.get("card_id") if isinstance(profile, dict) else None
+        if isinstance(card_id, str):
+            values.add(card_id)
+    return values
 
 
 def _canonical_setting_issues(root):

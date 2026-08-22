@@ -1,3 +1,4 @@
+card_id: e12e4a0f-4591-5920-ab0d-6ca307aa7066
 metadata:
   version: 1.0
   status: Draft
@@ -9,7 +10,7 @@ card:
     left: water_drops
   field_setup:
     start: C3
-    source_profile: Landscape
+    source_card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
     my_menus:
     - name: SWITCH
       settings:

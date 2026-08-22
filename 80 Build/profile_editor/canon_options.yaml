@@ -11,10 +11,11 @@ metadata:
 settings:
   exposure.mode:
     section: exposure
-    label: Mode
+    label: Shooting Mode
     control: select
     allow_custom: false
     source: https://cam.start.canon/en/C003/manual/html/index.html
+    note: Choose the exposure program used inside the profile. Assign a C1-C3 recall slot in Cx Foundation instead.
     choices:
       - {value: "A+", label: "A+ — Scene Intelligent Auto", origin: canon}
       - {value: Fv, label: "Fv — Flexible-priority AE", origin: canon}
@@ -24,9 +25,6 @@ settings:
       - {value: M, label: "M — Manual exposure", origin: canon}
       - {value: Manual, label: "M — Manual exposure", origin: project_alias, canon_value: M}
       - {value: BULB, label: "BULB — Long exposure", origin: canon}
-      - {value: C1, label: "C1 — Custom shooting mode 1", origin: canon, conditional: registered mode}
-      - {value: C2, label: "C2 — Custom shooting mode 2", origin: canon, conditional: registered mode}
-      - {value: C3, label: "C3 — Custom shooting mode 3", origin: canon, conditional: registered mode}
 
   exposure.metering:
     section: exposure

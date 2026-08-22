@@ -1,3 +1,4 @@
+card_id: 61b4fa46-fe43-50a8-ba94-5087ba532cb6
 metadata:
   version: 1.0
   status: Draft
@@ -10,7 +11,7 @@ card:
     left: bird_perched
   field_setup:
     start: C1
-    source_profile: Wildlife
+    source_card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     my_menus:
     - name: AF Case
       settings:

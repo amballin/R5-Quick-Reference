@@ -11,6 +11,7 @@ This specification defines the system boundaries and ownership of data, content,
 - Reject roots or parent folders marked as old, backup, archive, build output, generated output, or native wrapper locations. Reject incomplete or generated-only roots and stop for project-owner direction rather than searching for a substitute.
 - Required source components, Git-root identity, current-working-directory containment, prohibited path markers, and camera identity are source-validation requirements.
 - Preserve the established baseline + overrides architecture and existing YAML structure.
+- Every profile and permanent reference card has an immutable canonical `card_id` UUID. Structured card relationships store UUIDs rather than mutable titles; editors and renderers resolve the current title for display. Existing cards use the documented deterministic migration and new or duplicated cards receive new UUIDs.
 - Distinguish five evidence classes in camera-control documentation: verified Canon capability, owner-confirmed current configuration, approved target pending physical verification, project recommendation, and unresolved item.
 - Do not treat approved targets, historical screenshots, inferred icon meanings, or recommendations as proof of the current camera configuration.
 - Explain the rationale and obtain explicit project-owner approval before changing an established architecture.
@@ -29,7 +30,7 @@ This specification defines the system boundaries and ownership of data, content,
 - Permanent reference cards remain separate from shooting profiles.
 - A permanent reference card may declare `reference_source: my_menu`; its rows are derived from `00 Master/my_menu.yaml` and the Canon settings catalog at render time so persisted My Menu content is not duplicated in profile YAML.
 - The physical button and dial layout is shared across subject profiles.
-- Subject profiles define complete shooting environments. C1, C2, and C3 are camera-side implementations of the canonical `Wildlife`, `Birds in Flight`, and `Landscape` profiles rather than independent AF presets. Field labels such as **General Wildlife** and **Birds in Flight / Action** may describe use, but machine-readable mappings retain the exact canonical profile title.
+- Subject profiles define complete shooting environments. C1, C2, and C3 are camera-side implementations of the canonical `Wildlife`, `Birds in Flight`, and `Landscape` profiles rather than independent AF presets. Field labels such as **General Wildlife** and **Birds in Flight / Action** may describe use, while machine-readable mappings retain immutable card UUIDs and resolve current titles for display.
 - The selected profile owns the initial AF Operation, Subject Detection, Eye Detection, exposure, drive, stabilization, and other subject-specific settings.
 - AF-ON and AE Lock keep constant focusing roles across profiles. AF-ON temporarily selects Face + Tracking for intelligent acquisition; AE Lock temporarily selects 1-Point AF for precise placement. Both maintain the current AF Operation and Servo AF characteristics.
 - The DOF button remains the One-Shot AF ↔ Servo AF control. AF-ON and AE Lock must not force an AF Operation that would defeat the selected profile state or a DOF-button change.
@@ -52,6 +53,7 @@ baseline.yaml + profile overrides
 ## Enforcement and Evidence
 
 - `00 Master/project_identity.yaml` is the machine-readable repository identity.
+- `80 Build/card_identity.py`, `80 Build/migrate_card_ids.py`, and `80 Build/validators/card_identity_validator.py` own identity resolution, legacy migration, UUID uniqueness, and referential-integrity enforcement.
 - `80 Build/validators/project_identity_validator.py` checks the Git root, current working directory, prohibited path markers, required authoritative components, identity fields, and baseline camera agreement.
 - `00 Master/baseline.yaml` is the shared-default source.
 - `00 Master/schema.yaml` documents the intended YAML fields and value shapes.

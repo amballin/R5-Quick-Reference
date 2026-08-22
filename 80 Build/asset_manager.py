@@ -24,6 +24,10 @@ class ProjectPaths:
         return self.local_workspace_dir / "Backups"
 
     @property
+    def deleted_cards_dir(self):
+        return self.local_workspace_dir / "Deleted Cards"
+
+    @property
     def baseline_file(self):
         return self.root / "00 Master" / "baseline.yaml"
 

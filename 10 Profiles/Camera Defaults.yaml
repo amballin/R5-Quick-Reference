@@ -1,3 +1,4 @@
+card_id: 24499188-e352-5bc4-b51b-2c54b50da333
 metadata:
   version: 1.0
   status: Final
@@ -22,7 +23,7 @@ card:
       - autofocus.servo_af_case
       - autofocus.switching_tracked_subjects
     start: C1
-    source_profile: Wildlife
+    source_card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
 inherits: baseline
 overrides: {}
 checklist:

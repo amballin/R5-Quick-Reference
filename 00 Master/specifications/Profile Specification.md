@@ -7,6 +7,7 @@ This specification governs subject/profile YAML under `10 Profiles/`.
 ## Requirements
 
 - Every profile inherits `baseline`.
+- Every profile and permanent reference card requires one immutable canonical `card_id` UUID. Existing cards are migrated deterministically; create and duplicate operations generate a new UUID. Titles and filenames remain human-facing labels rather than machine identity.
 - A profile contains only values that differ from `00 Master/baseline.yaml`; it must not repeat baseline values.
 - Overrides must use paths present in `baseline.defaults` and compatible value types.
 - Profile data retains camera concepts as separate fields, including ISO mode, fixed ISO value, Auto ISO maximum, Servo AF Case, Tracking Sensitivity, Accel./Decel. tracking, Switching tracked subjects, stabilization mode, IBIS, Lens IS, and High speed display.
@@ -52,9 +53,11 @@ The local loopback profile editor may perform only these writes under `10 Profil
 
 - update the title, optional subtitle, metadata status, release flag, and baseline overrides of an existing shooting profile without renaming its file;
 - create a new baseline-derived shooting profile; or
-- duplicate an existing shooting profile into a new file.
+- duplicate an existing shooting profile into a new file;
+- restore an exact held shooting-profile source from the machine-local Deleted Cards area after reviewed conflict checks; or
+- move a saved editable unreleased shooting profile to Deleted Cards after proving it has no structured inbound references.
 
-Reference cards and profile deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. The dedicated Cx Foundation transaction may update `controls.yaml`, its synchronized current-control record, C1–C3 registration headings and matching workflow labels, and the `card.field_setup.start`/`source_profile` declarations needed to keep routes aligned. New and duplicated profiles must begin as `Draft` with `metadata.release: false`.
+Reference cards and permanent deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. The dedicated Cx Foundation transaction may update `controls.yaml`, its synchronized current-control record, C1–C3 registration headings and matching workflow labels, and the `card.field_setup.start`/`source_card_id` declarations needed to keep routes aligned. New and duplicated profiles must begin as `Draft` with `metadata.release: false` and a new `card_id`.
 
 Every editor save must follow one guarded transaction:
 
@@ -67,13 +70,13 @@ Every editor save must follow one guarded transaction:
 7. Replace the profile atomically and run source validation.
 8. Restore the prior source state automatically if post-save validation fails.
 
-The editor does not commit, push, publish, change website version metadata, rename, or delete. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
+The editor does not commit, push, publish, change website version metadata, rename, or permanently delete. It may move an eligible unreleased card into recoverable Deleted Cards and restore it through the dedicated guarded transactions. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
 
-The workspace order is **Profiles**, **Cx Foundation**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, Cx Foundation, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
+The workspace order is **Profiles**, **Cx Foundation**, **Deleted Cards**, **My Menu**, **Baseline Setup**, **Review & Build**, then **Camera Reference**. Profile drafts must survive profile and workspace navigation in browser memory. The sidebar shows pending badges for profile, Cx Foundation, My Menu, and baseline work, while Review & Build lists every pending item with actions to open it or discard it after confirmation. Closing or refreshing the page while any draft remains invokes the browser leave warning. A local build remains locked until every pending item is saved or explicitly discarded and a fresh readiness check passes.
 
 The Cx Foundation workspace provides two explicitly separate decisions. **C1–C3 assignments** selects three distinct editable shooting profiles, one per slot. **Cx Foundation Fit** selects one editable card, compares its effective values with all three candidate foundations simultaneously, and counts differences by rendered visible card row using the same combined-row semantics as the card change markers. Every lowest-count foundation is marked Recommended, but the editor must never select or save it automatically. The owner may explicitly select any C1–C3 slot or No Cx. Fit uses an unsaved browser profile draft when one exists, but saving that card's foundation remains blocked until the ordinary profile draft is saved or discarded.
 
-An assignment review must synchronize both control mappings, registration headings and matching workflow labels, and every card route using an affected slot. It must not alter concrete C1–C3 registration row values; those remain deliberate matrix/tracker inputs because profile fields may contain ranges or guidance rather than one camera-ready value. A card-foundation review changes only that card's `start` and assigned `source_profile`, or removes both for No Cx, while preserving My Menu routes. Both operations require exact multi-file diff review, byte-bound one-use tokens, concurrent-source checks, a machine-local recovery backup, atomic writes, source validation, and complete rollback.
+An assignment review must synchronize both control mappings, registration headings and matching workflow labels, and every card route using an affected slot. It must not alter concrete C1–C3 registration row values; those remain deliberate matrix/tracker inputs because profile fields may contain ranges or guidance rather than one camera-ready value. A card-foundation review changes only that card's `start` and assigned `source_card_id`, or removes both for No Cx, while preserving My Menu routes. Both operations require exact multi-file diff review, byte-bound one-use tokens, concurrent-source checks, a machine-local recovery backup, atomic writes, source validation, and complete rollback.
 
 The editable settings panel presents card-visible controls first in renderer order and keeps other controls in a collapsed secondary group. Its independently scrolling preview remains visible beside desktop settings. The preview must state that `Δ` compares with the saved C1/C2/C3 foundation rather than the baseline, so removing an override does not imply that the indicator will clear.
 

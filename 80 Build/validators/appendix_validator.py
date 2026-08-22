@@ -42,15 +42,15 @@ def validate(root):
         else:
             ids.add(appendix_id)
 
-    profile_titles = _profile_titles(root)
+    profile_ids = _profile_ids(root)
     for entry in appendices:
         if not isinstance(entry, dict):
             continue
-        issues.extend(_validate_entry(root, manifest_path, entry, required_sections, ids, profile_titles))
+        issues.extend(_validate_entry(root, manifest_path, entry, required_sections, ids, profile_ids))
     return issues
 
 
-def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_titles):
+def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_ids):
     issues = []
     title = entry.get("title")
     relative_file = entry.get("file")
@@ -91,9 +91,9 @@ def _validate_entry(root, manifest_path, entry, required_sections, ids, profile_
     if entry.get("id") == "focus_bracketing_depth_compositing":
         issues.extend(_validate_focus_bracketing_revision(path, text, headings))
 
-    for profile in entry.get("profiles", []) or []:
-        if profile not in profile_titles:
-            issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id')} references missing profile: {profile}"))
+    for profile_id in entry.get("profile_ids", []) or []:
+        if profile_id not in profile_ids:
+            issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id')} references missing profile_id: {profile_id}"))
     for related_id in entry.get("related_appendices", []) or []:
         if related_id not in ids:
             issues.append(error("appendices", manifest_path, f"Appendix {entry.get('id')} references missing appendix id: {related_id}"))
@@ -109,17 +109,17 @@ def _headings(text):
     return headings
 
 
-def _profile_titles(root):
-    titles = set()
+def _profile_ids(root):
+    values = set()
     for path in sorted((root / "10 Profiles").glob("*.yaml")):
         try:
             data = load_yaml_checked(path) or {}
         except Exception:
             continue
-        title = data.get("title")
-        if isinstance(title, str):
-            titles.add(title)
-    return titles
+        card_id = data.get("card_id")
+        if isinstance(card_id, str):
+            values.add(card_id)
+    return values
 
 
 def _normalize(value):

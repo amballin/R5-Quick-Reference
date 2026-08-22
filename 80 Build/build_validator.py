@@ -221,7 +221,7 @@ def validate_required_appendices(paths):
     if not required_sections:
         results.append(("error", "required_appendix_sections_empty", str(manifest_path)))
 
-    profile_titles = _profile_titles(paths)
+    profile_ids = _profile_ids(paths)
     appendix_ids = {entry.get("id") for entry in appendices if isinstance(entry, dict)}
 
     for profile_path in discover_profiles(paths):
@@ -287,9 +287,9 @@ def validate_required_appendices(paths):
                 header = table.splitlines()[0].lower()
                 if "magnification" in header and re.search(r"(?:\b1:[124]\b|\b0\.(?:25|5)[x×])", table, flags=re.IGNORECASE):
                     results.append(("error", "focus_bracketing_magnification_table", str(path)))
-        for profile in entry.get("profiles", []) or []:
-            if profile not in profile_titles:
-                results.append(("error", "required_appendix_missing_profile_ref", f"{appendix_id}: {profile}"))
+        for profile_id in entry.get("profile_ids", []) or []:
+            if profile_id not in profile_ids:
+                results.append(("error", "required_appendix_missing_profile_ref", f"{appendix_id}: {profile_id}"))
         for related in entry.get("related_appendices", []) or []:
             if related not in appendix_ids:
                 results.append(("error", "required_appendix_missing_related_ref", f"{appendix_id}: {related}"))
@@ -332,17 +332,17 @@ def _headings(text):
     return headings
 
 
-def _profile_titles(paths):
-    titles = set()
+def _profile_ids(paths):
+    values = set()
     for path in discover_profiles(paths):
         try:
             data = _load_yaml(path)
         except Exception:
             continue
-        title = data.get("title")
-        if isinstance(title, str):
-            titles.add(title)
-    return titles
+        card_id = data.get("card_id")
+        if isinstance(card_id, str):
+            values.add(card_id)
+    return values
 
 
 def _normalize(value):

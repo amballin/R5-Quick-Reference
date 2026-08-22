@@ -81,6 +81,8 @@ Save and close Numbers or Excel before importing:
 ./80\ Build/scripts/import-verification-status.sh
 ```
 
+The same existing importer is available as **Import verification tracker** in the Profile Editor's **Review & Build** workspace. It requires explicit confirmation, is blocked by unsaved browser drafts, and shows the import result before readiness is checked. Import is never automatic.
+
 The importer chooses the most recently modified local Numbers or Excel tracker, matches stable Test IDs and registration settings, records history, and updates `90 Testing/eos_r5_verification_status.yaml`. Finish Day stops if a local tracker changed after its last successful import.
 
 ## Continue on the other Mac

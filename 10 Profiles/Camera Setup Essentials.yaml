@@ -1,3 +1,4 @@
+card_id: 468084df-890b-5b91-882e-221d2a61ab8e
 metadata:
   version: 1.0
   status: Final
@@ -16,7 +17,7 @@ card:
       settings:
       - shutter.type
     start: C1
-    source_profile: Wildlife
+    source_card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
 inherits: baseline
 overrides: {}
 checklist:

@@ -620,6 +620,32 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .pending-change-item p { margin: 0; color: var(--muted); font-size: .8rem; }
 .pending-change-actions, .local-build-actions { display: flex; gap: .55rem; flex-wrap: wrap; justify-content: flex-end; }
 .danger-action { color: var(--danger); border-color: #dfb5b5; }
+.danger-save-action { background: var(--danger); }
+.danger-save-action:hover { background: #7f2020; }
+
+.deleted-cards-list { display: grid; gap: 12px; margin-top: 18px; }
+.deleted-card-item {
+  align-items: center;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, #d6dbe1);
+  border-radius: 12px;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 16px;
+}
+.deleted-card-item h3, .deleted-card-item p { margin: 0 0 6px; }
+.deleted-card-item code { color: var(--muted, #5d6875); font-size: .78rem; overflow-wrap: anywhere; }
+.reference-warning-list {
+  background: #fff8e6;
+  border: 1px solid #e1bd61;
+  border-radius: 10px;
+  margin: 14px 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: 12px 16px;
+}
+.reference-warning-list h3 { margin-top: 0; }
 .local-build-panel { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; }
 .local-build-panel h2 { margin: .1rem 0 .3rem; }
 .local-build-panel p { margin-bottom: 0; }
@@ -632,6 +658,9 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .cx-assignment-card:last-child { border-right: 0; }
 .cx-assignment-card strong { font-size: 1.1rem; }
 .cx-assignment-card label, .cx-profile-picker { display: grid; gap: .35rem; color: var(--muted); font-size: .78rem; font-weight: 750; }
+.cx-profile-picker { margin: 0 1rem 1rem; padding: .85rem 1rem; border: 1px solid #b8c8d8; border-radius: 10px; background: var(--soft); }
+.cx-profile-picker > span { color: var(--ink); font-size: .9rem; }
+.cx-profile-picker select { width: 100%; min-height: 48px; font-size: 1rem; font-weight: 700; background: white; }
 .cx-assignment-card small { color: var(--muted); line-height: 1.4; }
 .cx-fit-results { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .cx-fit-option { position: relative; display: grid; align-content: start; gap: .45rem; min-height: 148px; padding: 1rem; border-right: 1px solid var(--line); background: var(--surface); cursor: pointer; }
@@ -752,4 +781,5 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .review-actions button { width: 100%; }
   .cx-selection-bar, .cx-fit-panel .collection-heading { align-items: stretch; flex-direction: column; }
   .cx-selection-bar button { width: 100%; }
+  .deleted-card-item { align-items: stretch; flex-direction: column; }
 }

@@ -1,3 +1,4 @@
+card_id: 24553406-f5c7-535b-9822-706b50a87dce
 metadata:
   version: 1.0
   status: Draft
@@ -9,7 +10,7 @@ card:
     left: people
   field_setup:
     start: C1
-    source_profile: Wildlife
+    source_card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     my_menus:
     - name: SWITCH
       settings:

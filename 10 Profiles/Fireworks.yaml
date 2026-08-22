@@ -1,3 +1,4 @@
+card_id: 4c14a449-ef29-5769-a4fd-a595b0b8209d
 metadata:
   version: 1.0
   status: Draft
@@ -11,7 +12,7 @@ card:
     left: fireworks
   field_setup:
     start: C3
-    source_profile: Landscape
+    source_card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
     my_menus:
     - name: SWITCH
       settings:

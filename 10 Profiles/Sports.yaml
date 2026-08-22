@@ -1,3 +1,4 @@
+card_id: 355bb069-fb1e-520f-8a4d-e992925bee0b
 metadata:
   version: 1.0
   status: Draft
@@ -10,7 +11,7 @@ card:
     left: sports
   field_setup:
     start: C2
-    source_profile: Birds in Flight
+    source_card_id: d2609cc6-8056-5632-932d-45dcb4416185
     my_menus:
     - name: SWITCH
       settings:

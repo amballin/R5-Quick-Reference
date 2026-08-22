@@ -163,7 +163,7 @@ def _add_my_menu_cue(profile, action):
     if (
         profile.get("display_category") == "reference"
         and not setup.get("start")
-        and not setup.get("source_profile")
+        and not setup.get("source_card_id")
     ):
         setup["access_only"] = True
     menus = setup.setdefault("my_menus", [])
@@ -224,7 +224,7 @@ def _remove_my_menu_cue(profile, action):
         setup["my_menus"] = retained_menus
         return
     setup.pop("my_menus", None)
-    if setup.get("access_only") is True and not setup.get("start") and not setup.get("source_profile"):
+    if setup.get("access_only") is True and not setup.get("start") and not setup.get("source_card_id"):
         setup.pop("access_only", None)
     if not setup:
         card.pop("field_setup", None)

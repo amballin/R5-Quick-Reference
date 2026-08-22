@@ -1,6 +1,6 @@
 """Derived comparisons between a profile card and its selected Cx foundation.
 
-The selected foundation is the profile named by ``card.field_setup.source_profile``.
+The selected foundation is the profile identified by ``card.field_setup.source_card_id``.
 That profile expresses the complete authored intent represented by the registered
 Cx, including ranges and field guidance that cannot be compared safely with a
 single concrete registration-workbook value.
@@ -49,8 +49,8 @@ def analyze_selected_foundation(profile, merged, profiles, baseline, setting_pat
     if not isinstance(setup, Mapping):
         setup = {}
     start = str(setup.get("start") or "").upper()
-    source_title = setup.get("source_profile")
-    if not start and not source_title:
+    source_id = setup.get("source_card_id")
+    if not start and not source_id:
         return {
             "start": "",
             "source_profile": "",
@@ -61,10 +61,11 @@ def analyze_selected_foundation(profile, merged, profiles, baseline, setting_pat
         }
     if start not in {"C1", "C2", "C3"}:
         raise CxRouteAnalysisError(f"Unsupported Cx starting mode: {start or 'missing'}")
-    if not isinstance(source_title, str) or not source_title.strip():
-        raise CxRouteAnalysisError(f"{start} requires a source profile.")
-    source_title = source_title.strip()
-    foundation = _profile_by_title(profiles, source_title)
+    if not isinstance(source_id, str) or not source_id.strip():
+        raise CxRouteAnalysisError(f"{start} requires a source card ID.")
+    source_id = source_id.strip()
+    foundation = _profile_by_id(profiles, source_id)
+    source_title = str(foundation.get("title") or source_id)
     defaults = _baseline_defaults(baseline)
     foundation_overrides = foundation.get("overrides") or {}
     if not isinstance(foundation_overrides, Mapping):
@@ -121,7 +122,8 @@ def analyze_foundation_fit(profile, profiles, baseline, setting_paths, assignmen
         candidate = copy.deepcopy(profile)
         setup = candidate.setdefault("card", {}).setdefault("field_setup", {})
         setup["start"] = start
-        setup["source_profile"] = source_title.strip()
+        foundation = _profile_by_title(profiles, source_title.strip())
+        setup["source_card_id"] = foundation.get("card_id")
         merged = _deep_merge(_baseline_defaults(baseline), candidate.get("overrides") or {})
         analysis = analyze_selected_foundation(
             candidate,
@@ -179,6 +181,22 @@ def _profile_by_title(profiles, title):
     if len(candidates) != 1:
         raise CxRouteAnalysisError(
             f"Cx foundation title must resolve to exactly one profile: {title}"
+        )
+    return candidates[0]
+
+
+def _profile_by_id(profiles, card_id):
+    if isinstance(profiles, Mapping):
+        candidates = [
+            profile
+            for profile in profiles.values()
+            if isinstance(profile, Mapping) and profile.get("card_id") == card_id
+        ]
+    else:
+        candidates = []
+    if len(candidates) != 1:
+        raise CxRouteAnalysisError(
+            f"Cx foundation card_id must resolve to exactly one profile: {card_id}"
         )
     return candidates[0]
 

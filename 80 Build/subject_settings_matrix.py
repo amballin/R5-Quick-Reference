@@ -79,7 +79,9 @@ def generate_subject_settings_matrix(paths):
             {
                 "title": profile["title"],
                 "release": profile["release"],
-                "card_start": _card_start_label(profile.get("field_setup") or {}, profile["title"]),
+                "card_start": _card_start_label(
+                    profile.get("field_setup") or {}, profile["title"], profile.get("source_profile") or ""
+                ),
             }
             for profile in profiles
         ],
@@ -182,8 +184,11 @@ remove_subject_settings_summary = remove_subject_settings_matrix
 
 def _subject_profiles(paths):
     profiles = []
+    all_profiles = {}
     for profile_path in sorted(paths.profiles_dir.glob("*.yaml")):
-        profile = load_yaml_checked(profile_path) or {}
+        all_profiles[profile_path.stem] = load_yaml_checked(profile_path) or {}
+    for profile_path in sorted(paths.profiles_dir.glob("*.yaml")):
+        profile = all_profiles[profile_path.stem]
         if profile.get("card_type") == "reference":
             continue
         category = profile.get("display_category") or "subject"
@@ -195,15 +200,15 @@ def _subject_profiles(paths):
                 "display_order": profile.get("display_order", 100),
                 "release": (profile.get("metadata") or {}).get("release") is True,
                 "field_setup": (profile.get("card") or {}).get("field_setup") or {},
+                "source_profile": _source_title((profile.get("card") or {}).get("field_setup") or {}, all_profiles),
                 "overrides": profile.get("overrides") or {},
             }
         )
     return sorted(profiles, key=lambda item: (item["display_order"], item["title"].lower()))
 
 
-def _card_start_label(field_setup, profile_title=""):
+def _card_start_label(field_setup, profile_title="", source_profile=""):
     start = field_setup.get("start")
-    source_profile = field_setup.get("source_profile")
     menu_names = [
         menu.get("name")
         for menu in field_setup.get("my_menus") or []
@@ -217,6 +222,14 @@ def _card_start_label(field_setup, profile_title=""):
     if menu_names:
         route += " + " + " + ".join(menu_names)
     return route
+
+
+def _source_title(field_setup, profiles):
+    source_card_id = field_setup.get("source_card_id")
+    for name, profile in profiles.items():
+        if profile.get("card_id") == source_card_id:
+            return profile.get("title") or name
+    return ""
 
 
 def _summary_keys(paths, profiles, access):

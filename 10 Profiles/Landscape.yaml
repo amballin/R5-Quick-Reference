@@ -1,3 +1,4 @@
+card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
 metadata:
   version: 1.0
   status: Draft
@@ -9,7 +10,7 @@ card:
     left: landscape
   field_setup:
     start: C3
-    source_profile: Landscape
+    source_card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
     my_menus:
     - name: SWITCH
       settings:

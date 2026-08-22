@@ -9,6 +9,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from validators import (  # noqa: E402
     baseline_validator,
+    card_identity_validator,
     card_layout_validator,
     appendix_validator,
     canon_guides_validator,
@@ -40,6 +41,7 @@ VALIDATORS = [
     ("Project Structure", structure.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
+    ("Card Identity", card_identity_validator.validate),
     ("Card Layout", card_layout_validator.validate),
     ("Setting Access Map", setting_access_validator.validate),
     ("My Menu", my_menu_validator.validate),
@@ -67,6 +69,7 @@ SOURCE_ONLY_VALIDATORS = [
     ("Project Structure", structure.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
+    ("Card Identity", card_identity_validator.validate),
     ("Card Layout", card_layout_validator.validate),
     ("Setting Access Map", setting_access_validator.validate),
     ("My Menu", my_menu_validator.validate),

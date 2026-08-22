@@ -31,6 +31,10 @@
           <span class="nav-label-line"><span class="nav-label">Cx Foundation</span><span id="cx-foundation-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Assign and choose C1–C3</span>
         </button>
+        <button class="view-tab" type="button" data-view="deleted-cards">
+          <span class="nav-label">Deleted Cards</span>
+          <span class="nav-note">Restore removed drafts</span>
+        </button>
         <button class="view-tab" type="button" data-view="my-menu">
           <span class="nav-label-line"><span class="nav-label">My Menu</span><span id="my-menu-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Arrange camera shortcuts</span>
@@ -55,7 +59,7 @@
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
       Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference cards, direct baseline edits, deletion, Git, and publishing remain unavailable here. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes.
+      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, Git, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes.
     </section>
 
     <section id="dictionary-view" class="app-view" hidden>
@@ -133,8 +137,8 @@
             <p class="eyebrow">Selected card</p>
             <h2>Cx Foundation Fit</h2>
           </div>
-          <label class="cx-profile-picker">Profile <select id="cx-profile-select" disabled></select></label>
         </div>
+        <label class="cx-profile-picker"><span>Profile to evaluate</span><select id="cx-profile-select" disabled></select></label>
         <p id="cx-fit-summary" class="collection-note">Choose a profile to compare its visible card rows with C1, C2, and C3 simultaneously.</p>
         <div id="cx-fit-results" class="cx-fit-results" aria-live="polite"></div>
         <div class="cx-selection-bar">
@@ -167,6 +171,7 @@
           <div class="profile-action-menu-items">
             <button id="duplicate-button" class="secondary" type="button" disabled>Duplicate profile</button>
             <button id="reload-button" class="secondary" type="button" disabled>Discard draft &amp; reload</button>
+            <button id="discard-profile-button" class="secondary danger-action" type="button" hidden>Move to Deleted Cards</button>
           </div>
         </details>
       </section>
@@ -197,6 +202,12 @@
                   <option>Draft</option>
                   <option>Review</option>
                   <option>Final</option>
+                </select>
+              </label>
+              <label>Card section
+                <select id="display-category-input">
+                  <option value="subject">Subjects</option>
+                  <option value="reference">Camera Setup &amp; Controls</option>
                 </select>
               </label>
               <label class="release-control"><input id="release-input" type="checkbox"> Include in released card bundle</label>
@@ -264,6 +275,20 @@
           <iframe id="preview-frame" title="Temporary profile card preview" hidden></iframe>
         </aside>
       </div>
+    </section>
+
+    <section id="deleted-cards-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Recoverable holding area</p>
+          <h2>Deleted Cards</h2>
+          <p class="muted">Cards moved here are inactive but retain their exact source and immutable identity. Restore requires an exact diff review and validation.</p>
+        </div>
+        <button id="refresh-deleted-cards" class="secondary" type="button">Refresh</button>
+      </div>
+      <div class="configuration-state"><strong>No permanent delete</strong> · The normal editor can restore these cards but cannot purge them.</div>
+      <div id="deleted-cards-message" class="message" role="status" hidden></div>
+      <div id="deleted-cards-list" class="deleted-cards-list" aria-live="polite"></div>
     </section>
 
     <section id="baseline-view" class="app-view" hidden>
@@ -337,6 +362,7 @@
           <p class="muted">The build button remains locked until every pending browser draft is saved or explicitly discarded and a fresh readiness check passes. Any safely stale spreadsheet-derived artifacts are refreshed automatically during the confirmed build.</p>
         </div>
         <div class="local-build-actions">
+          <button id="import-verification-tracker" class="secondary" type="button">Import verification tracker</button>
           <button id="validate-readiness" class="primary" type="button">Validate readiness</button>
           <button id="run-local-build" class="save-action" type="button" disabled>Run local build</button>
         </div>
@@ -365,6 +391,43 @@
     <div class="review-actions">
       <button id="review-cancel" class="secondary" type="button">Continue editing</button>
       <button id="save-button" class="save-action" type="button">Save reviewed YAML</button>
+    </div>
+  </dialog>
+
+  <dialog id="discard-profile-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required removal review</p>
+        <h2>Move this card to Deleted Cards?</h2>
+        <p id="discard-profile-summary" class="muted"></p>
+      </div>
+      <button id="discard-profile-close" class="secondary" type="button" aria-label="Close removal review">Close</button>
+    </div>
+    <p class="review-warning"><strong>The active source shown below will move to a recoverable holding area.</strong> Structured references block removal. Narrative mentions below are warnings for human review.</p>
+    <div id="discard-profile-mentions" class="reference-warning-list" hidden></div>
+    <h3 class="review-diff-heading">Exact active-source removal</h3>
+    <pre id="discard-profile-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="discard-profile-cancel" class="secondary" type="button">Keep card</button>
+      <button id="discard-profile-confirm" class="save-action danger-save-action" type="button">Move reviewed card</button>
+    </div>
+  </dialog>
+
+  <dialog id="restore-profile-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required restore review</p>
+        <h2>Restore this card?</h2>
+        <p id="restore-profile-summary" class="muted"></p>
+      </div>
+      <button id="restore-profile-close" class="secondary" type="button" aria-label="Close restore review">Close</button>
+    </div>
+    <p class="review-warning"><strong>The exact held source shown below will return to the active project.</strong> Conflicting filenames or card identities block restoration.</p>
+    <h3 class="review-diff-heading">Exact YAML restoration</h3>
+    <pre id="restore-profile-diff" class="review-diff" tabindex="0"></pre>
+    <div class="review-actions">
+      <button id="restore-profile-cancel" class="secondary" type="button">Keep in Deleted Cards</button>
+      <button id="restore-profile-confirm" class="save-action" type="button">Restore reviewed card</button>
     </div>
   </dialog>
 

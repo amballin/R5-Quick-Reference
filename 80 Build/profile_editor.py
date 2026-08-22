@@ -23,6 +23,7 @@ import tempfile
 import threading
 import time
 from urllib.parse import quote, unquote, urlparse
+from uuid import uuid4
 
 import yaml
 
@@ -49,6 +50,14 @@ from baseline_migration import (
     migration_diff,
 )
 from build_validator import discover_profiles, is_reference_card
+from card_identity import (
+    CardIdentityError,
+    index_profiles,
+    narrative_mentions,
+    profile_by_id,
+    profile_by_title,
+    valid_card_id,
+)
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
@@ -90,6 +99,7 @@ TOGGLE_SETS = (
 )
 REFERENCE_CLASSIFICATIONS = {"Set Once", "Situational", "Ignore", "Avoid", "Unresolved"}
 PROFILE_STATUSES = {"Draft", "Review", "Final"}
+DISPLAY_CATEGORIES = {"subject", "reference"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
@@ -104,6 +114,7 @@ EDITOR_BUILD_FILES = (
     "90 Testing/eos_r5_verification_tracker.yaml",
     "80 Build/baseline_impact.py",
     "80 Build/baseline_migration.py",
+    "80 Build/card_identity.py",
     "80 Build/cx_route_analysis.py",
     "80 Build/html_renderer.py",
     "80 Build/my_menu_colors.py",
@@ -177,6 +188,8 @@ class ProfileEditorModel:
         self._pending_migration_reviews = {}
         self._pending_color_reviews = {}
         self._pending_cx_reviews = {}
+        self._pending_discard_reviews = {}
+        self._pending_restore_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
 
@@ -353,6 +366,7 @@ class ProfileEditorModel:
             items.append(
                 {
                     "name": name,
+                    "cardId": profile.get("card_id"),
                     "title": profile.get("title", name),
                     "cardType": "reference" if reference else "profile",
                     "editableDraft": not reference,
@@ -421,11 +435,11 @@ class ProfileEditorModel:
         setup = profile.setdefault("card", {}).setdefault("field_setup", {})
         if start:
             setup["start"] = start
-            setup["source_profile"] = self._cx_assignments()[start]
+            setup["source_card_id"] = self._card_id_for_title(self._cx_assignments()[start])
             setup.pop("access_only", None)
         else:
             setup.pop("start", None)
-            setup.pop("source_profile", None)
+            setup.pop("source_card_id", None)
             if not setup:
                 profile.get("card", {}).pop("field_setup", None)
         relative = f"10 Profiles/{profile_name}.yaml"
@@ -497,10 +511,15 @@ class ProfileEditorModel:
     def _cx_assignments(self):
         controls = load_yaml(self.paths.root / "controls.yaml") or {}
         modes = controls.get("custom_shooting_modes") or {}
-        return {
-            start: str((modes.get(start) or {}).get("profile_title") or "").strip()
-            for start in ("C1", "C2", "C3")
-        }
+        assignments = {}
+        for start in ("C1", "C2", "C3"):
+            card_id = str((modes.get(start) or {}).get("profile_id") or "").strip()
+            try:
+                name, profile = profile_by_id(self.profiles, card_id)
+            except CardIdentityError as exc:
+                raise PrototypeError(str(exc)) from exc
+            assignments[start] = str(profile.get("title") or name)
+        return assignments
 
     def _validate_cx_assignments(self, assignments):
         if not isinstance(assignments, dict):
@@ -578,7 +597,7 @@ class ProfileEditorModel:
             start = str(setup.get("start") or "").upper()
             if start not in assignments:
                 continue
-            setup["source_profile"] = assignments[start]
+            setup["source_card_id"] = self._card_id_for_title(assignments[start])
             relative = f"10 Profiles/{name}.yaml"
             candidates[relative] = self._dump_profile(candidate)
         return candidates
@@ -603,8 +622,7 @@ class ProfileEditorModel:
             text = text[:match.start()] + block + text[match.end():]
         return text
 
-    @staticmethod
-    def _replace_cx_mode_assignments(text, assignments, old_assignments):
+    def _replace_cx_mode_assignments(self, text, assignments, old_assignments):
         for start, title in assignments.items():
             if title == old_assignments.get(start):
                 continue
@@ -613,16 +631,24 @@ class ProfileEditorModel:
             if not match:
                 raise PrototypeError(f"Cannot locate the {start} control mapping.")
             block = match.group(0)
-            block = re.sub(r"(^    profile_title: ).*$", rf"\g<1>{title}", block, count=1, flags=re.MULTILINE)
+            profile_id = self._card_id_for_title(title)
+            block = re.sub(r"(^    profile_id: ).*$", rf"\g<1>{profile_id}", block, count=1, flags=re.MULTILINE)
             block = re.sub(r"(^    field_label: ).*$", rf"\g<1>{title}", block, count=1, flags=re.MULTILINE)
             text = text[:match.start()] + block + text[match.end():]
         return text
 
     def _profile_by_title(self, title):
-        matches = [profile for profile in self.profiles.values() if profile.get("title") == title]
-        if len(matches) != 1:
-            raise PrototypeError(f"Cx foundation title must resolve once: {title}")
-        return matches[0]
+        try:
+            return profile_by_title(self.profiles, title)[1]
+        except CardIdentityError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def _card_id_for_title(self, title):
+        profile = self._profile_by_title(title)
+        card_id = profile.get("card_id")
+        if not isinstance(card_id, str) or not card_id:
+            raise PrototypeError(f"Card is missing its immutable ID: {title}")
+        return card_id
 
     def _create_cx_review(self, candidates, summary, kind):
         before = {relative: (self.paths.root / relative).read_bytes() for relative in candidates}
@@ -1193,6 +1219,37 @@ class ProfileEditorModel:
         finally:
             self._build_lock.release()
 
+    def import_verification_tracker(self, pending_changes, confirmed):
+        try:
+            pending = int(pending_changes)
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("Pending-change count must be an integer.") from exc
+        if pending:
+            raise PrototypeError("Resolve every unsaved browser draft before importing the verification tracker.")
+        if confirmed is not True:
+            raise PrototypeError("Verification tracker import confirmation is required.")
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("A local build or tracker import is already running.")
+        try:
+            try:
+                completed = subprocess.run(
+                    [sys.executable, "80 Build/verification_status.py", "import"],
+                    cwd=self.paths.root,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    timeout=15 * 60,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired as exc:
+                raise PrototypeError("Verification tracker import timed out after 15 minutes.") from exc
+            output = completed.stdout[-80_000:]
+            if completed.returncode:
+                raise PrototypeError(f"Verification tracker import failed.\n{output}")
+            return {"status": "passed", "output": output}
+        finally:
+            self._build_lock.release()
+
     def baseline_impact(self, values, my_menu_tabs=None):
         """Analyze a complete, value-only baseline draft without writing it."""
         proposed = self._proposed_baseline(values)
@@ -1452,6 +1509,7 @@ class ProfileEditorModel:
             )
             return {
                 "name": name,
+                "cardId": profile.get("card_id"),
                 "title": profile.get("title", name),
                 "subtitle": profile.get("subtitle") or "",
                 "cardType": "reference",
@@ -1475,6 +1533,7 @@ class ProfileEditorModel:
         if operation == "create":
             title = self._available_profile_name("New Profile")
             profile = {
+                "card_id": str(uuid4()),
                 "metadata": {
                     "version": 1.0,
                     "status": "Draft",
@@ -1499,6 +1558,7 @@ class ProfileEditorModel:
             raise PrototypeError("Reference cards cannot be duplicated in the profile editor.")
         title = self._available_profile_name(f"{source.get('title', source_name)} Copy")
         profile = copy.deepcopy(source)
+        profile["card_id"] = str(uuid4())
         profile["title"] = title
         profile["metadata"] = self._new_profile_metadata(profile.get("metadata"))
         return self._shooting_profile_detail(
@@ -1557,6 +1617,7 @@ class ProfileEditorModel:
             )
         return {
             "name": name,
+            "cardId": profile.get("card_id"),
             "title": profile.get("title", name),
             "subtitle": profile.get("subtitle") or "",
             "cardType": "profile",
@@ -1570,6 +1631,12 @@ class ProfileEditorModel:
                 "status": (profile.get("metadata") or {}).get("status", "Draft"),
                 "release": bool((profile.get("metadata") or {}).get("release", False)),
             },
+            "displayCategory": profile.get("display_category") or "subject",
+            "discardBlockers": (
+                self._profile_discard_blockers(name)
+                if operation == "update" and name in self.profiles
+                else []
+            ),
             "sections": sections,
             "settingOrder": [path for path in self.setting_order if path in self.default_fields],
             "cardSettingPaths": self._card_setting_paths(profile),
@@ -1714,6 +1781,223 @@ class ProfileEditorModel:
                 "validation": "passed",
             }
 
+    def review_profile_removal(self, profile_name, source_fingerprint):
+        profile = self._profile(profile_name)
+        if is_reference_card(profile):
+            raise PrototypeError("Reference cards cannot be moved to Deleted Cards.")
+        if bool((profile.get("metadata") or {}).get("release", False)):
+            raise PrototypeError("Only unreleased cards can be moved to Deleted Cards.")
+        if source_fingerprint != self._profile_fingerprint(profile_name):
+            raise ProfileConflictError("The profile changed after it was loaded. Reload it before removal.")
+        blockers = self._profile_discard_blockers(profile_name)
+        if blockers:
+            raise PrototypeError("Resolve these structured references before removal: " + "; ".join(blockers))
+        target = self._profile_path(profile_name)
+        before = target.read_bytes()
+        diff = "".join(
+            difflib.unified_diff(
+                before.decode("utf-8").splitlines(keepends=True),
+                [],
+                fromfile=f"a/10 Profiles/{profile_name}.yaml",
+                tofile="/dev/null",
+            )
+        )
+        review = {
+            "created": time.monotonic(),
+            "target_name": profile_name,
+            "card_id": profile.get("card_id"),
+            "title": str(profile.get("title") or profile_name),
+            "source_fingerprint": source_fingerprint,
+            "source_sha256": self._sha256(before),
+            "diff": diff,
+        }
+        with self._write_lock:
+            self._expire_discard_reviews()
+            while len(self._pending_discard_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(
+                    self._pending_discard_reviews,
+                    key=lambda key: self._pending_discard_reviews[key]["created"],
+                )
+                del self._pending_discard_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_discard_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "sourceFile": f"10 Profiles/{profile_name}.yaml",
+            "summary": f"Move unreleased card {profile_name}.yaml to the recoverable Deleted Cards holding area.",
+            "diff": diff,
+            "narrativeMentions": self._profile_narrative_mentions(profile_name),
+        }
+
+    def save_profile_removal(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed removal token is required.")
+        with self._write_lock:
+            self._expire_discard_reviews()
+            review = self._pending_discard_reviews.pop(review_token, None)
+            if review is None:
+                raise ProfileConflictError("This removal review expired or was already used. Review it again.")
+            name = review["target_name"]
+            target = self._profile_path(name)
+            if not target.is_file():
+                raise ProfileConflictError("The profile no longer exists. Reload Profiles.")
+            before = target.read_bytes()
+            if self._sha256(before) != review["source_sha256"]:
+                raise ProfileConflictError("The profile changed after review. Reload it and review again.")
+            profile = self._profile(name)
+            if bool((profile.get("metadata") or {}).get("release", False)):
+                raise ProfileConflictError("The profile is now released and cannot be removed.")
+            blockers = self._profile_discard_blockers(name)
+            if blockers:
+                raise ProfileConflictError(
+                    "Profile dependencies changed after review: " + "; ".join(blockers)
+                )
+            backup = self._create_discard_backup(review, before)
+            deleted = self._write_deleted_card(review, before)
+            try:
+                target.unlink()
+                directory = os.open(target.parent, os.O_RDONLY)
+                try:
+                    os.fsync(directory)
+                finally:
+                    os.close(directory)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-removal source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                try:
+                    self._atomic_write(target, before, None)
+                    self._remove_deleted_entry(deleted)
+                except Exception as rollback_exc:  # pragma: no cover - catastrophic filesystem failure
+                    raise PrototypeError(
+                        f"Removal failed and automatic restore also failed. Recovery backup: {backup}. "
+                        f"Removal error: {exc}. Restore error: {rollback_exc}"
+                    ) from exc
+                raise PrototypeError(
+                    f"Removal failed; the active card was restored automatically. Recovery backup: {backup}. {exc}"
+                ) from exc
+            self._reload_profiles()
+            return {
+                "removedProfile": name,
+                "cardId": review["card_id"],
+                "sourceFile": f"10 Profiles/{name}.yaml",
+                "deletedCard": str(deleted),
+                "backup": str(backup),
+                "validation": "passed",
+            }
+
+    def deleted_cards(self):
+        root = self.paths.deleted_cards_dir
+        if not root.is_dir():
+            return []
+        entries = []
+        for folder in sorted(root.iterdir()):
+            if not folder.is_dir():
+                continue
+            manifest_path = folder / "manifest.json"
+            card_path = folder / "card.yaml"
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                data = card_path.read_bytes()
+            except (OSError, ValueError, json.JSONDecodeError):
+                continue
+            if self._sha256(data) != manifest.get("source_sha256"):
+                continue
+            entries.append(
+                {
+                    "cardId": manifest.get("card_id"),
+                    "name": manifest.get("target_profile"),
+                    "title": manifest.get("title"),
+                    "removed": manifest.get("removed"),
+                    "sourceFile": manifest.get("source_file"),
+                }
+            )
+        return entries
+
+    def review_profile_restore(self, card_id):
+        folder, manifest, data = self._deleted_card_entry(card_id)
+        name = manifest["target_profile"]
+        target = self._profile_path(name)
+        if target.exists():
+            raise ProfileConflictError(f"Cannot restore because 10 Profiles/{name}.yaml already exists.")
+        if any(profile.get("card_id") == card_id for profile in self.profiles.values()):
+            raise ProfileConflictError(f"Cannot restore because card_id is already active: {card_id}")
+        self._validate_candidate(name, data)
+        diff = "".join(
+            difflib.unified_diff(
+                [],
+                data.decode("utf-8").splitlines(keepends=True),
+                fromfile="/dev/null",
+                tofile=f"b/10 Profiles/{name}.yaml",
+            )
+        )
+        review = {
+            "created": time.monotonic(),
+            "card_id": card_id,
+            "target_name": name,
+            "deleted_folder": str(folder),
+            "source_sha256": self._sha256(data),
+            "candidate": data,
+            "diff": diff,
+        }
+        with self._write_lock:
+            self._expire_restore_reviews()
+            token = secrets.token_urlsafe(24)
+            self._pending_restore_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "summary": f"Restore {name}.yaml from Deleted Cards to active project source.",
+            "sourceFile": f"10 Profiles/{name}.yaml",
+            "diff": diff,
+        }
+
+    def save_profile_restore(self, review_token):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed restore token is required.")
+        with self._write_lock:
+            self._expire_restore_reviews()
+            review = self._pending_restore_reviews.pop(review_token, None)
+            if review is None:
+                raise ProfileConflictError("This restore review expired or was already used. Review it again.")
+            folder, manifest, data = self._deleted_card_entry(review["card_id"])
+            if str(folder) != review["deleted_folder"] or self._sha256(data) != review["source_sha256"]:
+                raise ProfileConflictError("The Deleted Cards entry changed after review.")
+            name = review["target_name"]
+            target = self._profile_path(name)
+            if target.exists() or any(profile.get("card_id") == review["card_id"] for profile in self.profiles.values()):
+                raise ProfileConflictError("The restore target or card identity is now in use.")
+            backup = self._create_restore_backup(review, data)
+            try:
+                self._atomic_write(target, data, None)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-restore source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                if target.exists():
+                    target.unlink()
+                raise PrototypeError(
+                    f"Restore failed; Deleted Cards remains unchanged. Recovery backup: {backup}. {exc}"
+                ) from exc
+            cleanup_warning = None
+            try:
+                self._remove_deleted_entry(folder)
+            except Exception as exc:  # Keep the validated active source if holding-area cleanup fails.
+                cleanup_warning = (
+                    "The card was restored and validated, but its recoverable holding copy could not be "
+                    f"removed: {exc}"
+                )
+            self._reload_profiles()
+            result = {
+                "restoredProfile": name,
+                "cardId": review["card_id"],
+                "sourceFile": f"10 Profiles/{name}.yaml",
+                "backup": str(backup),
+                "validation": "passed",
+            }
+            if cleanup_warning:
+                result["warning"] = cleanup_warning
+            return result
+
     def preview_draft(self, payload):
         profile, target_name, _operation, _source_name, _fingerprint = self._candidate_profile(payload)
         return self._render_preview(target_name, profile)
@@ -1799,11 +2083,15 @@ class ProfileEditorModel:
         title = self._single_line(payload.get("title"), "Title", 120, required=True)
         subtitle = self._single_line(payload.get("subtitle"), "Subtitle", 200, required=False)
         clean_overrides = self._validate_overrides(payload.get("overrides", {}))
+        display_category = payload.get("displayCategory")
+        if display_category not in DISPLAY_CATEGORIES:
+            raise PrototypeError("Card section must be Subjects or Camera Setup & Controls.")
 
         if operation == "create":
             if source_name not in {None, ""} or source_fingerprint not in {None, ""}:
                 raise PrototypeError("A baseline-derived profile must not identify a source profile.")
             profile = {
+                "card_id": str(uuid4()),
                 "metadata": self._new_profile_metadata(),
                 "title": title,
                 "inherits": "baseline",
@@ -1821,6 +2109,7 @@ class ProfileEditorModel:
                 raise PrototypeError("Renaming an existing profile is not available in Stage 2.")
             profile = source
             if operation == "duplicate":
+                profile["card_id"] = str(uuid4())
                 profile["metadata"] = self._new_profile_metadata(profile.get("metadata"))
             else:
                 metadata = profile.setdefault("metadata", {})
@@ -1836,6 +2125,10 @@ class ProfileEditorModel:
             profile["title"] = title
             profile["inherits"] = "baseline"
             profile["overrides"] = nested_from_flat(clean_overrides)
+        if display_category == "reference":
+            profile["display_category"] = "reference"
+        else:
+            profile.pop("display_category", None)
         if subtitle:
             profile["subtitle"] = subtitle
         else:
@@ -1927,6 +2220,114 @@ class ProfileEditorModel:
         (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         return backup
 
+    def _create_discard_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", review["target_name"]).strip("-").lower()
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-discard-{safe_name}"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        before_dir = backup / "before" / "10 Profiles"
+        before_dir.mkdir(parents=True)
+        (before_dir / f"{review['target_name']}.yaml").write_bytes(before)
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": "move_unreleased_profile_to_deleted_cards",
+            "card_id": review["card_id"],
+            "target_profile": review["target_name"],
+            "source_sha256": review["source_sha256"],
+            "recovery": f"Restore before/10 Profiles/{review['target_name']}.yaml to 10 Profiles/.",
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
+
+    def _write_deleted_card(self, review, data):
+        root = self.paths.deleted_cards_dir.resolve()
+        root.mkdir(parents=True, exist_ok=True)
+        target = (root / review["card_id"]).resolve()
+        if target.parent != root:
+            raise PrototypeError("Deleted Cards identity path is invalid.")
+        if target.exists():
+            raise ProfileConflictError("This card already has a Deleted Cards entry.")
+        temporary = Path(tempfile.mkdtemp(prefix=".card-", dir=root))
+        try:
+            (temporary / "card.yaml").write_bytes(data)
+            manifest = {
+                "version": 1,
+                "card_id": review["card_id"],
+                "title": review["title"],
+                "target_profile": review["target_name"],
+                "source_file": f"10 Profiles/{review['target_name']}.yaml",
+                "source_sha256": review["source_sha256"],
+                "removed": datetime.now().astimezone().isoformat(),
+                "recovery": "Use Profile Editor → Deleted Cards → Restore.",
+            }
+            (temporary / "manifest.json").write_text(
+                json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            )
+            os.replace(temporary, target)
+        finally:
+            if temporary.exists():
+                shutil.rmtree(temporary)
+        return target
+
+    def _deleted_card_entry(self, card_id):
+        if not valid_card_id(card_id):
+            raise PrototypeError("Select a valid Deleted Cards entry.")
+        root = self.paths.deleted_cards_dir.resolve()
+        folder = (root / card_id).resolve()
+        if folder.parent != root or not folder.is_dir():
+            raise PrototypeError("Deleted Cards entry was not found.")
+        try:
+            manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+            data = (folder / "card.yaml").read_bytes()
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            raise PrototypeError("Deleted Cards entry is incomplete or unreadable.") from exc
+        if manifest.get("card_id") != card_id or self._sha256(data) != manifest.get("source_sha256"):
+            raise ProfileConflictError("Deleted Cards integrity check failed.")
+        name = manifest.get("target_profile")
+        if not isinstance(name, str) or self._validate_profile_name(name) != name:
+            raise ProfileConflictError("Deleted Cards restore target is invalid.")
+        return folder, manifest, data
+
+    def _remove_deleted_entry(self, folder):
+        root = self.paths.deleted_cards_dir.resolve()
+        folder = Path(folder).resolve()
+        if folder.parent != root or not folder.is_dir():
+            raise PrototypeError("Refusing to remove an invalid Deleted Cards path.")
+        shutil.rmtree(folder)
+
+    def _create_restore_backup(self, review, data):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", review["target_name"]).strip("-").lower()
+        backup = self.paths.backups_dir / f"{timestamp}-profile-editor-restore-{safe_name}"
+        counter = 2
+        while backup.exists():
+            backup = self.paths.backups_dir / f"{timestamp}-profile-editor-restore-{safe_name}-{counter}"
+            counter += 1
+        source_dir = backup / "deleted-card"
+        source_dir.mkdir(parents=True)
+        (source_dir / f"{review['target_name']}.yaml").write_bytes(data)
+        (backup / "transaction.json").write_text(
+            json.dumps(
+                {
+                    "version": 1,
+                    "created": datetime.now().astimezone().isoformat(),
+                    "operation": "restore_profile_from_deleted_cards",
+                    "card_id": review["card_id"],
+                    "target_profile": review["target_name"],
+                    "source_sha256": review["source_sha256"],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return backup
+
     @staticmethod
     def _atomic_write(target, data, prior):
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -1993,6 +2394,40 @@ class ProfileEditorModel:
             raise ProfileConflictError(f"Profile source no longer exists: {name}.yaml")
         return self._sha256(path.read_bytes())
 
+    def _profile_discard_blockers(self, name):
+        profile = self._profile(name)
+        card_id = profile.get("card_id")
+        blockers = []
+        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        modes = controls.get("custom_shooting_modes") or {}
+        assigned = [start for start in ("C1", "C2", "C3") if (modes.get(start) or {}).get("profile_id") == card_id]
+        if assigned:
+            blockers.append(f"assigned to {', '.join(assigned)}")
+        routed = []
+        for other_name, other in self.profiles.items():
+            if other_name == name or is_reference_card(other):
+                continue
+            setup = ((other.get("card") or {}).get("field_setup") or {})
+            if setup.get("source_card_id") == card_id:
+                routed.append(str(other.get("title") or other_name))
+        if routed:
+            blockers.append("used as Cx foundation by " + ", ".join(sorted(routed, key=str.casefold)))
+        manifest = load_yaml(self.paths.root / "50 Field Guide" / "required_appendices.yaml") or {}
+        appendices = [
+            str(entry.get("title") or entry.get("id"))
+            for entry in manifest.get("appendices", []) or []
+            if isinstance(entry, dict) and card_id in (entry.get("profile_ids") or [])
+        ]
+        if appendices:
+            blockers.append("associated with appendices: " + ", ".join(appendices))
+        return blockers
+
+    def _profile_narrative_mentions(self, name):
+        profile = self._profile(name)
+        title = str(profile.get("title") or name)
+        excluded = [self._profile_path(name)]
+        return narrative_mentions(self.paths.root, title, excluded_paths=excluded)
+
     @staticmethod
     def _sha256(data):
         return hashlib.sha256(data).hexdigest()
@@ -2042,6 +2477,26 @@ class ProfileEditorModel:
         expired = [token for token, review in self._pending_reviews.items() if review["created"] < cutoff]
         for token in expired:
             del self._pending_reviews[token]
+
+    def _expire_discard_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_discard_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_discard_reviews[token]
+
+    def _expire_restore_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_restore_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_restore_reviews[token]
 
     def _expire_migration_reviews(self):
         cutoff = time.monotonic() - REVIEW_TTL_SECONDS
@@ -2182,6 +2637,8 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.baseline_detail())
             if path == "/api/cx-foundations":
                 return self._json(self.model.cx_foundation_detail())
+            if path == "/api/deleted-cards":
+                return self._json({"cards": self.model.deleted_cards()})
             if path == "/api/editor-info":
                 return self._json(self.model.editor_info())
             if path.startswith("/api/profiles/"):
@@ -2207,6 +2664,10 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/profile-drafts",
             "/api/profile-reviews",
             "/api/profile-saves",
+            "/api/profile-removal-reviews",
+            "/api/profile-removals",
+            "/api/profile-restore-reviews",
+            "/api/profile-restores",
             "/api/baseline-impact",
             "/api/baseline-plan",
             "/api/baseline-migration-reviews",
@@ -2220,6 +2681,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/cx-selection-reviews",
             "/api/cx-foundation-saves",
             "/api/build-readiness",
+            "/api/verification-tracker-import",
             "/api/local-build",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
@@ -2231,6 +2693,18 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.review_profile(payload))
             if parsed.path == "/api/profile-saves":
                 return self._json(self.model.save_profile(payload.get("reviewToken")))
+            if parsed.path == "/api/profile-removal-reviews":
+                return self._json(
+                    self.model.review_profile_removal(
+                        payload.get("profile"), payload.get("sourceFingerprint")
+                    )
+                )
+            if parsed.path == "/api/profile-removals":
+                return self._json(self.model.save_profile_removal(payload.get("reviewToken")))
+            if parsed.path == "/api/profile-restore-reviews":
+                return self._json(self.model.review_profile_restore(payload.get("cardId")))
+            if parsed.path == "/api/profile-restores":
+                return self._json(self.model.save_profile_restore(payload.get("reviewToken")))
             if parsed.path == "/api/baseline-impact":
                 return self._json(
                     self.model.baseline_impact(
@@ -2276,6 +2750,12 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.save_cx_review(payload.get("reviewToken")))
             if parsed.path == "/api/build-readiness":
                 return self._json(self.model.build_readiness(payload.get("pendingChanges")))
+            if parsed.path == "/api/verification-tracker-import":
+                return self._json(
+                    self.model.import_verification_tracker(
+                        payload.get("pendingChanges"), payload.get("confirmImport")
+                    )
+                )
             if parsed.path == "/api/local-build":
                 return self._json(
                     self.model.run_local_build(
