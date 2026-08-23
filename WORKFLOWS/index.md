@@ -10,11 +10,11 @@ Open [Preflight](preflight.html) to confirm this Mac has the current source and 
 
 ## 2. Develop, build, and test
 
-Open [Profile Editor](profile-editor.html) as the main interface for routine profile, My Menu, baseline, camera-reference, session-review, validation, and local-build work. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
+Open **R5 Profile Editor.app** from the machine-local `Applications` folder for routine work, and use [Profile Editor](profile-editor.html) for its complete operating guide. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
 
 Open [Local Build](local-build.html) for the equivalent terminal commands, troubleshooting, or project changes outside the editor's scope. For routine generated-result review, open `Canon Camera Reference Local/Build Output/merged-build/index.html`, not intermediate card files or the Git-tracked `docs/` publication mirror. Git actions and publishing remain separate workflows.
 
-Open [USB Camera Configuration](usb-camera-configuration.html) to connect a physical EOS R5 through Canon EDSDK. The current Phase 0 command is read-only: it verifies the camera identity and connection, reports available camera information, and closes the SDK session without changing camera settings.
+Open **R5 Camera Lab.app** from the machine-local `Applications` folder to connect a physical EOS R5 through Canon EDSDK, and use [USB Camera Configuration](usb-camera-configuration.html) for the complete workflow. The current Camera Lab connection and comparison workflow is read-only: it verifies camera identity, scans reviewed capabilities, and compares the selected profile without changing camera settings.
 
 ## 3. Record spreadsheet testing status
 

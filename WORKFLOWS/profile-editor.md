@@ -10,7 +10,17 @@ It cannot edit permanent reference cards, rename profiles, remove released cards
 
 ## Start the editor
 
-Use the Project Terminal panel on the [Workflow Index](index.html) to open the project worktree in Terminal. Then run:
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. The app opens the established launcher in Terminal, starts Profile Editor, and opens Google Chrome automatically. Keep that Terminal window open while using the editor; press **Control-C** there to stop it cleanly.
+
+Build or refresh both local application wrappers from the repository root with:
+
+```bash
+./80\ Build/scripts/build-app-wrappers.sh
+```
+
+The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. The existing **Start Profile Editor.command** launcher remains available in the repository's top-level folder.
+
+For development or diagnostics, use the Project Terminal panel on the [Workflow Index](index.html) to open the project worktree in Terminal. Then run:
 
 ```bash
 npm run ui
