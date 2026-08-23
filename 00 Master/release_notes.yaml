@@ -88,3 +88,9 @@ releases:
       - Added a comprehensive Water Drop Collision Photography guide covering Pluto timing, drop calibration, multi-flash placement, reflection control, and precise manual focusing.
       - Standardized Servo AF behavior with the project-customized Case 1 preset (-1 / +1) for Wildlife, Birds Perched, and Sports, while retaining Case 4 for Birds in Flight and Case A for general use.
       - Added High Speed Display and expanded AF Case, tracking, subject-switching, My Menu, subject-card, and spreadsheet guidance.
+  "2.03":
+    highlights:
+      - Added Profile Editor 1.0 for safely maintaining profiles, C1–C3 foundations, My Menu, and shared baseline settings with previews and impact review.
+      - Added the read-only EOS R5 Camera Lab for comparing a USB-connected camera with subject-profile targets in an efficient setup-route order.
+      - Added a dedicated My Menu reference card and Touch & Drag AF guidance.
+      - Reorganized cards and spreadsheet rows into a faster practical camera-setup sequence.
