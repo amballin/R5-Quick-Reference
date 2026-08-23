@@ -10,11 +10,11 @@ Open [Preflight](preflight.html) to confirm this Mac has the current source and 
 
 ## 2. Develop, build, and test
 
-Open **R5 Profile Editor.app** from the machine-local `Applications` folder for routine work, and use [Profile Editor](profile-editor.html) for its complete operating guide. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
+Open **R5 Profile Editor.app** from the machine-local `Applications` folder for routine work, and use [Profile Editor](profile-editor.html) for its complete operating guide. It runs in the background without a Terminal window and has its own Stop action. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
 
 Open [Local Build](local-build.html) for the equivalent terminal commands, troubleshooting, or project changes outside the editor's scope. For routine generated-result review, open `Canon Camera Reference Local/Build Output/merged-build/index.html`, not intermediate card files or the Git-tracked `docs/` publication mirror. Git actions and publishing remain separate workflows.
 
-Open **R5 Camera Lab.app** from the machine-local `Applications` folder to connect a physical EOS R5 through Canon EDSDK, and use [USB Camera Configuration](usb-camera-configuration.html) for the complete workflow. The current Camera Lab connection and comparison workflow is read-only: it verifies camera identity, scans reviewed capabilities, and compares the selected profile without changing camera settings.
+Open **R5 Camera Lab.app** from the machine-local `Applications` folder to connect a physical EOS R5 through Canon EDSDK, or use **Open in Camera Lab** from a saved Subject/Profile Card in Profile Editor to start or reuse it with that profile preselected. Use [USB Camera Configuration](usb-camera-configuration.html) for the complete workflow. The current Camera Lab connection and comparison workflow is read-only: it verifies camera identity, scans reviewed capabilities, and compares the selected profile without changing camera settings. Profile Editor and Camera Lab stop independently.
 
 ## 3. Record spreadsheet testing status
 

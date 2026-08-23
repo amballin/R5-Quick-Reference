@@ -1,5 +1,9 @@
+const editorToken = document.querySelector('meta[name="profile-editor-token"]').content;
+
 const elements = {
   editorBuild: document.querySelector("#editor-build"),
+  openCameraLab: document.querySelector("#open-camera-lab"),
+  stopProfileEditor: document.querySelector("#stop-profile-editor"),
   profileActionMenu: document.querySelector(".profile-action-menu"),
   viewTabs: [...document.querySelectorAll(".view-tab")],
   views: [...document.querySelectorAll(".app-view")],
@@ -199,7 +203,11 @@ function profileFilenameFromTitle(title) {
 }
 
 async function request(url, options) {
-  const response = await fetch(url, options);
+  const requestOptions = { ...(options || {}) };
+  if (requestOptions.method === "POST") {
+    requestOptions.headers = { ...(requestOptions.headers || {}), "X-Profile-Editor-Token": editorToken };
+  }
+  const response = await fetch(url, requestOptions);
   const payload = await response.json();
   if (!response.ok) throw new Error(payload.error || "The prototype could not complete the request.");
   return payload;
@@ -631,6 +639,60 @@ function captureCurrentProfileDraft() {
   }
   invalidateBuildReadiness();
   renderSessionStatus();
+  updateCameraLabAction();
+}
+
+function updateCameraLabAction() {
+  const savedProfile = state.detail?.cardType === "profile" && (state.detail.operation || "update") === "update";
+  const changed = savedProfile && profilePayloadChanged(profileDraftPayload());
+  elements.openCameraLab.disabled = !savedProfile || changed;
+  elements.openCameraLab.title = changed
+    ? "Save or discard this profile draft before opening Camera Lab."
+    : savedProfile ? `Open the saved ${state.detail.name} profile in Camera Lab.` : "Select a saved Subject/Profile Card first.";
+}
+
+async function openCurrentProfileInCameraLab() {
+  captureCurrentProfileDraft();
+  updateCameraLabAction();
+  if (elements.openCameraLab.disabled) {
+    showMessage("Save or discard the current profile draft before opening Camera Lab.", true);
+    return;
+  }
+  elements.openCameraLab.disabled = true;
+  showMessage(`Opening the saved ${state.detail.name} profile in Camera Lab…`);
+  try {
+    const result = await request("/api/camera-lab-launch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile: state.detail.name }),
+    });
+    showMessage(result.reused
+      ? `Camera Lab was already running and opened ${state.detail.name}.`
+      : `Camera Lab started independently with ${state.detail.name} selected.`);
+  } catch (error) {
+    showMessage(error.message, true);
+  } finally {
+    updateCameraLabAction();
+  }
+}
+
+async function stopProfileEditor() {
+  captureCurrentProfileDraft();
+  const pending = pendingSessionItems().length;
+  const warning = pending
+    ? `Stop Profile Editor? ${pending} unsaved browser draft${pending === 1 ? "" : "s"} will be lost.`
+    : "Stop Profile Editor and its local server?";
+  if (!window.confirm(warning)) return;
+  elements.stopProfileEditor.disabled = true;
+  try {
+    await request("/api/editor-shutdown", { method: "POST", body: "{}" });
+    document.querySelectorAll("button, select, input").forEach((control) => { control.disabled = true; });
+    showMessage("Profile Editor stopped cleanly. Camera Lab, if running, remains independent. You may close this tab.");
+    window.setTimeout(() => window.close(), 300);
+  } catch (error) {
+    elements.stopProfileEditor.disabled = false;
+    showMessage(`Profile Editor could not stop cleanly: ${error.message}`, true);
+  }
 }
 
 function normalizedMyMenuDraft(menus = state.myMenus) {
@@ -1271,6 +1333,7 @@ function render() {
     : editable ? "Render preview" : "Render reference preview";
   elements.reviewButton.disabled = !editable;
   updateDiscardProfileAction();
+  updateCameraLabAction();
   if (!editable) {
     renderReference();
     elements.customCount.textContent = "0";
@@ -2742,6 +2805,8 @@ async function preview() {
 }
 
 elements.profileSelect.addEventListener("change", () => loadProfile(elements.profileSelect.value));
+elements.openCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
+elements.stopProfileEditor.addEventListener("click", stopProfileEditor);
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => {
   elements.profileActionMenu.open = false;

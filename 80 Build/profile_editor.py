@@ -22,7 +22,9 @@ import sys
 import tempfile
 import threading
 import time
+from urllib.error import HTTPError, URLError
 from urllib.parse import quote, unquote, urlparse
+from urllib.request import urlopen
 from uuid import uuid4
 
 import yaml
@@ -70,6 +72,7 @@ from utilities import flatten
 
 HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
+CAMERA_LAB_ORIGIN = "http://127.0.0.1:8770"
 PREVIEW_NAME = "_Profile Editor Preview.html"
 MAX_REQUEST_BYTES = 1_000_000
 SECTION_LABELS = {
@@ -124,6 +127,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
+    "80 Build/scripts/start-profile-editor.sh",
 )
 
 
@@ -133,6 +137,68 @@ class PrototypeError(ValueError):
 
 class ProfileConflictError(PrototypeError):
     pass
+
+
+class CameraLabLauncher:
+    """Start or reuse the independent Camera Lab and open a saved profile."""
+
+    def __init__(self, root=PROJECT_ROOT):
+        self.root = Path(root).resolve()
+        self.start_script = self.root / "80 Build" / "scripts" / "start-camera-lab.sh"
+        local_workspace = Path(os.environ.get("PRS_LOCAL_WORKSPACE", f"{self.root} Local")).expanduser().resolve()
+        self.log_file = local_workspace / "Logs" / "R5 Camera Lab.log"
+
+    @staticmethod
+    def profile_url(profile_name):
+        return f"{CAMERA_LAB_ORIGIN}/?profile={quote(profile_name)}"
+
+    def _is_running(self):
+        try:
+            with urlopen(f"{CAMERA_LAB_ORIGIN}/api/camera-control/status", timeout=0.5) as response:
+                payload = json.load(response)
+        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError, OSError):
+            return False
+        return payload.get("read_only") is True and payload.get("backend_mode") in {"edsdk", "simulated"}
+
+    @staticmethod
+    def _open_url(url):
+        result = subprocess.run(
+            ["/usr/bin/open", "-a", "Google Chrome", url],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode:
+            raise PrototypeError("Camera Lab is running, but Google Chrome could not open it.")
+
+    def launch(self, profile_name):
+        url = self.profile_url(profile_name)
+        if self._is_running():
+            self._open_url(url)
+            return {"url": url, "started": False, "reused": True}
+        if not self.start_script.is_file() or not os.access(self.start_script, os.X_OK):
+            raise PrototypeError(f"Camera Lab launcher is missing or not executable: {self.start_script}")
+        self.log_file.parent.mkdir(parents=True, exist_ok=True)
+        with self.log_file.open("ab") as log_handle:
+            process = subprocess.Popen(
+                [str(self.start_script), "--profile", profile_name],
+                cwd=self.root,
+                stdin=subprocess.DEVNULL,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+        deadline = time.monotonic() + 12
+        while time.monotonic() < deadline:
+            if self._is_running():
+                return {"url": url, "started": True, "reused": False}
+            return_code = process.poll()
+            if return_code is not None:
+                raise PrototypeError(
+                    f"Camera Lab could not start (status {return_code}). Review {self.log_file}."
+                )
+            time.sleep(0.1)
+        raise PrototypeError(f"Camera Lab did not become ready. Review {self.log_file}.")
 
 
 def nested_from_flat(values):
@@ -162,7 +228,13 @@ def same_value(left, right):
 
 
 class ProfileEditorModel:
-    def __init__(self, root=PROJECT_ROOT, source_validator=None, derived_artifact_checker=None):
+    def __init__(
+        self,
+        root=PROJECT_ROOT,
+        source_validator=None,
+        derived_artifact_checker=None,
+        camera_lab_launcher=None,
+    ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         self.baseline = load_baseline(self.paths)
@@ -192,6 +264,14 @@ class ProfileEditorModel:
         self._pending_restore_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
+        self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths.root)
+
+    def launch_camera_lab(self, profile_name):
+        name = self._validate_profile_name(profile_name)
+        profile = self._profile(name)
+        if is_reference_card(profile):
+            raise PrototypeError("Camera Lab accepts saved Subject/Profile Cards, not reference cards.")
+        return self.camera_lab_launcher.launch(name)
 
     def _load_profiles(self):
         profiles = {}
@@ -2667,6 +2747,7 @@ class ProfileEditorModel:
 
 class EditorHandler(BaseHTTPRequestHandler):
     model = None
+    request_token = None
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -2703,6 +2784,8 @@ class EditorHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         if parsed.path not in {
+            "/api/editor-shutdown",
+            "/api/camera-lab-launch",
             "/api/preview",
             "/api/profile-drafts",
             "/api/profile-reviews",
@@ -2728,8 +2811,19 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/local-build",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
+        if parsed.path in {"/api/editor-shutdown", "/api/camera-lab-launch"} and not secrets.compare_digest(
+            self.headers.get("X-Profile-Editor-Token", ""), self.request_token
+        ):
+            return self._json({"error": "Profile Editor request token is missing or invalid."}, HTTPStatus.FORBIDDEN)
         try:
             payload = self._request_json()
+            if parsed.path == "/api/editor-shutdown":
+                result = {"stopping": True, "server_closed": True}
+                self._json(result)
+                threading.Thread(target=self.server.shutdown, daemon=True).start()
+                return
+            if parsed.path == "/api/camera-lab-launch":
+                return self._json(self.model.launch_camera_lab(payload.get("profile")))
             if parsed.path == "/api/profile-drafts":
                 return self._json(self.model.profile_draft(payload.get("operation"), payload.get("sourceProfile")))
             if parsed.path == "/api/profile-reviews":
@@ -2842,22 +2936,27 @@ class EditorHandler(BaseHTTPRequestHandler):
 
     def _static_file(self, request_path):
         relative = "index.html" if request_path in {"", "/"} else unquote(request_path.lstrip("/"))
-        return self._safe_file(STATIC_DIR, relative)
+        replacements = None
+        if relative == "index.html":
+            replacements = {b"__PROFILE_EDITOR_TOKEN__": self.request_token.encode("ascii")}
+        return self._safe_file(STATIC_DIR, relative, replacements=replacements)
 
     def _source_file(self, relative):
         return self._safe_file(self.model.paths.root, relative)
 
-    def _safe_file(self, root, relative):
+    def _safe_file(self, root, relative, replacements=None):
         root = root.resolve()
         candidate = (root / relative).resolve()
         if candidate != root and root not in candidate.parents:
             raise FileNotFoundError(relative)
-        return self._file(candidate)
+        return self._file(candidate, replacements=replacements)
 
-    def _file(self, path, content_type=None):
+    def _file(self, path, content_type=None, replacements=None):
         if not path.is_file():
             raise FileNotFoundError(path)
         data = path.read_bytes()
+        for old, new in (replacements or {}).items():
+            data = data.replace(old, new)
         mime = content_type or mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", mime)
@@ -2892,6 +2991,15 @@ def parse_args():
     return parser.parse_args()
 
 
+def create_server(model, port=DEFAULT_PORT, token=None):
+    handler = type(
+        "BoundEditorHandler",
+        (EditorHandler,),
+        {"model": model, "request_token": token or secrets.token_urlsafe(32)},
+    )
+    return ThreadingHTTPServer((HOST, port), handler)
+
+
 def main():
     args = parse_args()
     model = ProfileEditorModel()
@@ -2904,11 +3012,11 @@ def main():
     if not 1 <= args.port <= 65535:
         print("Port must be between 1 and 65535.", file=sys.stderr)
         return 2
-    EditorHandler.model = model
-    server = ThreadingHTTPServer((HOST, args.port), EditorHandler)
+    server = create_server(model, port=args.port)
     print("Canon Camera Reference — guarded profile editor")
     print(f"Open http://{HOST}:{args.port}")
-    print("Press Control-C to stop. Profile saves require exact diff review, backup, and validation.")
+    print("Use Stop Profile Editor in the page header, or press Control-C here.")
+    print("Profile saves require exact diff review, backup, and validation.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

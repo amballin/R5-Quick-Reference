@@ -1,4 +1,5 @@
 const token = document.querySelector('meta[name="camera-lab-token"]').content;
+const requestedProfileName = new URLSearchParams(window.location.search).get("profile");
 
 const elements = {
   backendBadge: document.querySelector("#backend-badge"),
@@ -39,6 +40,8 @@ const elements = {
   coverageConditional: document.querySelector("#coverage-conditional"),
   coverageUnmappedSummary: document.querySelector("#coverage-unmapped-summary"),
   coverageUnmapped: document.querySelector("#coverage-unmapped"),
+  cxSlotCards: document.querySelector("#cx-slot-cards"),
+  comparisonPanel: document.querySelector("#comparison-panel"),
   profileSelect: document.querySelector("#profile-select"),
   compareButton: document.querySelector("#compare-button"),
   comparisonResults: document.querySelector("#comparison-results"),
@@ -225,6 +228,7 @@ function setBusy(busy) {
   elements.applyScenarioButton.disabled = busy;
   elements.simulateDisconnectButton.disabled = busy || !statusState?.connected;
   elements.stopCameraLabButton.disabled = busy;
+  for (const button of document.querySelectorAll("[data-cx-profile]")) button.disabled = busy;
 }
 
 function renderStoppedState() {
@@ -714,6 +718,62 @@ function renderComparison(comparison) {
   elements.compareStep.classList.add("active");
 }
 
+function openCxChecklist(profileName) {
+  const option = [...elements.profileSelect.options].find((item) => item.value === profileName);
+  if (!option) return;
+  elements.profileSelect.value = profileName;
+  comparisonState = null;
+  elements.comparisonResults.hidden = true;
+  setBusy(requestPending);
+  elements.comparisonPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.setTimeout(() => elements.compareButton.focus({ preventScroll: true }), 350);
+}
+
+function renderCxSetup(profiles) {
+  const foundations = new Map(
+    profiles
+      .filter((profile) => profile.is_foundation && ["C1", "C2", "C3"].includes(profile.foundation_slot))
+      .map((profile) => [profile.foundation_slot, profile])
+  );
+  elements.cxSlotCards.replaceChildren(
+    ...["C1", "C2", "C3"].map((slot) => {
+      const profile = foundations.get(slot);
+      const card = document.createElement("article");
+      card.className = `cx-slot-card${profile ? "" : " cx-slot-missing"}`;
+      const heading = document.createElement("h3");
+      heading.textContent = profile ? `${slot} – ${profile.title}` : `${slot} – Assignment unavailable`;
+      const summary = document.createElement("p");
+      summary.textContent = profile
+        ? `Saved foundation: ${profile.title}. Camera Lab rereads this assignment from the current saved project profiles.`
+        : "No saved foundation profile currently resolves to this slot. Save the assignment in Profile Editor, then reload Camera Lab.";
+      const steps = document.createElement("ol");
+      const instructions = profile
+        ? [
+            `In a normal shooting mode, open the ${profile.title} checklist and set or confirm its assigned values.`,
+            `On the camera choose Set-up 5 → Custom shooting mode (C1-C3) → Register settings → ${slot}. Registration is manual.`,
+            `Leave the setup state, recall ${slot}, then use Scan & compare for ${profile.title}.`,
+            "Resolve readable differences with another scan and manually confirm only the findings Camera Lab identifies as manual, conditional, or unreadable.",
+          ]
+        : ["Return to Profile Editor and save a foundation profile for this slot before registering it on the camera."];
+      for (const instruction of instructions) {
+        const item = document.createElement("li");
+        item.textContent = instruction;
+        steps.append(item);
+      }
+      card.append(heading, summary, steps);
+      if (profile) {
+        const button = document.createElement("button");
+        button.className = "secondary cx-open-button";
+        button.type = "button";
+        button.dataset.cxProfile = profile.name;
+        button.textContent = `Open ${slot} checklist`;
+        card.append(button);
+      }
+      return card;
+    })
+  );
+}
+
 async function loadProfiles() {
   try {
     const result = await request("/api/camera-control/profiles");
@@ -729,6 +789,16 @@ async function loadProfiles() {
         return option;
       })
     );
+    if (requestedProfileName) {
+      const requested = result.profiles.find((profile) => profile.name === requestedProfileName);
+      if (requested) {
+        elements.profileSelect.value = requested.name;
+        setMessage(`${requested.title} was selected by Profile Editor. Connect and scan when ready.`, "info");
+      } else {
+        setMessage(`The requested saved profile “${requestedProfileName}” is not available in Camera Lab. Select another profile.`, "info");
+      }
+    }
+    renderCxSetup(result.profiles);
     setBusy(requestPending);
   } catch (error) {
     setMessage(error.message);
@@ -860,6 +930,11 @@ elements.stopCameraLabButton.addEventListener("click", stopCameraLab);
 elements.scanButton.addEventListener("click", () => runAction(scanAndCompare));
 
 elements.profileSelect.addEventListener("change", () => setBusy(requestPending));
+
+elements.cxSlotCards.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-cx-profile]");
+  if (button) openCxChecklist(button.dataset.cxProfile);
+});
 
 elements.compareButton.addEventListener("click", () => runAction(scanAndCompare));
 

@@ -36,7 +36,8 @@ APP_WRAPPERS = (
         name="R5 Profile Editor",
         bundle_id="com.amballin.canon-eos-r5.profile-editor",
         executable="r5-profile-editor",
-        command_file="Start Profile Editor.command",
+        command_file="80 Build/scripts/start-profile-editor.sh",
+        launch_in_terminal=False,
     ),
 )
 

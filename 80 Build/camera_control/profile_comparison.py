@@ -58,10 +58,10 @@ REFERENCE_GUIDANCE_PATHS = {
 }
 
 
-def list_profiles():
+def list_profiles(paths=PATHS):
     loaded_profiles = []
     titles_by_card_id = {}
-    for source in sorted(PATHS.profiles_dir.glob("*.yaml"), key=lambda item: item.stem.casefold()):
+    for source in sorted(paths.profiles_dir.glob("*.yaml"), key=lambda item: item.stem.casefold()):
         data = _load_yaml(source)
         loaded_profiles.append((source, data))
         if data.get("card_id"):

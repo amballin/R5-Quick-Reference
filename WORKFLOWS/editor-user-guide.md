@@ -4,13 +4,15 @@ Profile Editor 1.0 is the main local interface for routine work: creating and up
 
 ## Start the editor
 
-From the project root, run:
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. It starts in the background without opening Terminal and opens Google Chrome automatically. Use **Stop Profile Editor** in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server.
+
+For development or diagnostics, from the project root run:
 
 ```bash
 npm run ui
 ```
 
-Open the local address shown in Terminal. Keep that Terminal window open while using the editor. Press **Control-C** in Terminal when you are finished.
+Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press **Control-C** in Terminal when you are finished.
 
 The editor runs only on this Mac. It does not publish the website or make Git changes.
 
@@ -42,6 +44,8 @@ Use the workspace sidebar:
 On narrower windows, the sidebar becomes a compact navigation row above the workspace.
 
 Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into **Profile to evaluate** automatically.
+
+When a saved Subject/Profile Card is selected with no unsaved ordinary profile edits, choose **Open in Camera Lab** in the header to start or reuse the independent read-only Lab with that profile preselected. The editor passes only the saved profile name; Camera Lab reloads the current profile and C1–C3 assignments. It does not connect, scan, compare, or change a camera setting automatically. Each app's Stop button closes only that app.
 
 ## Choose a Cx foundation
 

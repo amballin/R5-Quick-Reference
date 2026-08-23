@@ -1,14 +1,14 @@
 version: 1
-updated: '2026-08-22T21:15:15.881887-04:00'
+updated: '2026-08-23T14:20:50-04:00'
 tests:
   SETUP-01:
     status: Verified
-    test_date: 46235
-    session_id: 1
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Insert card and save the current configuration.
-    evidence_class: Approved target pending verification
+    observation: Pre-configuration camera-settings backup saved as BASE_CFG.CSD.
+    next_action: Preserve BASE_CFG.CSD as the starting checkpoint for this physical session.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: Not applicable
     verified_against: sha256:6298d64e10367b2e38e5d41253bb816c1012479ab7612afc5a53ad66630e975f
   SETUP-02:
@@ -23,12 +23,12 @@ tests:
     verified_against: sha256:2c28c37a65e2efee3349ec9d9c3a6e75de10e76697f1c3b5ec5ca8d1ceae0030
   SETUP-03:
     status: Verified
-    test_date: 46235
-    session_id: 1
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: Auto update must remain disabled throughout.
-    next_action: Open the Custom shooting mode menu and disable Auto update.
-    evidence_class: Approved target pending verification
+    observation: Auto update confirmed disabled before and after C1-C3 registration.
+    next_action: Keep Auto update disabled during future C1-C3 maintenance.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: 'No'
     verified_against: sha256:eb596d6e2a1ad3dba500a053b487e07af4813566f59012575380f500c95740a3
   SETUP-MM-01:
@@ -97,98 +97,400 @@ tests:
     updated_in_project: Not applicable
   C1-CONFIG-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Configure from a normal shooting mode, not recalled C1.
-    evidence_class: Approved target pending verification
+    observation: C1 Wildlife camera-body targets were configured and checked; the attached lens exposed only IS On/Off, so exact Mode 1 could not be verified.
+    next_action: Verify C1 Mode 1 with a compatible lens; retain the confirmed camera-body settings.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   C1-REG-01:
-    status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    status: Verified
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Register only after every C1 setting is checked.
-    evidence_class: Approved target pending verification
+    observation: C1 Wildlife was registered; later C2 and C3 work did not alter its recalled camera-body settings.
+    next_action: Retain C1 and verify the equipment-dependent lens stabilization mode when compatible equipment is available.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: 'No'
+    verified_against: sha256:04a561cd1850599049f01a2ec97355afe25fe8c5fc4c4c81d52f639897d63b03
   C1-READ-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Record discrepancies before proceeding to C2.
-    evidence_class: Approved target pending verification
+    observation: Recalled C1 camera-body targets passed Camera Lab and manual checks; exact lens Mode 1 remained unavailable.
+    next_action: Complete the C1 read-back with a lens that exposes Mode 1.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   C2-CONFIG-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Do not build C2 while working inside recalled C1.
-    evidence_class: Approved target pending verification
+    observation: C2 Birds in Flight camera-body targets were configured and checked; the attached lens exposed only IS On/Off, so exact Mode 3 could not be verified.
+    next_action: Verify C2 Mode 3 with a compatible lens; retain the confirmed camera-body settings.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   C2-REG-01:
-    status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    status: Verified
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Register only after every C2 setting is checked.
-    evidence_class: Approved target pending verification
+    observation: C2 Birds in Flight was registered and C1 was rechecked unchanged afterward.
+    next_action: Retain C2 and verify the equipment-dependent lens stabilization mode when compatible equipment is available.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: 'No'
+    verified_against: sha256:f4b28c92d9a20605b591f5721dd3ad3beff4e7b5105c8c15a65d23398e8e2d56
   C2-READ-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Recheck C1 after the C2 read-back.
-    evidence_class: Approved target pending verification
+    observation: Recalled C2 camera-body targets passed Camera Lab and manual checks; exact lens Mode 3 remained unavailable. C1 remained unchanged.
+    next_action: Complete the C2 read-back with a lens that exposes Mode 3.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   C3-CONFIG-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Do not build C3 while working inside C1 or C2.
-    evidence_class: Approved target pending verification
+    observation: C3 Landscape camera-body targets were configured in Av and checked; the attached lens exposed only IS On/Off, so exact Mode 1 could not be verified.
+    next_action: Verify C3 Mode 1 with a compatible lens; retain the confirmed camera-body settings.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   C3-REG-01:
-    status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    status: Verified
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Register only after every C3 setting is checked.
-    evidence_class: Approved target pending verification
+    observation: C3 Landscape was registered and recalled as Av; C1 and C2 remained unchanged afterward.
+    next_action: Retain C3 and verify the equipment-dependent lens stabilization mode when compatible equipment is available.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: 'No'
+    verified_against: sha256:f692886e78e72d84e31a5ef91aa281938d0529b8b7ea1a220bbf200993144e29
   C3-READ-01:
     status: Inconclusive—needs retest
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: Recall C1, C2, and C3 in sequence afterward.
-    evidence_class: Approved target pending verification
+    observation: Recalled C3 camera-body targets passed Camera Lab and manual checks, including Av; exact lens Mode 1 remained unavailable. C1 and C2 remained unchanged.
+    next_action: Complete the C3 read-back with a lens that exposes Mode 1.
+    evidence_class: Unresolved
     updated_in_project: 'No'
   BACKUP-SET-02:
     status: Backup-Settings
-    test_date: 46235
-    session_id: 2
+    test_date: 46257
+    session_id: 3
     evidence_files: []
-    observation: ''
-    next_action: After saving, set Status to Backup-Settings before operational control and shutter testing.
-    evidence_class: Approved target pending verification
+    observation: Post-registration checkpoint saved as C123_CFG.CSD after recalled-state and cross-slot checks.
+    next_action: Preserve C123_CFG.CSD as the completed C1-C3 checkpoint.
+    evidence_class: Owner-confirmed current configuration
     updated_in_project: Not applicable
-registration: {}
-sessions: []
+  FINAL-READ-01:
+    status: Inconclusive—needs retest
+    test_date: 46257
+    session_id: 3
+    evidence_files: []
+    observation: C1-C3 camera-body read-backs and Auto update checks passed; exact lens Mode 1/3 values were not exposed by the attached lens.
+    next_action: Repeat only the equipment-dependent lens stabilization checks with a compatible lens.
+    evidence_class: Unresolved
+    updated_in_project: 'No'
+  FINAL-SAVE-01:
+    status: Verified
+    test_date: 46257
+    session_id: 3
+    evidence_files: []
+    observation: Final camera-settings backup saved as C123_CFG.CSD after C1-C3 registration and cross-slot confirmation.
+    next_action: Preserve C123_CFG.CSD as the current recovery checkpoint.
+    evidence_class: Owner-confirmed current configuration
+    updated_in_project: Not applicable
+    verified_against: sha256:3d3558eaa54a0fdee859a544db2bccada6d3a8749fda96001422741914b6d0a6
+registration:
+  Mode:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Wildlife confirmed in M.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Birds in Flight confirmed in M.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Landscape confirmed in Av.
+    verified_against: sha256:16380d447ae550758ff49c344119374224a6b1c009504e23f6f4f93c11c00533
+  Metering:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:bc76af3dd5f76e718fe876deafcfbc0fd4a3f64d2a2eb64d2253751bd18f4eae
+  Exposure Compensation:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:88e1331bb1792dc8c402253666af51d91b4ff14bdf848d8f5715f7c5735374ee
+  Shutter Speed:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:50a59b23cd80339f63a7068a9f9b6618357bcc05eb6f986cc5c7a707e50c0a74
+  Aperture:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:74b8c602aefe9109b324a5d3d0f5af54cafeaceae6f80e96effd7b7e7b7512a0
+  ISO:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:3c57560fdad255af8dddd4afe759bf3a638ced62cd0b435fbcb39f539ed4d5cd
+  Auto ISO Maximum:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:215087f96f2c5d379e4931bbcffe7ea4f1ebe59cc0229f5dae23f52e08edbba5
+  AF Operation:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:e52a8877636b9e990324e5e59a10b6b8a0723c7699f752ac41a4e39a25ed8c94
+  Servo AF Case:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:c9f1ca7567fd410ce854474a770e020fea6e9904b6872801ebc1b2f20b392fbf
+  Tracking Sensitivity:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:dfe83819227cc879db8a3ff1c5b898a2d1c1b0f74d6b3364ad9a92ed7b018424
+  Accel./Decel. Tracking:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:e11fda77b702b46abfbda7bbf4de92c162668fd479106b46da999dcd11ba28cf
+  Switching Tracked Subjects:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:1866e2e49cd4159a2f76e301df8394efb14ebc00f49606d84fedb5501875eeb7
+  AF Method:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:ac30ce5e48a2e9e69db02806afb6a8c836dd8220dce399b57ed50b6ec3569d82
+  Subject Detection:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:ca630f9c8761b1ba9bc261fc0264e1fdff6c6ebce7d3d60f68453c6e6c0fb66e
+  Eye Detection:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:d4f49e58f189bc2a85058e8030bdba5867549892594d4961911a877fc7774cc1
+  Drive Mode:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:a407ab25d86c6b32e4618dffadce1bc9f7375731cceb32a9b15154cb636bbc93
+  High Speed Display:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:0af962b70870008b8b495ab863d5b9773e68daa4e052c10a5157bbb6e9b09a04
+  Shutter Type:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:e0eb3a601149113b744968c8d35c10e22707716e94c780644837edcabff082bb
+  Image Stabilizer Mode:
+    c1_configured: Needs retest
+    c1_read_back: Needs retest
+    c1_notes: Target Mode 1; attached lens exposed only IS On/Off.
+    c2_configured: Needs retest
+    c2_read_back: Needs retest
+    c2_notes: Target Mode 3; attached lens exposed only IS On/Off.
+    c3_configured: Needs retest
+    c3_read_back: Needs retest
+    c3_notes: Target Mode 1; attached lens exposed only IS On/Off.
+    verified_against: sha256:cc5907ea77c17b747bda000cb9d24e886022b15d9be9b15be2fd7d3a6aa18fba
+  IBIS:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:f88432494f6ce6fd467acf866dcb7285209af0daa97f23211b4c2e9a2fca510a
+  Focus Bracketing:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Confirmed in session 3.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Confirmed in session 3.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Confirmed in session 3.
+    verified_against: sha256:faa653558ccc3ca42def02cffceb2449676221f3e2b701a95cb76c734a606a66
+  Lens IS switch:
+    c1_configured: Pass
+    c1_read_back: Pass
+    c1_notes: Physical lens switch confirmed On.
+    c2_configured: Pass
+    c2_read_back: Pass
+    c2_notes: Physical lens switch confirmed On.
+    c3_configured: Pass
+    c3_read_back: Pass
+    c3_notes: Physical lens switch confirmed On.
+    verified_against: sha256:77c1f08d541f8a95c354155213e1184f193765664d2faca4e6245806067b6735
+sessions:
+- session_id: 3
+  date: 46257
+  goal: Configure, register, and read back C1 Wildlife, C2 Birds in Flight, and C3 Landscape with read-only Camera Lab comparison.
+  firmware: 2.2.1
+  battery_charge: External power
+  lens: Attached lens; IS On/Off only; model not recorded
+  flash_trigger: Not used
+  starting_backup: BASE_CFG.CSD
+  image_range: No images captured; read-only EDSDK scans and manual camera confirmation
+  outcome: C1-C3 camera-body targets registered and cross-checked; lens Mode 1/3 remains equipment-dependent; final backup C123_CFG.CSD.
+  next_session: Verify Mode 1/3 with a compatible lens and complete operational shooting tests.
+  notes: Direct USB; EDSDK 13.20.20.0; Auto update disabled; C3 recalled as Av; Camera Lab performed no setting writes.
 retired_tests: {}
 history:
+- timestamp: '2026-08-23T14:20:50-04:00'
+  event: physical_camera_session_recorded
+  id: SESSION-3
+  previous: null
+  current:
+    session_id: 3
+    camera: Canon EOS R5
+    firmware: 2.2.1
+    connection: Direct USB
+    power: External power
+    edsdk: 13.20.20.0
+    starting_backup: BASE_CFG.CSD
+    final_backup: C123_CFG.CSD
+    auto_update: Disabled
+    registered_profiles:
+    - C1 Wildlife
+    - C2 Birds in Flight
+    - C3 Landscape (Av)
+    camera_body_result: Registered and read back; cross-slot checks passed
+    unresolved:
+    - C1 Image Stabilizer Mode 1
+    - C2 Image Stabilizer Mode 3
+    - C3 Image Stabilizer Mode 1
+    reason: Attached lens exposed only IS On/Off; exact stabilization mode requires compatible equipment.
+    operational_tests: Not performed
+    camera_lab_writes: None; read-only comparison only
 - timestamp: '2026-07-31T13:02:47.081637-04:00'
   event: spreadsheet_import
   id: SETUP-01

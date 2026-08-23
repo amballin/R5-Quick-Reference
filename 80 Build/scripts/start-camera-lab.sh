@@ -8,22 +8,29 @@ CAMERA_LAB_ORIGIN="http://127.0.0.1:8770"
 CAMERA_LAB_URL="$CAMERA_LAB_ORIGIN/"
 BACKEND="edsdk"
 CAMERA_LAB_PID=""
+PROFILE_NAME=""
 
 usage() {
-    echo "Usage: ./80\\ Build/scripts/start-camera-lab.sh [--simulated]"
+    echo "Usage: ./80\\ Build/scripts/start-camera-lab.sh [--simulated] [--profile NAME]"
     echo
     echo "Without an option, starts the physical Canon EDSDK connection."
     echo "Use --simulated to start the Camera Lab simulator instead."
 }
 
-if [[ $# -gt 1 ]]; then
-    usage
-    exit 2
-fi
-
-if [[ $# -eq 1 ]]; then
+while [[ $# -gt 0 ]]; do
     case "$1" in
-        --simulated) BACKEND="simulated" ;;
+        --simulated)
+            BACKEND="simulated"
+            shift
+            ;;
+        --profile)
+            if [[ $# -lt 2 || -z "$2" ]]; then
+                usage
+                exit 2
+            fi
+            PROFILE_NAME="$2"
+            shift 2
+            ;;
         --help|-h)
             usage
             exit 0
@@ -33,6 +40,11 @@ if [[ $# -eq 1 ]]; then
             exit 2
             ;;
     esac
+done
+
+if [[ -n "$PROFILE_NAME" ]]; then
+    ENCODED_PROFILE="$(python3 -c 'import sys; from urllib.parse import quote; print(quote(sys.argv[1]))' "$PROFILE_NAME")"
+    CAMERA_LAB_URL="$CAMERA_LAB_ORIGIN/?profile=$ENCODED_PROFILE"
 fi
 
 if ! command -v open >/dev/null 2>&1 || ! open -Ra "Google Chrome"; then

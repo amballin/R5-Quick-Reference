@@ -2,7 +2,9 @@ from http.client import HTTPConnection
 import json
 from pathlib import Path
 import sys
+import tempfile
 import threading
+from types import SimpleNamespace
 import unittest
 
 BUILD_DIR = Path(__file__).resolve().parent
@@ -11,7 +13,7 @@ if str(BUILD_DIR) not in sys.path:
 
 from camera_control.dev_server import create_server
 from camera_control.errors import CameraSelectionError, CameraSessionError, WrongCameraModelError
-from camera_control.profile_comparison import _conditional_status
+from camera_control.profile_comparison import _conditional_status, list_profiles
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
 
@@ -215,6 +217,38 @@ class CameraControlServiceTests(unittest.TestCase):
         remaining_titles = [profile["title"] for profile in profile_list[3:]]
         self.assertEqual(remaining_titles, sorted(remaining_titles, key=str.casefold))
 
+    def test_profile_choices_reread_changed_saved_cx_foundations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            profiles_dir = Path(directory)
+
+            def save(name, title, slot, card_id, source_card_id):
+                (profiles_dir / f"{name}.yaml").write_text(
+                    "\n".join(
+                        [
+                            f"title: {title}",
+                            f"card_id: {card_id}",
+                            "card:",
+                            "  field_setup:",
+                            f"    start: {slot}",
+                            f"    source_card_id: {source_card_id}",
+                        ]
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+
+            save("Macro", "Macro", "C1", "card-macro", "card-macro")
+            save("Wildlife", "Wildlife", "C1", "card-wildlife", "card-macro")
+            save("Birds in Flight", "Birds in Flight", "C2", "card-birds", "card-birds")
+            save("Landscape", "Landscape", "C3", "card-landscape", "card-landscape")
+
+            profile_list = list_profiles(SimpleNamespace(profiles_dir=profiles_dir))
+            profiles = {profile["name"]: profile for profile in profile_list}
+
+        self.assertEqual([profile["name"] for profile in profile_list[:3]], ["Macro", "Birds in Flight", "Landscape"])
+        self.assertEqual(profiles["Macro"]["selector_label"], "C1 (Macro)")
+        self.assertEqual(profiles["Wildlife"]["selector_label"], "Wildlife ← C1 (Macro)")
+
     def test_profile_comparison_follows_card_order_then_additional_settings(self):
         service = CameraControlService()
         service.connect()
@@ -361,7 +395,17 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('id="additional-finding-section"', body)
         self.assertIn('id="return-to-top"', body)
         self.assertIn("Scan &amp; compare", body)
-        self.assertLess(body.index('id="camera-lab-build"'), body.index('class="camera-logo"'))
+        self.assertIn('id="cx-setup-panel"', body)
+        self.assertIn('id="cx-slot-cards"', body)
+        self.assertIn("Guided manual registration", body)
+        self.assertLess(body.index('class="camera-logo"'), body.index('id="camera-lab-build"'))
+        self.assertLess(body.index('id="cx-setup-panel"'), body.index('id="comparison-panel"'))
+
+        status, _, styles = self.request("GET", "/styles.css")
+        self.assertEqual(status, 200)
+        self.assertIn("grid-template-columns: auto 52px", styles)
+        self.assertIn("grid-row: 1 / span 2", styles)
+        self.assertIn("grid-row: 2; justify-self: end", styles)
 
     def test_camera_lab_script_rescans_comparison_and_exposes_recovery(self):
         status, _, body = self.request("GET", "/app.js")
@@ -377,6 +421,10 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('reason.className = "checklist-reason"', body)
         self.assertIn("function renderChecklistSummary()", body)
         self.assertIn("function checklistFindingKey(finding)", body)
+        self.assertIn("function renderCxSetup(profiles)", body)
+        self.assertIn("profile.is_foundation", body)
+        self.assertIn("button.dataset.cxProfile = profile.name", body)
+        self.assertIn("function openCxChecklist(profileName)", body)
         self.assertIn('elements.checklistRescanButton.addEventListener("click", () => runAction(scanAndCompare))', body)
         self.assertIn("window.localStorage.setItem(checklistStorageKey", body)
         self.assertIn('elements.comparisonOrder.value === "setup"', body)
@@ -389,6 +437,9 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("window.clearInterval(statusPollId)", body)
         self.assertIn("if (cameraLabStopped || requestPending) return", body)
         self.assertIn("statusPollId = window.setInterval", body)
+        self.assertIn('new URLSearchParams(window.location.search).get("profile")', body)
+        self.assertIn("was selected by Profile Editor", body)
+        self.assertIn("not available in Camera Lab", body)
 
     def test_camera_lab_serves_canonical_silver_logo(self):
         status, headers, body = self.request("GET", "/silver-camera-logo.png")

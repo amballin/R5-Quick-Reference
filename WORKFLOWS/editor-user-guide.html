@@ -116,9 +116,10 @@
 <h1>Profile Editor User Guide</h1>
 <p>Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages for Git handoff, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.</p>
 <section class="step"><h2>Start the editor</h2>
-<p>From the project root, run:</p>
+<p>For routine use, double-click <strong>R5 Profile Editor.app</strong> in the machine-local <code>Applications</code> folder. It starts in the background without opening Terminal and opens Google Chrome automatically. Use <strong>Stop Profile Editor</strong> in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server.</p>
+<p>For development or diagnostics, from the project root run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
-<p>Open the local address shown in Terminal. Keep that Terminal window open while using the editor. Press <strong>Control-C</strong> in Terminal when you are finished.</p>
+<p>Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press <strong>Control-C</strong> in Terminal when you are finished.</p>
 <p>The editor runs only on this Mac. It does not publish the website or make Git changes.</p>
 </section>
 <section class="step"><h2>Understand the working model</h2>
@@ -146,6 +147,7 @@
 </ul>
 <p>On narrower windows, the sidebar becomes a compact navigation row above the workspace.</p>
 <p>Moving to another tab does not save work, but the sidebar badges and Review &amp; Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into <strong>Profile to evaluate</strong> automatically.</p>
+<p>When a saved Subject/Profile Card is selected with no unsaved ordinary profile edits, choose <strong>Open in Camera Lab</strong> in the header to start or reuse the independent read-only Lab with that profile preselected. The editor passes only the saved profile name; Camera Lab reloads the current profile and C1–C3 assignments. It does not connect, scan, compare, or change a camera setting automatically. Each app&#x27;s Stop button closes only that app.</p>
 </section>
 <section class="step"><h2>Choose a Cx foundation</h2>
 <p>Open <strong>Cx Foundation</strong> when the C1–C3 arrangement or a card&#x27;s starting route needs deliberate review. This workspace is separate from Profiles because these decisions should change less often than ordinary card settings.</p>

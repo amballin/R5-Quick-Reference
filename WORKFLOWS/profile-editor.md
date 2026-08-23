@@ -4,13 +4,13 @@ Profile Editor 1.0 is the project's main local interface for routine work: shoot
 
 Use the specialized workflow pages—not the editor—for Git preflight and handoff, manual spreadsheet preparation or recovery, testing-status import, physical-camera verification, commits and pushes, and publication. The editor's confirmed local build automatically refreshes safely stale spreadsheet-derived artifacts.
 
-The header shows the editor version and a deterministic short build identifier. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.
+The header shows the editor version and a deterministic short build identifier below its action row. The identifier's right edge aligns with **Stop Profile Editor**, and the silver camera logo is centered across both rows. If two open editor windows show different build identifiers, use the window connected to the current server and reload it before reviewing changes.
 
 It cannot edit permanent reference cards, rename profiles, remove released cards, permanently delete cards, commit, push, merge, publish, or change website version metadata. It may move an unreleased editable card into recoverable Deleted Cards only through the dependency-checked, reviewed transaction described below. The shared baseline changes only through the guarded multi-file migration described below. My Menu tab names/items and their named-tab colors save together through their own guarded two-file transaction. **Review & Build** may refresh generated local output and tracked `docs/` only after all session drafts are resolved, readiness validation passes, and the user confirms the build.
 
 ## Start the editor
 
-For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. The app opens the established launcher in Terminal, starts Profile Editor, and opens Google Chrome automatically. Keep that Terminal window open while using the editor; press **Control-C** there to stop it cleanly.
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. The app starts Profile Editor in the background without opening Terminal and opens Google Chrome automatically. Use **Stop Profile Editor** in the page header to stop its local server. The page closes its tab when browser policy permits; if it remains open, close it after the stopped confirmation appears. Unsaved browser drafts are identified in the confirmation before shutdown.
 
 Build or refresh both local application wrappers from the repository root with:
 
@@ -18,7 +18,7 @@ Build or refresh both local application wrappers from the repository root with:
 ./80\ Build/scripts/build-app-wrappers.sh
 ```
 
-The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. The existing **Start Profile Editor.command** launcher remains available in the repository's top-level folder.
+The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. Startup failures are recorded in the machine-local `Logs/R5 Profile Editor.log` file. The existing **Start Profile Editor.command** launcher remains available as a Terminal-based diagnostic fallback in the repository's top-level folder.
 
 For development or diagnostics, use the Project Terminal panel on the [Workflow Index](index.html) to open the project worktree in Terminal. Then run:
 
@@ -35,6 +35,12 @@ http://127.0.0.1:8765
 ```
 
 The editor is available only on this Mac while that command is running. Press **Control-C** in Terminal to stop it. It listens only on the local loopback address.
+
+## Open the current profile in Camera Lab
+
+Select a saved Subject/Profile Card and choose **Open in Camera Lab** in the header. Profile Editor starts the independent Camera Lab if needed, or reuses the existing Lab, then opens it with that saved profile preselected. Camera Lab reloads the current saved profile and C1–C3 assignments itself; the editor passes only the canonical profile name.
+
+Save or discard ordinary profile edits first. The button is unavailable for a new or unsaved profile draft and for permanent reference cards. Opening the Lab does not connect the camera, scan it, compare it, or change a setting; use the Lab controls when ready. Stopping Profile Editor does not stop Camera Lab, and stopping Camera Lab does not stop Profile Editor.
 
 ## Follow the workspace order
 

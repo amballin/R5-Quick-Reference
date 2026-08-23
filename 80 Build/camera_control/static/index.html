@@ -18,10 +18,10 @@
       <div class="mode-stack">
         <span id="backend-badge" class="badge">Loading</span>
         <span class="safety-badge">No setting writes</span>
-        <span id="camera-lab-build" class="build-badge" aria-live="polite">Loading Camera Lab build…</span>
         <button id="stop-camera-lab-button" class="stop-server-button" type="button">Stop Camera Lab</button>
       </div>
       <img class="camera-logo" src="/silver-camera-logo.png" alt="" aria-hidden="true">
+      <span id="camera-lab-build" class="build-badge" aria-live="polite">Loading Camera Lab build…</span>
     </div>
   </header>
 
@@ -94,6 +94,36 @@
         </dl>
       </section>
     </div>
+
+    <section id="cx-setup-panel" class="panel cx-setup-panel" aria-labelledby="cx-setup-heading">
+      <div class="panel-heading">
+        <div>
+          <p class="label">Phase 1 guided registration</p>
+          <h2 id="cx-setup-heading">C1–C3 Setup &amp; Validation</h2>
+          <p>Use the current saved assignments below to configure each custom mode manually, then use Camera Lab for read-only verification.</p>
+        </div>
+        <span class="safety-badge">Guided manual registration</span>
+      </div>
+      <div class="cx-safety-note">
+        <strong>Before the first slot</strong>
+        <ol>
+          <li>Save an independent pre-configuration camera-settings backup.</li>
+          <li>Start from a normal shooting mode such as Fv, P, Tv, Av, or M—never from a recalled C1, C2, or C3 state.</li>
+          <li>Keep Custom shooting mode Auto update disabled while setting shared controls, My Menu, and baseline values.</li>
+        </ol>
+      </div>
+      <div id="cx-slot-cards" class="cx-slot-grid" aria-live="polite">
+        <p class="cx-loading">Loading the saved C1–C3 assignments…</p>
+      </div>
+      <div class="cx-final-check">
+        <strong>After all three slots</strong>
+        <ol>
+          <li>Recall C1, C2, and C3 one at a time and rescan each assigned profile.</li>
+          <li>Confirm Auto update is still disabled and recheck earlier slots after completing a later slot.</li>
+          <li>Save a separate final camera-settings backup and keep the pre-configuration backup intact.</li>
+        </ol>
+      </div>
+    </section>
 
     <section id="comparison-panel" class="panel comparison-panel">
       <div class="panel-heading">

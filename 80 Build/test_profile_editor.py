@@ -2,9 +2,12 @@
 """Integration tests for guarded Stage 2 profile-editor transactions."""
 
 from copy import deepcopy
+from http.client import HTTPConnection
+import json
 from pathlib import Path
 import shutil
 import tempfile
+import threading
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -18,7 +21,7 @@ import sys
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from profile_editor import ProfileConflictError, ProfileEditorModel, PrototypeError
+from profile_editor import ProfileConflictError, ProfileEditorModel, PrototypeError, create_server
 from profile_loader import load_yaml
 from validators import control_validator, profile_validator, spreadsheet_spec_validator
 
@@ -47,6 +50,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
+            "80 Build/scripts/start-profile-editor.sh",
         ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -577,6 +581,76 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first["version"], "1.0.0")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
+
+    def test_camera_lab_launch_accepts_only_saved_subject_profiles(self):
+        class FakeLauncher:
+            def __init__(self):
+                self.names = []
+
+            def launch(self, name):
+                self.names.append(name)
+                return {"url": f"http://127.0.0.1:8770/?profile={name}", "started": True, "reused": False}
+
+        launcher = FakeLauncher()
+        self.model.camera_lab_launcher = launcher
+        result = self.model.launch_camera_lab("Landscape")
+        self.assertEqual(launcher.names, ["Landscape"])
+        self.assertTrue(result["started"])
+        with self.assertRaisesRegex(PrototypeError, "Subject/Profile Cards"):
+            self.model.launch_camera_lab("My Menu")
+
+    def test_profile_editor_ui_has_guarded_independent_camera_lab_and_stop_actions(self):
+        editor = self.root / "80 Build" / "profile_editor"
+        html = (editor / "index.html").read_text(encoding="utf-8")
+        javascript = (editor / "app.js").read_text(encoding="utf-8")
+        stylesheet = (editor / "styles.css").read_text(encoding="utf-8")
+        self.assertIn('meta name="profile-editor-token"', html)
+        self.assertIn('id="open-camera-lab"', html)
+        self.assertIn('id="stop-profile-editor"', html)
+        self.assertIn('request("/api/camera-lab-launch"', javascript)
+        self.assertIn('request("/api/editor-shutdown"', javascript)
+        self.assertIn("profilePayloadChanged(profileDraftPayload())", javascript)
+        self.assertIn("Camera Lab, if running, remains independent", javascript)
+        self.assertIn("grid-row: 1 / span 2", stylesheet)
+        self.assertIn("justify-self: end", stylesheet)
+
+    def test_profile_editor_lifecycle_actions_require_token_and_shutdown_server(self):
+        token = "profile-editor-test-token"
+        server = create_server(self.model, port=0, token=token)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/editor-shutdown",
+                body="{}",
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/editor-shutdown",
+                body="{}",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Profile-Editor-Token": token,
+                },
+            )
+            response = connection.getresponse()
+            payload = json.loads(response.read())
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertTrue(payload["server_closed"])
+            thread.join(timeout=2)
+            self.assertFalse(thread.is_alive())
+        finally:
+            server.server_close()
 
     def test_profile_detail_exposes_card_order_and_visible_setting_paths(self):
         detail = self.model.profile_detail("Birds in Flight")

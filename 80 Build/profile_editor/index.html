@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="profile-editor-token" content="__PROFILE_EDITOR_TOKEN__">
   <title>Profile Editor 1.0</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css">
@@ -13,10 +14,14 @@
       <p class="eyebrow">Canon Camera Reference</p>
       <h1>Profile Editor</h1>
     </div>
-    <div class="build-badges">
-      <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
-      <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
+    <div class="header-tools">
+      <div class="header-actions">
+        <button id="open-camera-lab" class="header-button" type="button">Open in Camera Lab</button>
+        <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
+        <button id="stop-profile-editor" class="header-button" type="button">Stop Profile Editor</button>
+      </div>
       <img class="editor-camera-logo" src="/source/60%20Assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true">
+      <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
     </div>
   </header>
 

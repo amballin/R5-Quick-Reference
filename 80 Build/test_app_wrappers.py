@@ -76,6 +76,10 @@ class AppWrapperTests(unittest.TestCase):
                     self.assertIn(f"{wrapper.name}.log", runner)
                     self.assertIn("show_launch_failure", runner)
 
+            profile_editor = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Profile Editor")
+            self.assertFalse(profile_editor.launch_in_terminal)
+            self.assertEqual(profile_editor.command_file, "80 Build/scripts/start-profile-editor.sh")
+
 
 if __name__ == "__main__":
     unittest.main()

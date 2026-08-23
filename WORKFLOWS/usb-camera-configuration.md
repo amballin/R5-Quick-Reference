@@ -26,6 +26,8 @@ The direct Terminal command remains available for development, diagnostics, and 
 
 Both launch methods use the cached machine-local Canon EDSDK helper and wait for Camera Lab to respond before opening `http://127.0.0.1:8770/` in Google Chrome.
 
+Profile Editor can also start or reuse Camera Lab through **Open in Camera Lab**. It passes only the current saved Subject/Profile Card name. Camera Lab validates that name against its freshly loaded catalog and preselects the profile; it does not connect, scan, compare, or write automatically. The two apps remain independent, so each Stop button closes only its own server and Camera Lab alone owns the camera session.
+
 To open the simulator instead:
 
 ```bash
@@ -108,11 +110,34 @@ The silver camera logo displayed by Camera Lab is served directly from the canon
 
 The tracked catalog must not contain a camera body identifier. Physical observations must record EOS R5 firmware, EDSDK version, date, camera mode and relevant equipment context before they are accepted as capability evidence.
 
+## Set up and validate C1–C3
+
+Use **C1–C3 Setup & Validation** before the profile-comparison section when the camera's custom modes have not yet been configured. The three cards are generated from the current saved profile foundations each time Camera Lab loads them; they are not fixed to particular subjects. If Profile Editor saves C1 as Macro, reload Camera Lab and the first card and profile selector will identify **C1 – Macro** automatically.
+
+Camera Lab guides this work but remains read-only. **Open Cx checklist** selects the assigned profile and moves to comparison; it does not change a camera setting or register a custom mode.
+
+1. Disconnect USB, save an independent pre-configuration camera-settings backup through the camera's card menu, then reconnect Camera Lab.
+2. Start from a normal still-photo shooting mode such as Fv, P, Tv, Av, or M, never from a recalled C1, C2, or C3 state.
+3. Keep Custom shooting mode Auto update disabled. Configure the shared controls, My Menu entries, and baseline values before the slot-specific target.
+4. For the displayed Cx assignment, choose **Open Cx checklist**, connect and scan if needed, and resolve or confirm the assigned profile's findings.
+5. Register the completed state manually on the camera through **Set-up 5 → Custom shooting mode (C1-C3) → Register settings → Cx**. Camera Lab does not press this command or write the camera.
+6. Leave the setup state, recall that Cx slot, and choose **Scan & compare** again. Resolve readable differences with another rescan; use manual confirmation only where the checklist identifies manual, conditional, or unreadable evidence.
+7. After each later slot, recall and recheck the slots already completed so a shared change has not altered their intended state.
+8. When all three recalled states pass review, confirm Auto update is still disabled, disconnect USB, and save a separate final camera-settings backup through the camera's card menu. Preserve the original pre-configuration backup.
+
+## Camera-settings backups remain card-based
+
+Use **Set-up 5 → Save/load cam settings on card → Save to card** on the EOS R5 for both the independent pre-configuration and post-configuration backups. Stop Camera Lab or disconnect the camera's USB cable before using this camera menu, then reconnect after the CSD file is saved.
+
+The installed SDK declares `EdsGetCsdFileData`, but a physical read-only test on the original EOS R5 with firmware 2.2.1 and EDSDK 13.20.20.0 returned Canon error `0x00000060` (`INVALID_PARAMETER`). No file was produced and no camera setting changed. Canon documents PC camera-settings save/load support for selected newer bodies, not the original EOS R5, so Camera Lab does not show a computer-backup button.
+
+`EdsSetCsdFileData` was not called and remains unavailable. Loading a CSD file would overwrite camera configuration and must not be inferred safe from the presence of the SDK symbol.
+
 ## Compare a Subject/Profile Card
 
 After connecting, select one Subject/Profile Card and choose **Scan & compare**. This control always performs a fresh capability scan before comparing, so a camera-side change is reread without scrolling back to the connection controls. Permanent reference cards such as Camera Buttons and My Menu are not offered because they are not complete camera-state targets.
 
-The selector lists the registered bases first as **C1 (Wildlife)**, **C2 (Birds in Flight)**, and **C3 (Landscape)**. Every remaining profile follows alphabetically with its starting foundation after a left arrow, for example **Sports ← C2 (Birds in Flight)**. A profile without a registered-mode foundation is labeled **Profile ← No Cx**. Comparison headings remain base-first: **C1 – Wildlife → People** means begin from the C1 Wildlife registration, then compare against the People target.
+The selector lists the current saved registered bases first in C1–C3 slot order. Every remaining profile follows alphabetically with its starting foundation after a left arrow, for example **Sports ← C2 (Birds in Flight)**. A profile without a registered-mode foundation is labeled **Profile ← No Cx**. Comparison headings remain base-first: **C1 – Wildlife → People** means begin from the currently saved C1 Wildlife registration, then compare against the People target. The names are read from saved profile data rather than hardcoded, so a saved foundation change appears after Camera Lab reloads.
 
 The detailed **Camera capabilities** inventory appears after the comparison and checklist because it is supporting reference material. Camera Lab still performs that read-only scan first internally; moving the displayed results does not change the data source, freshness, or safety behavior.
 
@@ -207,4 +232,4 @@ Unavailable optional properties are displayed as unavailable. They do not become
 - **Disconnected while watching:** restore the physical connection and rerun from the beginning; do not infer that the previous session remains valid.
 - **Scan fails after camera sleep or timeout:** Camera Lab retries one clean reconnection automatically. If the recovery popup appears, follow its steps and choose **Reconnect and scan**.
 
-The Phase 1 read-only comparison and manual checklist are implemented. Richer contextual equivalence and physical validation of the completed checklist remain. Guarded camera-setting writes, C1-C3 orchestration, and automated camera-settings-data transfer remain unavailable.
+The Phase 1 read-only comparison, manual checklist, and guided C1–C3 setup and recalled-state validation are implemented. Richer contextual equivalence and broader physical validation remain. Guarded camera-setting writes, automated C1–C3 registration, and automated camera-settings-data transfer remain unavailable; EOS R5 backups remain card-based.
