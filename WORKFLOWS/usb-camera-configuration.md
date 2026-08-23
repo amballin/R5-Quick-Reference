@@ -1,16 +1,24 @@
 # USB Camera Configuration
 
-Use this workflow only with the authoritative Canon EOS R5 project and a physical EOS R5 connected by USB. The current Phase 0 probe is read-only. It opens a camera session, reads available identity and health information, optionally watches for a disconnect, and closes the session. It has no camera-setting write API.
+Use this workflow only with the authoritative Canon EOS R5 project and a physical EOS R5 connected by USB. Camera Lab's implemented Phase 0 connection/capability scan and Phase 1 profile checklist are strictly read-only. They open one camera session, verify the EOS R5 identity, inspect reviewed settings, compare a selected profile, guide manual review, and close the session without exposing a camera-setting write API.
 
 ## Develop in Camera Lab
 
 Camera Lab is the fast standalone interface used before USB controls are integrated into the Profile Editor. It serves direct local files and does not rebuild cards, appendices, spreadsheets, the PWA, or `docs`.
 
-For normal physical-camera work, double-click **Start Camera Lab.command** in the repository's top-level folder. A Terminal window opens, Camera Lab starts with the physical-camera connection, and Google Chrome opens the interface automatically.
+For normal physical-camera work, double-click **R5 Camera Lab.app** in the machine-local `Applications` folder. Camera Lab starts with the physical-camera connection without opening Terminal, and Google Chrome opens the interface automatically.
 
-Keep that Terminal window open while using Camera Lab. Press **Control-C** there to stop Camera Lab cleanly. If startup fails, the window remains open so the error can be read. If port 8770 is already occupied, stop the existing Camera Lab before trying again.
+Build or refresh both local application wrappers from the repository root with:
 
-The equivalent Terminal command remains available for development and diagnostics:
+```bash
+./80\ Build/scripts/build-app-wrappers.sh
+```
+
+The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. The existing **Start Camera Lab.command** launcher remains available in the repository's top-level folder.
+
+Use **Stop Camera Lab** in the page header to close the EOS R5 session, stop the local server, and end the background app process. The page closes its tab when browser policy permits; if the tab remains open, close it after the stopped confirmation appears. Closing or refreshing the browser tab alone is not a dependable server-shutdown signal. If startup fails or the server stops unexpectedly, the app shows a macOS alert and records details in the machine-local `Logs/R5 Camera Lab.log` file. If port 8770 is already occupied, stop the existing Camera Lab before trying again.
+
+The direct Terminal command remains available for development, diagnostics, and Control-C recovery:
 
 ```bash
 ./80\ Build/scripts/start-camera-lab.sh
@@ -57,7 +65,7 @@ python3 -B "80 Build/camera_control/dev_server.py" \
   --sdk-path "/path/to/EDSDK.framework"
 ```
 
-Camera Lab binds only to local loopback, rejects non-local Host headers, requires a per-process request token for actions, and disables camera-setting writes. Stop it with Control-C.
+Camera Lab binds only to local loopback, rejects non-local Host headers, requires a per-process request token for actions, and disables camera-setting writes. Use the authenticated **Stop Camera Lab** action for normal shutdown or Control-C as the fallback.
 
 On macOS, that first run builds and ad-hoc signs a minimal machine-local `EDSDKHelper.app`, embeds a local framework copy, and stores the verified app under the sibling `Local/SDK` workspace outside Git. Later runs may point `--sdk-path` directly at that cached app:
 
@@ -104,19 +112,31 @@ The tracked catalog must not contain a camera body identifier. Physical observat
 
 After connecting, select one Subject/Profile Card and choose **Scan & compare**. This control always performs a fresh capability scan before comparing, so a camera-side change is reread without scrolling back to the connection controls. Permanent reference cards such as Camera Buttons and My Menu are not offered because they are not complete camera-state targets.
 
-The profile choice names the intended registered-mode foundation. For example, **C1 – Wildlife** means set the camera to C1 and compare it with the Wildlife card. A derived choice such as **C1 – Wildlife → People** means begin from the C1 Wildlife registration, then compare against the People target.
+The selector lists the registered bases first as **C1 (Wildlife)**, **C2 (Birds in Flight)**, and **C3 (Landscape)**. Every remaining profile follows alphabetically with its starting foundation after a left arrow, for example **Sports ← C2 (Birds in Flight)**. A profile without a registered-mode foundation is labeled **Profile ← No Cx**. Comparison headings remain base-first: **C1 – Wildlife → People** means begin from the C1 Wildlife registration, then compare against the People target.
+
+The detailed **Camera capabilities** inventory appears after the comparison and checklist because it is supporting reference material. Camera Lab still performs that read-only scan first internally; moving the displayed results does not change the data source, freshness, or safety behavior.
 
 The first findings section follows the exact visible setting-row order used by the selected card. Combined card rows retain their grouped presentation and show their underlying setting findings. **Additional settings** then lists every remaining resolved baseline/profile setting in canonical card-layout order.
 
-Each finding is shown in four columns: **Card Expected**, **Camera**, **Status**, and **Optimal Access Path**. Card Expected shows both the setting and its expected value, using the same My Menu-derived value color as the card editor. Access methods are listed in fastest practical order: assigned physical button, dial, switch, or direct control; Q screen; the selected card's My Menu route; then the fastest standard menu path. My Menu is not placed first when a faster direct control exists.
+Each finding is shown in five columns: **Card Expected**, **Camera**, **Status**, **Optimal Access Path**, and **Checklist**. Card Expected shows both the setting and its expected value, using the same My Menu-derived value color as the card editor. Access methods are listed in fastest practical order: assigned physical button, dial, switch, or direct control; Q screen; the selected card's My Menu route; then the fastest standard menu path. My Menu is not placed first when a faster direct control exists. Checklist shows whether the finding is camera-verified, requires a change and rescan, needs manual confirmation, is blocked, or needs no action.
 
 Every camera setting includes a reviewed way to reach it. Focus Bracketing uses **My Menu: SWITCH** before its Shooting 5 menu route. Image Quality, White Balance, and Picture Style identify the **Q screen** as their quickest route. Rows that contain authored notes, strategy, or verification status are explicitly identified as reference guidance rather than camera settings.
 
-Status is **Match**, **Different**, **Equivalent**, **Unreadable**, **Conditional**, **Manual**, or **Not applicable**. The comparison reads the existing capability scan and never changes a camera setting. Manual checklist actions and guided correction remain later Phase 1 work.
+Status is **Match**, **Different**, **Equivalent**, **Unreadable**, **Conditional**, **Manual**, or **Not applicable**. The comparison reads the existing capability scan and never changes a camera setting.
+
+Exposure Compensation, Aperture, and Shutter targets receive contextual comparison when the meaning is unambiguous. Exact values can match, simple ranges accept a camera value inside the range as equivalent, and an interpretable value outside the range is different. Instructions that depend on subject, lighting, grouping, bracketing, lens, or another field choice remain Conditional and explain which context Camera Lab cannot choose. For example, `1/2000–1/4000` can be evaluated directly, while separate outdoor and indoor targets remain Conditional.
 
 Use **Order** to switch among Setup route, the card's original row order, and status order. Status order places Different, Unreadable, Conditional, Manual, Equivalent, Match, and Not applicable findings in that sequence. Manual findings are then grouped by buttons and direct controls, My Menu tabs in the saved tab order (for example SWITCH and AF Case), standard menu, and items without a reviewed route. The floating up arrow returns to the top of Camera Lab after scrolling.
 
 **Setup route** is the default when configuring the camera. It combines card rows and additional settings into one working sequence: physical controls, Q screen, each saved My Menu tab in item order, then each Canon menu family and page. Actionable findings appear first, with status priority inside each route group, so each tab or page needs to be visited only once. Equivalent, matching, and not-applicable findings follow under clearly labeled no-change groups. Switch back to **Card order** when you need the card's presentation or **Status** when you need a discrepancy review.
+
+### Complete the read-only checklist
+
+The existing Setup route is also the checklist order. **Different** means change the readable setting and then choose **Rescan camera**; only a subsequent camera read can complete that item. **Manual**, **Conditional**, and **Unreadable** findings provide **Reviewed/set manually** because their completion depends on camera context, a physical control, or a value the SDK cannot verify. That checkbox records `manual_user_confirmed`; it never becomes camera verification.
+
+Camera Lab retains manual confirmations in this browser for the selected profile and connected-camera context. The expected target is part of each saved checklist identity, so a changed profile target does not inherit an older confirmation. Use **Clear manual confirmations** to begin a new manual review deliberately.
+
+The checklist summary reports **Camera verified**, **Manually confirmed**, **Unresolved**, and **Blocked** counts. Review is complete only when no unresolved or blocked findings remain. The last full-scan time is displayed beside the summary. This browser-local record is working-session evidence, not a change to project YAML, the verification tracker, or the physical camera.
 
 ## Before connecting
 
@@ -187,4 +207,4 @@ Unavailable optional properties are displayed as unavailable. They do not become
 - **Disconnected while watching:** restore the physical connection and rerun from the beginning; do not infer that the previous session remains valid.
 - **Scan fails after camera sleep or timeout:** Camera Lab retries one clean reconnection automatically. If the recovery popup appears, follow its steps and choose **Reconnect and scan**.
 
-Phase 1 readback comparison and later guarded writes remain unavailable until their capability mapping and physical-camera tests are complete.
+The Phase 1 read-only comparison and manual checklist are implemented. Richer contextual equivalence and physical validation of the completed checklist remain. Guarded camera-setting writes, C1-C3 orchestration, and automated camera-settings-data transfer remain unavailable.

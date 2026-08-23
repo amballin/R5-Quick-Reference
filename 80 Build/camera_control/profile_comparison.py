@@ -76,22 +76,43 @@ def list_profiles():
         start = field_setup.get("start")
         base_title = titles_by_card_id.get(field_setup.get("source_card_id"))
         foundation_title = f"{start} – {base_title}" if start and base_title else None
+        is_foundation = bool(
+            foundation_title and data.get("card_id") == field_setup.get("source_card_id")
+        )
         display_title = (
             foundation_title
-            if foundation_title and data.get("card_id") == field_setup.get("source_card_id")
+            if is_foundation
             else f"{foundation_title} → {title}"
             if foundation_title
             else title
+        )
+        selector_label = (
+            f"{start} ({base_title})"
+            if is_foundation
+            else f"{title} ← {start} ({base_title})"
+            if foundation_title
+            else f"{title} ← No Cx"
         )
         profiles.append(
             {
                 "name": source.stem,
                 "title": title,
                 "display_title": display_title,
+                "selector_label": selector_label,
                 "foundation": foundation_title,
+                "foundation_slot": start,
+                "is_foundation": is_foundation,
                 "display_category": data.get("display_category") or "subject",
             }
         )
+    profiles.sort(
+        key=lambda item: (
+            0 if item["is_foundation"] else 1,
+            int(item["foundation_slot"][1:])
+            if item["is_foundation"] and str(item["foundation_slot"]).startswith("C")
+            else item["title"].casefold(),
+        )
+    )
     return profiles
 
 
@@ -275,8 +296,7 @@ def _compare_path(path, expected, merged_fields, properties_by_path):
         finding["reason"] = "The reviewed SDK property did not return a usable value."
         return finding
     if property_item.get("capability_classification") == "conditional":
-        finding["status"] = "conditional"
-        finding["reason"] = "The profile target requires shooting-mode, lens, range, or field context."
+        finding["status"], finding["reason"] = _conditional_status(path, expected, finding["actual"])
         return finding
 
     status = _direct_status(path, expected, merged_fields, property_item)
@@ -288,6 +308,155 @@ def _compare_path(path, expected, merged_fields, properties_by_path):
         "not_applicable": "This value is not applicable in the selected profile context.",
     }[status]
     return finding
+
+
+def _conditional_status(path, expected, actual):
+    expected_text = str(expected or "").strip()
+    actual_text = str(actual or "").strip()
+    if _normalized_alias(expected_text) == _normalized_alias(actual_text):
+        return "match", "The camera readback matches the selected profile."
+
+    if path == "exposure.exposure_compensation":
+        return _compare_compensation_target(expected_text, actual_text)
+    if path == "lens.aperture.target":
+        return _compare_aperture_target(expected_text, actual_text)
+    if path == "shutter.target":
+        return _compare_shutter_target(expected_text, actual_text)
+    return "conditional", "The profile target requires shooting-mode, lens, range, or field context."
+
+
+def _compare_compensation_target(expected, actual):
+    actual_value = _parse_compensation(actual)
+    expected_value = _parse_compensation(expected)
+    if expected_value is not None:
+        if actual_value is None:
+            return "conditional", "The camera exposure-compensation value could not be interpreted safely."
+        return _numeric_result(expected_value, actual_value, expected, actual, "exposure compensation")
+
+    bounds = _compensation_range(expected)
+    if bounds is not None:
+        if actual_value is None:
+            return "conditional", "The camera exposure-compensation value could not be interpreted safely."
+        if min(bounds) <= actual_value <= max(bounds):
+            return "equivalent", "The camera exposure compensation is within the profile's accepted range."
+        return "difference", "The camera exposure compensation is outside the profile's accepted range."
+
+    return "conditional", "The exposure-compensation target requires field or background context."
+
+
+def _compare_aperture_target(expected, actual):
+    expected_value = _parse_aperture(expected)
+    actual_value = _parse_aperture(actual)
+    if expected_value is not None:
+        if actual_value is None:
+            return "difference", "The profile requires a fixed aperture, but the camera reports Auto."
+        return _numeric_result(expected_value, actual_value, expected, actual, "aperture")
+
+    bounds = _simple_aperture_range(expected)
+    if bounds is not None:
+        if actual_value is None:
+            return "difference", "The profile requires an aperture range, but the camera reports Auto."
+        if min(bounds) <= actual_value <= max(bounds):
+            return "equivalent", "The camera aperture is within the profile's accepted range."
+        return "difference", "The camera aperture is outside the profile's accepted range."
+
+    return "conditional", "The aperture target contains subject, grouping, bracketing, lens, or field context that Camera Lab cannot choose automatically."
+
+
+def _compare_shutter_target(expected, actual):
+    expected_value = _parse_shutter_seconds(expected)
+    actual_value = _parse_shutter_seconds(actual)
+    if expected_value is not None:
+        if actual_value is None:
+            return "difference", "The profile requires a fixed shutter speed, but the camera reports Auto or an unrecognized value."
+        return _numeric_result(expected_value, actual_value, expected, actual, "shutter speed")
+
+    bounds = _simple_shutter_range(expected)
+    if bounds is not None:
+        if actual_value is None:
+            return "difference", "The profile requires a shutter-speed range, but the camera reports Auto or an unrecognized value."
+        if min(bounds) <= actual_value <= max(bounds):
+            return "equivalent", "The camera shutter speed is within the profile's accepted range."
+        return "difference", "The camera shutter speed is outside the profile's accepted range."
+
+    return "conditional", "The shutter target contains subject, lighting, or field context that Camera Lab cannot choose automatically."
+
+
+def _numeric_result(expected_value, actual_value, expected, actual, setting):
+    if abs(expected_value - actual_value) > 1e-9:
+        return "difference", f"The camera {setting} differs from the selected profile."
+    if _normalized_alias(expected) == _normalized_alias(actual):
+        return "match", "The camera readback matches the selected profile."
+    return "equivalent", f"The camera {setting} uses an equivalent numeric representation."
+
+
+def _parse_compensation(value):
+    text = str(value or "").strip().replace("−", "-")
+    mixed = re.fullmatch(r"([+-]?)(\d+)\s+(\d+)/(\d+)", text)
+    if mixed:
+        sign, whole, numerator, denominator = mixed.groups()
+        number = int(whole) + int(numerator) / int(denominator)
+        return -number if sign == "-" else number
+    fraction = re.fullmatch(r"([+-]?)(\d+)/(\d+)", text)
+    if fraction:
+        sign, numerator, denominator = fraction.groups()
+        number = int(numerator) / int(denominator)
+        return -number if sign == "-" else number
+    decimal = re.fullmatch(r"([+-]?)(\d+(?:\.\d+)?)", text)
+    if decimal:
+        sign, number = decimal.groups()
+        parsed = float(number)
+        return -parsed if sign == "-" else parsed
+    return None
+
+
+def _compensation_range(value):
+    parts = re.split(r"\s+(?:to|–)\s+", str(value or "").strip(), maxsplit=1, flags=re.IGNORECASE)
+    if len(parts) != 2:
+        return None
+    bounds = tuple(_parse_compensation(part) for part in parts)
+    return bounds if all(bound is not None for bound in bounds) else None
+
+
+def _parse_aperture(value):
+    match = re.fullmatch(r"f\s*/\s*(\d+(?:\.\d+)?)", str(value or "").strip(), flags=re.IGNORECASE)
+    return float(match.group(1)) if match else None
+
+
+def _simple_aperture_range(value):
+    match = re.fullmatch(
+        r"f\s*/\s*(\d+(?:\.\d+)?)\s*[–-]\s*f\s*/\s*(\d+(?:\.\d+)?)",
+        str(value or "").strip(),
+        flags=re.IGNORECASE,
+    )
+    return (float(match.group(1)), float(match.group(2))) if match else None
+
+
+def _parse_shutter_seconds(value):
+    text = str(value or "").strip().casefold()
+    fraction = re.fullmatch(r"(\d+(?:\.\d+)?)/(\d+(?:\.\d+)?)", text)
+    if fraction:
+        return float(fraction.group(1)) / float(fraction.group(2))
+    seconds = re.fullmatch(r"(\d+(?:\.\d+)?)\s*(?:s|sec|secs|second|seconds)", text)
+    return float(seconds.group(1)) if seconds else None
+
+
+def _simple_shutter_range(value):
+    text = str(value or "").strip().casefold()
+    fractions = re.fullmatch(
+        r"(\d+(?:\.\d+)?)/(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)/(\d+(?:\.\d+)?)",
+        text,
+    )
+    if fractions:
+        return (
+            float(fractions.group(1)) / float(fractions.group(2)),
+            float(fractions.group(3)) / float(fractions.group(4)),
+        )
+    seconds = re.fullmatch(
+        r"(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*(?:s|sec|secs|second|seconds)(?:\s*\(start at \d+(?:\.\d+)?\s*(?:s|sec|secs|second|seconds)\))?",
+        text,
+    )
+    return (float(seconds.group(1)), float(seconds.group(2))) if seconds else None
 
 
 def _direct_status(path, expected, merged_fields, property_item):

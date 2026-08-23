@@ -56,6 +56,25 @@ Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does n
 - Generate duplicate control tables from one authoritative machine-readable control source.
 - Add validation that rejects the deprecated registered-AF workflow terminology.
 
+### Profile Editor Terminal-free Application
+
+Update **R5 Profile Editor.app** later so it owns the local Profile Editor server without opening Terminal, matching the Camera Lab application lifecycle. Add a clear authenticated **Stop Profile Editor** action that shuts down the server and ends the background app process, show startup or unexpected-stop failures in a macOS alert, retain diagnostic output in the machine-local `Logs/` folder, and preserve **Start Profile Editor.command** as the Terminal-based diagnostic and recovery path.
+
+### Profile Editor Camera Lab Launcher
+
+Add a later launcher-only integration from Profile Editor to the standalone Camera Lab. Preserve Camera Lab as the owner of the Canon EDSDK process, camera session, read-only comparison workflow, checklist state, and future camera-operation safeguards rather than embedding or duplicating those capabilities inside Profile Editor.
+
+The launcher should:
+
+- start Camera Lab only when its loopback service is not already running;
+- pass the currently selected **saved** profile so Camera Lab can preselect it, while never sending an unsaved browser draft to the camera workflow;
+- open Camera Lab in a separate browser tab and preserve Profile Editor independently;
+- detect and report startup, port-conflict, missing-helper, and already-running states clearly;
+- depend on Camera Lab's authenticated graceful-stop action so the camera session, EDSDK helper, and local server have one explicit owner and shutdown path; and
+- retain Terminal Control-C as the recovery fallback rather than treating browser tab closure as reliable process control.
+
+Do not add deeper Profile Editor embedding unless a later approved requirement needs shared unsaved-draft comparison, a unified camera-write journal, or coordinated backup/write transactions. Because this launcher crosses the isolated Camera Lab/Profile Editor boundary, implement and validate it as an integration checkpoint with the normal source-validation, development-build, and full-validation sequence.
+
 ### Feature Interaction Rules
 
 Create a structured way to capture and surface important Canon feature interactions and conditional menu behavior.

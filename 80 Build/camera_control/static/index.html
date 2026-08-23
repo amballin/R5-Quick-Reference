@@ -19,6 +19,7 @@
         <span id="backend-badge" class="badge">Loading</span>
         <span class="safety-badge">No setting writes</span>
         <span id="camera-lab-build" class="build-badge" aria-live="polite">Loading Camera Lab build…</span>
+        <button id="stop-camera-lab-button" class="stop-server-button" type="button">Stop Camera Lab</button>
       </div>
       <img class="camera-logo" src="/silver-camera-logo.png" alt="" aria-hidden="true">
     </div>
@@ -94,10 +95,68 @@
       </section>
     </div>
 
+    <section id="comparison-panel" class="panel comparison-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="label">Phase 1 read-only comparison</p>
+          <h2>Compare a Subject/Profile Card</h2>
+          <p>Select a card after scanning the camera. Findings follow the card's visible setting order; additional settings appear below.</p>
+        </div>
+        <span class="safety-badge">No setting writes</span>
+      </div>
+      <div class="profile-controls">
+        <label for="profile-select">Subject/Profile Card</label>
+        <select id="profile-select"><option value="">Loading profiles…</option></select>
+        <button id="compare-button" class="primary" type="button" disabled>Scan &amp; compare</button>
+      </div>
+      <div id="comparison-results" hidden>
+        <div class="comparison-toolbar">
+          <label for="comparison-order">Order</label>
+          <select id="comparison-order">
+            <option value="setup" selected>Setup route</option>
+            <option value="card">Card order</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+        <p id="comparison-summary" class="comparison-summary"></p>
+        <section class="checklist-panel" aria-labelledby="checklist-heading">
+          <div class="checklist-heading-row">
+            <div>
+              <p class="label">Read-only completion record</p>
+              <h3 id="checklist-heading">Setup checklist</h3>
+            </div>
+            <div class="checklist-actions">
+              <button id="checklist-rescan-button" class="primary" type="button">Rescan camera</button>
+              <button id="checklist-clear-button" class="secondary" type="button">Clear manual confirmations</button>
+            </div>
+          </div>
+          <div class="checklist-counts" aria-live="polite">
+            <div><strong id="checklist-sdk-count">0</strong><span>Camera verified</span></div>
+            <div><strong id="checklist-manual-count">0</strong><span>Manually confirmed</span></div>
+            <div><strong id="checklist-unresolved-count">0</strong><span>Unresolved</span></div>
+            <div><strong id="checklist-blocked-count">0</strong><span>Blocked</span></div>
+          </div>
+          <p id="checklist-result" class="checklist-result"></p>
+          <p class="checklist-note">Manual confirmations are saved only in this browser for this profile and camera context. They record your confirmation; they are not SDK verification. Use <strong>Rescan camera</strong> after changing any readable setting.</p>
+          <p id="checklist-last-scan" class="checklist-last-scan"></p>
+        </section>
+        <section id="card-finding-section" class="finding-section">
+          <h3 id="card-finding-heading">Settings shown on the card</h3>
+          <p id="card-finding-description">Shown in the exact order used by the selected card.</p>
+          <div id="card-findings" class="finding-list"></div>
+        </section>
+        <section id="additional-finding-section" class="finding-section additional-findings">
+          <h3>Additional settings</h3>
+          <p>Profile and baseline settings not displayed as rows on the selected card.</p>
+          <div id="additional-findings" class="finding-list"></div>
+        </section>
+      </div>
+    </section>
+
     <section id="capability-panel" class="panel capability-panel" hidden>
       <div class="panel-heading">
         <div>
-          <p class="label">Read-only discovery</p>
+          <p class="label">Read-only discovery reference</p>
           <h2>Camera capabilities</h2>
           <p id="capability-summary">No capability scan has been run.</p>
         </div>
@@ -136,43 +195,6 @@
         </section>
       </div>
       <p class="capability-note">A Canon descriptor can suggest configurability, but it is not proof that this application can safely write the property. Every write remains disabled and unverified.</p>
-    </section>
-
-    <section id="comparison-panel" class="panel comparison-panel">
-      <div class="panel-heading">
-        <div>
-          <p class="label">Phase 1 read-only comparison</p>
-          <h2>Compare a Subject/Profile Card</h2>
-          <p>Select a card after scanning the camera. Findings follow the card's visible setting order; additional settings appear below.</p>
-        </div>
-        <span class="safety-badge">No setting writes</span>
-      </div>
-      <div class="profile-controls">
-        <label for="profile-select">Subject/Profile Card</label>
-        <select id="profile-select"><option value="">Loading profiles…</option></select>
-        <button id="compare-button" class="primary" type="button" disabled>Scan &amp; compare</button>
-      </div>
-      <div id="comparison-results" hidden>
-        <div class="comparison-toolbar">
-          <label for="comparison-order">Order</label>
-          <select id="comparison-order">
-            <option value="setup" selected>Setup route</option>
-            <option value="card">Card order</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
-        <p id="comparison-summary" class="comparison-summary"></p>
-        <section id="card-finding-section" class="finding-section">
-          <h3 id="card-finding-heading">Settings shown on the card</h3>
-          <p id="card-finding-description">Shown in the exact order used by the selected card.</p>
-          <div id="card-findings" class="finding-list"></div>
-        </section>
-        <section id="additional-finding-section" class="finding-section additional-findings">
-          <h3>Additional settings</h3>
-          <p>Profile and baseline settings not displayed as rows on the selected card.</p>
-          <div id="additional-findings" class="finding-list"></div>
-        </section>
-      </div>
     </section>
 
     <section id="simulation-panel" class="panel simulation-panel" hidden>

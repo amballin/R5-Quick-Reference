@@ -11,6 +11,7 @@ import mimetypes
 from pathlib import Path
 import secrets
 import sys
+import threading
 from urllib.parse import parse_qs, urlparse
 
 if __package__ in {None, ""}:
@@ -184,10 +185,19 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                 result = self.service.set_simulated_scenario(scenario)
             elif path == "/api/camera-control/simulate-disconnect":
                 result = self.service.simulate_disconnect()
+            elif path == "/api/camera-control/shutdown":
+                self.service.close()
+                result = {
+                    "ok": True,
+                    "shutting_down": True,
+                    "camera_session_closed": True,
+                }
             else:
                 self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
                 return
             self._send_json(result)
+            if path == "/api/camera-control/shutdown":
+                threading.Thread(target=self.server.shutdown, daemon=True).start()
         except ValueError as exc:
             self._send_error(HTTPStatus.BAD_REQUEST, "invalid_request", str(exc))
         except CameraControlError as exc:

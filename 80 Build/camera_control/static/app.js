@@ -3,6 +3,7 @@ const token = document.querySelector('meta[name="camera-lab-token"]').content;
 const elements = {
   backendBadge: document.querySelector("#backend-badge"),
   cameraLabBuild: document.querySelector("#camera-lab-build"),
+  stopCameraLabButton: document.querySelector("#stop-camera-lab-button"),
   statusDot: document.querySelector("#status-dot"),
   connectionTitle: document.querySelector("#connection-title"),
   connectionMessage: document.querySelector("#connection-message"),
@@ -43,6 +44,14 @@ const elements = {
   comparisonResults: document.querySelector("#comparison-results"),
   comparisonSummary: document.querySelector("#comparison-summary"),
   comparisonOrder: document.querySelector("#comparison-order"),
+  checklistRescanButton: document.querySelector("#checklist-rescan-button"),
+  checklistClearButton: document.querySelector("#checklist-clear-button"),
+  checklistSdkCount: document.querySelector("#checklist-sdk-count"),
+  checklistManualCount: document.querySelector("#checklist-manual-count"),
+  checklistUnresolvedCount: document.querySelector("#checklist-unresolved-count"),
+  checklistBlockedCount: document.querySelector("#checklist-blocked-count"),
+  checklistResult: document.querySelector("#checklist-result"),
+  checklistLastScan: document.querySelector("#checklist-last-scan"),
   cardFindingSection: document.querySelector("#card-finding-section"),
   cardFindingHeading: document.querySelector("#card-finding-heading"),
   cardFindingDescription: document.querySelector("#card-finding-description"),
@@ -59,6 +68,106 @@ let statusState = null;
 let comparisonState = null;
 let selectedCameraIndex = null;
 let requestPending = false;
+const checklistStorageKey = "camera-lab-phase1-checklist-v1";
+let checklistState = loadChecklistState();
+
+function loadChecklistState() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(checklistStorageKey) || "{}");
+    return parsed && parsed.version === 1 && parsed.profiles ? parsed : { version: 1, profiles: {} };
+  } catch (_error) {
+    return { version: 1, profiles: {} };
+  }
+}
+
+function saveChecklistState() {
+  try {
+    window.localStorage.setItem(checklistStorageKey, JSON.stringify(checklistState));
+  } catch (_error) {
+    setMessage("Checklist progress could not be saved in this browser.", "info");
+  }
+}
+
+function cameraContextKey() {
+  const camera = statusState?.camera || {};
+  return [camera.product_name || "EOS R5", camera.body_id || "unknown-body", camera.firmware_version || "unknown-firmware"].join("|");
+}
+
+function activeChecklistRecord(create = false) {
+  if (!comparisonState) return null;
+  const profileName = comparisonState.profile.name || elements.profileSelect.value;
+  const recordKey = `${cameraContextKey()}|${profileName}`;
+  if (!checklistState.profiles[recordKey] && create) {
+    checklistState.profiles[recordKey] = { profile: profileName, camera_context: cameraContextKey(), confirmations: {}, last_scan_at: null };
+  }
+  return checklistState.profiles[recordKey] || null;
+}
+
+function checklistFindingKey(finding) {
+  const identity = finding.path || finding.key || (finding.items || []).map((item) => item.path).join("+") || finding.label;
+  return `${identity}|${finding.expected}`;
+}
+
+function isManualChecklistFinding(finding) {
+  return ["manual_confirmation_needed", "conditional", "unreadable"].includes(finding.status);
+}
+
+function manualConfirmation(finding) {
+  return activeChecklistRecord()?.confirmations?.[checklistFindingKey(finding)] || null;
+}
+
+function setManualConfirmation(finding, confirmed) {
+  const record = activeChecklistRecord(true);
+  const key = checklistFindingKey(finding);
+  if (confirmed) {
+    record.confirmations[key] = {
+      evidence_method: "manual_user_confirmed",
+      confirmed_at: new Date().toISOString(),
+      expected: finding.expected,
+    };
+  } else {
+    delete record.confirmations[key];
+  }
+  saveChecklistState();
+}
+
+function allComparisonFindings() {
+  if (!comparisonState) return [];
+  return [...comparisonState.card_findings, ...comparisonState.additional_findings];
+}
+
+function checklistCounts() {
+  const counts = { sdk: 0, manual: 0, unresolved: 0, blocked: 0 };
+  for (const finding of allComparisonFindings()) {
+    if (["match", "equivalent"].includes(finding.status)) {
+      counts.sdk += 1;
+    } else if (finding.status === "blocked") {
+      counts.blocked += 1;
+    } else if (isManualChecklistFinding(finding) && manualConfirmation(finding)) {
+      counts.manual += 1;
+    } else if (finding.status !== "not_applicable") {
+      counts.unresolved += 1;
+    }
+  }
+  return counts;
+}
+
+function renderChecklistSummary() {
+  const counts = checklistCounts();
+  elements.checklistSdkCount.textContent = counts.sdk;
+  elements.checklistManualCount.textContent = counts.manual;
+  elements.checklistUnresolvedCount.textContent = counts.unresolved;
+  elements.checklistBlockedCount.textContent = counts.blocked;
+  const complete = counts.unresolved === 0 && counts.blocked === 0;
+  elements.checklistResult.className = `checklist-result ${complete ? "complete" : "incomplete"}`;
+  elements.checklistResult.textContent = complete
+    ? `Review complete: ${counts.sdk} camera-verified and ${counts.manual} manually confirmed findings.`
+    : `Review incomplete: ${counts.unresolved} unresolved and ${counts.blocked} blocked findings remain.`;
+  const record = activeChecklistRecord();
+  elements.checklistLastScan.textContent = record?.last_scan_at
+    ? `Last full camera scan: ${new Date(record.last_scan_at).toLocaleString()}`
+    : "No full camera scan has been recorded for this checklist.";
+}
 
 async function request(path, options = {}) {
   const headers = { Accept: "application/json", ...(options.headers || {}) };
@@ -107,10 +216,41 @@ function setBusy(busy) {
   elements.connectButton.disabled = busy || Boolean(statusState?.connected);
   elements.scanButton.disabled = busy || (!Boolean(statusState?.connected) && !Boolean(statusState?.reconnect_available));
   elements.compareButton.disabled = busy || (!Boolean(statusState?.connected) && !Boolean(statusState?.reconnect_available)) || !elements.profileSelect.value;
+  elements.checklistRescanButton.disabled = busy || (!Boolean(statusState?.connected) && !Boolean(statusState?.reconnect_available));
+  elements.checklistClearButton.disabled = busy;
   elements.disconnectButton.disabled = busy;
   elements.refreshButton.disabled = busy;
   elements.applyScenarioButton.disabled = busy;
   elements.simulateDisconnectButton.disabled = busy || !statusState?.connected;
+  elements.stopCameraLabButton.disabled = busy;
+}
+
+function renderStoppedState() {
+  requestPending = true;
+  statusState = null;
+  elements.statusDot.className = "status-dot";
+  elements.connectionTitle.textContent = "Camera Lab stopped";
+  elements.connectionMessage.textContent = "The camera session and local server closed cleanly. You may close this tab.";
+  elements.stopCameraLabButton.disabled = true;
+  for (const button of document.querySelectorAll("button")) button.disabled = true;
+  setMessage("Camera Lab stopped cleanly. If this tab remains open, close it when ready.", "info");
+}
+
+async function stopCameraLab() {
+  if (requestPending) return;
+  if (!window.confirm("Stop Camera Lab and close the current EOS R5 session?")) return;
+  setBusy(true);
+  setMessage("Stopping Camera Lab and closing the camera session…", "info");
+  try {
+    const result = await request("/api/camera-control/shutdown", { method: "POST", body: "{}" });
+    if (!result.camera_session_closed) throw new Error("Camera Lab did not confirm that the camera session closed.");
+    renderStoppedState();
+    window.setTimeout(() => window.close(), 300);
+  } catch (error) {
+    requestPending = false;
+    setBusy(false);
+    setMessage(`Camera Lab could not stop cleanly: ${error.message}`);
+  }
 }
 
 function renderStatus(status) {
@@ -368,7 +508,7 @@ function groupHeadingRow(label) {
   const row = document.createElement("tr");
   row.className = "group-heading-row";
   const heading = document.createElement("th");
-  heading.colSpan = 4;
+  heading.colSpan = 5;
   heading.scope = "rowgroup";
   heading.textContent = label;
   row.append(heading);
@@ -429,6 +569,52 @@ function findingRow(finding, cardRow = false) {
     access.classList.add("access-unavailable");
   }
 
+  const checklist = document.createElement("td");
+  checklist.dataset.label = "Checklist";
+  checklist.className = "checklist-cell";
+  if (["match", "equivalent"].includes(finding.status)) {
+    checklist.textContent = finding.status === "match" ? "Verified by camera" : "Accepted equivalent";
+  } else if (finding.status === "difference") {
+    checklist.textContent = "Change, then rescan";
+  } else if (finding.status === "blocked") {
+    checklist.textContent = "Resolve blocker";
+  } else if (finding.status === "not_applicable") {
+    checklist.textContent = "No action";
+  } else if (isManualChecklistFinding(finding)) {
+    const label = document.createElement("label");
+    label.className = "manual-confirmation";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = Boolean(manualConfirmation(finding));
+    checkbox.addEventListener("change", () => {
+      setManualConfirmation(finding, checkbox.checked);
+      renderComparisonTables();
+      renderChecklistSummary();
+    });
+    const text = document.createElement("span");
+    text.textContent = "Reviewed/set manually";
+    const evidence = document.createElement("small");
+    evidence.textContent = checkbox.checked
+      ? "Saved as manual_user_confirmed"
+      : "Not camera-verified";
+    label.append(checkbox, text, evidence);
+    checklist.append(label);
+    const reasons = [...new Set(
+      (finding.items?.length ? finding.items : [finding])
+        .map((item) => item.reason)
+        .filter(Boolean)
+    )];
+    if (reasons.length) {
+      const reason = document.createElement("small");
+      reason.className = "checklist-reason";
+      reason.textContent = reasons.join(" ");
+      checklist.append(reason);
+    }
+    row.classList.toggle("finding-manually-confirmed", checkbox.checked);
+  } else {
+    checklist.textContent = "Review required";
+  }
+
   if (cardRow && (finding.items || []).length > 1) {
     const details = document.createElement("ul");
     details.className = "finding-details";
@@ -444,7 +630,7 @@ function findingRow(finding, cardRow = false) {
     reason.textContent = finding.reason;
     camera.append(reason);
   }
-  row.append(expected, camera, statusCell, access);
+  row.append(expected, camera, statusCell, access, checklist);
   return row;
 }
 
@@ -455,7 +641,7 @@ function findingTable(findings, cardRows = false) {
   table.className = "comparison-table";
   const head = document.createElement("thead");
   const headingRow = document.createElement("tr");
-  for (const label of ["Card Expected", "Camera", "Status", "Optimal Access Path"]) {
+  for (const label of ["Card Expected", "Camera", "Status", "Optimal Access Path", "Checklist"]) {
     const heading = document.createElement("th");
     heading.scope = "col";
     heading.textContent = label;
@@ -510,9 +696,13 @@ function renderComparisonTables() {
 
 function renderComparison(comparison) {
   comparisonState = comparison;
+  const record = activeChecklistRecord(true);
+  record.last_scan_at = new Date().toISOString();
+  saveChecklistState();
   elements.comparisonResults.hidden = false;
   elements.comparisonSummary.textContent = `${comparison.profile.display_title || comparison.profile.title}: ${comparison.summary.card_rows} card rows followed by ${comparison.summary.additional_settings} additional settings. Camera settings were not changed.`;
   renderComparisonTables();
+  renderChecklistSummary();
   elements.compareStep.classList.remove("locked");
   elements.compareStep.classList.add("active");
 }
@@ -528,7 +718,7 @@ async function loadProfiles() {
       ...result.profiles.map((profile) => {
         const option = document.createElement("option");
         option.value = profile.name;
-        option.textContent = profile.display_title || profile.title;
+        option.textContent = profile.selector_label || profile.display_title || profile.title;
         return option;
       })
     );
@@ -656,11 +846,25 @@ elements.disconnectButton.addEventListener("click", () => runAction(async () => 
   await request("/api/camera-control/disconnect", { method: "POST", body: "{}" });
 }));
 
+elements.stopCameraLabButton.addEventListener("click", stopCameraLab);
+
 elements.scanButton.addEventListener("click", () => runAction(scanAndCompare));
 
 elements.profileSelect.addEventListener("change", () => setBusy(requestPending));
 
 elements.compareButton.addEventListener("click", () => runAction(scanAndCompare));
+
+elements.checklistRescanButton.addEventListener("click", () => runAction(scanAndCompare));
+
+elements.checklistClearButton.addEventListener("click", () => {
+  const record = activeChecklistRecord();
+  if (!record || !Object.keys(record.confirmations || {}).length) return;
+  if (!window.confirm("Clear every saved manual confirmation for this profile and camera context?")) return;
+  record.confirmations = {};
+  saveChecklistState();
+  renderComparisonTables();
+  renderChecklistSummary();
+});
 
 elements.comparisonOrder.addEventListener("change", renderComparisonTables);
 

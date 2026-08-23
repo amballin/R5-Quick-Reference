@@ -66,6 +66,8 @@ body {
 .badge.live { background: var(--green); }
 .safety-badge { color: #704e00; background: #ffe7a6; }
 .build-badge { color: #d9ebfb; background: rgba(10, 25, 43, 0.28); }
+.stop-server-button { min-height: 32px; padding: 6px 10px; color: white; border-color: rgba(255, 255, 255, 0.55); background: transparent; font-size: 0.78rem; }
+.stop-server-button:hover:not(:disabled) { border-color: white; background: rgba(255, 255, 255, 0.12); }
 
 main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 48px; }
 
@@ -169,6 +171,18 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .comparison-toolbar label { color: var(--muted); font-weight: 700; }
 .comparison-toolbar select { min-width: 150px; }
 .comparison-summary { margin: 20px 0 0; padding: 12px 14px; border-radius: 9px; background: var(--blue-soft); }
+.checklist-panel { margin-top: 18px; padding: 16px; border: 1px solid #b8c7d9; border-radius: 10px; background: #f8fbff; }
+.checklist-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.checklist-heading-row h3 { margin: 0; }
+.checklist-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.checklist-counts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.checklist-counts div { display: grid; gap: 2px; padding: 11px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+.checklist-counts strong { font-size: 1.35rem; }
+.checklist-counts span { color: var(--muted); font-size: 0.76rem; font-weight: 700; }
+.checklist-result { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; font-weight: 800; }
+.checklist-result.complete { color: #125c36; background: var(--green-soft); }
+.checklist-result.incomplete { color: #6b4a00; background: var(--amber-soft); }
+.checklist-note, .checklist-last-scan { margin: 9px 0 0; color: var(--muted); font-size: 0.8rem; }
 .finding-section { margin-top: 22px; }
 .finding-section > h3 { margin: 0; }
 .finding-section > p { margin: 5px 0 12px; color: var(--muted); }
@@ -180,11 +194,13 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .comparison-table thead th:nth-child(1) { width: 24%; }
 .comparison-table thead th:nth-child(2) { width: 25%; }
 .comparison-table thead th:nth-child(3) { width: 12%; }
+.comparison-table thead th:nth-child(5) { width: 17%; }
 .comparison-table tbody tr { box-shadow: inset 5px 0 #8d99a3; }
 .comparison-table tbody .finding-match { box-shadow: inset 5px 0 var(--green); background: var(--green-soft); }
 .comparison-table tbody .finding-difference, .comparison-table tbody .finding-unreadable { box-shadow: inset 5px 0 var(--canon); background: #fff7f8; }
 .comparison-table tbody .finding-equivalent { box-shadow: inset 5px 0 var(--blue); background: var(--blue-soft); }
 .comparison-table tbody .finding-conditional, .comparison-table tbody .finding-manual_confirmation_needed { box-shadow: inset 5px 0 #d69a00; background: #fffbef; }
+.comparison-table tbody .finding-manually-confirmed { box-shadow: inset 5px 0 var(--green); }
 .comparison-table tbody .group-heading-row { box-shadow: none; }
 .group-heading-row th { padding: 9px 12px; border-top: 2px solid #e4c36a; color: #604900; background: var(--amber-soft); font-size: 0.76rem; letter-spacing: 0.04em; text-transform: uppercase; }
 .expected-setting, .expected-value, .comparison-table td > strong, .comparison-table td > small { display: block; }
@@ -202,6 +218,11 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .access-paths .access-my_menu { color: var(--access-color); font-weight: 800; }
 .access-paths .access-my_menu::before { background: var(--access-color); }
 .access-unavailable { color: var(--muted); font-style: italic; }
+.checklist-cell { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+.manual-confirmation { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 7px; align-items: start; color: var(--ink); cursor: pointer; }
+.manual-confirmation input { margin-top: 2px; }
+.manual-confirmation small { grid-column: 2; color: var(--muted); font-weight: 500; }
+.checklist-reason { display: block; margin-top: 7px; color: var(--muted); font-weight: 500; line-height: 1.35; }
 .table-scroll { overflow-x: auto; }
 .capability-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .capability-table th, .capability-table td { padding: 11px 10px; border-top: 1px solid #e8edf1; text-align: left; vertical-align: top; }
@@ -238,6 +259,10 @@ footer { padding: 24px; color: var(--muted); text-align: center; font-size: 0.82
 
 @media (max-width: 760px) {
   .app-header, .status-card { align-items: stretch; flex-direction: column; }
+  .checklist-heading-row { align-items: stretch; flex-direction: column; }
+  .checklist-actions { justify-content: stretch; }
+  .checklist-actions button { flex: 1 1 180px; }
+  .checklist-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .header-tools { width: 100%; justify-content: space-between; }
   .mode-stack, .actions { justify-content: flex-start; }
   .stepper { grid-template-columns: 1fr 1fr; }

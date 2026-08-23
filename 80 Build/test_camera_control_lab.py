@@ -11,11 +11,34 @@ if str(BUILD_DIR) not in sys.path:
 
 from camera_control.dev_server import create_server
 from camera_control.errors import CameraSelectionError, CameraSessionError, WrongCameraModelError
+from camera_control.profile_comparison import _conditional_status
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
 
 
 class CameraControlServiceTests(unittest.TestCase):
+    def test_contextual_comparison_evaluates_exact_ranges_and_guidance(self):
+        cases = [
+            ("exposure.exposure_compensation", "0", "0", "match"),
+            ("exposure.exposure_compensation", "0 to +1/3", "+1/3", "equivalent"),
+            ("exposure.exposure_compensation", "0 to +1/3", "+2/3", "difference"),
+            ("exposure.exposure_compensation", "Adjust for background", "0", "conditional"),
+            ("lens.aperture.target", "Auto", "Auto", "match"),
+            ("lens.aperture.target", "f/8", "f/8.0", "equivalent"),
+            ("lens.aperture.target", "f/8–f/11", "f/8.0", "equivalent"),
+            ("lens.aperture.target", "f/8–f/11", "Auto", "difference"),
+            ("lens.aperture.target", "f/8–f/11; bracket before f/16", "f/8.0", "conditional"),
+            ("shutter.target", "Auto", "Auto", "match"),
+            ("shutter.target", "1/200", "1/200", "match"),
+            ("shutter.target", "1/2000–1/4000", "1/2500", "equivalent"),
+            ("shutter.target", "2–6 s (start at 4 s)", "4 sec", "equivalent"),
+            ("shutter.target", "1/2000–1/4000", "Auto", "difference"),
+            ("shutter.target", "1/1000–1/2000 outdoor; 1/640–1/1000 indoor", "1/1000", "conditional"),
+        ]
+        for path, expected, actual, status in cases:
+            with self.subTest(path=path, expected=expected, actual=actual):
+                self.assertEqual(_conditional_status(path, expected, actual)[0], status)
+
     def test_camera_lab_info_exposes_version_and_source_derived_build(self):
         first = camera_lab_info()
         second = camera_lab_info()
@@ -177,11 +200,20 @@ class CameraControlServiceTests(unittest.TestCase):
             service.compare_profile("Landscape")
 
     def test_profile_choices_name_the_registered_mode_and_base_card(self):
-        profiles = {profile["name"]: profile for profile in CameraControlService().profiles()["profiles"]}
+        profile_list = CameraControlService().profiles()["profiles"]
+        profiles = {profile["name"]: profile for profile in profile_list}
+        self.assertEqual([profile["name"] for profile in profile_list[:3]], ["Wildlife", "Birds in Flight", "Landscape"])
         self.assertEqual(profiles["Wildlife"]["display_title"], "C1 – Wildlife")
         self.assertEqual(profiles["Birds in Flight"]["display_title"], "C2 – Birds in Flight")
         self.assertEqual(profiles["Landscape"]["display_title"], "C3 – Landscape")
         self.assertEqual(profiles["People"]["display_title"], "C1 – Wildlife → People")
+        self.assertEqual(profiles["Wildlife"]["selector_label"], "C1 (Wildlife)")
+        self.assertEqual(profiles["Birds in Flight"]["selector_label"], "C2 (Birds in Flight)")
+        self.assertEqual(profiles["Landscape"]["selector_label"], "C3 (Landscape)")
+        self.assertEqual(profiles["Sports"]["selector_label"], "Sports ← C2 (Birds in Flight)")
+        self.assertEqual(profiles["Camera Defaults"]["selector_label"], "Camera Defaults ← C1 (Wildlife)")
+        remaining_titles = [profile["title"] for profile in profile_list[3:]]
+        self.assertEqual(remaining_titles, sorted(remaining_titles, key=str.casefold))
 
     def test_profile_comparison_follows_card_order_then_additional_settings(self):
         service = CameraControlService()
@@ -315,8 +347,17 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("default-src 'self'", header_map["Content-Security-Policy"])
         self.assertIn('id="recovery-dialog"', body)
         self.assertIn('id="camera-lab-build"', body)
+        self.assertIn('id="stop-camera-lab-button"', body)
         self.assertIn('id="comparison-order"', body)
         self.assertIn('<option value="setup" selected>Setup route</option>', body)
+        self.assertIn('id="checklist-rescan-button"', body)
+        self.assertIn('id="checklist-clear-button"', body)
+        self.assertIn('id="checklist-sdk-count"', body)
+        self.assertIn('id="checklist-manual-count"', body)
+        self.assertIn('id="checklist-unresolved-count"', body)
+        self.assertIn('id="checklist-blocked-count"', body)
+        self.assertIn("Manual confirmations are saved only in this browser", body)
+        self.assertLess(body.index('id="comparison-panel"'), body.index('id="capability-panel"'))
         self.assertIn('id="additional-finding-section"', body)
         self.assertIn('id="return-to-top"', body)
         self.assertIn("Scan &amp; compare", body)
@@ -330,9 +371,20 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('elements.compareButton.addEventListener("click", () => runAction(scanAndCompare))', body)
         self.assertIn("function manualGroup(finding)", body)
         self.assertIn("function setupGroup(finding)", body)
+        self.assertIn('const checklistStorageKey = "camera-lab-phase1-checklist-v1"', body)
+        self.assertIn('evidence_method: "manual_user_confirmed"', body)
+        self.assertIn('"Saved as manual_user_confirmed"', body)
+        self.assertIn('reason.className = "checklist-reason"', body)
+        self.assertIn("function renderChecklistSummary()", body)
+        self.assertIn("function checklistFindingKey(finding)", body)
+        self.assertIn('elements.checklistRescanButton.addEventListener("click", () => runAction(scanAndCompare))', body)
+        self.assertIn("window.localStorage.setItem(checklistStorageKey", body)
         self.assertIn('elements.comparisonOrder.value === "setup"', body)
         self.assertIn("function updateFloatingReturn()", body)
         self.assertIn("profile.display_title || profile.title", body)
+        self.assertIn("profile.selector_label || profile.display_title || profile.title", body)
+        self.assertIn('request("/api/camera-control/shutdown", { method: "POST", body: "{}" })', body)
+        self.assertIn("function renderStoppedState()", body)
 
     def test_camera_lab_serves_canonical_silver_logo(self):
         status, headers, body = self.request("GET", "/silver-camera-logo.png")
@@ -397,6 +449,38 @@ class CameraLabHttpTests(unittest.TestCase):
         status, _, body = self.request("GET", "/api/camera-control/status", host="camera-lab.example")
         self.assertEqual(status, 403)
         self.assertEqual(body["error"]["kind"], "invalid_host")
+
+    def test_authenticated_shutdown_closes_service_and_stops_server(self):
+        token = "shutdown-test-token"
+        service = CameraControlService()
+        server = create_server(service, port=0, token=token)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            service.connect()
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/camera-control/shutdown",
+                body="{}",
+                headers={
+                    "Host": "127.0.0.1",
+                    "Content-Type": "application/json",
+                    "X-Camera-Lab-Token": token,
+                },
+            )
+            response = connection.getresponse()
+            payload = json.loads(response.read())
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertTrue(payload["shutting_down"])
+            self.assertTrue(payload["camera_session_closed"])
+            thread.join(timeout=2)
+            self.assertFalse(thread.is_alive())
+            self.assertFalse(service.status(check_connection=False)["connected"])
+        finally:
+            server.server_close()
+            service.close()
 
 
 if __name__ == "__main__":

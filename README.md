@@ -20,6 +20,14 @@ python3 "80 Build/build.py"
 
 The repository contains the editable profiles, reference cards, appendices, templates, build code, assets, and published `docs/` site. Disposable build output, backups, reports, and native-wrapper resources live in the sibling `<repository folder name> Local/` workspace and can be recreated or managed independently.
 
+On macOS, build the machine-local **R5 Camera Lab.app** and **R5 Profile Editor.app** launchers with:
+
+```bash
+./80\ Build/scripts/build-app-wrappers.sh
+```
+
+The apps are written to the sibling `<repository folder name> Local/Applications/` folder. **R5 Camera Lab.app** runs Camera Lab without opening Terminal and records diagnostic output under the machine-local `Logs/` folder. **R5 Profile Editor.app** currently opens its established launcher in Terminal. Rebuild the apps after moving or renaming the repository, or when setting up another Mac.
+
 Each Mac needs its own GitHub authentication. For this HTTPS remote, configure the macOS Keychain helper with `git config --global credential.helper osxkeychain`. When Git first prompts, use the GitHub username `amballin` and a personal access token as the password; never store the token in the repository.
 
 Use the repository's handoff scripts from the project root:
