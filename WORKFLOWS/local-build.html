@@ -113,12 +113,13 @@
 <body>
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
-<h1>Local Build: When and Why</h1>
-<p>The normal local build is:</p>
+<h1>Local Validation and Build: When and Why</h1>
+<p>Choose the smallest validation that proves the affected surface is correct. A narrow metadata or documentation-source change may need only a targeted check or source-only validation. Run the complete local build when generated output or build behavior can change, or when work reaches an integration checkpoint.</p>
+<p>The complete local sequence is:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/validator.py&quot; --source-only &amp;&amp;
 python3 &quot;80 Build/build.py&quot; &amp;&amp;
 python3 &quot;80 Build/validator.py&quot;</code></pre></div>
-<p>You may copy and run the complete block. The <code>&amp;&amp;</code> connections stop the sequence at the first error, so a failed check cannot be hidden by a later command. You may also run the three commands one at a time when troubleshooting.</p>
+<p>You may copy and run the complete block. The <code>&amp;&amp;</code> connections stop the sequence at the first error, so a failed check cannot be hidden by a later command. You may also run the three commands one at a time when troubleshooting. One successful sequence is enough while its inputs remain unchanged.</p>
 <p>The Profile Editor provides the same sequence under <strong>Review &amp; Build</strong>. It first requires every browser draft to be saved or explicitly discarded, then requires a fresh readiness check and a final confirmation. This is convenient after profile, My Menu, or baseline work; the command block remains available for troubleshooting and other project changes.</p>
 <section class="step"><h2>Why three commands</h2>
 <ul>
@@ -127,6 +128,15 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <li>The final validator checks the generated result.</li>
 </ul>
 <p>Stop when any command reports an error. Read the first error, correct it, and rerun the sequence. None of these commands publishes, commits, or pushes.</p>
+</section>
+<section class="step"><h2>Use targeted or source-only validation when</h2>
+<ul>
+<li>Release notes are the only changed source: confirm the next version, run source-only validation, and review the diff. The publishing workflow checks the exact candidate again.</li>
+<li>A decision-log, project-memory, TODO, or other non-generated metadata/documentation change cannot affect rendered output or build behavior.</li>
+<li>A subsystem documents its own focused test loop, such as isolated Camera Lab development.</li>
+<li>A machine-local testing-status import changes only canonical YAML status; run the relevant import checks and source-only validation.</li>
+</ul>
+<p>Targeted validation is not permission to skip a later integration checkpoint. Accumulate related source work, then run the complete sequence once when it reaches that boundary.</p>
 </section>
 <section class="step"><h2>Baseline impact before the build</h2>
 <p>When <code>00 Master/baseline.yaml</code> changed outside a reviewed Profile Editor migration, run:</p>
@@ -149,7 +159,8 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <li>Build or rendering code changed.</li>
 <li>Finish Day or workflow Markdown changed; the build automatically refreshes its tracked HTML copy.</li>
 <li>You want to review the complete local website.</li>
-<li>Before committing a substantial source change.</li>
+<li>At integration, computer handoff, or Finish Day checkpoints. Publication runs its own supported publish-mode build and verification instead of requiring another unchanged development build immediately beforehand.</li>
+<li>Before committing a substantial change that has not already passed the complete sequence on the same inputs.</li>
 <li>A validator specifically requests regenerated output.</li>
 </ul>
 </section>
@@ -158,7 +169,17 @@ python3 &quot;80 Build/validator.py&quot;</code></pre></div>
 <li>You only inspected files or answered a question.</li>
 <li>You changed only machine-local testing observations and are importing them into YAML; validate after import.</li>
 <li>You are preparing spreadsheets only; use their dedicated build commands.</li>
+<li>You changed only release notes or non-generated project metadata and source-only validation passed.</li>
 </ul>
+</section>
+<section class="step"><h2>Repeat a full build only when</h2>
+<ul>
+<li>Inputs changed after the previous successful sequence.</li>
+<li>A previous build or validation failed and the cause was corrected.</li>
+<li>Build, rendering, template, spreadsheet-generation, or reproducibility behavior changed and a clean repeat is needed to test determinism.</li>
+<li>There is evidence of hidden state or nondeterministic output.</li>
+</ul>
+<p>Do not run a second unchanged full build merely because an artifact is maintained or expected to be regenerated later.</p>
 </section>
 <section class="step"><h2>After pulling on another Mac</h2>
 <p>Build if you need local output or if pulled changes affect generated content. Machine-local output is deliberately not synchronized through Git.</p>

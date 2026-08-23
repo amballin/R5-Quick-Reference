@@ -128,7 +128,7 @@
 </section>
 <section class="step"><h2>1. Prepare the release notes when publishing</h2>
 <p>Skip this step when you are only finishing for the day or switching Macs.</p>
-<p>Ask Codex to prepare curated release notes for the upcoming website version. Codex should review the reader-facing changes since the previous publication, propose concise highlights for your approval, create the required backup, add the approved entry to <code>00 Master/release_notes.yaml</code>, and validate it.</p>
+<p>Ask Codex to prepare curated release notes for the upcoming website version. Codex should review the reader-facing changes since the previous publication, propose concise highlights for your approval, create the required backup, add the approved entry to <code>00 Master/release_notes.yaml</code>, confirm that it uses the next publication version, and run source-only validation. A release-note-only change does not require a development build; the full sequence runs once in Step 2.</p>
 <p>For an ordinary release, the upcoming version keeps the current major number from <code>80 Build/publish_metadata.yaml</code> and adds one to its minor number. For a new major series, the upcoming version is <code>N.00</code>, where <code>N</code> is greater than the current major version. Do not edit the publish metadata manually.</p>
 <p>Review and approve the highlights as reader-facing release notes. Do not continue until the exact upcoming version exists in <code>00 Master/release_notes.yaml</code>.</p>
 </section>

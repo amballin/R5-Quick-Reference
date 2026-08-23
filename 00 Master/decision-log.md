@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Proportional Validation and Full-Build Checkpoints
+
+**Status:** Accepted
+**Date:** 2026-08-22
+
+Use the narrowest repository-owned validation that proves the affected surface is correct. A release-note-only change requires confirmation of the next publication version, source-only validation, and diff review; it does not require a development build. The same proportional rule applies to other narrow metadata or non-generated documentation changes.
+
+Run the normal source-validation, development-build, and full-validation sequence when source changes can affect generated cards, guides, downloads, search, the PWA, `docs/`, or build behavior, and at integration, computer-handoff, and Finish Day checkpoints. Publication uses the supported publish-mode build and post-publication verification; it does not require another unchanged development build immediately after a successful Finish Day sequence. Specialized isolated workflows may retain their documented focused test loops before integration.
+
+One successful full sequence is sufficient while its inputs remain unchanged. Require a clean repeat only when generation or reproducibility behavior changed, hidden state or nondeterminism is suspected, inputs changed, or an earlier check failed. This clarifies the scope of the normal local sequence without weakening the Profile Editor's explicitly confirmed **Review & Build** action or any integration and publication safeguard.
+
 ## Rapid Setup Ordering on Generated Cards
 
 **Status:** Accepted

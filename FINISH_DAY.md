@@ -25,7 +25,7 @@ The command diagnoses every spreadsheet-derived artifact first and will not over
 
 Skip this step when you are only finishing for the day or switching Macs.
 
-Ask Codex to prepare curated release notes for the upcoming website version. Codex should review the reader-facing changes since the previous publication, propose concise highlights for your approval, create the required backup, add the approved entry to `00 Master/release_notes.yaml`, and validate it.
+Ask Codex to prepare curated release notes for the upcoming website version. Codex should review the reader-facing changes since the previous publication, propose concise highlights for your approval, create the required backup, add the approved entry to `00 Master/release_notes.yaml`, confirm that it uses the next publication version, and run source-only validation. A release-note-only change does not require a development build; the full sequence runs once in Step 2.
 
 For an ordinary release, the upcoming version keeps the current major number from `80 Build/publish_metadata.yaml` and adds one to its minor number. For a new major series, the upcoming version is `N.00`, where `N` is greater than the current major version. Do not edit the publish metadata manually.
 
