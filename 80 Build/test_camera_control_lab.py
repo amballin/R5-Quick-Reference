@@ -385,6 +385,10 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("profile.selector_label || profile.display_title || profile.title", body)
         self.assertIn('request("/api/camera-control/shutdown", { method: "POST", body: "{}" })', body)
         self.assertIn("function renderStoppedState()", body)
+        self.assertIn("cameraLabStopped = true", body)
+        self.assertIn("window.clearInterval(statusPollId)", body)
+        self.assertIn("if (cameraLabStopped || requestPending) return", body)
+        self.assertIn("statusPollId = window.setInterval", body)
 
     def test_camera_lab_serves_canonical_silver_logo(self):
         status, headers, body = self.request("GET", "/silver-camera-logo.png")

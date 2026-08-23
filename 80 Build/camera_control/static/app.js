@@ -68,6 +68,8 @@ let statusState = null;
 let comparisonState = null;
 let selectedCameraIndex = null;
 let requestPending = false;
+let cameraLabStopped = false;
+let statusPollId = null;
 const checklistStorageKey = "camera-lab-phase1-checklist-v1";
 let checklistState = loadChecklistState();
 
@@ -226,6 +228,11 @@ function setBusy(busy) {
 }
 
 function renderStoppedState() {
+  cameraLabStopped = true;
+  if (statusPollId !== null) {
+    window.clearInterval(statusPollId);
+    statusPollId = null;
+  }
   requestPending = true;
   statusState = null;
   elements.statusDot.className = "status-dot";
@@ -777,16 +784,18 @@ function renderEvents(events) {
 }
 
 async function refreshStatus({ quiet = false } = {}) {
+  if (cameraLabStopped || requestPending) return;
   try {
     const [status, events] = await Promise.all([
       request("/api/camera-control/status"),
       request("/api/camera-control/events"),
     ]);
+    if (cameraLabStopped || requestPending) return;
     renderStatus(status);
     renderEvents(events.events);
     if (!quiet) setMessage("");
   } catch (error) {
-    setMessage(error.message);
+    if (!cameraLabStopped && !requestPending) setMessage(error.message);
   }
 }
 
@@ -897,4 +906,4 @@ elements.simulateDisconnectButton.addEventListener("click", () => runAction(asyn
 loadProfiles();
 refreshStatus();
 updateFloatingReturn();
-window.setInterval(() => refreshStatus({ quiet: true }), 2500);
+statusPollId = window.setInterval(() => refreshStatus({ quiet: true }), 2500);
