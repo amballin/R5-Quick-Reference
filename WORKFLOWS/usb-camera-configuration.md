@@ -16,6 +16,8 @@ Build or refresh both local application wrappers from the repository root with:
 
 The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. The existing **Start Camera Lab.command** launcher remains available in the repository's top-level folder.
 
+The header checkout badge reads **Main project** for the authoritative `main` worktree or **Prototype · branch-name** for a development worktree. Confirm this badge before physical-camera work so observations are recorded against the intended source checkout.
+
 Use **Stop Camera Lab** in the page header to close the EOS R5 session, stop the local server, and end the background app process. The page closes its tab when browser policy permits; if the tab remains open, close it after the stopped confirmation appears. Closing or refreshing the browser tab alone is not a dependable server-shutdown signal. If startup fails or the server stops unexpectedly, the app shows a macOS alert and records details in the machine-local `Logs/R5 Camera Lab.log` file. If port 8770 is already occupied, stop the existing Camera Lab before trying again.
 
 The direct Terminal command remains available for development, diagnostics, and Control-C recovery:

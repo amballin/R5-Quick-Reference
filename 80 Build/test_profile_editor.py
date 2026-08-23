@@ -23,6 +23,7 @@ if str(BUILD_DIR) not in sys.path:
 
 from profile_editor import ProfileConflictError, ProfileEditorModel, PrototypeError, create_server
 from profile_loader import load_yaml
+from project_context import project_context_info
 from validators import control_validator, profile_validator, spreadsheet_spec_validator
 
 
@@ -50,6 +51,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
+            "80 Build/project_context.py",
             "80 Build/scripts/start-profile-editor.sh",
         ):
             destination = self.root / relative
@@ -581,6 +583,26 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first["version"], "1.0.0")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
+        self.assertEqual(first["project_context"]["kind"], "unknown")
+        self.assertIsNone(first["project_context"]["branch"])
+
+    def test_project_context_distinguishes_main_and_prototype_branches(self):
+        git_dir = self.root / ".git"
+        git_dir.mkdir()
+        (git_dir / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
+        self.assertEqual(
+            project_context_info(self.root),
+            {"kind": "main", "label": "Main project", "branch": "main"},
+        )
+        (git_dir / "HEAD").write_text("ref: refs/heads/codex/profile-editor-prototype\n", encoding="utf-8")
+        self.assertEqual(
+            project_context_info(self.root),
+            {
+                "kind": "prototype",
+                "label": "Prototype · codex/profile-editor-prototype",
+                "branch": "codex/profile-editor-prototype",
+            },
+        )
 
     def test_camera_lab_launch_accepts_only_saved_subject_profiles(self):
         class FakeLauncher:
@@ -607,10 +629,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('meta name="profile-editor-token"', html)
         self.assertIn('id="open-camera-lab"', html)
         self.assertIn('id="stop-profile-editor"', html)
+        self.assertIn('id="project-context-badge"', html)
         self.assertIn('request("/api/camera-lab-launch"', javascript)
         self.assertIn('request("/api/editor-shutdown"', javascript)
         self.assertIn("profilePayloadChanged(profileDraftPayload())", javascript)
         self.assertIn("Camera Lab, if running, remains independent", javascript)
+        self.assertIn("info.project_context", javascript)
         self.assertIn("grid-row: 1 / span 2", stylesheet)
         self.assertIn("justify-self: end", stylesheet)
 

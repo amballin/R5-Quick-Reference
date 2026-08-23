@@ -16,6 +16,8 @@ Open the local address shown in Terminal. Keep that Terminal window open while u
 
 The editor runs only on this Mac. It does not publish the website or make Git changes.
 
+Before editing, confirm the header badge. **Main project** means the app is running from the authoritative `main` worktree. **Prototype · branch-name** means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.
+
 ## Understand the working model
 
 The editor separates temporary work from saved source:

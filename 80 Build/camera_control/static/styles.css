@@ -58,7 +58,7 @@ body {
 .header-tools .camera-logo { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
 .header-tools .build-badge { grid-column: 1; grid-row: 2; justify-self: end; }
 .mode-stack { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-.badge, .safety-badge, .build-badge {
+.badge, .safety-badge, .build-badge, .project-context-badge {
   display: inline-flex;
   padding: 7px 11px;
   border-radius: 999px;
@@ -67,6 +67,10 @@ body {
 }
 .badge { background: #526979; }
 .badge.live { background: var(--green); }
+.project-context-badge { color: white; background: #5d6670; }
+.project-context-badge.main { background: var(--green); }
+.project-context-badge.prototype { color: #3e2b00; background: #ffd267; }
+.project-context-badge.unknown { background: #6f7780; }
 .safety-badge { color: #704e00; background: #ffe7a6; }
 .build-badge { color: #d9ebfb; background: rgba(10, 25, 43, 0.28); }
 .stop-server-button { min-height: 32px; padding: 6px 10px; color: white; border-color: rgba(255, 255, 255, 0.55); background: transparent; font-size: 0.78rem; }

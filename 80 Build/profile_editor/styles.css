@@ -85,6 +85,19 @@ h2 { margin-bottom: .25rem; }
   font-weight: 700;
   white-space: nowrap;
 }
+.project-context-badge {
+  display: inline-flex;
+  padding: .42rem .65rem;
+  border-radius: 999px;
+  color: white;
+  background: #66717d;
+  font-size: .76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.project-context-badge.main { background: var(--teal); }
+.project-context-badge.prototype { color: #3e2b00; background: #ffd267; }
+.project-context-badge.unknown { background: #66717d; }
 .editor-camera-logo { display: block; width: 42px; height: 42px; object-fit: contain; }
 
 .app-shell {

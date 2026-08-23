@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import unittest
 
 BUILD_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BUILD_DIR.parent
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
@@ -16,6 +17,7 @@ from camera_control.errors import CameraSelectionError, CameraSessionError, Wron
 from camera_control.profile_comparison import _conditional_status, list_profiles
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
+from project_context import active_branch
 
 
 class CameraControlServiceTests(unittest.TestCase):
@@ -47,6 +49,9 @@ class CameraControlServiceTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first["version"], "1.0.0")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
+        branch = active_branch(PROJECT_ROOT)
+        self.assertEqual(first["project_context"]["branch"], branch)
+        self.assertEqual(first["project_context"]["kind"], "main" if branch == "main" else "prototype")
 
     def test_native_helper_pumps_canon_events_before_property_scans(self):
         source = (BUILD_DIR / "camera_control" / "native" / "edsdk_helper.c").read_text(encoding="utf-8")
@@ -408,6 +413,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("grid-row: 2; justify-self: end", styles)
 
     def test_camera_lab_script_rescans_comparison_and_exposes_recovery(self):
+        status, _, html = self.request("GET", "/")
+        self.assertEqual(status, 200)
         status, _, body = self.request("GET", "/app.js")
         self.assertEqual(status, 200)
         self.assertIn("await compareSelectedProfile()", body)
@@ -437,6 +444,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("window.clearInterval(statusPollId)", body)
         self.assertIn("if (cameraLabStopped || requestPending) return", body)
         self.assertIn("statusPollId = window.setInterval", body)
+        self.assertIn('id="project-context-badge"', html)
+        self.assertIn("app.project_context", body)
         self.assertIn('new URLSearchParams(window.location.search).get("profile")', body)
         self.assertIn("was selected by Profile Editor", body)
         self.assertIn("not available in Camera Lab", body)

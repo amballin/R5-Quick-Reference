@@ -2,6 +2,7 @@ const editorToken = document.querySelector('meta[name="profile-editor-token"]').
 
 const elements = {
   editorBuild: document.querySelector("#editor-build"),
+  projectContextBadge: document.querySelector("#project-context-badge"),
   openCameraLab: document.querySelector("#open-camera-lab"),
   stopProfileEditor: document.querySelector("#stop-profile-editor"),
   profileActionMenu: document.querySelector(".profile-action-menu"),
@@ -216,6 +217,10 @@ async function request(url, options) {
 async function loadEditorInfo() {
   try {
     const info = await request("/api/editor-info");
+    const projectContext = info.project_context || {};
+    elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
+    elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
+    elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
     elements.editorBuild.textContent = `Editor ${info.version} · Build ${info.build}`;
   } catch (error) {
     elements.editorBuild.textContent = "Editor build unavailable";

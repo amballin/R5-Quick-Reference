@@ -3,6 +3,7 @@ const requestedProfileName = new URLSearchParams(window.location.search).get("pr
 
 const elements = {
   backendBadge: document.querySelector("#backend-badge"),
+  projectContextBadge: document.querySelector("#project-context-badge"),
   cameraLabBuild: document.querySelector("#camera-lab-build"),
   stopCameraLabButton: document.querySelector("#stop-camera-lab-button"),
   statusDot: document.querySelector("#status-dot"),
@@ -269,6 +270,10 @@ function renderStatus(status) {
   const connected = Boolean(status.connected);
   const reconnectAvailable = Boolean(status.reconnect_available);
   const app = status.app || {};
+  const projectContext = app.project_context || {};
+  elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
+  elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
+  elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
   elements.cameraLabBuild.textContent = app.version && app.build
     ? `Camera Lab ${app.version} · Build ${app.build}`
     : "Camera Lab build unavailable";

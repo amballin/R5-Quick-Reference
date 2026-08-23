@@ -67,6 +67,7 @@ from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
 from my_menu_colors import MyMenuColorError, load_my_menu_colors, validate_my_menu_colors
 from my_menu_reference import reference_settings as my_menu_reference_settings
 from profile_loader import load_baseline, load_yaml
+from project_context import project_context_info
 from utilities import flatten
 
 
@@ -127,6 +128,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
+    "80 Build/project_context.py",
     "80 Build/scripts/start-profile-editor.sh",
 )
 
@@ -1175,6 +1177,7 @@ class ProfileEditorModel:
         return {
             "version": EDITOR_VERSION,
             "build": digest.hexdigest()[:8],
+            "project_context": project_context_info(self.paths.root),
         }
 
     def build_readiness(self, pending_changes):

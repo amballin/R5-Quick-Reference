@@ -38,6 +38,8 @@ Camera Lab must support a deterministic simulated backend for routine UI develop
 
 Camera Lab and Profile Editor header version/build information must occupy the row below their action controls, with its right edge aligned to the rightmost Stop button's right edge. The silver camera logo must be vertically centered across both rows.
 
+Both local applications must show a persistent checkout-context badge in the header action row. The badge must derive from the active Git worktree rather than a hardcoded folder name: **Main project** for branch `main`, **Prototype · &lt;branch&gt;** for another named branch, and **Project context unavailable** when the worktree cannot be identified. This indicator is operational guidance only and does not change repository authority.
+
 Profile Editor integration is a launcher boundary, not an embedded camera workspace. **Open in Camera Lab** must accept only the currently selected saved Subject/Profile Card, start Camera Lab if it is not running, reuse it if it is, and open a loopback URL whose `profile` query parameter contains only that canonical saved profile name. Camera Lab must validate the requested name against its freshly loaded profile catalog and preselect it without automatically connecting, scanning, comparing, or writing. Unsaved, new, and reference-card selections must not be passed. Camera Lab remains independently owned: Stop Profile Editor stops only the editor server, and Stop Camera Lab stops only the camera session and Lab server.
 
 The Phase 0 API boundary is:

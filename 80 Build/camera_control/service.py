@@ -8,6 +8,8 @@ import hashlib
 from pathlib import Path
 import threading
 
+from project_context import project_context_info
+
 from .connector import EXPECTED_MODEL, is_expected_model, normalize_product_name
 from .capability_mapping import capability_coverage, enrich_properties
 from .errors import (
@@ -28,6 +30,7 @@ CAMERA_LAB_VERSION = "1.0.0"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CAMERA_LAB_ROOT = Path(__file__).resolve().parent
 CAMERA_LAB_BUILD_INPUTS = (
+    PROJECT_ROOT / "80 Build" / "project_context.py",
     PROJECT_ROOT / "00 Master" / "baseline.yaml",
     PROJECT_ROOT / "00 Master" / "camera_capabilities.yaml",
     PROJECT_ROOT / "00 Master" / "card_layout.yaml",
@@ -54,7 +57,11 @@ def camera_lab_info():
         digest.update(b"\0")
         digest.update(source.read_bytes())
         digest.update(b"\0")
-    return {"version": CAMERA_LAB_VERSION, "build": digest.hexdigest()[:8]}
+    return {
+        "version": CAMERA_LAB_VERSION,
+        "build": digest.hexdigest()[:8],
+        "project_context": project_context_info(PROJECT_ROOT),
+    }
 
 
 class CameraControlService:

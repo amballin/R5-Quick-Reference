@@ -10,7 +10,7 @@ Open [Preflight](preflight.html) to confirm this Mac has the current source and 
 
 ## 2. Develop, build, and test
 
-Open **R5 Profile Editor.app** from the machine-local `Applications` folder for routine work, and use [Profile Editor](profile-editor.html) for its complete operating guide. It runs in the background without a Terminal window and has its own Stop action. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
+Open **R5 Profile Editor.app** from the intended worktree's machine-local `Applications` folder for routine work, and use [Profile Editor](profile-editor.html) for its complete operating guide. Confirm the header reads **Main project** for authoritative work or **Prototype · branch-name** for development work. It runs in the background without a Terminal window and has its own Stop action. Its guarded saves require exact YAML review, recovery backup, concurrent-change checks, and validation. **Review & Build** inventories pending drafts and can run the normal local sequence only after every draft is saved or discarded and readiness passes.
 
 Open [Local Build](local-build.html) for the equivalent terminal commands, troubleshooting, or project changes outside the editor's scope. For routine generated-result review, open `Canon Camera Reference Local/Build Output/merged-build/index.html`, not intermediate card files or the Git-tracked `docs/` publication mirror. Git actions and publishing remain separate workflows.
 
