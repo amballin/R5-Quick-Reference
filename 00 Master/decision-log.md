@@ -2,6 +2,26 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Streamlined Camera Lab Development Loop
+
+**Status:** Accepted
+**Date:** 2026-08-22
+
+Treat Camera Lab as an isolated development surface while USB behavior is being built before Profile Editor integration. During an isolated Camera Lab iteration, run only the camera-control tests, source-only validation, and relevant simulated, browser, or physical-camera checks. Do not regenerate cards, appendices, spreadsheets, the PWA, `docs/`, or complete profile output merely to test Camera Lab code or UI.
+
+End the fast loop and run the normal source-validation, development-build, and full-validation sequence when Camera Lab is integrated into the Profile Editor, when a change touches shared profile data, shared editor or build behavior, published output, or another non-USB subsystem, and before any commit, push, computer handoff, Finish Day, or publication. This preserves a fast iteration loop without weakening integration and release verification.
+
+## Guarded USB Camera Configuration
+
+**Status:** Accepted
+**Date:** 2026-08-22
+
+Add a machine-local Canon EDSDK integration that applies the existing baseline-plus-overrides profiles to a physically connected EOS R5 over USB. Keep the published website and offline PWA reference-only; native camera access belongs in a local helper used by the local Profile Editor and command-line diagnostics. Canon SDK binaries, credentials, and machine-specific paths remain outside the repository.
+
+Build the capability incrementally. Begin with a strictly read-only connection probe that discovers cameras, requires an unambiguous EOS R5 selection, opens one session, reports available camera identity and health properties, detects connection failure, and always closes the camera session and SDK. Later phases may add property capability discovery, readback comparison, guarded one-setting-at-a-time writes, generated manual checklists, sequential C1–C3 configuration and verification, and an independent card-backup workflow only as defined by the USB Camera Configuration Specification.
+
+Never describe an unreadable setting as matching, a successful write as verified without readback, a user-confirmed manual value as SDK-verified, or an approved profile target as the physical camera's current state. Require a recoverable pre-change card backup before the first future write-capable run. Card-settings file transfer remains camera-guided unless the original EOS R5 is physically proven to support the applicable EDSDK camera-settings-data operations.
+
 ## Active Profile Context and Automatic Saved My Menu Cues
 
 **Status:** Accepted

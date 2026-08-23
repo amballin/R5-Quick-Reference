@@ -34,6 +34,8 @@ Use the repository's handoff scripts from the project root:
 
 Start with the local [`Workflow Index`](WORKFLOWS/index.html). After Preflight, Profile Editor 1.0 is the main interface for routine profile, My Menu, baseline, camera-reference, validation, and local-build work. The index retains specialized workflows for spreadsheets, physical-camera testing, publishing, computer handoff, and recovery. For the short end-of-day recipe—including source commit/push, both spreadsheet families, publication, and the final synchronization check—open [`FINISH_DAY.html`](FINISH_DAY.html). Normal builds and `finish-day.sh` automatically refresh all tracked HTML workflow pages from their Markdown sources. These project-help pages are synchronized through Git but are never copied into the published website.
 
+The machine-local USB camera configurator begins with a read-only EOS R5 connection probe. Canon EDSDK remains an external machine dependency and is never stored in this repository. See [`USB Camera Configuration`](WORKFLOWS/usb-camera-configuration.md) for installation-path configuration and the smoke-test command.
+
 Project governance starts in [`PROJECT_RULES.md`](PROJECT_RULES.md). Detailed technical requirements are under [`00 Master/specifications/`](00%20Master/specifications/), while operational procedures are in [`HOW_TO.md`](HOW_TO.md).
 
 ## Build locally

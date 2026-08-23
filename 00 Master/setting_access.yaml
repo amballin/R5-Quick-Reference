@@ -19,6 +19,14 @@ setting_access:
     best_access: Q screen
     menu_location: Shooting menu > ISO speed settings
     rapid_order: 110
+  exposure.iso.value:
+    best_access: Q screen
+    menu_location: Shooting 2 > ISO speed settings
+    rapid_order: 111
+  exposure.auto_iso.maximum:
+    best_access: Full camera menu
+    menu_location: Shooting 2 > ISO speed settings > Auto range
+    rapid_order: 112
   exposure.exposure_compensation:
     best_access: Rear dial / Fv exposure dials
     menu_location: Direct control; Q is the alternative
@@ -51,6 +59,18 @@ setting_access:
     best_access: SET button
     menu_location: AF1 > Eye detection; shortcut works with a compatible AF method
     rapid_order: 150
+  autofocus.touch_drag_af:
+    best_access: Set once
+    menu_location: AF1 > Touch & drag AF settings > Touch & drag AF
+    rapid_order: 170
+  autofocus.touch_drag_positioning_method:
+    best_access: Set once
+    menu_location: AF1 > Touch & drag AF settings > Positioning method
+    rapid_order: 171
+  autofocus.touch_drag_active_area:
+    best_access: Set once
+    menu_location: AF1 > Touch & drag AF settings > Active touch area
+    rapid_order: 172
   drive.mode:
     best_access: Q screen
     menu_location: Shooting menu > Drive mode
@@ -75,7 +95,67 @@ setting_access:
     best_access: MM-SWITCH; MM-FOCUS*
     menu_location: Shooting 5 > Focus bracketing
     rapid_order: 240
+  image.long_exposure_noise_reduction.value:
+    best_access: Full camera menu
+    menu_location: Shooting 4 > Long exp. noise reduction
+    rapid_order: 250
   stabilization.ibis:
     best_access: Lens IS switch; camera IS menu when available
     menu_location: Shooting menu > IS (Image Stabilizer) mode; lens mode switch when fitted
     rapid_order: 40
+  stabilization.lens_is:
+    best_access: Lens IS switch
+    menu_location: Shooting 7 > IS (Image Stabilizer) mode; physical lens control when fitted
+    rapid_order: 41
+  display.screen_info_settings:
+    best_access: Set once
+    menu_location: Shooting 7 > Shooting info. disp. > Screen info. settings
+    rapid_order: 180
+  display.histogram:
+    best_access: Set once
+    menu_location: Shooting 7 > Shooting info. disp. > Histogram disp
+    rapid_order: 181
+  display.highlight_alert:
+    best_access: Set once
+    menu_location: Playback 5 > Highlight alert
+    rapid_order: 182
+  image.quality:
+    best_access: Q screen
+    menu_location: Shooting 1 > Image quality
+    rapid_order: 190
+  image.cropping_aspect_ratio:
+    best_access: MM-SWITCH
+    menu_location: Shooting 1 > Cropping/aspect ratio
+    rapid_order: 200
+  image.white_balance:
+    best_access: Q screen
+    menu_location: Shooting 3 > White balance
+    rapid_order: 201
+  image.highlight_tone_priority:
+    best_access: Full camera menu
+    menu_location: Shooting 2 > Highlight tone priority
+    rapid_order: 202
+  image.high_iso_noise_reduction:
+    best_access: Full camera menu
+    menu_location: Shooting 4 > High ISO speed NR
+    rapid_order: 203
+  image.picture_style:
+    best_access: Q screen
+    menu_location: Shooting 3 > Picture Style
+    rapid_order: 204
+  camera_setup.custom_shooting_mode_auto_update:
+    best_access: Set once
+    menu_location: Set-up 5 > Custom shooting mode (C1-C3) > Auto update set.
+    rapid_order: 260
+  camera_setup.electronic_full_time_mf:
+    best_access: Set once
+    menu_location: AF5 > Electronic full-time MF
+    rapid_order: 173
+  camera_setup.ibis_high_res_shot:
+    best_access: Full camera menu
+    menu_location: Shooting 5 > IBIS High resolution shot
+    rapid_order: 241
+  camera_setup.continuous_af:
+    best_access: Set once
+    menu_location: AF1 > Continuous AF
+    rapid_order: 139

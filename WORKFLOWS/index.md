@@ -14,6 +14,8 @@ Open [Profile Editor](profile-editor.html) as the main interface for routine pro
 
 Open [Local Build](local-build.html) for the equivalent terminal commands, troubleshooting, or project changes outside the editor's scope. For routine generated-result review, open `Canon Camera Reference Local/Build Output/merged-build/index.html`, not intermediate card files or the Git-tracked `docs/` publication mirror. Git actions and publishing remain separate workflows.
 
+Open [USB Camera Configuration](usb-camera-configuration.html) to connect a physical EOS R5 through Canon EDSDK. The current Phase 0 command is read-only: it verifies the camera identity and connection, reports available camera information, and closes the SDK session without changing camera settings.
+
 ## 3. Record spreadsheet testing status
 
 For camera setup and physical testing, open [On-Camera Verification Testing](verification-testing.html). It opens or creates the correct machine-local tracker, explains the required test order and evidence rules, and covers the complete import and two-Mac handoff cycle.

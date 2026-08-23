@@ -27,7 +27,7 @@ Before reading project source beyond the governing and identity files, creating 
 5. Do not search sibling directories to find a better, newer, or similarly named copy.
 6. Reject the repository if its root or any parent folder is named or clearly marked `OLD`, `Backup`, `Backups`, `Archive`, `Archives`, `Build Output`, `Generated`, `Generated Output`, or `Native Wrapper`.
 7. Confirm `00 Master/project_identity.yaml` identifies the project as **Canon EOS R5 Camera Reference**, with repository role **authoritative-source** and artifact type **source-repository**.
-8. Confirm these authoritative components exist inside the resolved root: `PROJECT_RULES.md`, `00 Master/baseline.yaml`, `00 Master/schema.yaml`, `00 Master/card_layout.yaml`, `00 Master/setting_access.yaml`, `10 Profiles/`, `20 Templates/`, `50 Field Guide/required_appendices.yaml`, `50 Field Guide/Appendices/R5 Quick Reference.md`, `80 Build/build.py`, and `80 Build/validator.py`.
+8. Confirm these authoritative components exist inside the resolved root: `PROJECT_RULES.md`, `00 Master/baseline.yaml`, `00 Master/schema.yaml`, `00 Master/card_layout.yaml`, `00 Master/setting_access.yaml`, `00 Master/specifications/USB Camera Configuration Specification.md`, `10 Profiles/`, `20 Templates/`, `50 Field Guide/required_appendices.yaml`, `50 Field Guide/Appendices/R5 Quick Reference.md`, `80 Build/build.py`, and `80 Build/validator.py`.
 9. Confirm the baseline camera manufacturer and model are Canon and EOS R5 and agree with the project identity file.
 10. Reject a repository that is empty, incomplete, generated-only, ambiguously identified, or missing any required authoritative component.
 11. If any identity or authority check fails, stop and ask the project owner to open or identify the correct project. Never choose another project automatically.
@@ -52,6 +52,7 @@ Before editing, report the resolved Git project root, project identity, camera m
 - Make the smallest change that satisfies the request. Do not modify unrelated work.
 - Before changing project files, create a timestamped backup under the sibling local workspace's `Backups/` folder sufficient to restore the affected state.
 - Validate relevant YAML, documentation references, project structure, and generated behavior before publishing.
+- Isolated Camera Lab iteration may use the streamlined validation loop defined by the USB Camera Configuration Specification. This exception never replaces the normal source-validation, development-build, and full-validation sequence at the integration, Git handoff, Finish Day, or publication checkpoints defined there.
 - Publishing, committing, and pushing are separate explicit actions; do not perform them without authorization.
 - Do not install or use the GitHub CLI (`gh`) for this project. Use the established local `git` commands for version control and `80 Build/scripts/publish.sh` for explicitly authorized website publishing. Do not introduce a replacement GitHub workflow or dependency without explicit project-owner approval.
 - Before creating or switching to a new Git branch, explain why the branch may be useful, the risks and additional workflow steps it creates, and whether working directly on `main` is appropriate. Obtain explicit project-owner approval before creating or switching branches.
@@ -76,5 +77,6 @@ Architectural or permanent rule changes require explicit project-owner approval.
 - [Appendix Specification](00%20Master/specifications/Appendix%20Specification.md)
 - [Asset Specification](00%20Master/specifications/Asset%20Specification.md)
 - [Build and Validation Specification](00%20Master/specifications/Build%20and%20Validation%20Specification.md)
+- [USB Camera Configuration Specification](00%20Master/specifications/USB%20Camera%20Configuration%20Specification.md)
 
 See also [project memory](00%20Master/project_memory.md) and the [decision log](00%20Master/decision-log.md).

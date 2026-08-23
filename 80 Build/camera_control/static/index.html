@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="camera-lab-token" content="__CAMERA_LAB_TOKEN__">
+  <title>EOS R5 Camera Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-copy">
+      <p class="eyebrow">Canon Camera Reference</p>
+      <h1>EOS R5 Camera Lab</h1>
+      <p class="subtitle">A read-only workspace for building and testing the USB connection.</p>
+    </div>
+    <div class="header-tools">
+      <div class="mode-stack">
+        <span id="backend-badge" class="badge">Loading</span>
+        <span class="safety-badge">No setting writes</span>
+        <span id="camera-lab-build" class="build-badge" aria-live="polite">Loading Camera Lab build…</span>
+      </div>
+      <img class="camera-logo" src="/silver-camera-logo.png" alt="" aria-hidden="true">
+    </div>
+  </header>
+
+  <main>
+    <section class="stepper" aria-label="Camera configuration phases">
+      <div id="connect-step" class="step active"><span>1</span><strong>Connect</strong><small>In progress</small></div>
+      <div id="discover-step" class="step locked"><span>2</span><strong>Discover</strong><small>Capabilities</small></div>
+      <div id="compare-step" class="step locked"><span>3</span><strong>Compare</strong><small>Expected vs actual</small></div>
+      <div class="step locked"><span>4</span><strong>Configure</strong><small>Not enabled</small></div>
+    </section>
+
+    <section class="status-card" aria-live="polite">
+      <div class="status-heading">
+        <span id="status-dot" class="status-dot"></span>
+        <div>
+          <p class="label">Connection</p>
+          <h2 id="connection-title">Checking Camera Lab</h2>
+          <p id="connection-message">Reading the local service status…</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="discover-button" class="secondary" type="button">Discover cameras</button>
+        <button id="connect-button" class="primary" type="button">Connect</button>
+        <button id="scan-button" class="primary" type="button" hidden>Scan capabilities</button>
+        <button id="disconnect-button" class="danger" type="button" hidden>Disconnect</button>
+      </div>
+    </section>
+
+    <div id="message" class="message" role="alert" hidden></div>
+
+    <section id="camera-choice-card" class="panel" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="label">Camera selection</p>
+          <h2>Choose the EOS R5 to connect</h2>
+        </div>
+      </div>
+      <div id="camera-choices" class="camera-choices"></div>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="label">Camera</p>
+            <h2>Connected device</h2>
+          </div>
+          <button id="refresh-button" class="icon-button" type="button" aria-label="Refresh camera status">Refresh</button>
+        </div>
+        <dl class="detail-list">
+          <div><dt>Model</dt><dd id="camera-model">—</dd></div>
+          <div><dt>Body ID</dt><dd id="camera-body">—</dd></div>
+          <div><dt>Firmware</dt><dd id="camera-firmware">—</dd></div>
+          <div><dt>Power status</dt><dd id="camera-battery">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="label">Connection engine</p>
+            <h2>Canon EDSDK</h2>
+          </div>
+        </div>
+        <dl class="detail-list">
+          <div><dt>Mode</dt><dd id="sdk-mode">—</dd></div>
+          <div><dt>Version</dt><dd id="sdk-version">—</dd></div>
+          <div><dt>Location</dt><dd id="sdk-path" class="path-value">—</dd></div>
+          <div><dt>Access</dt><dd>Read-only</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <section id="capability-panel" class="panel capability-panel" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="label">Read-only discovery</p>
+          <h2>Camera capabilities</h2>
+          <p id="capability-summary">No capability scan has been run.</p>
+        </div>
+        <span class="safety-badge">Writes untested</span>
+      </div>
+      <div class="table-scroll">
+        <table class="capability-table">
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col">Readback</th>
+              <th scope="col">Profile mapping</th>
+              <th scope="col">Descriptor</th>
+              <th scope="col">Allowed values</th>
+              <th scope="col">Write status</th>
+            </tr>
+          </thead>
+          <tbody id="capability-rows"></tbody>
+        </table>
+      </div>
+      <div class="coverage-grid">
+        <section>
+          <h3>SDK-readable profile settings</h3>
+          <p id="coverage-readable-summary" class="coverage-count">—</p>
+          <ul id="coverage-readable" class="path-list"></ul>
+        </section>
+        <section>
+          <h3>Conditional comparison</h3>
+          <p id="coverage-conditional-summary" class="coverage-count">—</p>
+          <ul id="coverage-conditional" class="path-list"></ul>
+        </section>
+        <section>
+          <h3>Manual or SDK-unmapped</h3>
+          <p id="coverage-unmapped-summary" class="coverage-count">—</p>
+          <ul id="coverage-unmapped" class="path-list path-list-long"></ul>
+        </section>
+      </div>
+      <p class="capability-note">A Canon descriptor can suggest configurability, but it is not proof that this application can safely write the property. Every write remains disabled and unverified.</p>
+    </section>
+
+    <section id="comparison-panel" class="panel comparison-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="label">Phase 1 read-only comparison</p>
+          <h2>Compare a Subject/Profile Card</h2>
+          <p>Select a card after scanning the camera. Findings follow the card's visible setting order; additional settings appear below.</p>
+        </div>
+        <span class="safety-badge">No setting writes</span>
+      </div>
+      <div class="profile-controls">
+        <label for="profile-select">Subject/Profile Card</label>
+        <select id="profile-select"><option value="">Loading profiles…</option></select>
+        <button id="compare-button" class="primary" type="button" disabled>Scan &amp; compare</button>
+      </div>
+      <div id="comparison-results" hidden>
+        <div class="comparison-toolbar">
+          <label for="comparison-order">Order</label>
+          <select id="comparison-order">
+            <option value="setup" selected>Setup route</option>
+            <option value="card">Card order</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+        <p id="comparison-summary" class="comparison-summary"></p>
+        <section id="card-finding-section" class="finding-section">
+          <h3 id="card-finding-heading">Settings shown on the card</h3>
+          <p id="card-finding-description">Shown in the exact order used by the selected card.</p>
+          <div id="card-findings" class="finding-list"></div>
+        </section>
+        <section id="additional-finding-section" class="finding-section additional-findings">
+          <h3>Additional settings</h3>
+          <p>Profile and baseline settings not displayed as rows on the selected card.</p>
+          <div id="additional-findings" class="finding-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="simulation-panel" class="panel simulation-panel" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="label">Development controls</p>
+          <h2>Simulate connection conditions</h2>
+          <p>Change the camera state without needing the physical EOS R5.</p>
+        </div>
+      </div>
+      <div class="simulation-controls">
+        <label for="scenario-select">Scenario</label>
+        <select id="scenario-select"></select>
+        <button id="apply-scenario-button" class="secondary" type="button">Apply scenario</button>
+        <button id="simulate-disconnect-button" class="danger-outline" type="button">Simulate disconnect</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <p class="label">Session history</p>
+          <h2>Connection events</h2>
+        </div>
+      </div>
+      <ol id="event-log" class="event-log">
+        <li class="empty-event">No connection events yet.</li>
+      </ol>
+    </section>
+  </main>
+
+  <button id="return-to-top" class="floating-return" type="button" aria-label="Return to top" title="Return to top" hidden>
+    <span aria-hidden="true">↑</span>
+  </button>
+
+  <dialog id="recovery-dialog" class="recovery-dialog" aria-labelledby="recovery-title">
+    <div class="recovery-content">
+      <p class="label">Connection recovery</p>
+      <h2 id="recovery-title">Camera Lab could not reconnect automatically</h2>
+      <ol>
+        <li>Wake the EOS R5 or turn it off and back on.</li>
+        <li>Close EOS Utility and any other camera-control application.</li>
+        <li>Disconnect and reconnect the USB cable.</li>
+        <li>Choose <strong>Reconnect and scan</strong> below.</li>
+        <li>If recovery still fails, stop and restart Camera Lab.</li>
+      </ol>
+      <p id="recovery-detail" class="recovery-detail"></p>
+      <div class="dialog-actions">
+        <form method="dialog"><button class="secondary" type="submit">Close</button></form>
+        <button id="recovery-retry-button" class="primary" type="button">Reconnect and scan</button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer>
+    <p>Phase 1 Camera Lab • Local loopback service • Camera-setting writes disabled</p>
+  </footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>

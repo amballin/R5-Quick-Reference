@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>USB Camera Configuration</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    h3 { margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>USB Camera Configuration</h1>
+<p>Use this workflow only with the authoritative Canon EOS R5 project and a physical EOS R5 connected by USB. The current Phase 0 probe is read-only. It opens a camera session, reads available identity and health information, optionally watches for a disconnect, and closes the session. It has no camera-setting write API.</p>
+<section class="step"><h2>Develop in Camera Lab</h2>
+<p>Camera Lab is the fast standalone interface used before USB controls are integrated into the Profile Editor. It serves direct local files and does not rebuild cards, appendices, spreadsheets, the PWA, or <code>docs</code>.</p>
+<p>For normal physical-camera work, double-click <strong>Start Camera Lab.command</strong> in the repository&#x27;s top-level folder. A Terminal window opens, Camera Lab starts with the physical-camera connection, and Google Chrome opens the interface automatically.</p>
+<p>Keep that Terminal window open while using Camera Lab. Press <strong>Control-C</strong> there to stop Camera Lab cleanly. If startup fails, the window remains open so the error can be read. If port 8770 is already occupied, stop the existing Camera Lab before trying again.</p>
+<p>The equivalent Terminal command remains available for development and diagnostics:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/start-camera-lab.sh</code></pre></div>
+<p>Both launch methods use the cached machine-local Canon EDSDK helper and wait for Camera Lab to respond before opening <code>http://127.0.0.1:8770/</code> in Google Chrome.</p>
+<p>To open the simulator instead:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/start-camera-lab.sh --simulated</code></pre></div>
+<p>The underlying simulated-server command remains available for diagnostics:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 -B &quot;80 Build/camera_control/dev_server.py&quot;</code></pre></div>
+<p>Open the displayed <code>http://127.0.0.1:8770/</code> address. HTML, CSS, and JavaScript changes need only a browser refresh. Python changes need only a Camera Lab restart.</p>
+<h3>Fast validation loop</h3>
+<p>While work remains isolated to Camera Lab, its camera-control tests, the capability catalog, and these USB documents, validate with:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 -m unittest \
+  &quot;80 Build/test_camera_control_connect.py&quot; \
+  &quot;80 Build/test_camera_control_lab.py&quot; &amp;&amp; \
+python3 &quot;80 Build/validator.py&quot; --source-only</code></pre></div>
+<p>Also exercise the affected simulated state in Camera Lab and use the physical EOS R5 when the change depends on real SDK behavior. Do not run the card/PWA build merely to test an isolated Camera Lab iteration.</p>
+<p>Run the complete source-validation, development-build, and full-validation sequence when USB work enters the shared Profile Editor, touches baseline/profile/shared-build or published inputs, reaches an explicit integration checkpoint, or is about to be committed, pushed, handed to another computer, finished for the day, or published.</p>
+<p>The simulation provides ready, no-camera, multiple-camera, wrong-model, missing-property, busy, and disconnect conditions. It never loads Canon EDSDK.</p>
+<p>On the first physical-camera run, point Camera Lab at the Canon-provided framework:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 -B &quot;80 Build/camera_control/dev_server.py&quot; \
+  --backend edsdk \
+  --sdk-path &quot;/path/to/EDSDK.framework&quot;</code></pre></div>
+<p>Camera Lab binds only to local loopback, rejects non-local Host headers, requires a per-process request token for actions, and disables camera-setting writes. Stop it with Control-C.</p>
+<p>On macOS, that first run builds and ad-hoc signs a minimal machine-local <code>EDSDKHelper.app</code>, embeds a local framework copy, and stores the verified app under the sibling <code>Local/SDK</code> workspace outside Git. Later runs may point <code>--sdk-path</code> directly at that cached app:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 -B &quot;80 Build/camera_control/dev_server.py&quot; \
+  --backend edsdk \
+  --sdk-path &quot;/path/to/project Local/SDK/EDSDKHelper.app&quot;</code></pre></div>
+<p>Only the helper has the narrowly scoped library-validation entitlement. Python, Camera Lab, and macOS security settings are not modified.</p>
+</section>
+<section class="step"><h2>Scan core capabilities</h2>
+<p>After Camera Lab shows <strong>EOS R5 connected</strong>, select <strong>Scan capabilities</strong>. The read-only scan checks the reviewed properties defined in <code>00 Master/camera_capabilities.yaml</code> and reports current raw values, data types, Canon descriptor access, descriptor forms, and allowed raw values. When a Subject/Profile Card is already selected, the scan automatically refreshes that profile comparison too. The current 22-property set includes the original core 15 plus aspect ratio, continuous AF, eye detection, AF method, IBIS high-resolution shot, subject-detection discovery, and image-metadata noise-reduction discovery.</p>
+<p>Camera Lab acquires Canon property-change events during its regular connection checks and again immediately before every scan. This ensures a setting changed directly on the camera is reread instead of leaving the prior comparison value displayed.</p>
+<p>If the camera slept or its session stopped responding, Camera Lab closes the stale session, reconnects once, reconfirms the EOS R5 identity, and retries the scan automatically. If that recovery fails, follow the popup instructions to wake or power-cycle the camera, close EOS Utility, reconnect USB, and retry. Restart Camera Lab if the guided retry still fails.</p>
+<p>Some Canon properties require a documented activation request before the camera session opens. Camera Lab performs that request only to expose the property for reading; it does not change the camera-menu setting, and activation does not count as write verification.</p>
+<p>The verified EOS R5 firmware 2.2.1 scan reads 20 of the 22 reviewed properties. Subject detection remains manual or SDK-unmapped because the original EOS R5 did not return a readable value in the tested context. The noise-reduction discovery row is expected to be unreadable from the camera because Canon defines that identifier on image metadata.</p>
+<p>Interpret the results conservatively:</p>
+<ul>
+<li><strong>Readable</strong> means the current value was returned by the connected camera in this session.</li>
+<li><strong>Descriptor available</strong> means Canon returned metadata or allowed raw values for the current camera context.</li>
+<li><strong>Unverified</strong> in the write column means Camera Lab did not attempt a write. A read/write descriptor alone is not proof that the project can set the property safely.</li>
+<li><strong>Unavailable</strong> may be mode-, lens-, card-, or equipment-dependent. Record the context before classifying it as unsupported.</li>
+</ul>
+<p>Camera Lab shows Canon’s human-readable label and the original raw SDK value together. Labels come from the installed Canon SDK headers and supplied sample tables. <code>Raw N</code> means the project has preserved the evidence but has not yet approved a human-readable interpretation.</p>
+<p>The coverage section separates baseline settings into:</p>
+<ul>
+<li><strong>SDK-readable profile settings</strong> with a direct reviewed property mapping;</li>
+<li><strong>Conditional comparison</strong> where a value depends on mode, lens, a target range, or situational profile guidance; and</li>
+<li><strong>Manual or SDK-unmapped</strong> settings that require later property discovery or a manual checklist.</li>
+</ul>
+<p>The silver camera logo displayed by Camera Lab is served directly from the canonical <code>60 Assets/Card Logos/png/Silver Logo.png</code> asset; it is not a duplicate Camera Lab image.</p>
+<p>The tracked catalog must not contain a camera body identifier. Physical observations must record EOS R5 firmware, EDSDK version, date, camera mode and relevant equipment context before they are accepted as capability evidence.</p>
+</section>
+<section class="step"><h2>Compare a Subject/Profile Card</h2>
+<p>After connecting, select one Subject/Profile Card and choose <strong>Scan &amp; compare</strong>. This control always performs a fresh capability scan before comparing, so a camera-side change is reread without scrolling back to the connection controls. Permanent reference cards such as Camera Buttons and My Menu are not offered because they are not complete camera-state targets.</p>
+<p>The profile choice names the intended registered-mode foundation. For example, <strong>C1 – Wildlife</strong> means set the camera to C1 and compare it with the Wildlife card. A derived choice such as <strong>C1 – Wildlife → People</strong> means begin from the C1 Wildlife registration, then compare against the People target.</p>
+<p>The first findings section follows the exact visible setting-row order used by the selected card. Combined card rows retain their grouped presentation and show their underlying setting findings. <strong>Additional settings</strong> then lists every remaining resolved baseline/profile setting in canonical card-layout order.</p>
+<p>Each finding is shown in four columns: <strong>Card Expected</strong>, <strong>Camera</strong>, <strong>Status</strong>, and <strong>Optimal Access Path</strong>. Card Expected shows both the setting and its expected value, using the same My Menu-derived value color as the card editor. Access methods are listed in fastest practical order: assigned physical button, dial, switch, or direct control; Q screen; the selected card&#x27;s My Menu route; then the fastest standard menu path. My Menu is not placed first when a faster direct control exists.</p>
+<p>Every camera setting includes a reviewed way to reach it. Focus Bracketing uses <strong>My Menu: SWITCH</strong> before its Shooting 5 menu route. Image Quality, White Balance, and Picture Style identify the <strong>Q screen</strong> as their quickest route. Rows that contain authored notes, strategy, or verification status are explicitly identified as reference guidance rather than camera settings.</p>
+<p>Status is <strong>Match</strong>, <strong>Different</strong>, <strong>Equivalent</strong>, <strong>Unreadable</strong>, <strong>Conditional</strong>, <strong>Manual</strong>, or <strong>Not applicable</strong>. The comparison reads the existing capability scan and never changes a camera setting. Manual checklist actions and guided correction remain later Phase 1 work.</p>
+<p>Use <strong>Order</strong> to switch among Setup route, the card&#x27;s original row order, and status order. Status order places Different, Unreadable, Conditional, Manual, Equivalent, Match, and Not applicable findings in that sequence. Manual findings are then grouped by buttons and direct controls, My Menu tabs in the saved tab order (for example SWITCH and AF Case), standard menu, and items without a reviewed route. The floating up arrow returns to the top of Camera Lab after scrolling.</p>
+<p><strong>Setup route</strong> is the default when configuring the camera. It combines card rows and additional settings into one working sequence: physical controls, Q screen, each saved My Menu tab in item order, then each Canon menu family and page. Actionable findings appear first, with status priority inside each route group, so each tab or page needs to be visited only once. Equivalent, matching, and not-applicable findings follow under clearly labeled no-change groups. Switch back to <strong>Card order</strong> when you need the card&#x27;s presentation or <strong>Status</strong> when you need a discrepancy review.</p>
+</section>
+<section class="step"><h2>Before connecting</h2>
+<ol>
+<li>Use a known-good data-capable USB cable.</li>
+<li>Turn the camera on and place it in still-photo mode.</li>
+<li>Close EOS Utility and every other application that may own the camera session.</li>
+<li>Ensure the battery is adequately charged or use supported external power.</li>
+<li>Keep the camera awake while testing.</li>
+</ol>
+</section>
+<section class="step"><h2>Locate Canon EDSDK</h2>
+<p>The repository does not contain or redistribute Canon SDK files. Point the probe at the EDSDK framework binary or framework directory supplied by Canon:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>export CANON_EDSDK_FRAMEWORK=&quot;/path/to/EDSDK.framework&quot;</code></pre></div>
+<p>You may instead pass the location for one run with <code>--sdk-path</code>. Do not place a personal absolute path in repository source or documentation.</p>
+</section>
+<section class="step"><h2>Connect and inspect</h2>
+<p>From the repository root:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/camera_control/connect_probe.py&quot;</code></pre></div>
+<p>For structured diagnostic output:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/camera_control/connect_probe.py&quot; --json</code></pre></div>
+<p>When more than one Canon camera is connected, the command stops and prints the available indexes. Rerun with the intended index:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/camera_control/connect_probe.py&quot; --camera-index 0</code></pre></div>
+<p>To keep the session open briefly and detect an unplug or camera shutdown:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/camera_control/connect_probe.py&quot; --watch-seconds 15</code></pre></div>
+<p>The probe accepts the EOS R5 names returned by the SDK (<code>EOS R5</code> and <code>Canon EOS R5</code>) after whitespace normalization. It rejects another Canon model rather than assuming compatibility.</p>
+</section>
+<section class="step"><h2>Expected result</h2>
+<p>A successful run reports:</p>
+<ul>
+<li>EOS R5 product identity;</li>
+<li>body or serial identifier when the camera exposes it;</li>
+<li>firmware version when available;</li>
+<li>raw battery value when available;</li>
+<li>EDSDK binary path and framework version when available; and</li>
+<li>confirmation that the camera session closed cleanly.</li>
+</ul>
+<p>Unavailable optional properties are displayed as unavailable. They do not become inferred values.</p>
+</section>
+<section class="step"><h2>Troubleshooting</h2>
+<ul>
+<li><strong>SDK not found:</strong> set <code>CANON_EDSDK_FRAMEWORK</code> or use <code>--sdk-path</code> with the Canon-provided framework.</li>
+<li><strong>No camera found:</strong> check cable capability, camera power, sleep state, and USB connection.</li>
+<li><strong>Camera session could not open:</strong> close EOS Utility and other tethering applications, then reconnect the camera.</li>
+<li><strong>More than one camera:</strong> rerun with the reported <code>--camera-index</code>.</li>
+<li><strong>Wrong model:</strong> stop. This project must not configure a different camera.</li>
+<li><strong>Disconnected while watching:</strong> restore the physical connection and rerun from the beginning; do not infer that the previous session remains valid.</li>
+<li><strong>Scan fails after camera sleep or timeout:</strong> Camera Lab retries one clean reconnection automatically. If the recovery popup appears, follow its steps and choose <strong>Reconnect and scan</strong>.</li>
+</ul>
+<p>Phase 1 readback comparison and later guarded writes remain unavailable until their capability mapping and physical-camera tests are complete.</p>
+</section>
+    <footer>Generated from WORKFLOWS/usb-camera-configuration.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

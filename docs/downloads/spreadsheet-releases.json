@@ -1,19 +1,19 @@
 {
   "version": 1,
-  "generated": "2026-08-21T13:03:52.968519-04:00",
+  "generated": "2026-08-22T20:12:25.642383-04:00",
   "targets": {
     "matrix": {
       "workbook_revision": 4,
-      "source_fingerprint": "sha256:13fadaa3dde4c54235ec041f567d85882a71fce7b16158236df27efd6c7b2985",
-      "prepared": "2026-08-21T13:03:36.953101-04:00",
+      "source_fingerprint": "sha256:49f8dd091816e0a675ed437fe45976ecfd5fd8678a8512d6b597c60bddf096e8",
+      "prepared": "2026-08-22T20:09:48.892088-04:00",
       "files": {
         "xlsx": {
           "name": "Subject Settings Matrix.xlsx",
-          "sha256": "1a1e3eeab1e62196f03950584b05150ed85b1d056bed67b6fd9af7af0ecf0f6b"
+          "sha256": "0102527b9584040412395a293f0b629748d2d3aa6f4dcb9b96f76cdb7422cde6"
         },
         "numbers": {
           "name": "Subject Settings Matrix.numbers",
-          "sha256": "a5acf5b5a5036ce5c99f8bc03e6f0a78f78266ef3c9383b322ca4ba9ea8f6ba0"
+          "sha256": "f3740385c81e4b149d2fa38d1cc86b78835052cc7a795cbed0499e9d76940fcf"
         }
       }
     },

@@ -59,6 +59,7 @@ LABEL = {
     "image.quality": "Image Quality",
     "image.cropping_aspect_ratio": "Crop / Aspect",
     "image.white_balance": "White Balance",
+    "image.picture_style": "Picture Style",
     "image.focus_bracketing": "Focus Bracketing",
     "image.highlight_tone_priority": "Highlight Tone Priority",
     "image.high_iso_noise_reduction": "High ISO NR",

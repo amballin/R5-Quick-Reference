@@ -16,6 +16,7 @@ PAGES = {
     "editor-user-guide": "Profile Editor User Guide",
     "spreadsheets": "Spreadsheet Workflows",
     "verification-testing": "On-Camera Verification Testing",
+    "usb-camera-configuration": "USB Camera Configuration",
     "publish": "Publish the Website",
     "recovery": "Recovery and Troubleshooting",
 }

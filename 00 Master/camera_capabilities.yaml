@@ -1,0 +1,385 @@
+schema_version: 1
+catalog_status: expanded_scan_verified
+camera:
+  manufacturer: Canon
+  model: EOS R5
+scope: reviewed_edsdk_properties
+write_policy:
+  enabled: false
+  descriptor_is_write_proof: false
+  required_evidence: sdk_written_and_verified
+properties:
+  - key: battery_level
+    label: Battery / power
+    edsdk_property_id: 0x00000008
+    simulated_value_raw: 4294967295
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [battery or external power source]
+  - key: storage_destination
+    label: Storage destination
+    edsdk_property_id: 0x0000000b
+    simulated_value_raw: 2
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [camera versus tethered storage context]
+  - key: image_quality
+    label: Image quality
+    edsdk_property_id: 0x00000100
+    simulated_value_raw: 6553359
+    profile_paths: [image.quality]
+    capability_classification: sdk_readable
+    dependencies: [still-photo mode]
+  - key: white_balance
+    label: White balance
+    edsdk_property_id: 0x00000106
+    simulated_value_raw: 0
+    profile_paths: [image.white_balance]
+    capability_classification: sdk_readable
+    dependencies: [still-photo mode]
+  - key: color_space
+    label: Color space
+    edsdk_property_id: 0x0000010d
+    simulated_value_raw: 1
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [image format and HDR PQ context]
+  - key: picture_style
+    label: Picture style
+    edsdk_property_id: 0x00000114
+    simulated_value_raw: 129
+    profile_paths: [image.picture_style]
+    capability_classification: sdk_readable
+    dependencies: [still-photo mode]
+  - key: exposure_mode
+    label: Exposure mode
+    edsdk_property_id: 0x00000400
+    simulated_value_raw: 3
+    profile_paths: [exposure.mode]
+    capability_classification: sdk_readable
+    dependencies: [physical mode dial and C1-C3 recall state]
+  - key: drive_mode
+    label: Drive mode
+    edsdk_property_id: 0x00000401
+    simulated_value_raw: 0
+    profile_paths: [drive.mode]
+    capability_classification: sdk_readable
+    dependencies: [shutter mode and special shooting features]
+  - key: iso_speed
+    label: ISO speed
+    edsdk_property_id: 0x00000402
+    simulated_value_raw: 72
+    profile_paths: [exposure.iso.mode, exposure.iso.value]
+    capability_classification: sdk_readable
+    dependencies: [Auto ISO versus fixed ISO context]
+  - key: metering_mode
+    label: Metering mode
+    edsdk_property_id: 0x00000403
+    simulated_value_raw: 3
+    profile_paths: [exposure.metering]
+    capability_classification: sdk_readable
+    dependencies: [shooting mode]
+  - key: af_mode
+    label: AF operation
+    edsdk_property_id: 0x00000404
+    simulated_value_raw: 0
+    profile_paths: [autofocus.operation]
+    capability_classification: sdk_readable
+    dependencies: [lens AF-MF switch and shooting mode]
+  - key: aperture
+    label: Aperture
+    edsdk_property_id: 0x00000405
+    simulated_value_raw: 48
+    profile_paths: [lens.aperture.target]
+    capability_classification: conditional
+    dependencies: [attached lens, focal length, shooting mode, camera-selected aperture strategy]
+  - key: shutter_speed
+    label: Shutter speed
+    edsdk_property_id: 0x00000406
+    simulated_value_raw: 104
+    profile_paths: [shutter.target]
+    capability_classification: conditional
+    dependencies: [shooting mode, target may be Auto or a recommended range]
+  - key: exposure_compensation
+    label: Exposure compensation
+    edsdk_property_id: 0x00000407
+    simulated_value_raw: 0
+    profile_paths: [exposure.exposure_compensation]
+    capability_classification: conditional
+    dependencies: [shooting mode, profile target may instruct situational adjustment]
+  - key: available_shots
+    label: Available shots
+    edsdk_property_id: 0x0000040a
+    simulated_value_raw: 1200
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [installed cards, image quality, available capacity]
+  - key: noise_reduction
+    label: Noise reduction (image metadata property)
+    edsdk_property_id: 0x00000411
+    simulated_value_raw: 0
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [Canon documents this property for EdsImageRef rather than EdsCameraRef]
+  - key: ibis_high_res_shot
+    label: IBIS high-resolution shot
+    edsdk_property_id: 0x000004e0
+    simulated_value_raw: 0
+    profile_paths: [camera_setup.ibis_high_res_shot]
+    capability_classification: sdk_readable
+    dependencies: [EOS R5, compatible shooting context]
+  - key: af_method
+    label: AF method / area
+    edsdk_property_id: 0x0000050e
+    simulated_value_raw: 2
+    profile_paths: [autofocus.method]
+    capability_classification: sdk_readable
+    dependencies: [live view and AF operating context]
+  - key: cropping_aspect_ratio
+    label: Cropping / aspect ratio
+    edsdk_property_id: 0x01000431
+    simulated_value_raw: 0
+    profile_paths: [image.cropping_aspect_ratio]
+    capability_classification: sdk_readable
+    dependencies: [Canon limited-property activation before opening the session]
+  - key: continuous_af
+    label: Preview AF / continuous AF
+    edsdk_property_id: 0x01000433
+    simulated_value_raw: 0
+    profile_paths: [camera_setup.continuous_af]
+    capability_classification: sdk_readable
+    dependencies: [Canon limited-property activation before opening the session]
+  - key: eye_detection
+    label: Eye detection
+    edsdk_property_id: 0x01000455
+    simulated_value_raw: 1
+    profile_paths: [autofocus.eye_detection]
+    capability_classification: sdk_readable
+    dependencies: [Face + Tracking AF method, Canon limited-property activation before opening the session]
+  - key: subject_detection
+    label: Subject to detect
+    edsdk_property_id: 0x01000468
+    simulated_value_raw: 2
+    profile_paths: []
+    capability_classification: context_only
+    dependencies: [original EOS R5 support unresolved, Canon limited-property activation before opening the session]
+observations:
+  - observed_on: 2026-08-22
+    evidence_method: sdk_verified
+    camera_firmware: 2.2.1
+    edsdk_framework_version: 13.20.20.0
+    read_only: true
+    write_testing_performed: false
+    context:
+      exposure_mode_raw: 1
+      storage_destination_raw: 1
+      power: external
+      lens: unrecorded
+      flash: unrecorded
+      card_configuration: unrecorded
+    summary:
+      total: 22
+      readable: 20
+      unreadable: 2
+      descriptors_available: 22
+    properties:
+      - key: battery_level
+        read_status: sdk_verified
+        data_type: int32
+        value_raw: -1
+        descriptor_access_raw: 0
+        descriptor_access: read
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: storage_destination
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 1
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [1, 3, 1, 3, 2]
+        write_classification: unverified
+      - key: image_quality
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 6553359
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [1310479, 1244943, 18087695, 18022159, 236191503, 236125967, 252968719, 6553619, 6553618, 6553875, 6553874, 6557203, 6557202, 6557459, 6488083, 6488082, 6488339, 6488338, 6491667, 6491666, 6491923, 6618895, 6553359]
+        write_classification: unverified
+      - key: white_balance
+        read_status: sdk_verified
+        data_type: int32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 23, 1, 8, 2, 3, 4, 5, 6, 9]
+        write_classification: unverified
+      - key: color_space
+        read_status: sdk_verified
+        data_type: int32
+        value_raw: 2
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [1, 2]
+        write_classification: unverified
+      - key: picture_style
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 136
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [135, 129, 130, 131, 136, 132, 133, 134, 33, 34, 35]
+        write_classification: unverified
+      - key: exposure_mode
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 1
+        descriptor_access_raw: 1
+        descriptor_access: write
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: drive_mode
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 4
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 18, 4, 5, 16, 17]
+        write_classification: unverified
+      - key: iso_speed
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 136
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144]
+        write_classification: unverified
+      - key: metering_mode
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 3
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [3, 4, 1, 5]
+        write_classification: unverified
+      - key: af_mode
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 1
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 1]
+        write_classification: unverified
+      - key: aperture
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 8
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: shutter_speed
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 139
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [16, 19, 21, 24, 27, 29, 32, 35, 37, 40, 43, 45, 48, 51, 53, 56, 59, 61, 64, 67, 69, 72, 75, 77, 80, 83, 85, 88, 91, 93, 96, 99, 101, 104, 107, 109, 112, 115, 117, 120, 123, 125, 128, 131, 133, 136, 139, 141, 144, 147, 149, 152, 155, 157, 160]
+        write_classification: unverified
+      - key: exposure_compensation
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [232, 235, 237, 240, 243, 245, 248, 251, 253, 0, 3, 5, 8, 11, 13, 16, 19, 21, 24]
+        write_classification: unverified
+      - key: available_shots
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 3623
+        descriptor_access_raw: 0
+        descriptor_access: read
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: noise_reduction
+        read_status: unreadable
+        read_error: 80
+        data_type: other
+        value_raw: null
+        descriptor_access_raw: 0
+        descriptor_access: read
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: ibis_high_res_shot
+        read_status: sdk_verified
+        data_type: int32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 1]
+        write_classification: unverified
+      - key: af_method
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 1
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [2, 10, 1, 5, 6]
+        write_classification: unverified
+      - key: cropping_aspect_ratio
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [0, 13, 1, 2, 7]
+        write_classification: unverified
+      - key: continuous_af
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: [1, 0]
+        write_classification: unverified
+      - key: eye_detection
+        read_status: sdk_verified
+        data_type: uint32
+        value_raw: 0
+        descriptor_access_raw: 3
+        descriptor_access: unknown
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified
+      - key: subject_detection
+        read_status: unreadable
+        read_error: 7
+        data_type: other
+        value_raw: null
+        descriptor_access_raw: 0
+        descriptor_access: read
+        descriptor_form: 0
+        allowed_values_raw: []
+        write_classification: unverified

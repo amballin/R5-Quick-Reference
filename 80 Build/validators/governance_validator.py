@@ -14,6 +14,7 @@ GOVERNING_FILES = [
     "00 Master/specifications/Appendix Specification.md",
     "00 Master/specifications/Asset Specification.md",
     "00 Master/specifications/Build and Validation Specification.md",
+    "00 Master/specifications/USB Camera Configuration Specification.md",
     "README.md",
     "HOW_TO.md",
 ]

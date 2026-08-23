@@ -55,6 +55,7 @@ REQUIRED_DISPLAY_ORDER = [
     "image.quality",
     "image.cropping_aspect_ratio",
     "image.white_balance",
+    "image.picture_style",
     "image.highlight_tone_priority",
     "image.high_iso_noise_reduction",
     "camera_setup.custom_shooting_mode_auto_update",
