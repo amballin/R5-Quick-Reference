@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Rapid Setup Ordering on Generated Cards
+
+**Status:** Accepted
+**Date:** 2026-08-22
+
+Organize generated cards around efficient in-field camera updates without changing the baseline-plus-overrides profile architecture. Subject cards with a C1–C3 foundation begin with a compact differences-only **Change from Cx [source card]** route, grouped by buttons/dials/physical switches, Q screen, each persisted My Menu tab, and then Canon menu page. Preserve the existing complete shooting-oriented Settings table beneath it.
+
+Render the complete visible settings on Camera Defaults and Camera Setup Essentials in that same rapid setup sequence. Derive route grouping and order from the shared setting-access metadata, persisted My Menu layout, and Canon settings catalog; do not author presentation order or duplicate settings in profile YAML.
+
 ## Streamlined Camera Lab Development Loop
 
 **Status:** Accepted

@@ -6,9 +6,14 @@ from urllib.parse import quote
 
 from validators.common import load_yaml_checked
 from site_navigation import SITE_NAV_CSS, site_navigation
-from cx_route_analysis import analyze_selected_foundation, row_requires_change
+from cx_route_analysis import (
+    analyze_selected_foundation,
+    represented_paths,
+    row_requires_change,
+)
+from my_menu import load_my_menu, used_tabs
 from my_menu_colors import load_my_menu_colors, menu_color
-from my_menu_reference import reference_rows as my_menu_reference_rows
+from my_menu_reference import catalog_items, reference_rows as my_menu_reference_rows
 
 from utilities import flatten
 
@@ -369,6 +374,217 @@ def table(profile, merged, icon_manager=None, paths=None, baseline=None):
     return html + "</table>"
 
 
+def rapid_setup_rows(profile, merged, paths, changed_paths=None):
+    """Return visible card rows grouped in practical on-camera setup order."""
+    rows = settings_rows(profile, merged, paths)
+    if changed_paths is not None:
+        rows = [row for row in rows if row_requires_change(row["key"], changed_paths)]
+    access_config = (
+        (load_yaml_checked(paths.setting_access_file) or {}).get("setting_access") or {}
+    )
+    saved_routes = _saved_my_menu_routes(paths, access_config)
+    routed = []
+    for original_order, row in enumerate(rows):
+        route = _primary_setup_route(row["key"], access_config, saved_routes)
+        routed.append({**row, "route": route, "original_order": original_order})
+    return sorted(
+        routed,
+        key=lambda row: (
+            row["route"]["group_order"],
+            row["route"]["item_order"],
+            row["route"]["rapid_order"],
+            row["original_order"],
+        ),
+    )
+
+
+def rapid_setup_table(
+    profile,
+    merged,
+    icon_manager=None,
+    paths=None,
+    baseline=None,
+    changed_paths=None,
+    show_change_column=False,
+):
+    rows = rapid_setup_rows(profile, merged, paths, changed_paths)
+    change_summary = field_setup_change_summary(profile, merged, baseline, paths)
+    access_classes = field_setup_setting_classes(profile, merged, paths)
+    table_class = "rapid-setup-table"
+    if show_change_column and change_summary:
+        table_class += " has-change-column"
+    html = f'<div class="rapid-setup"><table class="{table_class}">'
+    current_group = None
+    for row in rows:
+        route = row["route"]
+        if route["group_key"] != current_group:
+            group_style = (
+                f' style="color:{escape(route["color"])}"' if route.get("color") else ""
+            )
+            colspan = 3 if show_change_column and change_summary else 2
+            html += (
+                f'<tr class="rapid-setup-group"><th colspan="{colspan}" scope="rowgroup"{group_style}>'
+                f'{escape(route["group_label"])}</th></tr>'
+            )
+            current_group = route["group_key"]
+        rendered_label = row["label"]
+        if icon_manager is not None:
+            rendered_label = icon_manager.icon_html(row["key"], row["label"], row["value"])
+        if route.get("detail"):
+            rendered_label += (
+                f'<small class="rapid-setup-detail">{escape(route["detail"])}</small>'
+            )
+        access_class = access_classes.get(row["key"])
+        value_class = f"field-value {access_class}" if access_class else "field-value"
+        value_style = f' style="color:{escape(route["color"])}"' if route.get("color") else ""
+        html += (
+            f'<tr><td class="field-label">{rendered_label}</td>'
+            f'<td class="{value_class}"{value_style}>{escape(str(row["value"]))}</td>'
+        )
+        if show_change_column and change_summary:
+            changed = row_requires_change(row["key"], change_summary["changed_paths"])
+            if changed:
+                label = escape(change_summary["change_label"])
+                change_style = (
+                    f' style="color:{escape(route["color"])}"' if route.get("color") else ""
+                )
+                html += (
+                    f'<td class="field-change"{change_style} title="{label}" aria-label="{label}">'
+                    '<span aria-hidden="true">Δ</span></td>'
+                )
+            else:
+                html += '<td class="field-change" aria-hidden="true"></td>'
+        html += "</tr>"
+    return html + "</table></div>"
+
+
+def _saved_my_menu_routes(paths, access_config):
+    items = catalog_items(paths)
+    configuration = load_my_menu(paths, items)
+    colors = load_my_menu_colors(paths)
+    mapped = {}
+    for tab_order, tab in enumerate(used_tabs(configuration)):
+        tab_name = tab["name"]
+        for item_order, item_id in enumerate(tab["items"]):
+            item = items[item_id]
+            setting_path = item.get("setting_path")
+            if not setting_path:
+                item_label = _normalize_setup_text(item.get("label"))
+                setting_path = next(
+                    (
+                        path
+                        for path, access in access_config.items()
+                        if item_label
+                        and item_label in _normalize_setup_text(access.get("menu_location"))
+                    ),
+                    None,
+                )
+            if not setting_path:
+                continue
+            mapped.setdefault(setting_path, []).append(
+                {
+                    "kind": "my_menu",
+                    "group_key": f"my-menu-{tab_order}",
+                    "group_label": f"My Menu → {tab_name}",
+                    "group_order": 2000 + tab_order,
+                    "item_order": item_order,
+                    "color": menu_color(colors, tab_name, tab_order),
+                    "detail": "",
+                }
+            )
+    return mapped
+
+
+def _primary_setup_route(row_key, access_config, saved_routes):
+    candidates = []
+    rapid_orders = []
+    for path in represented_paths(row_key):
+        access = access_config.get(path) or {}
+        rapid_orders.append(access.get("rapid_order", 9999))
+        for label in _route_segments(access.get("best_access")):
+            normalized = label.casefold()
+            if normalized.startswith("mm-") or "c1-c3 registered profile" in normalized:
+                continue
+            if normalized == "set once":
+                continue
+            if "menu" in normalized and "q screen" not in normalized:
+                continue
+            if "q screen" in normalized or normalized.startswith("q "):
+                candidates.append(
+                    {
+                        "kind": "quick",
+                        "group_key": "quick",
+                        "group_label": "Q screen",
+                        "group_order": 1000,
+                        "item_order": 0,
+                        "color": "",
+                        "detail": "",
+                    }
+                )
+            else:
+                candidates.append(
+                    {
+                        "kind": "direct",
+                        "group_key": "direct",
+                        "group_label": "Buttons, dials & switches",
+                        "group_order": 0,
+                        "item_order": 0,
+                        "color": "",
+                        "detail": label,
+                    }
+                )
+        candidates.extend(saved_routes.get(path) or [])
+        for label in _route_segments(access.get("menu_location")):
+            if label.casefold().startswith("my menu") or ">" not in label:
+                continue
+            page = label.split(">", 1)[0].strip()
+            candidates.append(
+                {
+                    "kind": "menu",
+                    "group_key": f'menu-{_normalize_setup_text(page)}',
+                    "group_label": page,
+                    "group_order": 3000 + _menu_page_order(label),
+                    "item_order": 0,
+                    "color": "",
+                    "detail": "",
+                }
+            )
+    route = min(
+        candidates,
+        key=lambda item: (item["group_order"], item["item_order"]),
+        default={
+            "kind": "unmapped",
+            "group_key": "unmapped",
+            "group_label": "Other settings",
+            "group_order": 9000,
+            "item_order": 0,
+            "color": "",
+            "detail": "",
+        },
+    )
+    return {**route, "rapid_order": min(rapid_orders or [9999])}
+
+
+def _route_segments(value):
+    return [part.strip() for part in str(value or "").split(";") if part.strip()]
+
+
+def _normalize_setup_text(value):
+    text = str(value or "").casefold().replace("→", ">").replace("shooting", "shoot")
+    return re.sub(r"[^a-z0-9]+", " ", text).strip()
+
+
+def _menu_page_order(label):
+    page = label.split(">", 1)[0].strip()
+    match = re.match(r"^(Shooting|AF|Playback|Set-up)(?: menu)?\s*(\d+)?", page, re.I)
+    if not match:
+        return 4900
+    family = {"shooting": 0, "af": 1, "playback": 2, "set-up": 3}.get(
+        match.group(1).casefold(), 4
+    )
+    return family * 100 + (int(match.group(2)) if match.group(2) else 90)
+
+
 def bullets(items):
     return "<ul>" + "".join(f"<li>{item}</li>" for item in items) + "</ul>"
 
@@ -437,8 +653,47 @@ def card_note_items(profile, paths=None, merged=None):
 
 
 def settings_section(profile, merged, icon_manager=None, paths=None, baseline=None):
-    rendered = f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths, baseline)}"
     change_summary = field_setup_change_summary(profile, merged, baseline, paths)
+    if is_camera_setup(profile) or is_camera_defaults(profile):
+        rendered = (
+            "<h2>Rapid Camera Setup</h2>"
+            + rapid_setup_table(
+                profile,
+                merged,
+                icon_manager,
+                paths,
+                baseline,
+                show_change_column=True,
+            )
+        )
+        if change_summary:
+            label = escape(change_summary["legend_label"])
+            rendered += (
+                '<p class="field-change-legend">'
+                '<span aria-hidden="true">Δ</span> '
+                f"{label}</p>"
+            )
+        return rendered
+
+    rendered = ""
+    if change_summary and change_summary["start"]:
+        foundation = escape(change_summary["foundation_label"])
+        rendered += f"<h2>Change from {foundation}</h2>"
+        if change_summary["changed_paths"]:
+            rendered += rapid_setup_table(
+                profile,
+                merged,
+                icon_manager,
+                paths,
+                baseline,
+                changed_paths=change_summary["changed_paths"],
+                show_change_column=True,
+            )
+        else:
+            rendered += (
+                '<p class="rapid-setup-empty">No camera changes are needed from this foundation.</p>'
+            )
+    rendered += f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths, baseline)}"
     if change_summary:
         label = escape(change_summary["legend_label"])
         rendered += (

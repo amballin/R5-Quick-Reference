@@ -20,7 +20,7 @@ from cx_route_analysis import (
     analyze_selected_foundation,
     row_requires_change,
 )
-from html_renderer import settings_section, table
+from html_renderer import rapid_setup_rows, settings_section, table
 from profile_loader import load_baseline, load_yaml
 
 
@@ -156,6 +156,40 @@ class CxCardIndicatorIntegrationTests(unittest.TestCase):
         merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
         html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
         self.assertIn("Δ</span> Change from C1 Wildlife", html)
+
+    def test_subject_card_leads_with_changed_rows_in_setup_route_order(self):
+        profile = load_yaml(self.paths.profile_file("People"))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
+        change_section, settings = html.split("<h2>Settings</h2>", 1)
+        self.assertIn("<h2>Change from C1 Wildlife</h2>", change_section)
+        self.assertIn("Q screen", change_section)
+        self.assertIn("My Menu → SWITCH", change_section)
+        self.assertLess(change_section.index("Q screen"), change_section.index("My Menu → SWITCH"))
+        self.assertIn("Subject Detection", change_section)
+        self.assertNotIn("Image Stabilization", change_section)
+        self.assertIn("Image Stabilization", settings)
+
+    def test_foundation_card_reports_that_no_camera_changes_are_needed(self):
+        profile = load_yaml(self.paths.profile_file("Wildlife"))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
+        self.assertIn("<h2>Change from C1 Wildlife</h2>", html)
+        self.assertIn("No camera changes are needed from this foundation.", html)
+
+    def test_setup_cards_use_full_rapid_route_instead_of_shooting_order(self):
+        profile = load_yaml(self.paths.profile_file("Camera Defaults"))
+        merged = merge(self.baseline["defaults"], profile.get("overrides") or {})
+        rows = rapid_setup_rows(profile, merged, self.paths)
+        groups = [row["route"]["group_label"] for row in rows]
+        html = settings_section(profile, merged, paths=self.paths, baseline=self.baseline)
+        self.assertIn("<h2>Rapid Camera Setup</h2>", html)
+        self.assertNotIn("<h2>Settings</h2>", html)
+        self.assertIn("Buttons, dials & switches", groups)
+        self.assertIn("Q screen", groups)
+        self.assertIn("My Menu → SWITCH", groups)
+        self.assertLess(groups.index("Buttons, dials & switches"), groups.index("Q screen"))
+        self.assertLess(groups.index("Q screen"), groups.index("My Menu → SWITCH"))
 
     def test_every_editable_profile_card_renders_change_column(self):
         rendered_routes = 0
