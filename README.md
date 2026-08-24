@@ -26,7 +26,7 @@ On macOS, build the machine-local **R5 Camera Lab.app** and **R5 Profile Editor.
 ./80\ Build/scripts/build-app-wrappers.sh
 ```
 
-The apps are written to the sibling `<repository folder name> Local/Applications/` folder. **R5 Camera Lab.app** runs Camera Lab without opening Terminal and records diagnostic output under the machine-local `Logs/` folder. **R5 Profile Editor.app** currently opens its established launcher in Terminal. Rebuild the apps after moving or renaming the repository, or when setting up another Mac.
+The apps are written to the sibling `<repository folder name> Local/Applications/` folder. Both apps run without opening Terminal and record diagnostic output under the machine-local `Logs/` folder. The main Profile Editor uses port 8765; a development-worktree editor uses port 8766 and a distinct macOS application identity so both can run together. Reopening an already running editor recovers its Chrome window. The repository's **Stop Profile Editor.command** is the ownership-checked fallback for a hidden or unresponsive editor. Rebuild the apps after moving or renaming the repository, or when setting up another Mac.
 
 Each Mac needs its own GitHub authentication. For this HTTPS remote, configure the macOS Keychain helper with `git config --global credential.helper osxkeychain`. When Git first prompts, use the GitHub username `amballin` and a personal access token as the password; never store the token in the repository.
 

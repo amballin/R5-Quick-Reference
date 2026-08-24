@@ -72,7 +72,9 @@ from utilities import flatten
 
 
 HOST = "127.0.0.1"
-DEFAULT_PORT = 8765
+MAIN_EDITOR_PORT = 8765
+PROTOTYPE_EDITOR_PORT = 8766
+DEFAULT_PORT = MAIN_EDITOR_PORT
 CAMERA_LAB_ORIGIN = "http://127.0.0.1:8770"
 PREVIEW_NAME = "_Profile Editor Preview.html"
 MAX_REQUEST_BYTES = 1_000_000
@@ -129,8 +131,16 @@ EDITOR_BUILD_FILES = (
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/project_context.py",
+    "80 Build/scripts/profile-editor-runtime.sh",
     "80 Build/scripts/start-profile-editor.sh",
+    "80 Build/scripts/stop-profile-editor.sh",
 )
+
+
+def default_editor_port(project_root=PROJECT_ROOT):
+    """Keep main and development worktrees on distinct loopback ports."""
+    context = project_context_info(Path(project_root).resolve())
+    return MAIN_EDITOR_PORT if context.get("kind") == "main" else PROTOTYPE_EDITOR_PORT
 
 
 class PrototypeError(ValueError):
@@ -2985,7 +2995,12 @@ class EditorHandler(BaseHTTPRequestHandler):
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--port", type=int, default=DEFAULT_PORT)
+    parser.add_argument("--port", type=int)
+    parser.add_argument(
+        "--print-default-port",
+        action="store_true",
+        help="Print the context-specific default port and exit.",
+    )
     parser.add_argument(
         "--check",
         action="store_true",
@@ -3005,6 +3020,10 @@ def create_server(model, port=DEFAULT_PORT, token=None):
 
 def main():
     args = parse_args()
+    if args.print_default_port:
+        print(default_editor_port())
+        return 0
+    port = args.port if args.port is not None else default_editor_port()
     model = ProfileEditorModel()
     if args.check:
         for profile in model.profile_list():
@@ -3012,12 +3031,12 @@ def main():
         print(f"Profile editor check passed: {len(model.profiles)} profiles loaded.")
         print(f"Preview output: {model.paths.html_output_dir / PREVIEW_NAME}")
         return 0
-    if not 1 <= args.port <= 65535:
+    if not 1 <= port <= 65535:
         print("Port must be between 1 and 65535.", file=sys.stderr)
         return 2
-    server = create_server(model, port=args.port)
+    server = create_server(model, port=port)
     print("Canon Camera Reference — guarded profile editor")
-    print(f"Open http://{HOST}:{args.port}")
+    print(f"Open http://{HOST}:{port}")
     print("Use Stop Profile Editor in the page header, or press Control-C here.")
     print("Profile saves require exact diff review, backup, and validation.")
     try:

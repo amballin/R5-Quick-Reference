@@ -4,7 +4,9 @@ Profile Editor 1.0 is the main local interface for routine work: creating and up
 
 ## Start the editor
 
-For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. It starts in the background without opening Terminal and opens Google Chrome automatically. Use **Stop Profile Editor** in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server.
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. It starts in the background without opening Terminal and opens Google Chrome automatically. The main project uses port 8765 and a development prototype uses port 8766, so both can run at the same time. Their header badges and macOS application identities remain distinct.
+
+If an editor is running without a visible Chrome window, open that checkout's **R5 Profile Editor.app** again to recover the window. Use **Stop Profile Editor** in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server. If the window cannot be recovered, double-click **Stop Profile Editor.command** in that repository. It clears stale process records, recognizes one verified pre-upgrade prototype left on port 8765, and stops only a server verified as belonging to that exact checkout.
 
 For development or diagnostics, from the project root run:
 

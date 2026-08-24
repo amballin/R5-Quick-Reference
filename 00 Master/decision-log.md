@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Context-Separated Profile Editor Runtime and Recovery
+
+**Status:** Accepted
+**Date:** 2026-08-24
+
+Reserve loopback port 8765 for the Profile Editor in the authoritative `main` worktree and port 8766 for a development-worktree Profile Editor so the main reference and its prototype can run concurrently. Give the development wrapper a distinct macOS bundle identifier so Launch Services treats it as an independent local application. Keep an explicit `--port` override for diagnostics, but make the branch-context port the normal CLI and wrapper default.
+
+Record the launched server PID only in that checkout's machine-local workspace. A repeated launch may reopen an already responsive editor only after matching the exact editor program, repository working directory, expected port, and editor endpoint. The macOS wrapper must hand work to a detached supervisor and exit immediately so Finder never treats its waiting shell as an unresponsive application and every later click can run the verified reuse path. Remove stale PID records automatically. Provide a recovery stop command that applies the same ownership checks before sending a termination signal, and never stop an unrecognized listener merely because it occupies the expected port. Preserve diagnostic history by appending wrapper launches to the machine-local log instead of truncating it.
+
 ## Proportional Validation and Full-Build Checkpoints
 
 **Status:** Accepted

@@ -21,7 +21,15 @@ import sys
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from profile_editor import ProfileConflictError, ProfileEditorModel, PrototypeError, create_server
+from profile_editor import (
+    MAIN_EDITOR_PORT,
+    PROTOTYPE_EDITOR_PORT,
+    ProfileConflictError,
+    ProfileEditorModel,
+    PrototypeError,
+    create_server,
+    default_editor_port,
+)
 from profile_loader import load_yaml
 from project_context import project_context_info
 from validators import control_validator, profile_validator, spreadsheet_spec_validator
@@ -52,7 +60,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
             "80 Build/project_context.py",
+            "80 Build/scripts/profile-editor-runtime.sh",
             "80 Build/scripts/start-profile-editor.sh",
+            "80 Build/scripts/stop-profile-editor.sh",
         ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -603,6 +613,41 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 "branch": "codex/profile-editor-prototype",
             },
         )
+
+    def test_default_editor_port_separates_main_and_prototype(self):
+        git_dir = self.root / ".git"
+        git_dir.mkdir(exist_ok=True)
+        (git_dir / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
+        self.assertEqual(default_editor_port(self.root), MAIN_EDITOR_PORT)
+        (git_dir / "HEAD").write_text(
+            "ref: refs/heads/codex/profile-editor-prototype\n", encoding="utf-8"
+        )
+        self.assertEqual(default_editor_port(self.root), PROTOTYPE_EDITOR_PORT)
+
+    def test_profile_editor_runtime_requires_exact_process_ownership(self):
+        runtime = (PROJECT_ROOT / "80 Build/scripts/profile-editor-runtime.sh").read_text(
+            encoding="utf-8"
+        )
+        launcher = (PROJECT_ROOT / "80 Build/scripts/start-profile-editor.sh").read_text(
+            encoding="utf-8"
+        )
+        stopper = (PROJECT_ROOT / "80 Build/scripts/stop-profile-editor.sh").read_text(
+            encoding="utf-8"
+        )
+        for safeguard in (
+            '"$command_line" == *"$PROFILE_EDITOR_PROGRAM"*',
+            '"$process_cwd" == "$PROJECT_ROOT"',
+            '-iTCP:"$port"',
+            '"http://127.0.0.1:$port/api/editor-info"',
+        ):
+            self.assertIn(safeguard, runtime)
+        self.assertIn("Profile Editor is already running", launcher)
+        self.assertIn("older Profile Editor for this prototype", launcher)
+        self.assertIn("used by an unrecognized process", launcher)
+        self.assertIn('[[ "$STATUS" -eq 143 ]]', launcher)
+        self.assertIn("profile_editor_stop_pid", stopper)
+        self.assertIn("profile_editor_find_legacy_pid", stopper)
+        self.assertIn("Nothing was stopped", stopper)
 
     def test_camera_lab_launch_accepts_only_saved_subject_profiles(self):
         class FakeLauncher:

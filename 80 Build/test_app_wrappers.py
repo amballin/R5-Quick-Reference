@@ -16,7 +16,7 @@ BUILD_DIR = Path(__file__).resolve().parent
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from app_wrappers import APP_WRAPPERS, build_app_wrappers
+from app_wrappers import APP_WRAPPERS, build_app_wrappers, effective_bundle_id
 
 
 PROJECT_ROOT = BUILD_DIR.parent
@@ -52,7 +52,7 @@ class AppWrapperTests(unittest.TestCase):
                 with info_path.open("rb") as handle:
                     info = plistlib.load(handle)
                 self.assertEqual(info["CFBundleDisplayName"], wrapper.name)
-                self.assertEqual(info["CFBundleIdentifier"], wrapper.bundle_id)
+                self.assertEqual(info["CFBundleIdentifier"], effective_bundle_id(wrapper, PROJECT_ROOT))
                 self.assertTrue(os.access(executable_path, os.X_OK))
 
                 result = subprocess.run(
@@ -72,13 +72,19 @@ class AppWrapperTests(unittest.TestCase):
                     self.assertIn('/usr/bin/open -a "Terminal"', runner)
                 else:
                     self.assertNotIn('/usr/bin/open -a "Terminal"', runner)
-                    self.assertIn('"$COMMAND_FILE" > "$LOG_FILE" 2>&1', runner)
+                    self.assertIn('"$COMMAND_FILE" >> "$LOG_FILE" 2>&1', runner)
                     self.assertIn(f"{wrapper.name}.log", runner)
                     self.assertIn("show_launch_failure", runner)
+                    if wrapper.detach_after_launch:
+                        self.assertIn(") </dev/null >/dev/null 2>&1 &", runner)
+                    else:
+                        self.assertNotIn(") </dev/null >/dev/null 2>&1 &", runner)
 
             profile_editor = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Profile Editor")
             self.assertFalse(profile_editor.launch_in_terminal)
+            self.assertTrue(profile_editor.detach_after_launch)
             self.assertEqual(profile_editor.command_file, "80 Build/scripts/start-profile-editor.sh")
+            self.assertNotEqual(effective_bundle_id(profile_editor, PROJECT_ROOT), profile_editor.bundle_id)
 
 
 if __name__ == "__main__":

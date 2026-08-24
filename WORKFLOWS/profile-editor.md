@@ -10,7 +10,9 @@ It cannot edit permanent reference cards, rename profiles, remove released cards
 
 ## Start the editor
 
-For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. The app starts Profile Editor in the background without opening Terminal and opens Google Chrome automatically. Use **Stop Profile Editor** in the page header to stop its local server. The page closes its tab when browser policy permits; if it remains open, close it after the stopped confirmation appears. Unsaved browser drafts are identified in the confirmation before shutdown.
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. The app starts Profile Editor in the background without opening Terminal and opens Google Chrome automatically. The main project uses `http://127.0.0.1:8765/`; a development worktree uses `http://127.0.0.1:8766/`, so the main reference and prototype can run together. Their application wrappers also have distinct macOS identities. Confirm the header badge before editing.
+
+If that checkout's editor is already running but its Chrome window is missing, open **R5 Profile Editor.app** again. The launcher verifies and reopens the existing instance instead of starting a duplicate. Use **Stop Profile Editor** in the page header to stop its local server. The page closes its tab when browser policy permits; if it remains open, close it after the stopped confirmation appears. Unsaved browser drafts are identified in the confirmation before shutdown.
 
 Build or refresh both local application wrappers from the repository root with:
 
@@ -18,7 +20,9 @@ Build or refresh both local application wrappers from the repository root with:
 ./80\ Build/scripts/build-app-wrappers.sh
 ```
 
-The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. Startup failures are recorded in the machine-local `Logs/R5 Profile Editor.log` file. The existing **Start Profile Editor.command** launcher remains available as a Terminal-based diagnostic fallback in the repository's top-level folder.
+The wrappers are written to `Canon Camera Reference UI Prototype Local/Applications/` and retain a deliberate link to this authoritative project folder. Rebuild them after moving or renaming the project, or on another Mac. Startup and relaunch diagnostics are appended to the machine-local `Logs/R5 Profile Editor.log` file. The existing **Start Profile Editor.command** launcher remains available as a Terminal-based diagnostic fallback in the repository's top-level folder.
+
+If no editor window is visible and reopening the app does not recover it, double-click **Stop Profile Editor.command** in the repository's top-level folder. It stops only a process that matches this checkout's exact editor program, working directory, and expected port. It also recognizes a verified prototype left on the former shared port 8765 so that one legacy instance can be cleared after upgrading. It removes stale process records automatically and refuses to stop an unrecognized service.
 
 For development or diagnostics, use the Project Terminal panel on the [Workflow Index](index.html) to open the project worktree in Terminal. Then run:
 
@@ -28,10 +32,11 @@ npm run ui
 
 Run the command from the repository root. It starts Profile Editor 1.0 without building or publishing the website.
 
-Open the local address shown in Terminal, normally:
+Open the local address shown in Terminal. The normal addresses are:
 
 ```text
-http://127.0.0.1:8765
+Main project: http://127.0.0.1:8765
+Prototype:    http://127.0.0.1:8766
 ```
 
 The editor is available only on this Mac while that command is running. Press **Control-C** in Terminal to stop it. It listens only on the local loopback address.

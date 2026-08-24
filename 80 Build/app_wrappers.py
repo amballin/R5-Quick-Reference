@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import plistlib
 import shlex
@@ -14,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from project_context import project_context_info
+
 
 @dataclass(frozen=True)
 class AppWrapper:
@@ -22,6 +25,7 @@ class AppWrapper:
     executable: str
     command_file: str
     launch_in_terminal: bool = True
+    detach_after_launch: bool = False
 
 
 APP_WRAPPERS = (
@@ -38,6 +42,7 @@ APP_WRAPPERS = (
         executable="r5-profile-editor",
         command_file="80 Build/scripts/start-profile-editor.sh",
         launch_in_terminal=False,
+        detach_after_launch=True,
     ),
 )
 
@@ -47,6 +52,15 @@ def default_local_workspace(project_root: Path) -> Path:
     if configured:
         return Path(configured).expanduser().resolve()
     return Path(f"{project_root} Local")
+
+
+def effective_bundle_id(wrapper: AppWrapper, project_root: Path) -> str:
+    """Give a development Profile Editor its own macOS application identity."""
+    context = project_context_info(project_root)
+    if wrapper.name != "R5 Profile Editor" or context.get("kind") != "prototype":
+        return wrapper.bundle_id
+    root_suffix = hashlib.sha256(str(project_root.resolve()).encode("utf-8")).hexdigest()[:12]
+    return f"{wrapper.bundle_id}.prototype.w{root_suffix}"
 
 
 def _runner_source(wrapper: AppWrapper, project_root: Path) -> str:
@@ -86,7 +100,7 @@ fi
     log_file = shlex.quote(
         str(default_local_workspace(project_root) / "Logs" / f"{wrapper.name}.log")
     )
-    return common + f"""
+    runner = common + f"""
 LOG_FILE={log_file}
 LOG_DIR="$(dirname -- "$LOG_FILE")"
 
@@ -107,22 +121,36 @@ APPLESCRIPT
     exit 1
 fi
 
-"$COMMAND_FILE" > "$LOG_FILE" 2>&1
-STATUS=$?
+run_launcher() {{
+    printf '\n[%s] Launching %s\n' "$(/bin/date '+%Y-%m-%d %H:%M:%S')" "$APP_NAME" >> "$LOG_FILE"
+    "$COMMAND_FILE" >> "$LOG_FILE" 2>&1
+    STATUS=$?
 
-if [[ "$STATUS" -ne 0 && "$STATUS" -ne 130 ]]; then
-    show_launch_failure "$STATUS"
-fi
+    if [[ "$STATUS" -ne 0 && "$STATUS" -ne 130 ]]; then
+        show_launch_failure "$STATUS"
+    fi
 
-exit "$STATUS"
+    return "$STATUS"
+}}
+"""
+    if wrapper.detach_after_launch:
+        return runner + """
+(
+    run_launcher
+) </dev/null >/dev/null 2>&1 &
+exit 0
+"""
+    return runner + """
+run_launcher
+exit $?
 """
 
 
-def _info_plist(wrapper: AppWrapper) -> bytes:
+def _info_plist(wrapper: AppWrapper, project_root: Path) -> bytes:
     payload = {
         "CFBundleDisplayName": wrapper.name,
         "CFBundleExecutable": wrapper.executable,
-        "CFBundleIdentifier": wrapper.bundle_id,
+        "CFBundleIdentifier": effective_bundle_id(wrapper, project_root),
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": wrapper.name,
         "CFBundlePackageType": "APPL",
@@ -157,7 +185,7 @@ def _validate_app(app_path: Path, wrapper: AppWrapper, project_root: Path) -> No
     expected = {
         "CFBundleDisplayName": wrapper.name,
         "CFBundleExecutable": wrapper.executable,
-        "CFBundleIdentifier": wrapper.bundle_id,
+        "CFBundleIdentifier": effective_bundle_id(wrapper, project_root),
         "CFBundlePackageType": "APPL",
     }
     for key, value in expected.items():
@@ -204,7 +232,7 @@ def build_app_wrappers(project_root: Path, output_dir: Optional[Path] = None):
             staged_app = staging_root / f"{wrapper.name}.app"
             macos_dir = staged_app / "Contents/MacOS"
             macos_dir.mkdir(parents=True)
-            (staged_app / "Contents/Info.plist").write_bytes(_info_plist(wrapper))
+            (staged_app / "Contents/Info.plist").write_bytes(_info_plist(wrapper, project_root))
             executable_path = macos_dir / wrapper.executable
             executable_path.write_text(_runner_source(wrapper, project_root), encoding="utf-8")
             executable_path.chmod(0o755)

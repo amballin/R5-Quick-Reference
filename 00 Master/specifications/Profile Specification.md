@@ -49,6 +49,8 @@ The report must include access-only profile cards and exclude permanent referenc
 
 Profile Editor 1.0 is the primary local interface for routine profile, Cx Foundation, My Menu, baseline, camera-reference, readiness, and local-build work. Workflow documentation must lead with this interface for those tasks and reserve terminal-first instructions for startup, troubleshooting, Git/handoff, spreadsheets, testing import, recovery, and publication.
 
+The normal Profile Editor runtime must use loopback port 8765 in the authoritative `main` worktree and 8766 in a development worktree, while retaining an explicit diagnostic port override. The development application wrapper must use a distinct macOS bundle identifier so it can run beside the main application. The wrapper must hand launch supervision to a detached background process and exit immediately, allowing every Finder click to execute the verified start-or-reuse path instead of activating a waiting non-interactive shell. Each checkout must keep its runtime PID only in its own machine-local workspace. Reopening an application may reuse and reopen a responsive existing instance only after verifying its exact editor program, repository working directory, expected port, and editor endpoint. Launch must discard stale PID records, preserve prior diagnostic log content, and refuse to stop or reuse an unrecognized port listener. A separate recovery stop command must enforce the same ownership checks before signaling a hidden editor process.
+
 The local loopback profile editor may perform only these writes under `10 Profiles/`:
 
 - update the title, optional subtitle, metadata status, release flag, baseline overrides, and saved-My-Menu card cues of an existing shooting profile without renaming its file;
