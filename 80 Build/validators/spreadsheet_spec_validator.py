@@ -60,7 +60,7 @@ def validate(root):
     if defaults_sheet != {
         "worksheet": "C1-C3 Defaults",
         "table_name": "CxDefaultsTable",
-        "note": "Approved registration targets pending physical verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.",
+        "note": "Session-3 camera-body targets; lens Mode 1/3 remains pending. Edited targets require physical re-verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.",
         "excel": {"freeze_rows": 2, "freeze_columns": 1},
         "numbers": {
             "header_rows": 2,

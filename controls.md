@@ -46,11 +46,11 @@ The approved target assignments are complete shooting configurations derived fro
 
 | Custom mode | Canonical profile | Field label | Verification status |
 |---|---|---|---|
-| C1 | Wildlife | General Wildlife | Registered settings present; match to the Wildlife profile pending verification |
-| C2 | Birds in Flight | Birds in Flight / Action | Not yet registered |
-| C3 | Landscape | Landscape | Not yet registered |
+| C1 | Wildlife | General Wildlife | Registered and camera-body verified; lens Mode 1 pending |
+| C2 | Birds in Flight | Birds in Flight / Action | Registered and camera-body verified; lens Mode 3 pending |
+| C3 | Landscape | Landscape | Registered and camera-body verified; lens Mode 1 pending |
 
-They are not independent AF-setting controls.
+They are not independent AF-setting controls. The camera-body registrations were recalled and cross-checked in physical session 3; only the lens-dependent stabilization modes remain unresolved.
 
 ## Retired Screenshot Evidence
 

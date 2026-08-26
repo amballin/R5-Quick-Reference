@@ -75,8 +75,8 @@ def validate(root):
             assigned_ids.append(profile_id)
         if not isinstance(mapping.get("field_label"), str) or not mapping["field_label"].strip():
             issues.append(error("controls", project_path, f"{mode} requires a non-empty field label."))
-        if mapping.get("status") != "approved_target_pending_camera_verification":
-            issues.append(error("controls", project_path, f"{mode} must remain an approved target pending camera verification."))
+        if mapping.get("status") not in {"owner_confirmed", "approved_target_pending_camera_verification"}:
+            issues.append(error("controls", project_path, f"{mode} must be owner-confirmed or pending camera verification."))
     if len(assigned_ids) == 3 and len(set(assigned_ids)) != 3:
         issues.append(error("controls", project_path, "C1, C2, and C3 must use three different profiles."))
 

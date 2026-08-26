@@ -53,11 +53,13 @@ body {
 .app-header h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem); }
 .subtitle { margin: 8px 0 0; color: #d6e0e6; }
 
-.header-tools { display: grid; grid-template-columns: auto 52px; grid-template-rows: auto auto; column-gap: 12px; row-gap: 8px; align-items: center; justify-content: end; }
+.header-tools { display: grid; grid-template-columns: auto 52px; grid-template-rows: auto auto auto; column-gap: 12px; row-gap: 8px; align-items: center; justify-content: end; }
 .header-tools .mode-stack { grid-column: 1; grid-row: 1; }
-.header-tools .camera-logo { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
-.header-tools .build-badge { grid-column: 1; grid-row: 2; justify-self: end; }
+.header-tools .header-meta { grid-column: 1; grid-row: 2; }
+.header-tools .header-version { grid-column: 1; grid-row: 3; justify-self: end; }
+.header-tools .camera-logo { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
 .mode-stack { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.header-meta { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
 .badge, .safety-badge, .build-badge, .project-context-badge {
   display: inline-flex;
   padding: 7px 11px;
@@ -72,7 +74,10 @@ body {
 .project-context-badge.prototype { color: #3e2b00; background: #ffd267; }
 .project-context-badge.unknown { background: #6f7780; }
 .safety-badge { color: #704e00; background: #ffe7a6; }
-.build-badge { color: #d9ebfb; background: rgba(10, 25, 43, 0.28); }
+.build-badge { flex-direction: column; align-items: flex-end; color: #d9ebfb; background: rgba(10, 25, 43, 0.28); }
+.build-badge summary { cursor: pointer; }
+.build-badge[open] { border-radius: 14px; white-space: normal; }
+.source-hash { display: block; margin-top: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; }
 .stop-server-button { min-height: 32px; padding: 6px 10px; color: white; border-color: rgba(255, 255, 255, 0.55); background: transparent; font-size: 0.78rem; }
 .stop-server-button:hover:not(:disabled) { border-color: white; background: rgba(255, 255, 255, 0.12); }
 
@@ -110,6 +115,17 @@ main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 48px; }
   background: var(--surface);
   box-shadow: var(--shadow);
 }
+.panel.collapsible-panel { padding: 0; overflow: hidden; }
+.collapsible-summary { margin: 0; padding: 20px; cursor: pointer; list-style: none; }
+.collapsible-summary::-webkit-details-marker { display: none; }
+.collapsible-summary h2 { margin: 0 0 4px; }
+.collapsible-summary p { margin: 0; color: var(--muted); }
+.summary-tools { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
+.collapse-state { min-width: 66px; color: var(--blue); font-size: .76rem; font-weight: 800; text-align: right; }
+.collapse-state::before { content: "Expand ▾"; }
+.collapsible-panel[open] .collapse-state::before { content: "Collapse ▴"; }
+.collapsible-panel[open] > .collapsible-summary { border-bottom: 1px solid var(--line); }
+.collapsible-content { padding: 20px; }
 
 .status-card {
   display: flex;
@@ -148,6 +164,7 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .recovery-content ol { margin: 18px 0; padding-left: 24px; }
 .recovery-content li + li { margin-top: 8px; }
 .recovery-detail { padding: 11px 13px; border-radius: 9px; color: #7c1327; background: #fce8ec; border: 1px solid #efbdc7; overflow-wrap: anywhere; }
+.safety-callout { margin: 18px 0 0; padding: 11px 13px; border-radius: 9px; color: #604900; background: var(--amber-soft); border: 1px solid #ead38c; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
 .dialog-actions form { margin: 0; }
 
@@ -225,6 +242,9 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .expected-setting, .expected-value, .comparison-table td > strong, .comparison-table td > small { display: block; }
 .expected-setting { color: var(--muted); font-size: 0.76rem; font-weight: 700; }
 .expected-value { margin-top: 4px; color: var(--ink); font-size: 0.94rem; }
+.context-choice { display: grid; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--ink); font-size: 0.78rem; font-weight: 800; }
+.context-choice select { width: 100%; min-width: 0; font-size: 0.8rem; font-weight: 500; }
+.context-choice small { color: var(--muted); font-weight: 500; line-height: 1.35; }
 .comparison-table td > small { margin-top: 4px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.72rem; }
 .finding-status { flex: 0 0 auto; padding: 4px 8px; border-radius: 999px; background: white; font-size: 0.74rem; font-weight: 800; }
 .finding-details { margin: 10px 0 0; padding: 10px 0 0 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; }
@@ -283,7 +303,7 @@ footer { padding: 24px; color: var(--muted); text-align: center; font-size: 0.82
   .checklist-actions button { flex: 1 1 180px; }
   .checklist-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .header-tools { width: 100%; }
-  .header-tools .mode-stack { justify-content: flex-end; }
+  .header-tools .mode-stack, .header-tools .header-meta { justify-content: flex-start; }
   .mode-stack, .actions { justify-content: flex-start; }
   .stepper { grid-template-columns: 1fr 1fr; }
   .dashboard-grid { grid-template-columns: 1fr; }
@@ -291,6 +311,8 @@ footer { padding: 24px; color: var(--muted); text-align: center; font-size: 0.82
   .profile-controls { grid-template-columns: 1fr; align-items: stretch; }
   .comparison-toolbar { align-items: stretch; flex-direction: column; }
   .coverage-grid { grid-template-columns: 1fr; }
+  .collapsible-summary { align-items: flex-start; flex-direction: column; }
+  .summary-tools { width: 100%; justify-content: space-between; }
   .cx-slot-grid { grid-template-columns: 1fr; }
   .detail-list div { grid-template-columns: 110px minmax(0, 1fr); }
   .comparison-table-scroll { overflow: visible; border: 0; }
@@ -310,5 +332,7 @@ footer { padding: 24px; color: var(--muted); text-align: center; font-size: 0.82
   .app-header { padding: 22px 16px; }
   .stepper { grid-template-columns: 1fr; }
   .panel, .status-card { padding: 16px; }
+  .panel.collapsible-panel { padding: 0; }
+  .collapsible-summary, .collapsible-content { padding: 16px; }
   .actions button { width: 100%; }
 }

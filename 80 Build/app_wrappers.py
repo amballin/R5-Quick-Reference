@@ -35,6 +35,7 @@ APP_WRAPPERS = (
         executable="r5-camera-lab",
         command_file="80 Build/scripts/start-camera-lab.sh",
         launch_in_terminal=False,
+        detach_after_launch=True,
     ),
     AppWrapper(
         name="R5 Profile Editor",

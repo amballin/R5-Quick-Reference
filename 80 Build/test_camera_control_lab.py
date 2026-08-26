@@ -1,9 +1,14 @@
 from http.client import HTTPConnection
 import json
+import os
 from pathlib import Path
+import re
+import socket
+import subprocess
 import sys
 import tempfile
 import threading
+import time
 from types import SimpleNamespace
 import unittest
 
@@ -14,7 +19,7 @@ if str(BUILD_DIR) not in sys.path:
 
 from camera_control.dev_server import create_server
 from camera_control.errors import CameraSelectionError, CameraSessionError, WrongCameraModelError
-from camera_control.profile_comparison import _conditional_status, list_profiles
+from camera_control.profile_comparison import _conditional_evaluation, _conditional_status, list_profiles
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
 from project_context import active_branch
@@ -43,13 +48,67 @@ class CameraControlServiceTests(unittest.TestCase):
             with self.subTest(path=path, expected=expected, actual=actual):
                 self.assertEqual(_conditional_status(path, expected, actual)[0], status)
 
+    def test_contextual_comparison_requires_and_applies_authored_choices(self):
+        shutter = "1/1000–1/2000 outdoor; 1/640–1/1000 indoor"
+        unresolved = _conditional_evaluation("shutter.target", shutter, "1/800")
+        self.assertEqual(unresolved["status"], "conditional")
+        self.assertEqual(unresolved["context_prompt"]["question"], "Which lighting condition applies?")
+        self.assertEqual(
+            [(option["id"], option["target"]) for option in unresolved["context_prompt"]["options"]],
+            [("outdoor", "1/1000–1/2000"), ("indoor", "1/640–1/1000")],
+        )
+
+        indoor = _conditional_evaluation("shutter.target", shutter, "1/800", "indoor")
+        self.assertEqual(indoor["status"], "equivalent")
+        self.assertEqual(indoor["context_prompt"]["selected_target"], "1/640–1/1000")
+
+        action = _conditional_evaluation(
+            "shutter.target",
+            "1/200–1/320 portraits; 1/500+ action",
+            "1/1000",
+            "action",
+        )
+        self.assertEqual(action["status"], "equivalent")
+        slower_action = _conditional_evaluation(
+            "shutter.target",
+            "1/200–1/320 portraits; 1/500+ action",
+            "1/200",
+            "action",
+        )
+        self.assertEqual(slower_action["status"], "difference")
+
+        groups = _conditional_evaluation(
+            "lens.aperture.target",
+            "f/1.8–f/4 single; f/4–f/8 groups",
+            "f/5.6",
+            "groups",
+        )
+        self.assertEqual(groups["status"], "equivalent")
+
+    def test_contextual_comparison_does_not_invent_unwritten_targets(self):
+        background = _conditional_evaluation(
+            "exposure.exposure_compensation",
+            "Adjust for background",
+            "0",
+        )
+        self.assertEqual(background["status"], "conditional")
+        self.assertNotIn("context_prompt", background)
+        bracketing = _conditional_evaluation(
+            "lens.aperture.target",
+            "f/8–f/11; bracket before f/16",
+            "f/8.0",
+        )
+        self.assertEqual(bracketing["status"], "conditional")
+        self.assertNotIn("context_prompt", bracketing)
+
     def test_camera_lab_info_exposes_version_and_source_derived_build(self):
         first = camera_lab_info()
         second = camera_lab_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], "1.0.0")
+        self.assertEqual(first["version"], "0.42.6")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
         branch = active_branch(PROJECT_ROOT)
+        self.assertEqual(first["context_name"], "Main" if branch == "main" else "Prototype")
         self.assertEqual(first["project_context"]["branch"], branch)
         self.assertEqual(first["project_context"]["kind"], "main" if branch == "main" else "prototype")
 
@@ -58,6 +117,127 @@ class CameraControlServiceTests(unittest.TestCase):
         self.assertIn("EdsSetPropertyEventHandler", source)
         self.assertIn('emit_error("EdsGetEvent(Capabilities)"', source)
         self.assertIn('emit_error("EdsGetEvent(Poll)"', source)
+
+    def test_camera_lab_launcher_reopens_a_valid_running_lab(self):
+        with tempfile.TemporaryDirectory(prefix="camera-lab-launcher-test-") as temporary:
+            fake_bin = Path(temporary)
+            (fake_bin / "open").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            (fake_bin / "curl").write_text(
+                "#!/bin/sh\nprintf '%s\\n' '{\"ok\":true,\"read_only\":true,\"backend_mode\":\"edsdk\",\"app\":{\"version\":\"0.42.6\",\"project_context\":{}}}'\n",
+                encoding="utf-8",
+            )
+            (fake_bin / "open").chmod(0o755)
+            (fake_bin / "curl").chmod(0o755)
+            result = subprocess.run(
+                [str(PROJECT_ROOT / "80 Build/scripts/start-camera-lab.sh")],
+                check=False,
+                capture_output=True,
+                text=True,
+                env={**os.environ, "PATH": f"{fake_bin}:{os.environ['PATH']}"},
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Camera Lab is already running on port 8770", result.stdout)
+
+    def test_backend_restart_replaces_the_server_process_with_simulator(self):
+        with socket.socket() as reservation:
+            reservation.bind(("127.0.0.1", 0))
+            port = reservation.getsockname()[1]
+        with tempfile.TemporaryDirectory(prefix="camera-lab-restart-sdk-") as sdk_path:
+            process = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-B",
+                    str(BUILD_DIR / "camera_control" / "dev_server.py"),
+                    "--backend",
+                    "edsdk",
+                    "--sdk-path",
+                    sdk_path,
+                    "--port",
+                    str(port),
+                ],
+                cwd=PROJECT_ROOT,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+            def get(path):
+                connection = HTTPConnection("127.0.0.1", port, timeout=1)
+                connection.request("GET", path, headers={"Host": "127.0.0.1"})
+                response = connection.getresponse()
+                raw = response.read()
+                connection.close()
+                return response.status, raw
+
+            def post(path, token, payload):
+                connection = HTTPConnection("127.0.0.1", port, timeout=2)
+                connection.request(
+                    "POST",
+                    path,
+                    body=json.dumps(payload),
+                    headers={
+                        "Host": "127.0.0.1",
+                        "Content-Type": "application/json",
+                        "X-Camera-Lab-Token": token,
+                    },
+                )
+                response = connection.getresponse()
+                raw = response.read()
+                connection.close()
+                return response.status, json.loads(raw)
+
+            try:
+                for _ in range(100):
+                    try:
+                        status, raw = get("/api/camera-control/status")
+                        payload = json.loads(raw)
+                        if status == 200 and payload["backend_mode"] == "edsdk":
+                            break
+                    except (ConnectionError, OSError, json.JSONDecodeError):
+                        pass
+                    time.sleep(0.05)
+                else:
+                    self.fail("EDSDK-mode test server did not start")
+
+                _, index = get("/")
+                token_match = re.search(rb'<meta name="camera-lab-token" content="([^"]+)">', index)
+                self.assertIsNotNone(token_match)
+                status, payload = post(
+                    "/api/camera-control/restart-backend",
+                    token_match.group(1).decode("ascii"),
+                    {"backend": "simulated"},
+                )
+                self.assertEqual(status, 200)
+                self.assertTrue(payload["restarting"])
+
+                for _ in range(200):
+                    try:
+                        status, raw = get("/api/camera-control/status")
+                        payload = json.loads(raw)
+                        if status == 200 and payload["backend_mode"] == "simulated":
+                            break
+                    except (ConnectionError, OSError, json.JSONDecodeError):
+                        pass
+                    time.sleep(0.05)
+                else:
+                    self.fail("Camera Lab did not restart in simulated mode")
+                self.assertIsNone(process.poll(), "The supervised server process should survive replacement")
+
+                _, index = get("/")
+                token_match = re.search(rb'<meta name="camera-lab-token" content="([^"]+)">', index)
+                self.assertIsNotNone(token_match)
+                status, payload = post(
+                    "/api/camera-control/shutdown",
+                    token_match.group(1).decode("ascii"),
+                    {},
+                )
+                self.assertEqual(status, 200)
+                self.assertTrue(payload["shutting_down"])
+                process.wait(timeout=5)
+            finally:
+                if process.poll() is None:
+                    process.terminate()
+                    process.wait(timeout=5)
 
     def test_ready_scenario_connects_and_disconnects(self):
         service = CameraControlService()
@@ -318,6 +498,30 @@ class CameraControlServiceTests(unittest.TestCase):
             ]
         )
 
+    def test_profile_comparison_exposes_context_then_uses_selected_authored_target(self):
+        service = CameraControlService()
+        service.connect()
+        service.scan_capabilities()
+
+        people = service.compare_profile("People")
+        shutter = next(item for item in people["card_findings"] if item["key"] == "shutter.target")
+        aperture = next(item for item in people["card_findings"] if item["key"] == "lens.aperture.target")
+        self.assertEqual(shutter["status"], "conditional")
+        self.assertEqual(aperture["status"], "conditional")
+        self.assertEqual(shutter["context_prompts"][0]["selected"], None)
+        self.assertEqual(aperture["context_prompts"][0]["selected"], None)
+
+        selected = service.compare_profile(
+            "People",
+            {"shutter.target": "portraits", "lens.aperture.target": "groups"},
+        )
+        selected_shutter = next(item for item in selected["card_findings"] if item["key"] == "shutter.target")
+        selected_aperture = next(item for item in selected["card_findings"] if item["key"] == "lens.aperture.target")
+        self.assertIn(selected_shutter["status"], {"match", "equivalent", "difference"})
+        self.assertIn(selected_aperture["status"], {"match", "equivalent", "difference"})
+        self.assertEqual(selected_shutter["context_prompts"][0]["selected_target"], "1/200–1/320")
+        self.assertEqual(selected_aperture["context_prompts"][0]["selected_target"], "f/4–f/8")
+
     def test_every_comparison_finding_has_a_reviewed_access_route(self):
         service = CameraControlService()
         service.connect()
@@ -385,8 +589,13 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertEqual(header_map["Cache-Control"], "no-store")
         self.assertIn("default-src 'self'", header_map["Content-Security-Policy"])
         self.assertIn('id="recovery-dialog"', body)
-        self.assertIn('id="camera-lab-build"', body)
+        self.assertIn('id="camera-lab-version"', body)
+        self.assertIn('id="camera-lab-source-hash"', body)
         self.assertIn('id="stop-camera-lab-button"', body)
+        self.assertIn('id="backend-switch-button"', body)
+        self.assertIn('id="backend-switch-dialog"', body)
+        self.assertIn('id="backend-switch-confirm"', body)
+        self.assertIn("Camera Lab remains read-only", body)
         self.assertIn('id="comparison-order"', body)
         self.assertIn('<option value="setup" selected>Setup route</option>', body)
         self.assertIn('id="checklist-rescan-button"', body)
@@ -402,22 +611,38 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("Scan &amp; compare", body)
         self.assertIn('id="cx-setup-panel"', body)
         self.assertIn('id="cx-slot-cards"', body)
-        self.assertIn("Guided manual registration", body)
-        self.assertLess(body.index('class="camera-logo"'), body.index('id="camera-lab-build"'))
+        self.assertIn("C1–C3 Maintenance &amp; Validation", body)
+        self.assertIn("Maintenance &amp; reverification", body)
+        self.assertIn("verified in physical session 3", body)
+        self.assertIn('<details class="build-badge header-version">', body)
+        self.assertIn('<details id="cx-setup-panel" class="panel collapsible-panel cx-setup-panel">', body)
+        self.assertIn('<details id="capability-panel" class="panel collapsible-panel capability-panel" hidden>', body)
+        self.assertIn('class="collapse-state"', body)
+        self.assertNotIn("Phase 1 guided registration", body)
+        self.assertNotIn("Phase 1 read-only comparison", body)
+        self.assertIn("Read-only discovery reference", body)
+        self.assertIn('aria-label="Return to Compare a Subject/Profile Card"', body)
+        self.assertLess(body.index('id="backend-badge"'), body.index('id="backend-switch-button"'))
+        self.assertLess(body.index('id="backend-switch-button"'), body.index('id="stop-camera-lab-button"'))
+        self.assertLess(body.index("No setting writes"), body.index('id="project-context-badge"'))
+        self.assertLess(body.index('id="project-context-badge"'), body.index('id="camera-lab-version"'))
         self.assertLess(body.index('id="cx-setup-panel"'), body.index('id="comparison-panel"'))
 
         status, _, styles = self.request("GET", "/styles.css")
         self.assertEqual(status, 200)
         self.assertIn("grid-template-columns: auto 52px", styles)
-        self.assertIn("grid-row: 1 / span 2", styles)
-        self.assertIn("grid-row: 2; justify-self: end", styles)
+        self.assertIn("grid-template-rows: auto auto auto", styles)
+        self.assertIn("grid-row: 1 / span 3", styles)
+        self.assertIn(".header-tools .header-meta { grid-column: 1; grid-row: 2; }", styles)
+        self.assertIn(".header-tools .header-version { grid-column: 1; grid-row: 3; justify-self: end; }", styles)
+        self.assertIn(".collapse-state::before", styles)
 
     def test_camera_lab_script_rescans_comparison_and_exposes_recovery(self):
         status, _, html = self.request("GET", "/")
         self.assertEqual(status, 200)
         status, _, body = self.request("GET", "/app.js")
         self.assertEqual(status, 200)
-        self.assertIn("await compareSelectedProfile()", body)
+        self.assertIn("await compareSelectedProfile({ recordScan: true })", body)
         self.assertIn("showRecoveryInstructions(error.message)", body)
         self.assertIn('elements.compareButton.addEventListener("click", () => runAction(scanAndCompare))', body)
         self.assertIn("function manualGroup(finding)", body)
@@ -435,10 +660,24 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('elements.checklistRescanButton.addEventListener("click", () => runAction(scanAndCompare))', body)
         self.assertIn("window.localStorage.setItem(checklistStorageKey", body)
         self.assertIn('elements.comparisonOrder.value === "setup"', body)
+        self.assertIn("contextSelections", body)
+        self.assertIn("Choose context before evaluating", body)
+        self.assertIn('query.append("context"', body)
         self.assertIn("function updateFloatingReturn()", body)
+        self.assertIn('elements.comparisonPanel.scrollIntoView({ behavior: "smooth", block: "start" })', body)
+        self.assertIn("session-3 camera-body registration was verified", body)
+        self.assertNotIn("window.scrollTo({ top: 0", body)
         self.assertIn("profile.display_title || profile.title", body)
         self.assertIn("profile.selector_label || profile.display_title || profile.title", body)
         self.assertIn('request("/api/camera-control/shutdown", { method: "POST", body: "{}" })', body)
+        self.assertIn("function showBackendSwitchConfirmation()", body)
+        self.assertIn("elements.backendSwitchDialog.showModal()", body)
+        self.assertIn('request("/api/camera-control/restart-backend"', body)
+        self.assertIn("elements.backendSwitchConfirm.addEventListener", body)
+        self.assertLess(
+            body.index("elements.backendSwitchDialog.showModal()"),
+            body.index('request("/api/camera-control/restart-backend"'),
+        )
         self.assertIn("function renderStoppedState()", body)
         self.assertIn("cameraLabStopped = true", body)
         self.assertIn("window.clearInterval(statusPollId)", body)
@@ -461,6 +700,49 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertEqual(status, 403)
         self.assertEqual(body["error"]["kind"], "invalid_token")
 
+    def test_backend_restart_requires_token_and_records_confirmed_target(self):
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/restart-backend",
+            {"backend": "edsdk"},
+        )
+        self.assertEqual(status, 403)
+        self.assertEqual(body["error"]["kind"], "invalid_token")
+
+        original_shutdown = self.server.shutdown
+        shutdown_requested = threading.Event()
+        with tempfile.TemporaryDirectory(prefix="camera-lab-sdk-test-") as sdk_path:
+            self.server.restart_sdk_path = Path(sdk_path)
+            self.server.shutdown = shutdown_requested.set
+            try:
+                status, _, body = self.request(
+                    "POST",
+                    "/api/camera-control/restart-backend",
+                    {"backend": "edsdk"},
+                    token=self.token,
+                )
+                self.assertEqual(status, 200)
+                self.assertTrue(body["restarting"])
+                self.assertTrue(body["camera_session_closed"])
+                self.assertEqual(body["backend"], "edsdk")
+                self.assertTrue(shutdown_requested.wait(timeout=1))
+                self.assertEqual(self.server.restart_backend, "edsdk")
+            finally:
+                self.server.shutdown = original_shutdown
+                self.server.restart_backend = None
+                self.server.restart_sdk_path = None
+
+    def test_backend_restart_rejects_current_mode_without_shutdown(self):
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/restart-backend",
+            {"backend": "simulated"},
+            token=self.token,
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("already running in simulated mode", body["error"]["message"])
+        self.assertIsNone(self.server.restart_backend)
+
     def test_connect_and_status_api(self):
         status, _, body = self.request(
             "POST",
@@ -473,7 +755,7 @@ class CameraLabHttpTests(unittest.TestCase):
         status, _, body = self.request("GET", "/api/camera-control/status")
         self.assertEqual(status, 200)
         self.assertEqual(body["camera"]["product_name"], "EOS R5")
-        self.assertEqual(body["app"]["version"], "1.0.0")
+        self.assertEqual(body["app"]["version"], "0.42.6")
         self.assertRegex(body["app"]["build"], r"^[0-9a-f]{8}$")
 
     def test_capability_api_returns_read_only_inventory(self):
@@ -508,6 +790,17 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertTrue(body["read_only"])
         self.assertEqual(body["ordering"], "subject_profile_card_then_additional")
         self.assertEqual(body["card_findings"][0]["label"], "Mode")
+
+        status, _, body = self.request(
+            "GET",
+            "/api/camera-control/comparison?profile=People&context=shutter.target%7Cportraits&context=lens.aperture.target%7Cgroups",
+        )
+        self.assertEqual(status, 200)
+        shutter = next(item for item in body["card_findings"] if item["key"] == "shutter.target")
+        aperture = next(item for item in body["card_findings"] if item["key"] == "lens.aperture.target")
+        self.assertEqual(shutter["context_prompts"][0]["selected"], "portraits")
+        self.assertEqual(aperture["context_prompts"][0]["selected"], "groups")
+        self.assertTrue(body["read_only"])
 
     def test_non_loopback_host_is_rejected(self):
         status, _, body = self.request("GET", "/api/camera-control/status", host="camera-lab.example")

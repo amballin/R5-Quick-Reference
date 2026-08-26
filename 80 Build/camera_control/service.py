@@ -8,7 +8,7 @@ import hashlib
 from pathlib import Path
 import threading
 
-from project_context import project_context_info
+from application_version import application_version_info
 
 from .connector import EXPECTED_MODEL, is_expected_model, normalize_product_name
 from .capability_mapping import capability_coverage, enrich_properties
@@ -26,10 +26,11 @@ from .profile_comparison import compare_profile as build_profile_comparison
 from .profile_comparison import list_profiles
 
 
-CAMERA_LAB_VERSION = "1.0.0"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CAMERA_LAB_ROOT = Path(__file__).resolve().parent
 CAMERA_LAB_BUILD_INPUTS = (
+    PROJECT_ROOT / "00 Master" / "application_version.yaml",
+    PROJECT_ROOT / "80 Build" / "application_version.py",
     PROJECT_ROOT / "80 Build" / "project_context.py",
     PROJECT_ROOT / "00 Master" / "baseline.yaml",
     PROJECT_ROOT / "00 Master" / "camera_capabilities.yaml",
@@ -57,10 +58,12 @@ def camera_lab_info():
         digest.update(b"\0")
         digest.update(source.read_bytes())
         digest.update(b"\0")
+    version_info = application_version_info(PROJECT_ROOT)
     return {
-        "version": CAMERA_LAB_VERSION,
+        "version": version_info["version"],
         "build": digest.hexdigest()[:8],
-        "project_context": project_context_info(PROJECT_ROOT),
+        "context_name": version_info["context_name"],
+        "project_context": version_info["project_context"],
     }
 
 
@@ -364,13 +367,17 @@ class CameraControlService:
     def profiles(self):
         return {"ok": True, "profiles": list_profiles()}
 
-    def compare_profile(self, profile_name):
+    def compare_profile(self, profile_name, context_choices=None):
         with self.lock:
             status = self.status(check_connection=True)
             if not status["connected"] or self.capabilities is None:
                 raise CameraSessionError("Connect the EOS R5 and scan capabilities before comparing a profile.")
             try:
-                comparison = build_profile_comparison(profile_name, self.capabilities["properties"])
+                comparison = build_profile_comparison(
+                    profile_name,
+                    self.capabilities["properties"],
+                    context_choices=context_choices,
+                )
             except ValueError as exc:
                 raise CameraSessionError(str(exc)) from exc
             self._event("profile_comparison", f"Compared {comparison['profile']['title']} without changing the camera.")

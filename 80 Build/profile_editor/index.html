@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="profile-editor-token" content="__PROFILE_EDITOR_TOKEN__">
-  <title>Profile Editor 1.0</title>
+  <title>R5 Profile Editor</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,13 +16,18 @@
     </div>
     <div class="header-tools">
       <div class="header-actions">
-        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
-        <button id="open-camera-lab" class="header-button" type="button">Open in Camera Lab</button>
         <a class="guide-link" href="/source/WORKFLOWS/editor-user-guide.html" target="_blank" rel="noreferrer">User guide</a>
+        <button id="open-camera-lab" class="header-button" type="button">Open in Camera Lab</button>
         <button id="stop-profile-editor" class="header-button" type="button">Stop Profile Editor</button>
       </div>
+      <div class="header-meta">
+        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
+      </div>
+      <details class="build-badge header-version">
+        <summary id="editor-version" aria-live="polite">Loading editor version…</summary>
+        <span id="editor-source-hash" class="source-hash">Source hash unavailable</span>
+      </details>
       <img class="editor-camera-logo" src="/source/60%20Assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true">
-      <span id="editor-build" class="build-badge" aria-live="polite">Loading editor build…</span>
     </div>
   </header>
 

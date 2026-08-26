@@ -116,7 +116,8 @@ def list_profiles(paths=PATHS):
     return profiles
 
 
-def compare_profile(profile_name, properties):
+def compare_profile(profile_name, properties, context_choices=None):
+    context_choices = context_choices or {}
     profile_info = next((item for item in list_profiles() if item["name"] == profile_name), None)
     if profile_info is None:
         raise ValueError(f"Unknown profile: {profile_name}")
@@ -136,7 +137,13 @@ def compare_profile(profile_name, properties):
         paths = [path for path in COMBINED_PATHS.get(row["key"], [row["key"]]) if path in merged_fields]
         represented.update(paths)
         items = [
-            _compare_path(path, merged_fields[path], merged_fields, properties_by_path)
+            _compare_path(
+                path,
+                merged_fields[path],
+                merged_fields,
+                properties_by_path,
+                context_choices,
+            )
             for path in paths
         ]
         card_findings.append(
@@ -149,6 +156,9 @@ def compare_profile(profile_name, properties):
                 "actual_raw": _card_actual_raw(items),
                 "status": _combined_status(items),
                 "items": items,
+                "context_prompts": [
+                    item["context_prompt"] for item in items if item.get("context_prompt")
+                ],
                 "access_paths": _access_paths(paths, access_config, menu_access),
             }
         )
@@ -157,7 +167,13 @@ def compare_profile(profile_name, properties):
     ordered_paths.extend(sorted(set(merged_fields) - set(ordered_paths)))
     additional_findings = [
         {
-            **_compare_path(path, merged_fields[path], merged_fields, properties_by_path),
+            **_compare_path(
+                path,
+                merged_fields[path],
+                merged_fields,
+                properties_by_path,
+                context_choices,
+            ),
             "expected_color": value_colors.get(path),
             "access_paths": _access_paths([path], access_config, menu_access),
         }
@@ -266,7 +282,7 @@ def _segments(value):
     return [item.strip() for item in str(value or "").split(";") if item.strip()]
 
 
-def _compare_path(path, expected, merged_fields, properties_by_path):
+def _compare_path(path, expected, merged_fields, properties_by_path, context_choices):
     property_item = properties_by_path.get(path)
     finding = {
         "path": path,
@@ -296,7 +312,16 @@ def _compare_path(path, expected, merged_fields, properties_by_path):
         finding["reason"] = "The reviewed SDK property did not return a usable value."
         return finding
     if property_item.get("capability_classification") == "conditional":
-        finding["status"], finding["reason"] = _conditional_status(path, expected, finding["actual"])
+        evaluation = _conditional_evaluation(
+            path,
+            expected,
+            finding["actual"],
+            context_choices.get(path),
+        )
+        finding["status"] = evaluation["status"]
+        finding["reason"] = evaluation["reason"]
+        if evaluation.get("context_prompt"):
+            finding["context_prompt"] = evaluation["context_prompt"]
         return finding
 
     status = _direct_status(path, expected, merged_fields, property_item)
@@ -310,19 +335,106 @@ def _compare_path(path, expected, merged_fields, properties_by_path):
     return finding
 
 
-def _conditional_status(path, expected, actual):
+def _conditional_status(path, expected, actual, context_choice=None):
+    evaluation = _conditional_evaluation(path, expected, actual, context_choice)
+    return evaluation["status"], evaluation["reason"]
+
+
+def _conditional_evaluation(path, expected, actual, context_choice=None):
     expected_text = str(expected or "").strip()
     actual_text = str(actual or "").strip()
     if _normalized_alias(expected_text) == _normalized_alias(actual_text):
-        return "match", "The camera readback matches the selected profile."
+        return {
+            "status": "match",
+            "reason": "The camera readback matches the selected profile.",
+        }
+
+    prompt = _context_prompt(path, expected_text, context_choice)
+    if prompt:
+        selected = next(
+            (option for option in prompt["options"] if option["id"] == context_choice),
+            None,
+        )
+        prompt["selected"] = selected["id"] if selected else None
+        prompt["selected_target"] = selected["target"] if selected else None
+        if selected is None:
+            reason = (
+                "The supplied contextual choice is not an authored option; choose one of the listed conditions."
+                if context_choice
+                else "Choose the applicable authored context before Camera Lab evaluates this target."
+            )
+            return {"status": "conditional", "reason": reason, "context_prompt": prompt}
+        status, reason = _compare_conditional_target(path, selected["target"], actual_text)
+        return {
+            "status": status,
+            "reason": f"Using the authored {selected['label']} target ({selected['target']}). {reason}",
+            "context_prompt": prompt,
+        }
+
+    status, reason = _compare_conditional_target(path, expected_text, actual_text)
+    return {"status": status, "reason": reason}
+
+
+def _compare_conditional_target(path, expected, actual):
 
     if path == "exposure.exposure_compensation":
-        return _compare_compensation_target(expected_text, actual_text)
+        return _compare_compensation_target(expected, actual)
     if path == "lens.aperture.target":
-        return _compare_aperture_target(expected_text, actual_text)
+        return _compare_aperture_target(expected, actual)
     if path == "shutter.target":
-        return _compare_shutter_target(expected_text, actual_text)
+        return _compare_shutter_target(expected, actual)
     return "conditional", "The profile target requires shooting-mode, lens, range, or field context."
+
+
+def _context_prompt(path, expected, selected):
+    clauses = [clause.strip() for clause in str(expected or "").split(";") if clause.strip()]
+    if len(clauses) < 2:
+        return None
+
+    options = []
+    for clause in clauses:
+        parsed = _contextual_clause(path, clause)
+        if parsed is None:
+            return None
+        target, label = parsed
+        options.append(
+            {
+                "id": re.sub(r"[^a-z0-9]+", "-", label.casefold()).strip("-"),
+                "label": label,
+                "target": target,
+                "authored_clause": clause,
+            }
+        )
+    if len({option["id"] for option in options}) != len(options):
+        return None
+
+    labels = {option["label"].casefold() for option in options}
+    if labels <= {"single", "groups"}:
+        question = "Which subject grouping applies?"
+    elif labels <= {"outdoor", "indoor"}:
+        question = "Which lighting condition applies?"
+    elif labels <= {"portraits", "action"}:
+        question = "Which subject situation applies?"
+    else:
+        question = "Which authored field condition applies?"
+    return {
+        "path": path,
+        "question": question,
+        "selected": selected,
+        "options": options,
+    }
+
+
+def _contextual_clause(path, clause):
+    patterns = {
+        "lens.aperture.target": r"(f\s*/\s*\d+(?:\.\d+)?(?:\s*[–-]\s*f\s*/\s*\d+(?:\.\d+)?)?)\s+(.+)",
+        "shutter.target": r"((?:\d+(?:\.\d+)?/\d+(?:\.\d+)?)(?:\s*[–-]\s*\d+(?:\.\d+)?/\d+(?:\.\d+)?)?\+?)\s+(.+)",
+    }
+    match = re.fullmatch(patterns.get(path, r"(?!)"), clause, flags=re.IGNORECASE)
+    if not match:
+        return None
+    target, label = (part.strip() for part in match.groups())
+    return target, label
 
 
 def _compare_compensation_target(expected, actual):
@@ -378,6 +490,14 @@ def _compare_shutter_target(expected, actual):
         if min(bounds) <= actual_value <= max(bounds):
             return "equivalent", "The camera shutter speed is within the profile's accepted range."
         return "difference", "The camera shutter speed is outside the profile's accepted range."
+
+    minimum_speed = _minimum_shutter_speed(expected)
+    if minimum_speed is not None:
+        if actual_value is None:
+            return "difference", "The profile requires a minimum shutter speed, but the camera reports Auto or an unrecognized value."
+        if actual_value <= minimum_speed:
+            return "equivalent", "The camera shutter speed meets or exceeds the profile's authored minimum."
+        return "difference", "The camera shutter speed is slower than the profile's authored minimum."
 
     return "conditional", "The shutter target contains subject, lighting, or field context that Camera Lab cannot choose automatically."
 
@@ -457,6 +577,14 @@ def _simple_shutter_range(value):
         text,
     )
     return (float(seconds.group(1)), float(seconds.group(2))) if seconds else None
+
+
+def _minimum_shutter_speed(value):
+    match = re.fullmatch(
+        r"(\d+(?:\.\d+)?)/(\d+(?:\.\d+)?)\s*\+",
+        str(value or "").strip(),
+    )
+    return float(match.group(1)) / float(match.group(2)) if match else None
 
 
 def _direct_status(path, expected, merged_fields, property_item):

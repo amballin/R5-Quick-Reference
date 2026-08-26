@@ -38,6 +38,7 @@ if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
 from asset_manager import ProjectPaths
+from application_version import application_version_info
 from baseline import merge
 from baseline_impact import (
     BaselineImpactError,
@@ -109,8 +110,9 @@ DISPLAY_CATEGORIES = {"subject", "reference"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
-EDITOR_VERSION = "1.0.0"
 EDITOR_BUILD_FILES = (
+    "00 Master/application_version.yaml",
+    "80 Build/application_version.py",
     "controls.yaml",
     "data/canon_r5_custom_controls_current.yaml",
     "00 Master/my_menu.yaml",
@@ -715,9 +717,11 @@ class ProfileEditorModel:
         return text
 
     def _replace_cx_mode_assignments(self, text, assignments, old_assignments):
+        changed_starts = []
         for start, title in assignments.items():
             if title == old_assignments.get(start):
                 continue
+            changed_starts.append(start)
             block_pattern = rf"(^  {start}:\n)(.*?)(?=^  C[123]:\n|^  notes:|^  restriction:)"
             match = re.search(block_pattern, text, flags=re.MULTILINE | re.DOTALL)
             if not match:
@@ -726,7 +730,23 @@ class ProfileEditorModel:
             profile_id = self._card_id_for_title(title)
             block = re.sub(r"(^    profile_id: ).*$", rf"\g<1>{profile_id}", block, count=1, flags=re.MULTILINE)
             block = re.sub(r"(^    field_label: ).*$", rf"\g<1>{title}", block, count=1, flags=re.MULTILINE)
+            block = re.sub(
+                r"(^    status: ).*$",
+                r"\g<1>approved_target_pending_camera_verification",
+                block,
+                count=1,
+                flags=re.MULTILINE,
+            )
+            block = re.sub(r"^    unresolved_items:.*\n", "", block, flags=re.MULTILINE)
             text = text[:match.start()] + block + text[match.end():]
+        for start in changed_starts:
+            text = re.sub(
+                rf"(^    {start}: ).*$",
+                r"\g<1>approved_target_pending_camera_verification",
+                text,
+                count=1,
+                flags=re.MULTILINE,
+            )
         return text
 
     def _profile_by_title(self, title):
@@ -1184,10 +1204,12 @@ class ProfileEditorModel:
             digest.update(b"\0")
             digest.update(source.read_bytes())
             digest.update(b"\0")
+        version_info = application_version_info(self.paths.root)
         return {
-            "version": EDITOR_VERSION,
+            "version": version_info["version"],
             "build": digest.hexdigest()[:8],
-            "project_context": project_context_info(self.paths.root),
+            "context_name": version_info["context_name"],
+            "project_context": version_info["project_context"],
         }
 
     def build_readiness(self, pending_changes):

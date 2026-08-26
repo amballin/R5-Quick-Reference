@@ -1,6 +1,6 @@
 camera: Canon EOS R5
-record_type: owner_confirmed_controls_with_approved_targets
-last_confirmed: 2026-07-25
+record_type: owner_confirmed_controls_and_current_registrations
+last_confirmed: 2026-08-23
 approved_architecture_date: 2026-07-25
 authority: project_owner
 
@@ -74,7 +74,7 @@ buttons:
     assignment: Switch to Custom shooting mode
     operation: Press repeatedly to switch among C1, C2, and C3
     status: owner_confirmed
-    notes: The assignment and C1-C3 switching behavior were physically tested. C1 contains registered settings; C2 and C3 do not yet contain their target registrations.
+    notes: The assignment and C1-C3 switching behavior were physically tested. Current registration evidence is recorded separately below.
 
 dials:
   - control: Main Dial
@@ -95,18 +95,21 @@ custom_shooting_modes:
   C1:
     profile_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
     field_label: General Wildlife
-    status: approved_target_pending_camera_verification
+    status: owner_confirmed
+    unresolved_items: [Image Stabilizer Mode 1]
   C2:
     profile_id: d2609cc6-8056-5632-932d-45dcb4416185
     field_label: Birds in Flight / Action
-    status: approved_target_pending_camera_verification
+    status: owner_confirmed
+    unresolved_items: [Image Stabilizer Mode 3]
   C3:
     profile_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
     field_label: Landscape
-    status: approved_target_pending_camera_verification
+    status: owner_confirmed
+    unresolved_items: [Image Stabilizer Mode 1]
   restriction: Do not document these modes as independent AF-setting controls.
   registration_state:
     switching_behavior: owner_confirmed
-    C1: registered_settings_present_profile_match_pending_verification
-    C2: not_registered
-    C3: not_registered
+    C1: registered_and_camera_body_verified
+    C2: registered_and_camera_body_verified
+    C3: registered_and_camera_body_verified

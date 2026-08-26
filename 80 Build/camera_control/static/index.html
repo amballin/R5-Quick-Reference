@@ -16,13 +16,19 @@
     </div>
     <div class="header-tools">
       <div class="mode-stack">
-        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
         <span id="backend-badge" class="badge">Loading</span>
-        <span class="safety-badge">No setting writes</span>
+        <button id="backend-switch-button" class="stop-server-button" type="button">Use Simulator</button>
         <button id="stop-camera-lab-button" class="stop-server-button" type="button">Stop Camera Lab</button>
       </div>
+      <div class="header-meta">
+        <span class="safety-badge">No setting writes</span>
+        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
+      </div>
+      <details class="build-badge header-version">
+        <summary id="camera-lab-version" aria-live="polite">Loading Camera Lab version…</summary>
+        <span id="camera-lab-source-hash" class="source-hash">Source hash unavailable</span>
+      </details>
       <img class="camera-logo" src="/silver-camera-logo.png" alt="" aria-hidden="true">
-      <span id="camera-lab-build" class="build-badge" aria-live="polite">Loading Camera Lab build…</span>
     </div>
   </header>
 
@@ -96,42 +102,42 @@
       </section>
     </div>
 
-    <section id="cx-setup-panel" class="panel cx-setup-panel" aria-labelledby="cx-setup-heading">
-      <div class="panel-heading">
+    <details id="cx-setup-panel" class="panel collapsible-panel cx-setup-panel">
+      <summary class="panel-heading collapsible-summary">
         <div>
-          <p class="label">Phase 1 guided registration</p>
-          <h2 id="cx-setup-heading">C1–C3 Setup &amp; Validation</h2>
-          <p>Use the current saved assignments below to configure each custom mode manually, then use Camera Lab for read-only verification.</p>
+          <h2 id="cx-setup-heading">C1–C3 Maintenance &amp; Validation</h2>
+          <p>The current camera-body registrations were verified in physical session 3. Use this workflow after an assignment change, reset, restore, or deliberate re-registration.</p>
         </div>
-        <span class="safety-badge">Guided manual registration</span>
+        <span class="summary-tools"><span class="safety-badge">Maintenance &amp; reverification</span><span class="collapse-state" aria-hidden="true"></span></span>
+      </summary>
+      <div class="collapsible-content">
+        <div class="cx-safety-note">
+          <strong>Before changing or rebuilding a slot</strong>
+          <ol>
+            <li>Save an independent pre-configuration camera-settings backup.</li>
+            <li>Start from a normal shooting mode such as Fv, P, Tv, Av, or M—never from a recalled C1, C2, or C3 state.</li>
+            <li>Keep Custom shooting mode Auto update disabled while setting shared controls, My Menu, and baseline values.</li>
+          </ol>
+        </div>
+        <div id="cx-slot-cards" class="cx-slot-grid" aria-live="polite">
+          <p class="cx-loading">Loading the saved C1–C3 assignments…</p>
+        </div>
+        <div class="cx-final-check">
+          <strong>After maintenance</strong>
+          <ol>
+            <li>Recall C1, C2, and C3 one at a time and rescan each assigned profile.</li>
+            <li>Confirm Auto update is still disabled and recheck earlier slots after completing a later slot.</li>
+            <li>Save a separate final camera-settings backup and keep the pre-configuration backup intact.</li>
+          </ol>
+        </div>
       </div>
-      <div class="cx-safety-note">
-        <strong>Before the first slot</strong>
-        <ol>
-          <li>Save an independent pre-configuration camera-settings backup.</li>
-          <li>Start from a normal shooting mode such as Fv, P, Tv, Av, or M—never from a recalled C1, C2, or C3 state.</li>
-          <li>Keep Custom shooting mode Auto update disabled while setting shared controls, My Menu, and baseline values.</li>
-        </ol>
-      </div>
-      <div id="cx-slot-cards" class="cx-slot-grid" aria-live="polite">
-        <p class="cx-loading">Loading the saved C1–C3 assignments…</p>
-      </div>
-      <div class="cx-final-check">
-        <strong>After all three slots</strong>
-        <ol>
-          <li>Recall C1, C2, and C3 one at a time and rescan each assigned profile.</li>
-          <li>Confirm Auto update is still disabled and recheck earlier slots after completing a later slot.</li>
-          <li>Save a separate final camera-settings backup and keep the pre-configuration backup intact.</li>
-        </ol>
-      </div>
-    </section>
+    </details>
 
     <section id="comparison-panel" class="panel comparison-panel">
       <div class="panel-heading">
         <div>
-          <p class="label">Phase 1 read-only comparison</p>
           <h2>Compare a Subject/Profile Card</h2>
-          <p>Select a card after scanning the camera. Findings follow the card's visible setting order; additional settings appear below.</p>
+          <p>Select a card after scanning the camera. Findings follow the card's visible setting order; when an authored target depends on subject, grouping, or lighting, choose that context in the finding before Camera Lab evaluates it.</p>
         </div>
         <span class="safety-badge">No setting writes</span>
       </div>
@@ -184,49 +190,51 @@
       </div>
     </section>
 
-    <section id="capability-panel" class="panel capability-panel" hidden>
-      <div class="panel-heading">
+    <details id="capability-panel" class="panel collapsible-panel capability-panel" hidden>
+      <summary class="panel-heading collapsible-summary">
         <div>
           <p class="label">Read-only discovery reference</p>
           <h2>Camera capabilities</h2>
           <p id="capability-summary">No capability scan has been run.</p>
         </div>
-        <span class="safety-badge">Writes untested</span>
+        <span class="summary-tools"><span class="safety-badge">Writes untested</span><span class="collapse-state" aria-hidden="true"></span></span>
+      </summary>
+      <div class="collapsible-content">
+        <div class="table-scroll">
+          <table class="capability-table">
+            <thead>
+              <tr>
+                <th scope="col">Property</th>
+                <th scope="col">Readback</th>
+                <th scope="col">Profile mapping</th>
+                <th scope="col">Descriptor</th>
+                <th scope="col">Allowed values</th>
+                <th scope="col">Write status</th>
+              </tr>
+            </thead>
+            <tbody id="capability-rows"></tbody>
+          </table>
+        </div>
+        <div class="coverage-grid">
+          <section>
+            <h3>SDK-readable profile settings</h3>
+            <p id="coverage-readable-summary" class="coverage-count">—</p>
+            <ul id="coverage-readable" class="path-list"></ul>
+          </section>
+          <section>
+            <h3>Conditional comparison</h3>
+            <p id="coverage-conditional-summary" class="coverage-count">—</p>
+            <ul id="coverage-conditional" class="path-list"></ul>
+          </section>
+          <section>
+            <h3>Manual or SDK-unmapped</h3>
+            <p id="coverage-unmapped-summary" class="coverage-count">—</p>
+            <ul id="coverage-unmapped" class="path-list path-list-long"></ul>
+          </section>
+        </div>
+        <p class="capability-note">A Canon descriptor can suggest configurability, but it is not proof that this application can safely write the property. Every write remains disabled and unverified.</p>
       </div>
-      <div class="table-scroll">
-        <table class="capability-table">
-          <thead>
-            <tr>
-              <th scope="col">Property</th>
-              <th scope="col">Readback</th>
-              <th scope="col">Profile mapping</th>
-              <th scope="col">Descriptor</th>
-              <th scope="col">Allowed values</th>
-              <th scope="col">Write status</th>
-            </tr>
-          </thead>
-          <tbody id="capability-rows"></tbody>
-        </table>
-      </div>
-      <div class="coverage-grid">
-        <section>
-          <h3>SDK-readable profile settings</h3>
-          <p id="coverage-readable-summary" class="coverage-count">—</p>
-          <ul id="coverage-readable" class="path-list"></ul>
-        </section>
-        <section>
-          <h3>Conditional comparison</h3>
-          <p id="coverage-conditional-summary" class="coverage-count">—</p>
-          <ul id="coverage-conditional" class="path-list"></ul>
-        </section>
-        <section>
-          <h3>Manual or SDK-unmapped</h3>
-          <p id="coverage-unmapped-summary" class="coverage-count">—</p>
-          <ul id="coverage-unmapped" class="path-list path-list-long"></ul>
-        </section>
-      </div>
-      <p class="capability-note">A Canon descriptor can suggest configurability, but it is not proof that this application can safely write the property. Every write remains disabled and unverified.</p>
-    </section>
+    </details>
 
     <section id="simulation-panel" class="panel simulation-panel" hidden>
       <div class="panel-heading">
@@ -257,7 +265,7 @@
     </section>
   </main>
 
-  <button id="return-to-top" class="floating-return" type="button" aria-label="Return to top" title="Return to top" hidden>
+  <button id="return-to-top" class="floating-return" type="button" aria-label="Return to Compare a Subject/Profile Card" title="Return to comparison" hidden>
     <span aria-hidden="true">↑</span>
   </button>
 
@@ -276,6 +284,19 @@
       <div class="dialog-actions">
         <form method="dialog"><button class="secondary" type="submit">Close</button></form>
         <button id="recovery-retry-button" class="primary" type="button">Reconnect and scan</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="backend-switch-dialog" class="recovery-dialog" aria-labelledby="backend-switch-title">
+    <div class="recovery-content">
+      <p class="label">Confirm Camera Lab restart</p>
+      <h2 id="backend-switch-title">Use the simulator?</h2>
+      <p id="backend-switch-message"></p>
+      <p class="safety-callout">Camera Lab remains read-only. It will not change a camera setting.</p>
+      <div class="dialog-actions">
+        <form method="dialog"><button class="secondary" type="submit">Cancel</button></form>
+        <button id="backend-switch-confirm" class="primary" type="button">Use Simulator</button>
       </div>
     </div>
   </dialog>

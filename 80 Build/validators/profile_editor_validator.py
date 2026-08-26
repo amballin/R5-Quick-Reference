@@ -1,4 +1,5 @@
 from profile_editor import ProfileEditorModel
+from application_version import application_version_info
 
 from .common import error
 
@@ -49,7 +50,8 @@ def validate(root):
         if create_detail.get("metadata") != {"status": "Draft", "release": False}:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profiles must begin as unreleased drafts."))
         editor_info = model.editor_info()
-        if editor_info.get("version") != "1.0.0" or len(editor_info.get("build") or "") != 8:
+        expected_version = application_version_info(root)["version"]
+        if editor_info.get("version") != expected_version or len(editor_info.get("build") or "") != 8:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Editor version/build metadata is incomplete."))
         route_catalog = model._my_menu_route_catalog()
         if not route_catalog:

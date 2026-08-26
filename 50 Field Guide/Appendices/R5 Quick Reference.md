@@ -77,7 +77,7 @@ Use Bulb only for long manual exposures where you directly control how long the 
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C2** | Custom shooting mode 2 | Recalls registered camera settings. |
 | ![Mode selector](../../60 Assets/icons/canon_r5_official/mode-select.svg) | **C3** | Custom shooting mode 3 | Recalls registered camera settings. |
 
-**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3). The owner-confirmed **M-Fn** assignment switches among C1, C2, and C3; C1 currently contains registered settings, while C2 and C3 are not yet registered.
+**Camera Menu:** MODE button, then Main dial. Custom modes are registered under Set-up > Custom shooting mode (C1-C3). The owner-confirmed **M-Fn** assignment switches among C1, C2, and C3. C1 Wildlife, C2 Birds in Flight, and C3 Landscape were registered, recalled, and camera-body verified in physical session 3; exact lens stabilization Mode 1/3 remains equipment-dependent.
 
 **Quick Access:** MODE button + Main Dial. The owner-confirmed **M-Fn** assignment switches among C1-C3; exposure mode is not normally changed through the Q screen.
 

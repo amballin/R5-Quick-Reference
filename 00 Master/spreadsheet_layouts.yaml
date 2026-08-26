@@ -58,7 +58,7 @@ workbooks:
       width_px: 2600
       title: Subject Settings Matrix
       instructions: Edit or paste into C1–C3 to experiment, then copy the approved targets from the C1-C3 Defaults tab to reset. Each column initially compares with itself, so yellow appears only after you choose a different comparison.
-      note: C1–C3 values are approved registration targets pending physical verification, not verified current camera state. Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
+      note: C1–C3 camera-body registrations were verified in physical session 3; exact lens Mode 1/3 remains pending. Edited targets require physical re-verification. Amber profile headers are authored but not currently released. “Not Used” marks settings made inapplicable by Manual Focus or the selected AF method. MM = My Menu. * Proposed My Menu tab; not approved or currently configured.
     excel:
       import_only_rows: 3
       freeze_rows: 6
@@ -89,7 +89,7 @@ workbooks:
       defaults_sheet:
         worksheet: C1-C3 Defaults
         table_name: CxDefaultsTable
-        note: Approved registration targets pending physical verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.
+        note: Session-3 camera-body targets; lens Mode 1/3 remains pending. Edited targets require physical re-verification. Ordinary copy/paste back to the matching C1–C3 column restores both the target values and compatible comparison highlighting.
         excel:
           freeze_rows: 2
           freeze_columns: 1

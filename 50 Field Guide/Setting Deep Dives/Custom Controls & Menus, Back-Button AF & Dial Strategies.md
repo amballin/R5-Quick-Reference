@@ -47,7 +47,7 @@ Explain why the Canon EOS R5 is configured around complete subject profiles, con
 
 ## Approved Control Layout
 
-The physical layout is shared across the baseline and all subject profiles. The button and dial assignments below are owner-confirmed on the camera. M-Fn switching among C1-C3 has been physically tested. C1 contains registered settings, but its match to the Wildlife profile remains pending verification; C2 and C3 are not yet registered.
+The physical layout is shared across the baseline and all subject profiles. The button and dial assignments below are owner-confirmed on the camera. M-Fn switching among C1-C3 has been physically tested. Physical session 3 registered, recalled, and camera-body verified C1 Wildlife, C2 Birds in Flight, and C3 Landscape; exact lens stabilization Mode 1/3 remains equipment-dependent.
 
 ### Controls
 
@@ -109,7 +109,7 @@ The selected profile or C mode loads the shooting environment. SET can change th
 
 ### M-Fn: custom-mode switching
 
-M-Fn is the direct entry point to the registered subject configurations. Press it repeatedly to switch among C1, C2, and C3 without changing the button assignments described above. The switching behavior is physically verified; C1 contains registered settings but still requires verification against the complete Wildlife profile, while C2 and C3 are not yet registered.
+M-Fn is the direct entry point to the registered subject configurations. Press it repeatedly to switch among C1, C2, and C3 without changing the button assignments described above. The switching behavior and all three current camera-body registrations were physically verified in session 3; exact lens stabilization Mode 1/3 remains equipment-dependent.
 
 ### AF-ON: intelligent acquisition
 
@@ -248,7 +248,7 @@ The exact starting values below convert card ranges and situational guidance int
 | **IBIS** | On | On | On |
 | **Lens IS switch** | On; physical check | On; physical check | On for the registered handheld starting state; turn off for tripod use |
 | **Focus Bracketing** | Disable | Disable | Disable; enable situationally for near-to-far depth of field |
-| **Current verification state** | Registration present; match to this matrix pending physical verification | Not yet registered | Not yet registered |
+| **Current verification state** | Camera-body verified; lens Mode 1 pending | Camera-body verified; lens Mode 3 pending | Camera-body verified; lens Mode 1 pending |
 
 The C2 starting shutter is **1/2500 sec**: fast enough for normal birds-in-flight action while giving the camera more opportunity to retain useful aperture and depth of field than a 1/4000-sec default. Raise it toward 1/3200–1/4000 when wing speed or subject motion requires it. The C3 starting aperture is **f/9**, the practical middle of the card's f/8–f/11 range.
 
@@ -500,7 +500,7 @@ Project configuration:
 
 - The physical control layout is the project owner's confirmed layout.
 - Face + Tracking on AF-ON and the SET Eye detection assignment are owner-confirmed on the camera.
-- C1 contains registered settings, but its match to the complete registration matrix remains pending physical verification. C2 and C3 are not yet registered.
+- C1 Wildlife, C2 Birds in Flight, and C3 Landscape were registered, recalled, and camera-body verified in physical session 3. Exact lens stabilization Mode 1/3 remains equipment-dependent.
 - Historical screenshots are not current-state evidence.
 - Plain physical names are used so the layout is readable in the field.
 

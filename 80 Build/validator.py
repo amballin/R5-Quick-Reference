@@ -8,6 +8,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from validators import (  # noqa: E402
+    application_version_validator,
     baseline_validator,
     card_identity_validator,
     card_layout_validator,
@@ -40,6 +41,7 @@ from validators import (  # noqa: E402
 VALIDATORS = [
     ("Project Identity", project_identity_validator.validate),
     ("Project Structure", structure.validate),
+    ("Application Version", application_version_validator.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
     ("Card Identity", card_identity_validator.validate),
@@ -69,6 +71,7 @@ VALIDATORS = [
 SOURCE_ONLY_VALIDATORS = [
     ("Project Identity", project_identity_validator.validate),
     ("Project Structure", structure.validate),
+    ("Application Version", application_version_validator.validate),
     ("YAML", yaml_validator.validate),
     ("Baseline", baseline_validator.validate),
     ("Card Identity", card_identity_validator.validate),

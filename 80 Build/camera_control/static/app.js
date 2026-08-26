@@ -4,7 +4,9 @@ const requestedProfileName = new URLSearchParams(window.location.search).get("pr
 const elements = {
   backendBadge: document.querySelector("#backend-badge"),
   projectContextBadge: document.querySelector("#project-context-badge"),
-  cameraLabBuild: document.querySelector("#camera-lab-build"),
+  cameraLabVersion: document.querySelector("#camera-lab-version"),
+  cameraLabSourceHash: document.querySelector("#camera-lab-source-hash"),
+  backendSwitchButton: document.querySelector("#backend-switch-button"),
   stopCameraLabButton: document.querySelector("#stop-camera-lab-button"),
   statusDot: document.querySelector("#status-dot"),
   connectionTitle: document.querySelector("#connection-title"),
@@ -66,6 +68,10 @@ const elements = {
   recoveryDialog: document.querySelector("#recovery-dialog"),
   recoveryDetail: document.querySelector("#recovery-detail"),
   recoveryRetryButton: document.querySelector("#recovery-retry-button"),
+  backendSwitchDialog: document.querySelector("#backend-switch-dialog"),
+  backendSwitchTitle: document.querySelector("#backend-switch-title"),
+  backendSwitchMessage: document.querySelector("#backend-switch-message"),
+  backendSwitchConfirm: document.querySelector("#backend-switch-confirm"),
 };
 
 let statusState = null;
@@ -74,6 +80,8 @@ let selectedCameraIndex = null;
 let requestPending = false;
 let cameraLabStopped = false;
 let statusPollId = null;
+let contextSelections = {};
+let requestedBackendMode = null;
 const checklistStorageKey = "camera-lab-phase1-checklist-v1";
 let checklistState = loadChecklistState();
 
@@ -111,11 +119,19 @@ function activeChecklistRecord(create = false) {
 
 function checklistFindingKey(finding) {
   const identity = finding.path || finding.key || (finding.items || []).map((item) => item.path).join("+") || finding.label;
-  return `${identity}|${finding.expected}`;
+  const selectedContext = contextPromptForFinding(finding)?.selected_target || "no-context-selected";
+  return `${identity}|${finding.expected}|${selectedContext}`;
 }
 
 function isManualChecklistFinding(finding) {
+  const prompt = contextPromptForFinding(finding);
+  if (finding.status === "conditional" && prompt && !prompt.selected) return false;
   return ["manual_confirmation_needed", "conditional", "unreadable"].includes(finding.status);
+}
+
+function contextPromptForFinding(finding) {
+  if (finding.context_prompt) return finding.context_prompt;
+  return (finding.context_prompts || [])[0] || null;
 }
 
 function manualConfirmation(finding) {
@@ -228,6 +244,7 @@ function setBusy(busy) {
   elements.refreshButton.disabled = busy;
   elements.applyScenarioButton.disabled = busy;
   elements.simulateDisconnectButton.disabled = busy || !statusState?.connected;
+  elements.backendSwitchButton.disabled = busy;
   elements.stopCameraLabButton.disabled = busy;
   for (const button of document.querySelectorAll("[data-cx-profile]")) button.disabled = busy;
 }
@@ -265,6 +282,68 @@ async function stopCameraLab() {
   }
 }
 
+function showBackendSwitchConfirmation() {
+  if (requestPending || !statusState) return;
+  requestedBackendMode = statusState.backend_mode === "simulated" ? "edsdk" : "simulated";
+  const usingSimulator = requestedBackendMode === "simulated";
+  elements.backendSwitchTitle.textContent = usingSimulator ? "Use the simulator?" : "Use the physical camera?";
+  elements.backendSwitchMessage.textContent = usingSimulator
+    ? "Camera Lab will disconnect any physical EOS R5 session and restart in simulated mode. Current camera scans and comparisons will be cleared."
+    : "Camera Lab will end the simulated session and restart with Canon EDSDK for a physical EOS R5. Current simulated scans and comparisons will be cleared.";
+  elements.backendSwitchConfirm.textContent = usingSimulator ? "Use Simulator" : "Use Camera";
+  if (typeof elements.backendSwitchDialog.showModal === "function") {
+    elements.backendSwitchDialog.showModal();
+  } else {
+    elements.backendSwitchDialog.setAttribute("open", "");
+  }
+}
+
+async function waitForBackendRestart(backend) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    await new Promise((resolve) => window.setTimeout(resolve, 150));
+    try {
+      const response = await fetch("/api/camera-control/status", { cache: "no-store" });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      if (payload.backend_mode === backend) {
+        window.location.reload();
+        return;
+      }
+    } catch (_error) {
+      // The loopback server is expected to be briefly unavailable during restart.
+    }
+  }
+  throw new Error("Camera Lab did not return after changing its connection mode. Refresh this page or reopen the app.");
+}
+
+async function restartWithSelectedBackend() {
+  const backend = requestedBackendMode;
+  if (!backend || requestPending) return;
+  elements.backendSwitchDialog.close();
+  setBusy(true);
+  if (statusPollId !== null) {
+    window.clearInterval(statusPollId);
+    statusPollId = null;
+  }
+  const label = backend === "simulated" ? "simulator" : "physical-camera mode";
+  setMessage(`Closing the current session and restarting Camera Lab in ${label}…`, "info");
+  try {
+    const result = await request("/api/camera-control/restart-backend", {
+      method: "POST",
+      body: JSON.stringify({ backend }),
+    });
+    if (!result.restarting || !result.camera_session_closed) {
+      throw new Error("Camera Lab did not confirm a safe backend restart.");
+    }
+    await waitForBackendRestart(backend);
+  } catch (error) {
+    requestedBackendMode = null;
+    setBusy(false);
+    if (statusPollId === null) statusPollId = window.setInterval(() => refreshStatus({ quiet: true }), 2500);
+    setMessage(error.message);
+  }
+}
+
 function renderStatus(status) {
   statusState = status;
   const connected = Boolean(status.connected);
@@ -274,11 +353,14 @@ function renderStatus(status) {
   elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
   elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
   elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
-  elements.cameraLabBuild.textContent = app.version && app.build
-    ? `Camera Lab ${app.version} · Build ${app.build}`
-    : "Camera Lab build unavailable";
+  const contextName = app.context_name || (projectContext.kind === "main" ? "Main" : projectContext.kind === "prototype" ? "Prototype" : "Unknown");
+  elements.cameraLabVersion.textContent = app.version
+    ? `Camera Lab ${app.version} · ${contextName}`
+    : "Camera Lab version unavailable";
+  elements.cameraLabSourceHash.textContent = app.build ? `Source hash ${app.build}` : "Source hash unavailable";
   elements.backendBadge.textContent = status.backend_mode === "simulated" ? "Simulated camera" : "Canon EDSDK";
   elements.backendBadge.classList.toggle("live", status.backend_mode === "edsdk");
+  elements.backendSwitchButton.textContent = status.backend_mode === "simulated" ? "Use Camera" : "Use Simulator";
   elements.statusDot.classList.toggle("connected", connected);
   elements.statusDot.classList.toggle("error", !connected && Boolean(status.last_error));
   elements.connectionTitle.textContent = connected ? "EOS R5 connected" : "Camera not connected";
@@ -547,6 +629,38 @@ function findingRow(finding, cardRow = false) {
   expectedValue.textContent = finding.expected;
   if (finding.expected_color) expectedValue.style.color = finding.expected_color;
   expected.append(title, expectedValue);
+  const contextPrompt = contextPromptForFinding(finding);
+  if (contextPrompt) {
+    const contextControl = document.createElement("label");
+    contextControl.className = "context-choice";
+    const question = document.createElement("span");
+    question.textContent = contextPrompt.question;
+    const select = document.createElement("select");
+    select.dataset.contextPath = contextPrompt.path;
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Choose context…";
+    select.append(placeholder);
+    for (const option of contextPrompt.options || []) {
+      const choice = document.createElement("option");
+      choice.value = option.id;
+      choice.textContent = `${option.label} — ${option.target}`;
+      choice.selected = option.id === contextPrompt.selected;
+      select.append(choice);
+    }
+    select.addEventListener("change", () => {
+      if (select.value) contextSelections[contextPrompt.path] = select.value;
+      else delete contextSelections[contextPrompt.path];
+      runAction(compareSelectedProfile);
+    });
+    contextControl.append(question, select);
+    if (contextPrompt.selected_target) {
+      const selectedTarget = document.createElement("small");
+      selectedTarget.textContent = `Applicable authored target: ${contextPrompt.selected_target}`;
+      contextControl.append(selectedTarget);
+    }
+    expected.append(contextControl);
+  }
 
   const camera = document.createElement("td");
   camera.dataset.label = "Camera";
@@ -596,6 +710,16 @@ function findingRow(finding, cardRow = false) {
     checklist.textContent = "Resolve blocker";
   } else if (finding.status === "not_applicable") {
     checklist.textContent = "No action";
+  } else if (finding.status === "conditional" && contextPrompt && !contextPrompt.selected) {
+    checklist.textContent = "Choose context before evaluating";
+    const reason = document.createElement("small");
+    reason.className = "checklist-reason";
+    reason.textContent = [...new Set(
+      (finding.items?.length ? finding.items : [finding])
+        .map((item) => item.reason)
+        .filter(Boolean)
+    )].join(" ");
+    checklist.append(reason);
   } else if (isManualChecklistFinding(finding)) {
     const label = document.createElement("label");
     label.className = "manual-confirmation";
@@ -710,10 +834,10 @@ function renderComparisonTables() {
   elements.additionalFindings.replaceChildren(findingTable(comparisonState.additional_findings, false));
 }
 
-function renderComparison(comparison) {
+function renderComparison(comparison, { recordScan = false } = {}) {
   comparisonState = comparison;
   const record = activeChecklistRecord(true);
-  record.last_scan_at = new Date().toISOString();
+  if (recordScan) record.last_scan_at = new Date().toISOString();
   saveChecklistState();
   elements.comparisonResults.hidden = false;
   elements.comparisonSummary.textContent = `${comparison.profile.display_title || comparison.profile.title}: ${comparison.summary.card_rows} card rows followed by ${comparison.summary.additional_settings} additional settings. Camera settings were not changed.`;
@@ -727,6 +851,7 @@ function openCxChecklist(profileName) {
   const option = [...elements.profileSelect.options].find((item) => item.value === profileName);
   if (!option) return;
   elements.profileSelect.value = profileName;
+  contextSelections = {};
   comparisonState = null;
   elements.comparisonResults.hidden = true;
   setBusy(requestPending);
@@ -749,17 +874,17 @@ function renderCxSetup(profiles) {
       heading.textContent = profile ? `${slot} – ${profile.title}` : `${slot} – Assignment unavailable`;
       const summary = document.createElement("p");
       summary.textContent = profile
-        ? `Saved foundation: ${profile.title}. Camera Lab rereads this assignment from the current saved project profiles.`
+        ? `Saved foundation: ${profile.title}. The session-3 camera-body registration was verified; Camera Lab rereads the current saved assignment whenever it loads.`
         : "No saved foundation profile currently resolves to this slot. Save the assignment in Profile Editor, then reload Camera Lab.";
       const steps = document.createElement("ol");
       const instructions = profile
         ? [
-            `In a normal shooting mode, open the ${profile.title} checklist and set or confirm its assigned values.`,
-            `On the camera choose Set-up 5 → Custom shooting mode (C1-C3) → Register settings → ${slot}. Registration is manual.`,
+            `For routine validation, recall ${slot} and open the ${profile.title} checklist without changing the registration.`,
+            `If the assignment or target changed, begin in a normal shooting mode, set or confirm the checklist values, then manually choose Set-up 5 → Custom shooting mode (C1-C3) → Register settings → ${slot}.`,
             `Leave the setup state, recall ${slot}, then use Scan & compare for ${profile.title}.`,
             "Resolve readable differences with another scan and manually confirm only the findings Camera Lab identifies as manual, conditional, or unreadable.",
           ]
-        : ["Return to Profile Editor and save a foundation profile for this slot before registering it on the camera."];
+        : ["Return to Profile Editor and save a foundation profile for this slot before maintaining or re-registering it on the camera."];
       for (const instruction of instructions) {
         const item = document.createElement("li");
         item.textContent = instruction;
@@ -891,18 +1016,22 @@ async function runAction(action) {
   }
 }
 
-async function compareSelectedProfile() {
+async function compareSelectedProfile({ recordScan = false } = {}) {
   const profile = elements.profileSelect.value;
   if (!profile) return;
-  const result = await request(`/api/camera-control/comparison?profile=${encodeURIComponent(profile)}`);
-  renderComparison(result);
+  const query = new URLSearchParams({ profile });
+  for (const [path, choice] of Object.entries(contextSelections)) {
+    query.append("context", `${path}|${choice}`);
+  }
+  const result = await request(`/api/camera-control/comparison?${query.toString()}`);
+  renderComparison(result, { recordScan });
 }
 
 async function scanAndCompare() {
   try {
     const result = await request("/api/camera-control/capabilities");
     renderCapabilities(result);
-    await compareSelectedProfile();
+    await compareSelectedProfile({ recordScan: true });
     if (result.automatic_reconnect_performed) {
       setMessage("The camera session was restored automatically, then the scan and profile comparison were refreshed.", "info");
     }
@@ -931,10 +1060,17 @@ elements.disconnectButton.addEventListener("click", () => runAction(async () => 
 }));
 
 elements.stopCameraLabButton.addEventListener("click", stopCameraLab);
+elements.backendSwitchButton.addEventListener("click", showBackendSwitchConfirmation);
+elements.backendSwitchConfirm.addEventListener("click", restartWithSelectedBackend);
 
 elements.scanButton.addEventListener("click", () => runAction(scanAndCompare));
 
-elements.profileSelect.addEventListener("change", () => setBusy(requestPending));
+elements.profileSelect.addEventListener("change", () => {
+  contextSelections = {};
+  comparisonState = null;
+  elements.comparisonResults.hidden = true;
+  setBusy(requestPending);
+});
 
 elements.cxSlotCards.addEventListener("click", (event) => {
   const button = event.target.closest("[data-cx-profile]");
@@ -961,7 +1097,7 @@ function updateFloatingReturn() {
   elements.returnToTop.hidden = window.scrollY < 280;
 }
 
-elements.returnToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+elements.returnToTop.addEventListener("click", () => elements.comparisonPanel.scrollIntoView({ behavior: "smooth", block: "start" }));
 window.addEventListener("scroll", updateFloatingReturn, { passive: true });
 
 elements.recoveryRetryButton.addEventListener("click", () => {

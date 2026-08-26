@@ -8,6 +8,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import mimetypes
+import os
 from pathlib import Path
 import secrets
 import sys
@@ -146,10 +147,17 @@ class CameraLabHandler(BaseHTTPRequestHandler):
             elif path == "/api/camera-control/profiles":
                 self._send_json(self.service.profiles())
             elif path == "/api/camera-control/comparison":
-                profile = (parse_qs(parsed.query).get("profile") or [None])[0]
+                query = parse_qs(parsed.query)
+                profile = (query.get("profile") or [None])[0]
                 if not profile:
                     raise ValueError("profile query parameter is required")
-                self._send_json(self.service.compare_profile(profile))
+                context_choices = {}
+                for encoded_choice in query.get("context") or []:
+                    context_path, separator, choice = encoded_choice.partition("|")
+                    if not separator or not context_path or not choice:
+                        raise ValueError("context query parameters must use path|choice")
+                    context_choices[context_path] = choice
+                self._send_json(self.service.compare_profile(profile, context_choices))
             elif path.startswith("/api/"):
                 self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
             else:
@@ -185,6 +193,27 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                 result = self.service.set_simulated_scenario(scenario)
             elif path == "/api/camera-control/simulate-disconnect":
                 result = self.service.simulate_disconnect()
+            elif path == "/api/camera-control/restart-backend":
+                backend = payload.get("backend")
+                if backend not in {"edsdk", "simulated"}:
+                    raise ValueError("backend must be edsdk or simulated")
+                if backend == self.service.backend_mode:
+                    raise ValueError(f"Camera Lab is already running in {backend} mode")
+                if backend == "edsdk" and (
+                    self.server.restart_sdk_path is None
+                    or not self.server.restart_sdk_path.is_dir()
+                ):
+                    raise ValueError(
+                        f"The machine-local Canon EDSDK helper was not found: {self.server.restart_sdk_path}"
+                    )
+                self.service.close()
+                self.server.restart_backend = backend
+                result = {
+                    "ok": True,
+                    "restarting": True,
+                    "backend": backend,
+                    "camera_session_closed": True,
+                }
             elif path == "/api/camera-control/shutdown":
                 self.service.close()
                 result = {
@@ -196,7 +225,7 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                 self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
                 return
             self._send_json(result)
-            if path == "/api/camera-control/shutdown":
+            if path in {"/api/camera-control/shutdown", "/api/camera-control/restart-backend"}:
                 threading.Thread(target=self.server.shutdown, daemon=True).start()
         except ValueError as exc:
             self._send_error(HTTPStatus.BAD_REQUEST, "invalid_request", str(exc))
@@ -206,33 +235,66 @@ class CameraLabHandler(BaseHTTPRequestHandler):
             self._send_error(HTTPStatus.INTERNAL_SERVER_ERROR, "server_error", str(exc))
 
 
-def create_server(service, port=DEFAULT_PORT, token=None):
+def create_server(service, port=DEFAULT_PORT, token=None, restart_sdk_path=None):
     handler = type(
         "BoundCameraLabHandler",
         (CameraLabHandler,),
         {"service": service, "request_token": token or secrets.token_urlsafe(32)},
     )
-    return ThreadingHTTPServer((HOST, port), handler)
+    server = ThreadingHTTPServer((HOST, port), handler)
+    server.restart_backend = None
+    server.restart_sdk_path = (
+        Path(restart_sdk_path).expanduser().resolve()
+        if restart_sdk_path
+        else None
+    )
+    return server
 
 
 def main(argv=None):
     args = parse_args(argv)
+    if args.sdk_path:
+        restart_sdk_path = Path(args.sdk_path).expanduser().resolve()
+    else:
+        local_workspace = Path(
+            os.environ.get("PRS_LOCAL_WORKSPACE", f"{PROJECT_ROOT} Local")
+        ).expanduser().resolve()
+        restart_sdk_path = local_workspace / "SDK" / "EDSDKHelper.app"
     service = CameraControlService(
         backend_mode=args.backend,
         sdk_path=args.sdk_path,
         simulated_scenario=args.scenario,
     )
-    server = create_server(service, port=args.port)
+    server = create_server(
+        service,
+        port=args.port,
+        restart_sdk_path=restart_sdk_path,
+    )
     print(f"EOS R5 Camera Lab: http://{HOST}:{server.server_port}/")
     print(f"Backend: {args.backend} • Camera-setting writes: disabled")
     print("Press Control-C to stop.")
+    restart_backend = None
     try:
         server.serve_forever(poll_interval=0.25)
     except KeyboardInterrupt:
         print("\nStopping Camera Lab.")
     finally:
+        restart_backend = server.restart_backend
         server.server_close()
         service.close()
+    if restart_backend:
+        restart_args = [
+            sys.executable,
+            "-B",
+            str(Path(__file__).resolve()),
+            "--backend",
+            restart_backend,
+            "--sdk-path",
+            str(restart_sdk_path),
+            "--port",
+            str(args.port),
+        ]
+        os.execv(sys.executable, restart_args)
     return 0
 
 

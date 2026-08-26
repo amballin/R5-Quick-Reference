@@ -80,7 +80,9 @@ class AppWrapperTests(unittest.TestCase):
                     else:
                         self.assertNotIn(") </dev/null >/dev/null 2>&1 &", runner)
 
+            camera_lab = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Camera Lab")
             profile_editor = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Profile Editor")
+            self.assertTrue(camera_lab.detach_after_launch)
             self.assertFalse(profile_editor.launch_in_terminal)
             self.assertTrue(profile_editor.detach_after_launch)
             self.assertEqual(profile_editor.command_file, "80 Build/scripts/start-profile-editor.sh")

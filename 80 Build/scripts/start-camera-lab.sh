@@ -52,6 +52,26 @@ if ! command -v open >/dev/null 2>&1 || ! open -Ra "Google Chrome"; then
     exit 1
 fi
 
+CAMERA_LAB_STATUS="$(curl -fsS "$CAMERA_LAB_ORIGIN/api/camera-control/status" 2>/dev/null || true)"
+if [[ -n "$CAMERA_LAB_STATUS" ]] && python3 -c '
+import json, sys
+payload = json.loads(sys.argv[1])
+app = payload.get("app")
+valid = (
+    payload.get("ok") is True
+    and payload.get("read_only") is True
+    and payload.get("backend_mode") in {"edsdk", "simulated"}
+    and isinstance(app, dict)
+    and isinstance(app.get("version"), str)
+    and isinstance(app.get("project_context"), dict)
+)
+raise SystemExit(0 if valid else 1)
+' "$CAMERA_LAB_STATUS" 2>/dev/null; then
+    open -a "Google Chrome" "$CAMERA_LAB_URL"
+    echo "Camera Lab is already running on port 8770; Google Chrome reopened it."
+    exit 0
+fi
+
 if command -v lsof >/dev/null 2>&1 && lsof -nP -iTCP:8770 -sTCP:LISTEN >/dev/null 2>&1; then
     echo "Camera Lab cannot start because port 8770 is already in use."
     echo "Stop the existing Camera Lab with Control-C, then run this command again."

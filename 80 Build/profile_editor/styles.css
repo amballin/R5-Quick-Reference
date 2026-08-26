@@ -72,11 +72,15 @@ h2 { margin-bottom: .25rem; }
 .guide-link:hover, .header-button:hover:not(:disabled) { background: rgba(255,255,255,.12); }
 .guide-link:focus-visible, .header-button:focus-visible { outline: 3px solid rgba(255,255,255,.65); outline-offset: 2px; }
 
-.header-tools { display: grid; grid-template-columns: auto 42px; grid-template-rows: auto auto; column-gap: .75rem; row-gap: .5rem; align-items: center; justify-content: end; }
+.header-tools { display: grid; grid-template-columns: auto 42px; grid-template-rows: auto auto auto; column-gap: .75rem; row-gap: .5rem; align-items: center; justify-content: end; }
 .header-actions { grid-column: 1; grid-row: 1; display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
-.header-tools .editor-camera-logo { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
-.header-tools .build-badge { grid-column: 1; grid-row: 2; justify-self: end; }
+.header-meta { grid-column: 1; grid-row: 2; display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+.header-version { grid-column: 1; grid-row: 3; justify-self: end; }
+.header-tools .editor-camera-logo { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
 .build-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
   padding: .42rem .65rem;
   border-radius: 999px;
   color: #d9ebfb;
@@ -85,6 +89,9 @@ h2 { margin-bottom: .25rem; }
   font-weight: 700;
   white-space: nowrap;
 }
+.build-badge summary { cursor: pointer; }
+.build-badge[open] { border-radius: 14px; white-space: normal; }
+.source-hash { display: block; margin-top: .35rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; }
 .project-context-badge {
   display: inline-flex;
   padding: .42rem .65rem;
@@ -761,7 +768,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .app-header, .profile-summary, .section-heading, .preview-heading { align-items: flex-start; }
   .app-header, .profile-summary, .preview-heading { flex-direction: column; }
   .header-tools { justify-content: start; }
-  .header-actions { justify-content: flex-start; }
+  .header-actions, .header-meta { justify-content: flex-start; }
   .toolbar > button, .profile-action-menu { flex: 1 1 100%; }
   .profile-action-menu > summary { text-align: center; }
   .profile-action-menu-items { position: static; width: 100%; box-shadow: none; }

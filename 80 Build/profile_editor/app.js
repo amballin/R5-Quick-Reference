@@ -1,7 +1,8 @@
 const editorToken = document.querySelector('meta[name="profile-editor-token"]').content;
 
 const elements = {
-  editorBuild: document.querySelector("#editor-build"),
+  editorVersion: document.querySelector("#editor-version"),
+  editorSourceHash: document.querySelector("#editor-source-hash"),
   projectContextBadge: document.querySelector("#project-context-badge"),
   openCameraLab: document.querySelector("#open-camera-lab"),
   stopProfileEditor: document.querySelector("#stop-profile-editor"),
@@ -221,9 +222,12 @@ async function loadEditorInfo() {
     elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
     elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
     elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
-    elements.editorBuild.textContent = `Editor ${info.version} · Build ${info.build}`;
+    const contextName = info.context_name || (projectContext.kind === "main" ? "Main" : projectContext.kind === "prototype" ? "Prototype" : "Unknown");
+    elements.editorVersion.textContent = `Editor ${info.version} · ${contextName}`;
+    elements.editorSourceHash.textContent = `Source hash ${info.build}`;
   } catch (error) {
-    elements.editorBuild.textContent = "Editor build unavailable";
+    elements.editorVersion.textContent = "Editor version unavailable";
+    elements.editorSourceHash.textContent = "Source hash unavailable";
     showMessage(error.message, true);
   }
 }
@@ -386,7 +390,7 @@ function renderCxAssignments() {
       await refreshCxFoundationFit();
     });
     const note = document.createElement("small");
-    note.textContent = "Approved registration target pending physical verification.";
+    note.textContent = "Registration evidence is tracked separately; changing an assignment requires physical re-verification.";
     label.append(select);
     card.append(title, label, note);
     elements.cxAssignmentGrid.append(card);

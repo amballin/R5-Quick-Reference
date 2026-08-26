@@ -48,6 +48,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         shutil.copy2(PROJECT_ROOT / "80 Build" / "profile_editor" / "canon_options.yaml", catalog)
         for relative in (
             "80 Build/baseline_impact.py",
+            "80 Build/application_version.py",
             "80 Build/baseline_migration.py",
             "80 Build/card_identity.py",
             "80 Build/cx_route_analysis.py",
@@ -190,6 +191,20 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         landscape = load_yaml(self.root / "10 Profiles" / "Landscape.yaml")
         self.assertEqual(controls["custom_shooting_modes"]["C1"]["profile_id"], landscape["card_id"])
         self.assertEqual(current["custom_shooting_modes"]["C3"]["profile_id"], wildlife["card_id"])
+        self.assertEqual(
+            controls["custom_shooting_modes"]["C1"]["status"],
+            "approved_target_pending_camera_verification",
+        )
+        self.assertEqual(controls["custom_shooting_modes"]["C2"]["status"], "owner_confirmed")
+        self.assertEqual(
+            current["custom_shooting_modes"]["C3"]["status"],
+            "approved_target_pending_camera_verification",
+        )
+        self.assertNotIn("unresolved_items", controls["custom_shooting_modes"]["C1"])
+        self.assertEqual(
+            controls["custom_shooting_modes"]["registration_state"]["C1"],
+            "approved_target_pending_camera_verification",
+        )
         self.assertEqual(
             [item["heading"] for item in tracker["registration"]["profiles"]],
             ["C1 Landscape", "C2 Birds in Flight", "C3 Wildlife"],
@@ -591,7 +606,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         first = self.model.editor_info()
         second = self.model.editor_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], "1.0.0")
+        self.assertEqual(first["version"], "0.42.6")
+        self.assertEqual(first["context_name"], "Unknown")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
         self.assertEqual(first["project_context"]["kind"], "unknown")
         self.assertIsNone(first["project_context"]["branch"])
@@ -649,6 +665,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("profile_editor_find_legacy_pid", stopper)
         self.assertIn("Nothing was stopped", stopper)
 
+    def test_profile_editor_and_camera_lab_use_shared_version_source(self):
+        editor = (PROJECT_ROOT / "80 Build/profile_editor.py").read_text(encoding="utf-8")
+        lab = (PROJECT_ROOT / "80 Build/camera_control/service.py").read_text(encoding="utf-8")
+        for source in (editor, lab):
+            self.assertIn("application_version_info", source)
+            self.assertNotIn('VERSION = "1.0.0"', source)
+
     def test_camera_lab_launch_accepts_only_saved_subject_profiles(self):
         class FakeLauncher:
             def __init__(self):
@@ -675,13 +698,22 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="open-camera-lab"', html)
         self.assertIn('id="stop-profile-editor"', html)
         self.assertIn('id="project-context-badge"', html)
+        self.assertIn('id="editor-version"', html)
+        self.assertIn('id="editor-source-hash"', html)
+        self.assertLess(html.index(">User guide<"), html.index('id="open-camera-lab"'))
+        self.assertLess(html.index('id="open-camera-lab"'), html.index('id="stop-profile-editor"'))
+        self.assertLess(html.index('id="stop-profile-editor"'), html.index('id="project-context-badge"'))
+        self.assertLess(html.index('id="project-context-badge"'), html.index('id="editor-version"'))
+        self.assertIn('<details class="build-badge header-version">', html)
+        self.assertIn(".header-meta { grid-column: 1; grid-row: 2;", stylesheet)
+        self.assertIn(".header-version { grid-column: 1; grid-row: 3; justify-self: end; }", stylesheet)
         self.assertIn('request("/api/camera-lab-launch"', javascript)
         self.assertIn('request("/api/editor-shutdown"', javascript)
         self.assertIn("profilePayloadChanged(profileDraftPayload())", javascript)
         self.assertIn("Camera Lab, if running, remains independent", javascript)
         self.assertIn("info.project_context", javascript)
-        self.assertIn("grid-row: 1 / span 2", stylesheet)
-        self.assertIn("justify-self: end", stylesheet)
+        self.assertIn("grid-template-rows: auto auto auto", stylesheet)
+        self.assertIn("grid-row: 1 / span 3", stylesheet)
 
     def test_profile_editor_lifecycle_actions_require_token_and_shutdown_server(self):
         token = "profile-editor-test-token"

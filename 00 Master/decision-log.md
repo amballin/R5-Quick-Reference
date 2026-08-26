@@ -2,6 +2,44 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Owner-Confirmed C1–C3 Registrations and Maintenance State
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Record physical session 3 as the current C1–C3 evidence: C1 Wildlife, C2 Birds in Flight, and C3 Landscape were manually registered on the EOS R5, recalled, read back against their camera-body targets, and cross-checked without changing earlier slots. Auto update remained disabled, and `C123_CFG.CSD` was saved on the camera card as the completed recovery checkpoint. Exact lens stabilization Mode 1 for C1/C3 and Mode 3 for C2 remains unresolved because the attached lens exposed only IS On/Off.
+
+Treat Camera Lab's C1–C3 section as a collapsed maintenance and reverification workflow for assignment changes, resets, restores, or deliberate re-registration. Preserve its safe normal-mode setup, independent backup, manual registration, recalled-state rescan, and cross-slot checks, but do not imply that the current camera-body registrations remain unfinished. Any future assignment or target change returns only the affected slot to approved-target-pending-verification state until it is physically re-registered and verified.
+
+This decision supersedes the pending C1–C3 current-state claims in **Owner-Confirmed EOS R5 Button and Dial Architecture**, **Subject-Profile Custom Modes and Tracking/Precision AF Buttons**, and **Custom Case 1 Preset and Updated Subject Assignments**. Their remaining architecture and evidence-boundary requirements stay binding.
+
+## Three-Row Local-Application Header
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Place the shared application version and expandable diagnostic hash on a dedicated third header row in both Camera Lab and Profile Editor. Right-align that row with the control-button column above it. Keep the checkout indicator on the second row and leave the silver camera logo isolated in its own adjacent grid column, vertically centered across all three rows.
+
+## Confirmed Camera Lab Backend Switching
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Let the running Camera Lab switch between Canon EDSDK and its deterministic simulator without a second server or Terminal workflow. Present **Use Simulator** in physical-camera mode and **Use Camera** in simulated mode. Every switch requires an explicit in-page confirmation that identifies the destination mode, warns that the current session and scan/comparison state will close, and reiterates that Camera Lab remains read-only.
+
+After confirmation, require the authenticated loopback endpoint to close the current camera or simulated session, shut down the listener, and replace that same supervised server process in the requested mode. Never start a competing port-8770 server. Returning to physical-camera mode requires the machine-local EDSDK helper to exist. Refresh the existing Lab page only after the replacement server reports the requested backend.
+
+## Shared Local-Application Version and Recoverable Relaunch
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Give Profile Editor and Camera Lab one repository-owned `Major.Minor.Incremental` version. Keep Major manually controlled. Derive Minor from commits after the recorded version anchor so every commit advances it, and display Incremental as zero after that advance. Advance Incremental exactly once through the documented completion command for each finished development update against the same commit; when development resumes after a commit, re-anchor the metadata and begin Incremental at one. Both apps must display the same version with a concise **Main** or **Prototype** label. Keep the full branch label prominent in its separate checkout badge, and move each app's deterministic source hash into expandable diagnostic details instead of the primary header text.
+
+Use Major `0` for the current pre-release local-application series until the project owner explicitly promotes it.
+
+Treat reopening either local macOS app as recovery of its existing responsive instance. Before reusing Camera Lab, verify the loopback status response identifies a read-only Camera Lab; then reopen its requested URL in Chrome and exit successfully. Continue to reject an unrecognized listener on port 8770. This extends the existing verified-reuse behavior of Profile Editor and the editor-to-Lab handoff to direct Camera Lab application launches.
+
 ## Context-Separated Profile Editor Runtime and Recovery
 
 **Status:** Accepted
@@ -564,7 +602,7 @@ This decision supersedes **Official Canon Physical-Control Icons on Camera Butto
 
 Assign **M-Fn** to Canon's **Switch to Custom shooting mode** function. The project owner physically tested the assignment and confirmed that repeated presses switch among C1, C2, and C3.
 
-The switching function is owner-confirmed, but the registered mode contents retain separate evidence states. C1 contains registered settings, although its match to the complete Wildlife profile remains pending verification. C2 and C3 do not yet contain their target registrations. Do not describe all three profile implementations as current merely because M-Fn can select their mode positions.
+The switching function is owner-confirmed, but the registered mode contents retain separate evidence states. At the time of this decision, C1 contained registered settings whose match to the complete Wildlife profile remained pending verification, while C2 and C3 did not yet contain their target registrations. Do not describe profile implementations as current merely because M-Fn can select their mode positions. The later **Owner-Confirmed C1–C3 Registrations and Maintenance State** decision supersedes this historical current-state snapshot.
 
 This decision supersedes the unresolved M-Fn portions of **Owner-Confirmed Eye Priority and AF-Point Position Controls**, **Subject-Profile Custom Modes and Tracking/Precision AF Buttons**, and **Owner-Confirmed EOS R5 Button and Dial Architecture**.
 
