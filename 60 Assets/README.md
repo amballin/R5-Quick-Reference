@@ -10,6 +10,8 @@ Card rendering prefers an available SVG asset and falls back to PNG. Published w
 
 Static Canon icon reference/cheatsheet pages are stored in `icons/cheatsheet/`.
 
+Native macOS application-wrapper icons are stored in `app-icons/`. Camera Lab uses the camera-and-lab icon, Profile Editor uses the camera-and-pencil icon, and the wrapper builder selects the amber prototype or green production variant from the current project context.
+
 The `Photography Icons/` collection is retained for reference, but it is not the active card icon source.
 
 The SVG files are from Feather Icons, an MIT-licensed open-source icon set:

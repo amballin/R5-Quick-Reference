@@ -11,12 +11,19 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 BUILD_DIR = Path(__file__).resolve().parent
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from app_wrappers import APP_WRAPPERS, build_app_wrappers, effective_bundle_id
+from app_wrappers import (
+    APP_WRAPPERS,
+    build_app_wrappers,
+    effective_bundle_id,
+    icon_source_path,
+    icon_variant,
+)
 
 
 PROJECT_ROOT = BUILD_DIR.parent
@@ -49,10 +56,14 @@ class AppWrapperTests(unittest.TestCase):
             for wrapper, app_path in zip(APP_WRAPPERS, second):
                 info_path = app_path / "Contents/Info.plist"
                 executable_path = app_path / "Contents/MacOS" / wrapper.executable
+                icon_path = app_path / "Contents/Resources/AppIcon.icns"
                 with info_path.open("rb") as handle:
                     info = plistlib.load(handle)
                 self.assertEqual(info["CFBundleDisplayName"], wrapper.name)
                 self.assertEqual(info["CFBundleIdentifier"], effective_bundle_id(wrapper, PROJECT_ROOT))
+                self.assertEqual(info["CFBundleIconFile"], "AppIcon.icns")
+                self.assertTrue(icon_path.is_file())
+                self.assertGreater(icon_path.stat().st_size, 0)
                 self.assertTrue(os.access(executable_path, os.X_OK))
 
                 result = subprocess.run(
@@ -87,6 +98,21 @@ class AppWrapperTests(unittest.TestCase):
             self.assertTrue(profile_editor.detach_after_launch)
             self.assertEqual(profile_editor.command_file, "80 Build/scripts/start-profile-editor.sh")
             self.assertNotEqual(effective_bundle_id(profile_editor, PROJECT_ROOT), profile_editor.bundle_id)
+            variant = icon_variant(PROJECT_ROOT)
+            self.assertEqual(icon_source_path(camera_lab, PROJECT_ROOT).name, f"{variant}-camera-lab.png")
+            self.assertEqual(icon_source_path(profile_editor, PROJECT_ROOT).name, f"{variant}-camera-pencil.png")
+
+    def test_selects_icon_variant_from_project_context(self):
+        camera_lab = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Camera Lab")
+        profile_editor = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Profile Editor")
+        with patch("app_wrappers.project_context_info", return_value={"kind": "main"}):
+            self.assertEqual(icon_variant(PROJECT_ROOT), "production")
+            self.assertEqual(icon_source_path(camera_lab, PROJECT_ROOT).name, "production-camera-lab.png")
+            self.assertEqual(icon_source_path(profile_editor, PROJECT_ROOT).name, "production-camera-pencil.png")
+        with patch("app_wrappers.project_context_info", return_value={"kind": "prototype"}):
+            self.assertEqual(icon_variant(PROJECT_ROOT), "prototype")
+            self.assertEqual(icon_source_path(camera_lab, PROJECT_ROOT).name, "prototype-camera-lab.png")
+            self.assertEqual(icon_source_path(profile_editor, PROJECT_ROOT).name, "prototype-camera-pencil.png")
 
 
 if __name__ == "__main__":

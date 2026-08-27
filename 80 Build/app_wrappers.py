@@ -10,6 +10,8 @@ import plistlib
 import shlex
 import shutil
 import stat
+import struct
+import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +26,7 @@ class AppWrapper:
     bundle_id: str
     executable: str
     command_file: str
+    icon_name: str
     launch_in_terminal: bool = True
     detach_after_launch: bool = False
 
@@ -34,6 +37,7 @@ APP_WRAPPERS = (
         bundle_id="com.amballin.canon-eos-r5.camera-lab",
         executable="r5-camera-lab",
         command_file="80 Build/scripts/start-camera-lab.sh",
+        icon_name="camera-lab",
         launch_in_terminal=False,
         detach_after_launch=True,
     ),
@@ -42,6 +46,7 @@ APP_WRAPPERS = (
         bundle_id="com.amballin.canon-eos-r5.profile-editor",
         executable="r5-profile-editor",
         command_file="80 Build/scripts/start-profile-editor.sh",
+        icon_name="camera-pencil",
         launch_in_terminal=False,
         detach_after_launch=True,
     ),
@@ -62,6 +67,53 @@ def effective_bundle_id(wrapper: AppWrapper, project_root: Path) -> str:
         return wrapper.bundle_id
     root_suffix = hashlib.sha256(str(project_root.resolve()).encode("utf-8")).hexdigest()[:12]
     return f"{wrapper.bundle_id}.prototype.w{root_suffix}"
+
+
+def icon_variant(project_root: Path) -> str:
+    """Use release-green icons on main and prototype-amber icons elsewhere."""
+    return "production" if project_context_info(project_root).get("kind") == "main" else "prototype"
+
+
+def icon_source_path(wrapper: AppWrapper, project_root: Path) -> Path:
+    filename = f"{icon_variant(project_root)}-{wrapper.icon_name}.png"
+    return project_root / "60 Assets" / "app-icons" / filename
+
+
+def _validate_source_icon(path: Path) -> None:
+    data = path.read_bytes()
+    if len(data) < 33 or data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        raise RuntimeError(f"Application icon is not a valid PNG: {path}")
+    width, height, _, color_type = struct.unpack(">IIBB", data[16:26])
+    if (width, height) != (1024, 1024):
+        raise RuntimeError(f"Application icon must be 1024x1024: {path}")
+    if color_type not in {4, 6}:
+        raise RuntimeError(f"Application icon must include transparency: {path}")
+
+
+def _write_icns(source: Path, destination: Path, scratch_root: Path) -> None:
+    icon_dir = scratch_root / f"{source.stem}-icon-pngs"
+    icon_dir.mkdir()
+    chunks = []
+    icon_types = {
+        16: b"icp4",
+        32: b"icp5",
+        64: b"icp6",
+        128: b"ic07",
+        256: b"ic08",
+        512: b"ic09",
+        1024: b"ic10",
+    }
+    for pixel_size, icon_type in icon_types.items():
+        target = icon_dir / f"icon-{pixel_size}.png"
+        subprocess.run(
+            ["/usr/bin/sips", "-z", str(pixel_size), str(pixel_size), str(source), "--out", str(target)],
+            check=True,
+            capture_output=True,
+        )
+        png = target.read_bytes()
+        chunks.append(icon_type + struct.pack(">I", len(png) + 8) + png)
+    body = b"".join(chunks)
+    destination.write_bytes(b"icns" + struct.pack(">I", len(body) + 8) + body)
 
 
 def _runner_source(wrapper: AppWrapper, project_root: Path) -> str:
@@ -152,6 +204,7 @@ def _info_plist(wrapper: AppWrapper, project_root: Path) -> bytes:
         "CFBundleDisplayName": wrapper.name,
         "CFBundleExecutable": wrapper.executable,
         "CFBundleIdentifier": effective_bundle_id(wrapper, project_root),
+        "CFBundleIconFile": "AppIcon.icns",
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": wrapper.name,
         "CFBundlePackageType": "APPL",
@@ -174,12 +227,17 @@ def _validate_project_root(project_root: Path) -> None:
             raise RuntimeError(f"Application launcher is missing: {command_path}")
         if not os.access(command_path, os.X_OK):
             raise RuntimeError(f"Application launcher is not executable: {command_path}")
+        icon_path = icon_source_path(wrapper, project_root)
+        if not icon_path.is_file():
+            raise RuntimeError(f"Application icon is missing: {icon_path}")
+        _validate_source_icon(icon_path)
 
 
 def _validate_app(app_path: Path, wrapper: AppWrapper, project_root: Path) -> None:
     info_path = app_path / "Contents/Info.plist"
     executable_path = app_path / "Contents/MacOS" / wrapper.executable
-    if not info_path.is_file() or not executable_path.is_file():
+    icon_path = app_path / "Contents/Resources/AppIcon.icns"
+    if not info_path.is_file() or not executable_path.is_file() or not icon_path.is_file():
         raise RuntimeError(f"Application wrapper is incomplete: {app_path}")
     with info_path.open("rb") as handle:
         info = plistlib.load(handle)
@@ -187,6 +245,7 @@ def _validate_app(app_path: Path, wrapper: AppWrapper, project_root: Path) -> No
         "CFBundleDisplayName": wrapper.name,
         "CFBundleExecutable": wrapper.executable,
         "CFBundleIdentifier": effective_bundle_id(wrapper, project_root),
+        "CFBundleIconFile": "AppIcon.icns",
         "CFBundlePackageType": "APPL",
     }
     for key, value in expected.items():
@@ -232,8 +291,15 @@ def build_app_wrappers(project_root: Path, output_dir: Optional[Path] = None):
         for wrapper in APP_WRAPPERS:
             staged_app = staging_root / f"{wrapper.name}.app"
             macos_dir = staged_app / "Contents/MacOS"
+            resources_dir = staged_app / "Contents/Resources"
             macos_dir.mkdir(parents=True)
+            resources_dir.mkdir(parents=True)
             (staged_app / "Contents/Info.plist").write_bytes(_info_plist(wrapper, project_root))
+            _write_icns(
+                icon_source_path(wrapper, project_root),
+                resources_dir / "AppIcon.icns",
+                staging_root,
+            )
             executable_path = macos_dir / wrapper.executable
             executable_path.write_text(_runner_source(wrapper, project_root), encoding="utf-8")
             executable_path.chmod(0o755)
