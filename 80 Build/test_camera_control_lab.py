@@ -1,4 +1,6 @@
 from http.client import HTTPConnection
+from contextlib import redirect_stderr
+import io
 import json
 import os
 from pathlib import Path
@@ -11,21 +13,31 @@ import threading
 import time
 from types import SimpleNamespace
 import unittest
+from urllib.parse import urlencode
 
 BUILD_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BUILD_DIR.parent
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from camera_control.dev_server import create_server
+from camera_control.dev_server import create_server, parse_args
 from camera_control.errors import CameraSelectionError, CameraSessionError, WrongCameraModelError
 from camera_control.profile_comparison import _conditional_evaluation, _conditional_status, list_profiles
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
+from application_version import application_version_info
 from project_context import active_branch
 
 
 class CameraControlServiceTests(unittest.TestCase):
+    def test_physical_write_launch_gate_is_explicit_and_edsdk_only(self):
+        self.assertFalse(parse_args(["--backend", "edsdk"]).enable_physical_writes)
+        self.assertTrue(
+            parse_args(["--backend", "edsdk", "--enable-physical-writes"]).enable_physical_writes
+        )
+        with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            parse_args(["--backend", "simulated", "--enable-physical-writes"])
+
     def test_contextual_comparison_evaluates_exact_ranges_and_guidance(self):
         cases = [
             ("exposure.exposure_compensation", "0", "0", "match"),
@@ -105,7 +117,7 @@ class CameraControlServiceTests(unittest.TestCase):
         first = camera_lab_info()
         second = camera_lab_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], "0.42.6")
+        self.assertEqual(first["version"], application_version_info(PROJECT_ROOT)["version"])
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
         branch = active_branch(PROJECT_ROOT)
         self.assertEqual(first["context_name"], "Main" if branch == "main" else "Prototype")
@@ -542,7 +554,8 @@ class CameraLabHttpTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.token = "test-camera-lab-token"
-        cls.service = CameraControlService()
+        cls.journal_temporary = tempfile.TemporaryDirectory(prefix="camera-lab-http-journals-")
+        cls.service = CameraControlService(journal_root=cls.journal_temporary.name)
         cls.server = create_server(cls.service, port=0, token=cls.token)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
@@ -554,6 +567,7 @@ class CameraLabHttpTests(unittest.TestCase):
         cls.server.server_close()
         cls.service.close()
         cls.thread.join(timeout=2)
+        cls.journal_temporary.cleanup()
 
     def request(self, method, path, payload=None, token=None, host="127.0.0.1"):
         connection = HTTPConnection("127.0.0.1", self.port, timeout=2)
@@ -593,9 +607,12 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('id="camera-lab-source-hash"', body)
         self.assertIn('id="stop-camera-lab-button"', body)
         self.assertIn('id="backend-switch-button"', body)
+        self.assertIn('id="physical-write-mode-button"', body)
         self.assertIn('id="backend-switch-dialog"', body)
         self.assertIn('id="backend-switch-confirm"', body)
-        self.assertIn("Camera Lab remains read-only", body)
+        self.assertIn('id="physical-write-mode-dialog"', body)
+        self.assertIn('id="physical-write-mode-confirm"', body)
+        self.assertIn("Camera changes start disabled", body)
         self.assertIn('id="comparison-order"', body)
         self.assertIn('<option value="setup" selected>Setup route</option>', body)
         self.assertIn('id="checklist-rescan-button"', body)
@@ -623,10 +640,28 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("Read-only discovery reference", body)
         self.assertIn('aria-label="Return to Compare a Subject/Profile Card"', body)
         self.assertLess(body.index('id="backend-badge"'), body.index('id="backend-switch-button"'))
-        self.assertLess(body.index('id="backend-switch-button"'), body.index('id="stop-camera-lab-button"'))
+        self.assertLess(body.index('id="backend-switch-button"'), body.index('id="physical-write-mode-button"'))
+        self.assertLess(body.index('id="physical-write-mode-button"'), body.index('id="stop-camera-lab-button"'))
         self.assertLess(body.index("No setting writes"), body.index('id="project-context-badge"'))
         self.assertLess(body.index('id="project-context-badge"'), body.index('id="camera-lab-version"'))
         self.assertLess(body.index('id="cx-setup-panel"'), body.index('id="comparison-panel"'))
+        self.assertIn('id="prepare-guarded-button"', body)
+        self.assertIn('id="guarded-run-panel"', body)
+        self.assertIn('id="guarded-confirm-dialog"', body)
+        self.assertIn('id="write-qualification-controls"', body)
+        self.assertIn('id="write-qualification-needed"', body)
+        self.assertIn('id="write-qualification-dialog"', body)
+        self.assertIn('id="write-qualification-dialog-summary"', body)
+        self.assertIn("Apply this profile to camera", body)
+        self.assertIn("Review what will change", body)
+        self.assertIn("Advanced setup — safely enable additional automatic settings", body)
+        self.assertIn('id="apply-result"', body)
+        self.assertIn('id="apply-result-title"', body)
+        self.assertIn('id="guarded-active-workspace"', body)
+        self.assertIn('id="guarded-step-settings"', body)
+        self.assertIn("C123_CFG.CSD", body)
+        self.assertLess(body.index('id="comparison-panel"'), body.index('id="guarded-run-panel"'))
+        self.assertLess(body.index('id="guarded-run-panel"'), body.index('id="capability-panel"'))
 
         status, _, styles = self.request("GET", "/styles.css")
         self.assertEqual(status, 200)
@@ -636,6 +671,7 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn(".header-tools .header-meta { grid-column: 1; grid-row: 2; }", styles)
         self.assertIn(".header-tools .header-version { grid-column: 1; grid-row: 3; justify-self: end; }", styles)
         self.assertIn(".collapse-state::before", styles)
+        self.assertIn(".guarded-active-workspace.is-processing { position: sticky", styles)
 
     def test_camera_lab_script_rescans_comparison_and_exposes_recovery(self):
         status, _, html = self.request("GET", "/")
@@ -674,6 +710,11 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("elements.backendSwitchDialog.showModal()", body)
         self.assertIn('request("/api/camera-control/restart-backend"', body)
         self.assertIn("elements.backendSwitchConfirm.addEventListener", body)
+        self.assertIn("function showPhysicalWriteModeConfirmation()", body)
+        self.assertIn("function restartWithPhysicalWriteMode()", body)
+        self.assertIn("elements.physicalWriteModeConfirm.addEventListener", body)
+        self.assertIn("physical_write_enabled: physicalWriteEnabled", body)
+        self.assertIn("Read directly from the connected camera", body)
         self.assertLess(
             body.index("elements.backendSwitchDialog.showModal()"),
             body.index('request("/api/camera-control/restart-backend"'),
@@ -688,6 +729,41 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('new URLSearchParams(window.location.search).get("profile")', body)
         self.assertIn("was selected by Profile Editor", body)
         self.assertIn("not available in Camera Lab", body)
+        self.assertIn("function renderGuardedRun(payload)", body)
+        self.assertIn("function guardedStepInstruction(step, position, total)", body)
+        self.assertIn("${position} of ${total}: ${step.label} → ${step.target}:", body)
+        self.assertIn("elements.guardedPlanDetails.hidden = processingOneStep", body)
+        self.assertIn("elements.guardedPlanDetails.open = false", body)
+        self.assertIn('manual_group_label', body)
+        self.assertIn('I changed these settings — rescan once', body)
+        self.assertIn("function persistGuardedPreflight()", body)
+        self.assertIn("window.sessionStorage.setItem", body)
+        self.assertIn("function sharedManualContext()", body)
+        self.assertIn("finding.shared_manual_confirmation", body)
+        self.assertIn("Previously manually confirmed in this connected-camera session", body)
+        self.assertIn('request("/api/camera-control/manual-confirmations/revoke"', body)
+        self.assertIn('query.set("manual_context", JSON.stringify(manualContext))', body)
+        self.assertIn("elements.guardedActiveWorkspace.scrollIntoView", body)
+        self.assertIn("function renderApplyResult(run, counts, completed, total)", body)
+        self.assertIn('title = "Profile applied successfully"', body)
+        self.assertIn('"Stopped — profile not fully applied"', body)
+        self.assertIn("Nothing has changed yet", body)
+        self.assertIn("Do not treat this profile as complete", body)
+        self.assertIn('request("/api/camera-control/guarded-run/prepare"', body)
+        self.assertIn('request("/api/camera-control/guarded-run/confirm"', body)
+        self.assertIn('request("/api/camera-control/guarded-run/next"', body)
+        self.assertIn('request("/api/camera-control/write-qualification/candidates"', body)
+        self.assertIn('request("/api/camera-control/write-qualification/prepare"', body)
+        self.assertIn('request("/api/camera-control/write-qualification/confirm"', body)
+        self.assertIn('request("/api/camera-control/write-qualification/execute"', body)
+        self.assertIn("function requiredWriteQualification()", body)
+        self.assertIn("function syncWriteQualificationToReview()", body)
+        self.assertIn("Required by this review:", body)
+        self.assertIn("elements.writeQualificationTarget.disabled = true", body)
+        self.assertIn("Camera Lab verified that exact value", body)
+        self.assertIn("review below has been refreshed automatically", body)
+        self.assertIn("await prepareGuardedRun()", body)
+        self.assertIn("manual_confirmed", body)
 
     def test_camera_lab_serves_canonical_silver_logo(self):
         status, headers, body = self.request("GET", "/silver-camera-logo.png")
@@ -725,6 +801,7 @@ class CameraLabHttpTests(unittest.TestCase):
                 self.assertTrue(body["restarting"])
                 self.assertTrue(body["camera_session_closed"])
                 self.assertEqual(body["backend"], "edsdk")
+                self.assertFalse(body["physical_write_enabled"])
                 self.assertTrue(shutdown_requested.wait(timeout=1))
                 self.assertEqual(self.server.restart_backend, "edsdk")
             finally:
@@ -740,8 +817,41 @@ class CameraLabHttpTests(unittest.TestCase):
             token=self.token,
         )
         self.assertEqual(status, 400)
-        self.assertIn("already running in simulated mode", body["error"]["message"])
+        self.assertIn("already running in the requested mode", body["error"]["message"])
         self.assertIsNone(self.server.restart_backend)
+
+    def test_guarded_write_restart_is_explicit_and_edsdk_only(self):
+        original_shutdown = self.server.shutdown
+        shutdown_requested = threading.Event()
+        with tempfile.TemporaryDirectory(prefix="camera-lab-sdk-test-") as sdk_path:
+            self.server.restart_sdk_path = Path(sdk_path)
+            self.server.shutdown = shutdown_requested.set
+            try:
+                status, _, body = self.request(
+                    "POST",
+                    "/api/camera-control/restart-backend",
+                    {"backend": "edsdk", "physical_write_enabled": True},
+                    token=self.token,
+                )
+                self.assertEqual(status, 200)
+                self.assertTrue(body["physical_write_enabled"])
+                self.assertEqual(self.server.restart_backend, "edsdk")
+                self.assertTrue(self.server.restart_physical_writes)
+                self.assertTrue(shutdown_requested.wait(timeout=1))
+            finally:
+                self.server.shutdown = original_shutdown
+                self.server.restart_backend = None
+                self.server.restart_physical_writes = False
+                self.server.restart_sdk_path = None
+
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/restart-backend",
+            {"backend": "simulated", "physical_write_enabled": True},
+            token=self.token,
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("only with the EDSDK backend", body["error"]["message"])
 
     def test_connect_and_status_api(self):
         status, _, body = self.request(
@@ -755,7 +865,7 @@ class CameraLabHttpTests(unittest.TestCase):
         status, _, body = self.request("GET", "/api/camera-control/status")
         self.assertEqual(status, 200)
         self.assertEqual(body["camera"]["product_name"], "EOS R5")
-        self.assertEqual(body["app"]["version"], "0.42.6")
+        self.assertEqual(body["app"]["version"], application_version_info(PROJECT_ROOT)["version"])
         self.assertRegex(body["app"]["build"], r"^[0-9a-f]{8}$")
 
     def test_capability_api_returns_read_only_inventory(self):
@@ -790,7 +900,6 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertTrue(body["read_only"])
         self.assertEqual(body["ordering"], "subject_profile_card_then_additional")
         self.assertEqual(body["card_findings"][0]["label"], "Mode")
-
         status, _, body = self.request(
             "GET",
             "/api/camera-control/comparison?profile=People&context=shutter.target%7Cportraits&context=lens.aperture.target%7Cgroups",
@@ -798,10 +907,133 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertEqual(status, 200)
         shutter = next(item for item in body["card_findings"] if item["key"] == "shutter.target")
         aperture = next(item for item in body["card_findings"] if item["key"] == "lens.aperture.target")
+        switching = next(
+            item for item in body["card_findings"]
+            if item["key"] == "autofocus.switching_tracked_subjects"
+        )
         self.assertEqual(shutter["context_prompts"][0]["selected"], "portraits")
         self.assertEqual(aperture["context_prompts"][0]["selected"], "groups")
+        self.assertEqual(switching["expected"], "On subject (1)")
         self.assertTrue(body["read_only"])
 
+    def test_simulator_guarded_run_api_requires_preflight_and_explicit_confirmation(self):
+        status, _, _ = self.request(
+            "POST", "/api/camera-control/connect", {}, token=self.token
+        )
+        self.assertEqual(status, 200)
+        status, _, _ = self.request("GET", "/api/camera-control/capabilities")
+        self.assertEqual(status, 200)
+        preflight = {
+            "still_movie_context": "still",
+            "current_mode": "Fv",
+            "lens": "RF 24-105",
+            "flash": "None",
+            "cards": "CFexpress + SD",
+            "applications_closed": True,
+            "camera_backup_confirmed": True,
+            "backup_filename": "C123_CFG.CSD",
+        }
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/guarded-run/prepare",
+            {"profile": "Landscape", "preflight": preflight},
+            token=self.token,
+        )
+        self.assertEqual(status, 200)
+        run = body["guarded_run"]
+        self.assertEqual(run["status"], "planned")
+        self.assertGreater(run["summary"]["classifications"]["simulator_automatic"], 0)
+
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/guarded-run/next",
+            {"session_id": run["session_id"]},
+            token=self.token,
+        )
+        self.assertEqual(status, 409)
+        self.assertIn("Confirm", body["error"]["message"])
+
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/guarded-run/confirm",
+            {"session_id": run["session_id"], "confirmed": True},
+            token=self.token,
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["guarded_run"]["status"], "in_progress")
+        self.assertGreater(body["guarded_run"]["summary"]["automatic_actions"]["completed"], 0)
+
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/guarded-run/next",
+            {"session_id": run["session_id"], "manual_confirmed": True},
+            token=self.token,
+        )
+        self.assertEqual(status, 200)
+        manual_context = {"still_movie_context": "still", "flash": "None", "cards": "CFexpress + SD"}
+        query = urlencode({"profile": "Travel", "manual_context": json.dumps(manual_context)})
+        status, _, body = self.request("GET", f"/api/camera-control/comparison?{query}")
+        self.assertEqual(status, 200)
+        findings = body["card_findings"] + body["additional_findings"]
+        self.assertTrue(any(finding.get("shared_manual_confirmation") for finding in findings))
+
+        status, _, body = self.request(
+            "POST",
+            "/api/camera-control/manual-confirmations/revoke",
+            {
+                "confirmations": [{"path": "shutter.target", "target": "Auto"}],
+                "manual_context": manual_context,
+            },
+            token=self.token,
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["removed"], 1)
+
+    def test_edsdk_mode_exposes_no_guarded_run_endpoint(self):
+        token = "edsdk-read-only-token"
+        with tempfile.TemporaryDirectory(prefix="edsdk-no-write-http-") as temporary:
+            service = CameraControlService(backend_mode="edsdk", journal_root=temporary)
+            server = create_server(service, port=0, token=token)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+                connection.request(
+                    "POST",
+                    "/api/camera-control/guarded-run/prepare",
+                    body="{}",
+                    headers={
+                        "Host": "127.0.0.1",
+                        "Content-Type": "application/json",
+                        "X-Camera-Lab-Token": token,
+                    },
+                )
+                response = connection.getresponse()
+                payload = json.loads(response.read())
+                connection.close()
+                self.assertEqual(response.status, 404)
+                self.assertEqual(payload["error"]["kind"], "not_found")
+                connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+                connection.request(
+                    "GET",
+                    "/api/camera-control/write-qualification/candidates",
+                    headers={"Host": "127.0.0.1", "X-Camera-Lab-Token": token},
+                )
+                qualification_response = connection.getresponse()
+                qualification_response.read()
+                connection.close()
+                self.assertEqual(qualification_response.status, 404)
+                status = service.status(check_connection=False)
+                self.assertTrue(status["real_camera_read_only"])
+                self.assertFalse(status["simulated_guarded_runs"])
+                self.assertFalse(status["physical_write_enabled"])
+                self.assertFalse(status["physical_write_qualification"])
+                self.assertIsNone(status["guarded_run"])
+            finally:
+                server.shutdown()
+                server.server_close()
+                service.close()
+                thread.join(timeout=2)
     def test_non_loopback_host_is_rejected(self):
         status, _, body = self.request("GET", "/api/camera-control/status", host="camera-lab.example")
         self.assertEqual(status, 403)

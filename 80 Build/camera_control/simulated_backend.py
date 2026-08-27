@@ -1,8 +1,13 @@
-"""Deterministic read-only camera backend for Camera Lab development."""
+"""Deterministic camera backend for Camera Lab development.
+
+Only this simulator implements guarded setting mutation.  The Canon EDSDK
+backends intentionally do not share or implement this interface.
+"""
 
 from __future__ import annotations
 
-from .capability_registry import simulated_capabilities
+from .capability_mapping import VALUE_MAPS
+from .capability_registry import CAPABILITY_PROPERTIES, simulated_capabilities
 
 
 SCENARIOS = {
@@ -13,6 +18,13 @@ SCENARIOS = {
     "missing_properties": "Missing optional properties",
     "busy": "Camera session busy",
     "disconnect": "Disconnect after connection",
+    "guarded_success": "Guarded run: successful write and readback",
+    "guarded_readback_mismatch": "Guarded run: readback mismatch",
+    "guarded_unsupported_value": "Guarded run: unsupported value",
+    "guarded_missing_prerequisite": "Guarded run: missing prerequisite",
+    "guarded_busy": "Guarded run: camera busy",
+    "guarded_disconnect": "Guarded run: disconnect",
+    "guarded_identity_change": "Guarded run: changed camera identity",
 }
 
 
@@ -24,6 +36,9 @@ class SimulatedBackend:
         self.initialized = False
         self.open_camera = None
         self.disconnected = False
+        self.setting_values = {key: value for key, _, _, value in CAPABILITY_PROPERTIES}
+        self.guarded_step_started = False
+        self.write_count = 0
 
     def initialize(self):
         self.initialized = True
@@ -59,6 +74,7 @@ class SimulatedBackend:
                 "body_id": "SIM-R5M2-0001",
                 "firmware_version": "1.0.0",
                 "battery_raw": 100,
+                "lens_name": "Simulated RF 100-500mm F4.5-7.1 L IS USM",
             }
         if self.scenario == "missing_properties":
             return {
@@ -66,23 +82,63 @@ class SimulatedBackend:
                 "body_id": None,
                 "firmware_version": None,
                 "battery_raw": None,
+                "lens_name": None,
             }
         return {
             "product_name": "EOS R5",
             "body_id": "SIM-R5-0001",
             "firmware_version": "2.2.1",
             "battery_raw": 100,
+            "lens_name": "Simulated RF 100-500mm F4.5-7.1 L IS USM",
         }
 
     def poll_product_name(self):
         if self.open_camera is None or self.disconnected or self.scenario == "disconnect":
             raise RuntimeError("Simulated USB connection was lost")
+        if self.scenario == "guarded_disconnect" and self.guarded_step_started:
+            self.disconnected = True
+            raise RuntimeError("Simulated USB connection was lost during the guarded run")
+        if self.scenario == "guarded_identity_change" and self.guarded_step_started:
+            return "EOS R6"
         return self.read_camera_details()["product_name"]
 
     def read_capabilities(self):
         if self.open_camera is None or self.disconnected:
             raise RuntimeError("No connected simulated camera is available for capability discovery")
-        return simulated_capabilities()
+        return simulated_capabilities(self.setting_values)
+
+    def guarded_prerequisite(self, key, value_raw):
+        if self.scenario == "guarded_missing_prerequisite":
+            return False, "Attach the required simulated lens before continuing."
+        return True, None
+
+    def supports_guarded_value(self, key, value_raw):
+        if self.scenario == "guarded_unsupported_value":
+            return False
+        return value_raw in VALUE_MAPS.get(key, {})
+
+    def begin_guarded_step(self):
+        self.guarded_step_started = True
+
+    def read_guarded_setting(self, key):
+        if self.open_camera is None or self.disconnected:
+            raise RuntimeError("No connected simulated camera is available")
+        if self.scenario == "guarded_busy" and self.guarded_step_started:
+            raise RuntimeError("Simulated camera is busy")
+        if key not in self.setting_values:
+            raise RuntimeError(f"Unknown simulated property: {key}")
+        return self.setting_values[key]
+
+    def write_guarded_setting(self, key, value_raw):
+        if self.open_camera is None or self.disconnected:
+            raise RuntimeError("No connected simulated camera is available")
+        if self.scenario == "guarded_busy":
+            raise RuntimeError("Simulated camera is busy")
+        if not self.supports_guarded_value(key, value_raw):
+            raise RuntimeError(f"Simulated value {value_raw} is unsupported for {key}")
+        self.write_count += 1
+        if self.scenario != "guarded_readback_mismatch":
+            self.setting_values[key] = value_raw
 
     def sdk_details(self):
         return {
@@ -98,3 +154,4 @@ class SimulatedBackend:
     def shutdown(self):
         self.open_camera = None
         self.initialized = False
+        self.guarded_step_started = False

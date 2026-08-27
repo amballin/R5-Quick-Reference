@@ -12,16 +12,17 @@
     <div class="header-copy">
       <p class="eyebrow">Canon Camera Reference</p>
       <h1>EOS R5 Camera Lab</h1>
-      <p class="subtitle">A read-only workspace for building and testing the USB connection.</p>
+      <p class="subtitle">Compare a profile, review every change, and verify the result.</p>
     </div>
     <div class="header-tools">
       <div class="mode-stack">
         <span id="backend-badge" class="badge">Loading</span>
         <button id="backend-switch-button" class="stop-server-button" type="button">Use Simulator</button>
+        <button id="physical-write-mode-button" class="stop-server-button" type="button" hidden>Enable camera changes</button>
         <button id="stop-camera-lab-button" class="stop-server-button" type="button">Stop Camera Lab</button>
       </div>
       <div class="header-meta">
-        <span class="safety-badge">No setting writes</span>
+        <span id="header-safety-badge" class="safety-badge">No setting writes</span>
         <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
       </div>
       <details class="build-badge header-version">
@@ -37,7 +38,7 @@
       <div id="connect-step" class="step active"><span>1</span><strong>Connect</strong><small>In progress</small></div>
       <div id="discover-step" class="step locked"><span>2</span><strong>Discover</strong><small>Capabilities</small></div>
       <div id="compare-step" class="step locked"><span>3</span><strong>Compare</strong><small>Expected vs actual</small></div>
-      <div class="step locked"><span>4</span><strong>Configure</strong><small>Not enabled</small></div>
+      <div id="configure-step" class="step locked"><span>4</span><strong>Apply profile</strong><small>Review and verify</small></div>
     </section>
 
     <section class="status-card" aria-live="polite">
@@ -83,6 +84,7 @@
           <div><dt>Body ID</dt><dd id="camera-body">—</dd></div>
           <div><dt>Firmware</dt><dd id="camera-firmware">—</dd></div>
           <div><dt>Power status</dt><dd id="camera-battery">—</dd></div>
+          <div><dt>Attached lens</dt><dd id="camera-lens">—</dd></div>
         </dl>
       </section>
 
@@ -97,7 +99,7 @@
           <div><dt>Mode</dt><dd id="sdk-mode">—</dd></div>
           <div><dt>Version</dt><dd id="sdk-version">—</dd></div>
           <div><dt>Location</dt><dd id="sdk-path" class="path-value">—</dd></div>
-          <div><dt>Access</dt><dd>Read-only</dd></div>
+          <div><dt>Access</dt><dd id="sdk-access">Read-only</dd></div>
         </dl>
       </section>
     </div>
@@ -139,7 +141,7 @@
           <h2>Compare a Subject/Profile Card</h2>
           <p>Select a card after scanning the camera. Findings follow the card's visible setting order; when an authored target depends on subject, grouping, or lighting, choose that context in the finding before Camera Lab evaluates it.</p>
         </div>
-        <span class="safety-badge">No setting writes</span>
+        <span id="comparison-safety-badge" class="safety-badge">No setting writes</span>
       </div>
       <div class="profile-controls">
         <label for="profile-select">Subject/Profile Card</label>
@@ -154,6 +156,7 @@
             <option value="card">Card order</option>
             <option value="status">Status</option>
           </select>
+          <button id="prepare-guarded-button" class="primary" type="button" hidden>Apply this profile to camera</button>
         </div>
         <p id="comparison-summary" class="comparison-summary"></p>
         <section class="checklist-panel" aria-labelledby="checklist-heading">
@@ -190,6 +193,118 @@
       </div>
     </section>
 
+    <section id="guarded-run-panel" class="panel guarded-run-panel" hidden>
+      <div class="panel-heading">
+        <div>
+          <p class="label">Apply profile</p>
+          <h2 id="apply-profile-title">Apply this profile to camera</h2>
+          <p id="apply-profile-intro">Camera Lab will first check that it is safe, then show every proposed change. Nothing changes until you review the list and confirm.</p>
+        </div>
+        <span class="safety-badge">Review required before changes</span>
+      </div>
+
+      <form id="guarded-preflight-form" class="guarded-preflight">
+        <div class="apply-section-heading">
+          <span>1</span>
+          <div><h3>Check that the camera is ready</h3><p>Confirm the connected equipment and recovery information. Camera Lab will stop if this context changes.</p></div>
+        </div>
+        <div class="guarded-identity" aria-live="polite">
+          <div><span>Camera</span><strong id="guarded-camera-identity">EOS R5 identity required</strong></div>
+          <div><span>Firmware</span><strong id="guarded-camera-firmware">Required</strong></div>
+          <div><span>Power</span><strong id="guarded-camera-power">Required</strong></div>
+        </div>
+        <label>Shooting mode
+          <select id="guarded-still-movie" required>
+            <option value="still">Still photos</option>
+            <option value="movie">Movie mode — cannot apply a photo profile</option>
+          </select>
+        </label>
+        <label>Current exposure mode
+          <input id="guarded-current-mode" type="text" placeholder="Fv, P, Tv, Av, M, or recalled Cx">
+        </label>
+        <label>Lens
+          <input id="guarded-lens" type="text" required placeholder="Attached lens or None">
+          <small id="guarded-lens-source">Camera readback is used when available.</small>
+        </label>
+        <label>Flash
+          <input id="guarded-flash" type="text" required placeholder="Attached flash/trigger or None">
+        </label>
+        <label>Cards
+          <input id="guarded-cards" type="text" required placeholder="CFexpress/SD presence and status">
+        </label>
+        <label>Recovery backup on the camera card
+          <input id="guarded-backup-filename" type="text" required value="C123_CFG.CSD">
+        </label>
+        <label class="guarded-checkbox"><input id="guarded-apps-closed" type="checkbox" required> EOS Utility and every other camera-control application are closed.</label>
+        <label class="guarded-checkbox"><input id="guarded-backup-confirmed" type="checkbox" required> The recorded camera-side CSD backup is recoverable.</label>
+        <p class="guarded-context-note"><strong>Recovery checkpoint:</strong> <code>C123_CFG.CSD</code> contains the verified C1 Wildlife, C2 Birds in Flight, and C3 Landscape registrations. Camera Lab will not register C1–C3 or transfer this file.</p>
+        <details id="write-qualification-controls" class="write-qualification-controls" hidden>
+          <summary>Advanced setup — safely enable additional automatic settings</summary>
+          <div class="advanced-content">
+            <h3>Test one camera value and restore it</h3>
+            <p>Use this only when the review says a setting is not yet enabled for automatic changes. Camera Lab temporarily tests one value, verifies it, restores the original value, and verifies the restoration.</p>
+            <p id="write-qualification-needed" class="guarded-context-note">Review what will change first. Camera Lab will then select the exact blocked setting and value here.</p>
+            <label>Setting
+              <select id="write-qualification-property"></select>
+            </label>
+            <label>Temporary test value
+              <select id="write-qualification-target"></select>
+            </label>
+            <button id="write-qualification-prepare" class="secondary" type="button">Review this safety test</button>
+            <div id="write-qualification-preview" class="qualification-preview" hidden>
+              <p id="write-qualification-summary"></p>
+              <p id="write-qualification-result" class="message" hidden></p>
+              <div class="guarded-actions">
+                <button id="write-qualification-confirm" class="danger-outline" type="button">Approve this safety test</button>
+                <button id="write-qualification-execute" class="danger" type="button" hidden>Test, verify and restore</button>
+              </div>
+            </div>
+          </div>
+        </details>
+        <div class="guarded-actions">
+          <button id="guarded-plan-button" class="primary" type="submit">Review what will change</button>
+          <button id="guarded-resume-button" class="secondary" type="button" hidden>Continue stopped attempt</button>
+        </div>
+      </form>
+
+      <div id="guarded-preview" hidden>
+        <div class="apply-section-heading">
+          <span>2</span>
+          <div><h3>Review every change</h3><p id="apply-review-message">Camera Lab has not changed anything yet.</p></div>
+        </div>
+        <div class="guarded-progress" aria-live="polite">
+          <div><span>Result</span><strong id="guarded-status">Ready for review</strong></div>
+          <div><span>Steps finished</span><strong id="guarded-progress-count">0 of 0</strong></div>
+          <progress id="guarded-progress-bar" value="0" max="1"></progress>
+        </div>
+        <div id="guarded-classification-counts" class="guarded-classification-counts"></div>
+        <p id="guarded-failure" class="message" hidden></p>
+        <section id="apply-result" class="apply-result" hidden aria-live="polite">
+          <h3 id="apply-result-title"></h3>
+          <p id="apply-result-summary"></p>
+          <ul id="apply-result-details"></ul>
+        </section>
+        <div id="guarded-active-workspace" class="guarded-active-workspace">
+          <section id="guarded-current-step" class="guarded-current-step" hidden>
+            <p class="label">Do this now</p>
+            <h3 id="guarded-step-title"></h3>
+            <ul id="guarded-step-settings" class="guarded-step-settings" hidden></ul>
+            <p id="guarded-step-detail"></p>
+            <p id="guarded-step-route"></p>
+          </section>
+          <div class="guarded-actions">
+            <button id="guarded-confirm-button" class="primary" type="button">Start applying profile</button>
+            <button id="guarded-next-button" class="primary" type="button" hidden>Complete this step</button>
+            <button id="guarded-abort-button" class="danger-outline" type="button">Stop applying</button>
+          </div>
+        </div>
+        <details id="guarded-plan-details" class="guarded-plan-details">
+          <summary>Optional: show the complete step-by-step list</summary>
+          <ol id="guarded-plan-steps" class="guarded-plan-steps"></ol>
+        </details>
+      </div>
+    </section>
+
     <details id="capability-panel" class="panel collapsible-panel capability-panel" hidden>
       <summary class="panel-heading collapsible-summary">
         <div>
@@ -197,7 +312,7 @@
           <h2>Camera capabilities</h2>
           <p id="capability-summary">No capability scan has been run.</p>
         </div>
-        <span class="summary-tools"><span class="safety-badge">Writes untested</span><span class="collapse-state" aria-hidden="true"></span></span>
+        <span class="summary-tools"><span class="safety-badge">Camera changes not safety-tested</span><span class="collapse-state" aria-hidden="true"></span></span>
       </summary>
       <div class="collapsible-content">
         <div class="table-scroll">
@@ -209,7 +324,7 @@
                 <th scope="col">Profile mapping</th>
                 <th scope="col">Descriptor</th>
                 <th scope="col">Allowed values</th>
-                <th scope="col">Write status</th>
+                <th scope="col">Change support</th>
               </tr>
             </thead>
             <tbody id="capability-rows"></tbody>
@@ -232,7 +347,7 @@
             <ul id="coverage-unmapped" class="path-list path-list-long"></ul>
           </section>
         </div>
-        <p class="capability-note">A Canon descriptor can suggest configurability, but it is not proof that this application can safely write the property. Every write remains disabled and unverified.</p>
+        <p class="capability-note">A setting may appear changeable without being safe to change. Camera Lab requires a successful safety test on this camera and exact value before enabling it.</p>
       </div>
     </details>
 
@@ -293,7 +408,7 @@
       <p class="label">Confirm Camera Lab restart</p>
       <h2 id="backend-switch-title">Use the simulator?</h2>
       <p id="backend-switch-message"></p>
-      <p class="safety-callout">Camera Lab remains read-only. It will not change a camera setting.</p>
+      <p class="safety-callout">Camera changes start disabled. Enabling them requires a restart, a successful safety test, a complete review, and separate confirmation.</p>
       <div class="dialog-actions">
         <form method="dialog"><button class="secondary" type="submit">Cancel</button></form>
         <button id="backend-switch-confirm" class="primary" type="button">Use Simulator</button>
@@ -301,8 +416,47 @@
     </div>
   </dialog>
 
+  <dialog id="physical-write-mode-dialog" class="recovery-dialog" aria-labelledby="physical-write-mode-title">
+    <div class="recovery-content">
+      <p class="label">Confirm camera-change mode</p>
+      <h2 id="physical-write-mode-title">Enable camera changes?</h2>
+      <p id="physical-write-mode-message"></p>
+      <p id="physical-write-mode-safety" class="safety-callout"></p>
+      <div class="dialog-actions">
+        <form method="dialog"><button class="secondary" type="submit">Cancel</button></form>
+        <button id="physical-write-mode-confirm" class="danger" type="button">Enable camera changes</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="guarded-confirm-dialog" class="recovery-dialog" aria-labelledby="guarded-confirm-title">
+    <div class="recovery-content">
+      <p class="label">Final confirmation</p>
+      <h2 id="guarded-confirm-title">Start applying this profile?</h2>
+      <p id="guarded-confirm-message">Camera Lab will handle one simulator setting at a time. It checks the current value, makes one change when needed, and verifies the result. Any problem stops the process.</p>
+      <p id="guarded-confirm-safety" class="safety-callout">This cannot write the physical EOS R5. Manual C1–C3 registration and camera-settings-file transfer remain unavailable.</p>
+      <div class="dialog-actions">
+        <form method="dialog"><button class="secondary" type="submit">Cancel</button></form>
+        <button id="guarded-confirm-execute" class="primary" type="button">Start applying profile</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="write-qualification-dialog" class="recovery-dialog" aria-labelledby="write-qualification-title">
+    <div class="recovery-content">
+      <p class="label">Camera safety test confirmation</p>
+      <h2 id="write-qualification-title">Run this reversible safety test?</h2>
+      <p id="write-qualification-dialog-summary">This temporarily changes one setting, verifies it, restores the original value, and verifies the restoration.</p>
+      <p class="safety-callout">Continue only with a recoverable backup and no other camera-control application open.</p>
+      <div class="dialog-actions">
+        <form method="dialog"><button class="secondary" type="submit">Cancel</button></form>
+        <button id="write-qualification-dialog-confirm" class="danger" type="button">Run safety test</button>
+      </div>
+    </div>
+  </dialog>
+
   <footer>
-    <p>Phase 1 Camera Lab • Local loopback service • Camera-setting writes disabled</p>
+    <p>Camera Lab • Read-only by default • Every camera change requires review, confirmation and verification</p>
   </footer>
   <script src="/app.js" defer></script>
 </body>

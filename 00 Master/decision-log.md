@@ -2,6 +2,51 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Operator-Facing Apply Profile Workflow
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Present guarded execution to the photographer as **Apply this profile to camera**, not as a guarded-run engineering interface. Use a four-part operator flow: check readiness, review every proposed change, apply one visible step at a time, and show an unmistakable result. Translate internal classifications into **Already correct**, **Camera Lab will change**, **You will change**, and **Needs attention first**. Nothing may change during readiness or review.
+
+On completion, show **Profile applied successfully** only when every planned step has reached a final successful state, with exact automatically verified, manually confirmed, and already-correct settings. On failure, blocking, disconnect, or user stop, show **Profile not fully applied**, the completed count, the stopping point, and completed settings. Never require the operator to infer success from a progress count or internal journal state.
+
+Keep reversible value qualification available only in a collapsed **Advanced setup** section described as a safety test. Preserve the existing explicit camera-change enablement, complete preview, separate final confirmation, one-setting write/readback verification, immediate stop boundaries, and machine-local journal. Internal API and journal names may retain `guarded_run`; operator-facing controls and guidance must use plain camera-task language.
+
+The active **Do this now** heading must repeat the complete setting and target from the reviewed plan in the form **step of total: setting → target:**. The complete plan remains available during review but is removed from the active one-step workspace while processing, so the operator never has to scroll through or cross-reference the expanded list to discover the required value.
+
+Separate the complete audit plan from the operator work queue. Already-correct, equivalent, not-applicable, and reference-only rows are automatically accounted for and rechecked when readable; they never become operator steps. After the single simulator confirmation, process all simulator-automatic settings without further clicks while preserving independent read, optional one-write, immediate-readback, per-step journal saves, and stop-on-first-failure behavior. Physical writes remain one deliberate action per actual write.
+
+Combine manual settings by their practical camera route, preserving the underlying per-setting journal records and showing every exact target in the active card. One group confirmation performs one capability rescan, camera-verifies all exact readable matches together, and records the remaining items as explicit group confirmation. Count and display operator actions separately from automatic work and no-action plan rows. Retain preflight entries only in browser session storage under the exact unchanged camera, firmware, and lens identity; keep the active workspace stationary and focused between actions.
+
+Use one machine-local **Manual Confirmations.json** ledger to connect Apply profile results with Rapid setup. A manual-group completion must immediately refresh the selected card: exact readable matches become camera-verified and remaining confirmed settings appear as manual confirmation. Reuse manual confirmation on another card only within the same uninterrupted connected-camera session and only for the exact body, firmware, lens, current mode, still/movie context, flash/card context, setting path, and normalized target. A different target never inherits confirmation. Disconnect, restart, identity/equipment/mode change, explicit clearing, or contradictory camera readback prevents reuse. Shared evidence must remain labelled manual—not SDK verification—and must not contain secrets or enter Git.
+
+## Body-Scoped Phase 2B Physical Write Qualification
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Keep Canon EDSDK read-only for every ordinary Camera Lab launch. Add physical writes only behind an explicit `--enable-physical-writes` launch flag carried through both the loopback server and native helper. Default mode must retain no qualification or guarded-write route, and backend switching must not silently enable writes. Let the operator deliberately choose **Enable camera changes** in the ordinary EDSDK Lab; after a separate warning and confirmation, close the current session and replace the same server process with the explicit flag. Provide **Return to read-only** through the same safe restart boundary. Enabling or disabling the gate performs no camera-setting write.
+
+Qualify one conservative property at a time with a fully previewed and separately confirmed reversible transaction: read original, write one descriptor-listed temporary value, immediately verify it, restore the original value, and immediately verify restoration. Limit the compiled and tracked qualification allowlist to white balance, picture style, drive mode, metering mode, AF operation, AF method, cropping/aspect ratio, continuous AF, and eye detection. Keep exposure mode, ISO, aperture, shutter, exposure compensation, image quality, C1–C3 registration, and CSD transfer unavailable.
+
+Read the attached lens through Canon's documented `kEdsPropID_LensName` property and make that readback authoritative in guarded preflight; require an explicit manual equipment entry only when the camera does not report a lens. Display the authored **Switching tracked subjects** choices with their camera numbers—**Initial priority (0)**, **On subject (1)**, and **Switch subject (2)**—but keep the setting manual because the installed Canon EDSDK exposes no documented property identifier for it. Never invent a private property ID to expand the write allowlist.
+
+Store successful `sdk_written_and_verified` evidence outside Git, scoped to the exact EOS R5 body identifier, firmware, EDSDK version, property, and raw value. Normal physical guarded execution may write only an exact evidenced value, one visible setting per deliberate action, with a fresh read, match skip, at most one write, and immediate readback. Stop on every unresolved failure and never mark a partial run complete. Automated tests use a no-SDK physical double; a live-camera qualification or setting write remains a separate owner-approved physical session.
+
+This decision narrows and supersedes only the Phase 2A requirement that Canon EDSDK can never expose a guarded write path. Phase 2A simulator behavior and default EDSDK read-only safety remain binding.
+
+## Simulator-Only Phase 2A Guarded Runs
+
+**Status:** Accepted
+**Date:** 2026-08-26
+
+Implement the first guarded-run slice entirely in Camera Lab's deterministic simulator. Offer **Prepare guarded run** only after a completed Subject/Profile Card comparison in simulated mode. Collect EOS R5 identity, firmware, power, still/movie and equipment context, competing-application closure, a fresh pre-change snapshot, and confirmation of a recoverable camera-side `.CSD` backup. Preview every step as already matching and skipped, simulator-automatic, manual, or blocked/unsupported, and require a separate explicit execution confirmation.
+
+Process one visible step per deliberate action. For every automatic simulator step, read the current value, skip a match, otherwise simulate one write, immediately read it back, and advance only on verified equality. Stop on mismatch, unsupported value, missing or changed prerequisite, busy state, disconnect, or changed identity. Persist an atomic, secret-free machine-local journal that supports deliberate resume or abort without ever labeling a partial run complete.
+
+Keep Canon EDSDK and the physical EOS R5 strictly read-only. EDSDK mode exposes no guarded-run action or API route and receives no guarded mutation method or new setter call. Preserve the approved limited-property activation and event-handler registration only as existing read-only discovery mechanisms. Keep C1–C3 registration and camera-settings-file transfer manual. Physical session 3 remains the current evidence for C1 Wildlife, C2 Birds in Flight, C3 Landscape, and recovery checkpoint `C123_CFG.CSD`; lens stabilization Mode 1/3 remains equipment-dependent.
+
 ## Owner-Confirmed C1–C3 Registrations and Maintenance State
 
 **Status:** Accepted
@@ -25,7 +70,7 @@ Place the shared application version and expandable diagnostic hash on a dedicat
 **Status:** Accepted
 **Date:** 2026-08-26
 
-Let the running Camera Lab switch between Canon EDSDK and its deterministic simulator without a second server or Terminal workflow. Present **Use Simulator** in physical-camera mode and **Use Camera** in simulated mode. Every switch requires an explicit in-page confirmation that identifies the destination mode, warns that the current session and scan/comparison state will close, and reiterates that Camera Lab remains read-only.
+Let the running Camera Lab switch between Canon EDSDK and its deterministic simulator without a second server or Terminal workflow. Present **Use Simulator** in physical-camera mode and **Use Camera** in simulated mode. Every switch requires an explicit in-page confirmation that identifies the destination mode, warns that the current session and scan/comparison state will close, states that the switch itself writes nothing, and reiterates that Canon EDSDK mode remains read-only. Simulator mutation is governed separately by the later accepted Phase 2A decision.
 
 After confirmation, require the authenticated loopback endpoint to close the current camera or simulated session, shut down the listener, and replace that same supervised server process in the requested mode. Never start a competing port-8770 server. Returning to physical-camera mode requires the machine-local EDSDK helper to exist. Refresh the existing Lab page only after the replacement server reports the requested backend.
 

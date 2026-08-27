@@ -7,6 +7,8 @@ const elements = {
   cameraLabVersion: document.querySelector("#camera-lab-version"),
   cameraLabSourceHash: document.querySelector("#camera-lab-source-hash"),
   backendSwitchButton: document.querySelector("#backend-switch-button"),
+  physicalWriteModeButton: document.querySelector("#physical-write-mode-button"),
+  headerSafetyBadge: document.querySelector("#header-safety-badge"),
   stopCameraLabButton: document.querySelector("#stop-camera-lab-button"),
   statusDot: document.querySelector("#status-dot"),
   connectionTitle: document.querySelector("#connection-title"),
@@ -23,9 +25,11 @@ const elements = {
   cameraBody: document.querySelector("#camera-body"),
   cameraFirmware: document.querySelector("#camera-firmware"),
   cameraBattery: document.querySelector("#camera-battery"),
+  cameraLens: document.querySelector("#camera-lens"),
   sdkMode: document.querySelector("#sdk-mode"),
   sdkVersion: document.querySelector("#sdk-version"),
   sdkPath: document.querySelector("#sdk-path"),
+  sdkAccess: document.querySelector("#sdk-access"),
   simulationPanel: document.querySelector("#simulation-panel"),
   scenarioSelect: document.querySelector("#scenario-select"),
   applyScenarioButton: document.querySelector("#apply-scenario-button"),
@@ -34,6 +38,7 @@ const elements = {
   connectStep: document.querySelector("#connect-step"),
   discoverStep: document.querySelector("#discover-step"),
   compareStep: document.querySelector("#compare-step"),
+  configureStep: document.querySelector("#configure-step"),
   capabilityPanel: document.querySelector("#capability-panel"),
   capabilitySummary: document.querySelector("#capability-summary"),
   capabilityRows: document.querySelector("#capability-rows"),
@@ -50,6 +55,8 @@ const elements = {
   comparisonResults: document.querySelector("#comparison-results"),
   comparisonSummary: document.querySelector("#comparison-summary"),
   comparisonOrder: document.querySelector("#comparison-order"),
+  comparisonSafetyBadge: document.querySelector("#comparison-safety-badge"),
+  prepareGuardedButton: document.querySelector("#prepare-guarded-button"),
   checklistRescanButton: document.querySelector("#checklist-rescan-button"),
   checklistClearButton: document.querySelector("#checklist-clear-button"),
   checklistSdkCount: document.querySelector("#checklist-sdk-count"),
@@ -72,6 +79,68 @@ const elements = {
   backendSwitchTitle: document.querySelector("#backend-switch-title"),
   backendSwitchMessage: document.querySelector("#backend-switch-message"),
   backendSwitchConfirm: document.querySelector("#backend-switch-confirm"),
+  physicalWriteModeDialog: document.querySelector("#physical-write-mode-dialog"),
+  physicalWriteModeTitle: document.querySelector("#physical-write-mode-title"),
+  physicalWriteModeMessage: document.querySelector("#physical-write-mode-message"),
+  physicalWriteModeSafety: document.querySelector("#physical-write-mode-safety"),
+  physicalWriteModeConfirm: document.querySelector("#physical-write-mode-confirm"),
+  guardedRunPanel: document.querySelector("#guarded-run-panel"),
+  applyProfileTitle: document.querySelector("#apply-profile-title"),
+  applyProfileIntro: document.querySelector("#apply-profile-intro"),
+  applyReviewMessage: document.querySelector("#apply-review-message"),
+  applyResult: document.querySelector("#apply-result"),
+  applyResultTitle: document.querySelector("#apply-result-title"),
+  applyResultSummary: document.querySelector("#apply-result-summary"),
+  applyResultDetails: document.querySelector("#apply-result-details"),
+  guardedPreflightForm: document.querySelector("#guarded-preflight-form"),
+  guardedCameraIdentity: document.querySelector("#guarded-camera-identity"),
+  guardedCameraFirmware: document.querySelector("#guarded-camera-firmware"),
+  guardedCameraPower: document.querySelector("#guarded-camera-power"),
+  guardedStillMovie: document.querySelector("#guarded-still-movie"),
+  guardedCurrentMode: document.querySelector("#guarded-current-mode"),
+  guardedLens: document.querySelector("#guarded-lens"),
+  guardedLensSource: document.querySelector("#guarded-lens-source"),
+  guardedFlash: document.querySelector("#guarded-flash"),
+  guardedCards: document.querySelector("#guarded-cards"),
+  guardedBackupFilename: document.querySelector("#guarded-backup-filename"),
+  guardedAppsClosed: document.querySelector("#guarded-apps-closed"),
+  guardedBackupConfirmed: document.querySelector("#guarded-backup-confirmed"),
+  guardedPlanButton: document.querySelector("#guarded-plan-button"),
+  guardedResumeButton: document.querySelector("#guarded-resume-button"),
+  guardedPreview: document.querySelector("#guarded-preview"),
+  guardedStatus: document.querySelector("#guarded-status"),
+  guardedProgressCount: document.querySelector("#guarded-progress-count"),
+  guardedProgressBar: document.querySelector("#guarded-progress-bar"),
+  guardedClassificationCounts: document.querySelector("#guarded-classification-counts"),
+  guardedFailure: document.querySelector("#guarded-failure"),
+  guardedActiveWorkspace: document.querySelector("#guarded-active-workspace"),
+  guardedCurrentStep: document.querySelector("#guarded-current-step"),
+  guardedStepTitle: document.querySelector("#guarded-step-title"),
+  guardedStepSettings: document.querySelector("#guarded-step-settings"),
+  guardedStepDetail: document.querySelector("#guarded-step-detail"),
+  guardedStepRoute: document.querySelector("#guarded-step-route"),
+  guardedConfirmButton: document.querySelector("#guarded-confirm-button"),
+  guardedNextButton: document.querySelector("#guarded-next-button"),
+  guardedAbortButton: document.querySelector("#guarded-abort-button"),
+  guardedPlanDetails: document.querySelector("#guarded-plan-details"),
+  guardedPlanSteps: document.querySelector("#guarded-plan-steps"),
+  guardedConfirmDialog: document.querySelector("#guarded-confirm-dialog"),
+  guardedConfirmExecute: document.querySelector("#guarded-confirm-execute"),
+  guardedConfirmMessage: document.querySelector("#guarded-confirm-message"),
+  guardedConfirmSafety: document.querySelector("#guarded-confirm-safety"),
+  writeQualificationControls: document.querySelector("#write-qualification-controls"),
+  writeQualificationNeeded: document.querySelector("#write-qualification-needed"),
+  writeQualificationProperty: document.querySelector("#write-qualification-property"),
+  writeQualificationTarget: document.querySelector("#write-qualification-target"),
+  writeQualificationPrepare: document.querySelector("#write-qualification-prepare"),
+  writeQualificationPreview: document.querySelector("#write-qualification-preview"),
+  writeQualificationSummary: document.querySelector("#write-qualification-summary"),
+  writeQualificationResult: document.querySelector("#write-qualification-result"),
+  writeQualificationConfirm: document.querySelector("#write-qualification-confirm"),
+  writeQualificationExecute: document.querySelector("#write-qualification-execute"),
+  writeQualificationDialog: document.querySelector("#write-qualification-dialog"),
+  writeQualificationDialogSummary: document.querySelector("#write-qualification-dialog-summary"),
+  writeQualificationDialogConfirm: document.querySelector("#write-qualification-dialog-confirm"),
 };
 
 let statusState = null;
@@ -82,6 +151,10 @@ let cameraLabStopped = false;
 let statusPollId = null;
 let contextSelections = {};
 let requestedBackendMode = null;
+let requestedPhysicalWriteMode = null;
+let guardedRunState = null;
+let writeQualificationState = null;
+let writeQualificationCandidates = [];
 const checklistStorageKey = "camera-lab-phase1-checklist-v1";
 let checklistState = loadChecklistState();
 
@@ -135,7 +208,9 @@ function contextPromptForFinding(finding) {
 }
 
 function manualConfirmation(finding) {
-  return activeChecklistRecord()?.confirmations?.[checklistFindingKey(finding)] || null;
+  return activeChecklistRecord()?.confirmations?.[checklistFindingKey(finding)]
+    || finding.shared_manual_confirmation
+    || null;
 }
 
 function setManualConfirmation(finding, confirmed) {
@@ -146,11 +221,51 @@ function setManualConfirmation(finding, confirmed) {
       evidence_method: "manual_user_confirmed",
       confirmed_at: new Date().toISOString(),
       expected: finding.expected,
+      source: "this_card",
     };
   } else {
     delete record.confirmations[key];
   }
   saveChecklistState();
+}
+
+function sharedManualContext() {
+  const key = guardedPreflightStorageKey();
+  if (!key) return null;
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(key) || "null");
+    if (!saved
+      || saved.still_movie_context !== "still"
+      || !saved.flash
+      || !saved.cards
+      || saved.applications_closed !== true
+      || saved.camera_backup_confirmed !== true) return null;
+    return {
+      still_movie_context: saved.still_movie_context,
+      flash: saved.flash,
+      cards: saved.cards,
+    };
+  } catch (_error) {
+    return null;
+  }
+}
+
+function sharedConfirmationItems(finding) {
+  return (finding.items?.length ? finding.items : [finding])
+    .filter((item) => item.path && item.expected)
+    .map((item) => ({path: item.path, target: item.expected}));
+}
+
+async function revokeSharedManualConfirmation(finding) {
+  const manualContext = sharedManualContext();
+  if (!finding.shared_manual_confirmation || !manualContext) return;
+  await request("/api/camera-control/manual-confirmations/revoke", {
+    method: "POST",
+    body: JSON.stringify({
+      confirmations: sharedConfirmationItems(finding),
+      manual_context: manualContext,
+    }),
+  });
 }
 
 function allComparisonFindings() {
@@ -246,6 +361,17 @@ function setBusy(busy) {
   elements.simulateDisconnectButton.disabled = busy || !statusState?.connected;
   elements.backendSwitchButton.disabled = busy;
   elements.stopCameraLabButton.disabled = busy;
+  elements.prepareGuardedButton.disabled = busy;
+  elements.guardedPlanButton.disabled = busy;
+  elements.guardedResumeButton.disabled = busy;
+  elements.guardedConfirmButton.disabled = busy;
+  elements.guardedNextButton.disabled = busy;
+  elements.guardedAbortButton.disabled = busy;
+  elements.guardedConfirmExecute.disabled = busy;
+  elements.writeQualificationPrepare.disabled = busy || !elements.writeQualificationTarget.value;
+  elements.writeQualificationConfirm.disabled = busy;
+  elements.writeQualificationExecute.disabled = busy;
+  elements.writeQualificationDialogConfirm.disabled = busy;
   for (const button of document.querySelectorAll("[data-cx-profile]")) button.disabled = busy;
 }
 
@@ -298,14 +424,14 @@ function showBackendSwitchConfirmation() {
   }
 }
 
-async function waitForBackendRestart(backend) {
+async function waitForBackendRestart(backend, physicalWriteEnabled = false) {
   for (let attempt = 0; attempt < 100; attempt += 1) {
     await new Promise((resolve) => window.setTimeout(resolve, 150));
     try {
       const response = await fetch("/api/camera-control/status", { cache: "no-store" });
       if (!response.ok) continue;
       const payload = await response.json();
-      if (payload.backend_mode === backend) {
+      if (payload.backend_mode === backend && payload.physical_write_enabled === physicalWriteEnabled) {
         window.location.reload();
         return;
       }
@@ -330,14 +456,70 @@ async function restartWithSelectedBackend() {
   try {
     const result = await request("/api/camera-control/restart-backend", {
       method: "POST",
-      body: JSON.stringify({ backend }),
+      body: JSON.stringify({ backend, physical_write_enabled: false }),
     });
     if (!result.restarting || !result.camera_session_closed) {
       throw new Error("Camera Lab did not confirm a safe backend restart.");
     }
-    await waitForBackendRestart(backend);
+    await waitForBackendRestart(backend, false);
   } catch (error) {
     requestedBackendMode = null;
+    setBusy(false);
+    if (statusPollId === null) statusPollId = window.setInterval(() => refreshStatus({ quiet: true }), 2500);
+    setMessage(error.message);
+  }
+}
+
+function showPhysicalWriteModeConfirmation() {
+  if (requestPending || !statusState || statusState.backend_mode !== "edsdk") return;
+  requestedPhysicalWriteMode = !statusState.physical_write_enabled;
+  elements.physicalWriteModeTitle.textContent = requestedPhysicalWriteMode
+    ? "Enable camera changes?"
+    : "Return Camera Lab to read-only mode?";
+  elements.physicalWriteModeMessage.textContent = requestedPhysicalWriteMode
+    ? "Camera Lab will close the current camera session and restart with the explicit physical-write gate. Enabling the gate does not change any camera setting."
+    : "Camera Lab will close the current camera session and restart in its ordinary read-only mode.";
+  elements.physicalWriteModeSafety.textContent = requestedPhysicalWriteMode
+    ? "Camera Lab still shows every proposed change first and requires another confirmation before applying anything."
+    : "Any unfinished attempt remains incomplete; no setting is changed while returning to read-only mode.";
+  elements.physicalWriteModeConfirm.textContent = requestedPhysicalWriteMode
+    ? "Enable camera changes"
+    : "Return to read-only";
+  elements.physicalWriteModeConfirm.className = requestedPhysicalWriteMode ? "danger" : "primary";
+  if (typeof elements.physicalWriteModeDialog.showModal === "function") {
+    elements.physicalWriteModeDialog.showModal();
+  } else {
+    elements.physicalWriteModeDialog.setAttribute("open", "");
+  }
+}
+
+async function restartWithPhysicalWriteMode() {
+  const physicalWriteEnabled = requestedPhysicalWriteMode;
+  if (typeof physicalWriteEnabled !== "boolean" || requestPending) return;
+  elements.physicalWriteModeDialog.close();
+  setBusy(true);
+  if (statusPollId !== null) {
+    window.clearInterval(statusPollId);
+    statusPollId = null;
+  }
+  setMessage(
+    physicalWriteEnabled
+      ? "Closing the current session and enabling guarded physical writes…"
+      : "Closing the current session and returning Camera Lab to read-only mode…",
+    "info"
+  );
+  try {
+    const result = await request("/api/camera-control/restart-backend", {
+      method: "POST",
+      body: JSON.stringify({backend: "edsdk", physical_write_enabled: physicalWriteEnabled}),
+    });
+    if (!result.restarting || !result.camera_session_closed
+        || result.physical_write_enabled !== physicalWriteEnabled) {
+      throw new Error("Camera Lab did not confirm the requested guarded-write restart.");
+    }
+    await waitForBackendRestart("edsdk", physicalWriteEnabled);
+  } catch (error) {
+    requestedPhysicalWriteMode = null;
     setBusy(false);
     if (statusPollId === null) statusPollId = window.setInterval(() => refreshStatus({ quiet: true }), 2500);
     setMessage(error.message);
@@ -360,12 +542,25 @@ function renderStatus(status) {
   elements.cameraLabSourceHash.textContent = app.build ? `Source hash ${app.build}` : "Source hash unavailable";
   elements.backendBadge.textContent = status.backend_mode === "simulated" ? "Simulated camera" : "Canon EDSDK";
   elements.backendBadge.classList.toggle("live", status.backend_mode === "edsdk");
+  elements.headerSafetyBadge.textContent = status.backend_mode === "simulated"
+    ? "Simulator changes only"
+    : status.physical_write_enabled
+      ? "Camera changes enabled"
+      : "No setting writes";
   elements.backendSwitchButton.textContent = status.backend_mode === "simulated" ? "Use Camera" : "Use Simulator";
+  elements.physicalWriteModeButton.hidden = status.backend_mode !== "edsdk";
+  elements.physicalWriteModeButton.textContent = status.physical_write_enabled
+    ? "Return to read-only"
+    : "Enable camera changes";
   elements.statusDot.classList.toggle("connected", connected);
   elements.statusDot.classList.toggle("error", !connected && Boolean(status.last_error));
   elements.connectionTitle.textContent = connected ? "EOS R5 connected" : "Camera not connected";
   elements.connectionMessage.textContent = connected
-    ? "The USB session is open and responding. Camera settings remain unchanged."
+    ? status.backend_mode === "simulated"
+      ? "The simulator is connected. Camera Lab will show every proposed change before applying it."
+      : status.physical_write_enabled
+        ? "The USB session is open. Camera Lab will show and confirm every change before applying it."
+        : "The USB session is open and responding. Camera settings remain unchanged."
     : status.last_error?.message || "Discover a camera, then connect when you are ready.";
   elements.connectButton.hidden = connected || reconnectAvailable;
   elements.scanButton.hidden = !connected && !reconnectAvailable;
@@ -378,17 +573,37 @@ function renderStatus(status) {
   elements.cameraBody.textContent = valueOrUnavailable(camera.body_id);
   elements.cameraFirmware.textContent = valueOrUnavailable(camera.firmware_version);
   elements.cameraBattery.textContent = powerStatus(camera.battery_raw);
+  elements.cameraLens.textContent = valueOrUnavailable(camera.lens_name);
 
   const sdk = status.sdk || {};
   elements.sdkMode.textContent = status.backend_mode === "simulated" ? "Simulation" : "Physical camera";
   elements.sdkVersion.textContent = valueOrUnavailable(sdk.framework_version);
   elements.sdkPath.textContent = valueOrUnavailable(sdk.path);
+  elements.sdkAccess.textContent = status.backend_mode === "simulated"
+    ? "Simulator profile application"
+    : status.physical_write_enabled ? "Camera changes enabled" : "Read-only";
+  elements.comparisonSafetyBadge.textContent = status.backend_mode === "simulated"
+    ? "Comparison stays read-only"
+    : status.physical_write_enabled ? "Changes require review" : "No setting writes";
 
   elements.simulationPanel.hidden = status.backend_mode !== "simulated";
+  const guardedAvailable = status.backend_mode === "simulated" || status.physical_guarded_runs;
+  elements.prepareGuardedButton.hidden = !guardedAvailable || !comparisonState;
+  elements.writeQualificationControls.hidden = !status.physical_write_qualification;
+  if (!guardedAvailable) {
+    elements.guardedRunPanel.hidden = true;
+  } else if (status.guarded_run && !guardedRunState) {
+    elements.guardedRunPanel.hidden = false;
+    elements.guardedResumeButton.hidden = false;
+    elements.guardedResumeButton.dataset.sessionId = status.guarded_run.session_id;
+    elements.guardedResumeButton.textContent = `Resume ${status.guarded_run.status} run`;
+  }
   elements.connectStep.classList.toggle("active", !connected);
   elements.discoverStep.classList.toggle("active", connected);
   elements.discoverStep.classList.toggle("locked", !connected);
   elements.compareStep.classList.toggle("locked", !Boolean(status.capabilities));
+  elements.configureStep.classList.toggle("locked", !guardedAvailable || (!comparisonState && !status.guarded_run));
+  elements.configureStep.classList.toggle("active", Boolean(guardedRunState) || Boolean(status.guarded_run));
   if (status.capabilities) renderCapabilities(status.capabilities);
   if (status.backend_mode === "simulated") {
     const scenarios = status.available_scenarios || {};
@@ -456,7 +671,9 @@ function renderCapabilities(capabilities) {
         ? `${allowed.slice(0, 6).map((value, index) => `${allowedDisplay[index] || `Raw ${value}`} [${value}]`).join(", ")}${allowed.length > 6 ? ` +${allowed.length - 6} more` : ""}`
         : "None reported";
       const write = document.createElement("td");
-      write.textContent = "Unverified";
+      write.textContent = property.write_classification === "machine_local_sdk_written_and_verified"
+        ? `Body-scoped verified: ${(property.verified_write_values_raw || []).join(", ")}`
+        : "Unverified";
       row.append(name, readback, mapping, descriptor, values, write);
       return row;
     })
@@ -725,17 +942,27 @@ function findingRow(finding, cardRow = false) {
     label.className = "manual-confirmation";
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.checked = Boolean(manualConfirmation(finding));
+    const confirmation = manualConfirmation(finding);
+    checkbox.checked = Boolean(confirmation);
     checkbox.addEventListener("change", () => {
       setManualConfirmation(finding, checkbox.checked);
-      renderComparisonTables();
-      renderChecklistSummary();
+      if (!checkbox.checked && finding.shared_manual_confirmation) {
+        runAction(async () => {
+          await revokeSharedManualConfirmation(finding);
+          await compareSelectedProfile();
+        });
+      } else {
+        renderComparisonTables();
+        renderChecklistSummary();
+      }
     });
     const text = document.createElement("span");
     text.textContent = "Reviewed/set manually";
     const evidence = document.createElement("small");
     evidence.textContent = checkbox.checked
-      ? "Saved as manual_user_confirmed"
+      ? (finding.shared_manual_confirmation
+        ? "Previously manually confirmed in this connected-camera session"
+        : "Saved as manual_user_confirmed")
       : "Not camera-verified";
     label.append(checkbox, text, evidence);
     checklist.append(label);
@@ -845,6 +1072,534 @@ function renderComparison(comparison, { recordScan = false } = {}) {
   renderChecklistSummary();
   elements.compareStep.classList.remove("locked");
   elements.compareStep.classList.add("active");
+  const guardedAvailable = statusState?.backend_mode === "simulated" || statusState?.physical_guarded_runs;
+  elements.prepareGuardedButton.hidden = !guardedAvailable;
+  elements.configureStep.classList.toggle("locked", !guardedAvailable);
+}
+
+const guardedClassificationLabels = {
+  already_matching_skipped: "Already correct",
+  simulator_automatic: "Camera Lab will change",
+  physical_automatic: "Camera Lab will change",
+  manual: "You will change",
+  blocked_or_unsupported: "Needs attention first",
+};
+
+const guardedStatusLabels = {
+  planned: "Ready for your review",
+  confirmed: "Ready to begin",
+  in_progress: "Applying profile",
+  failed: "Stopped — not fully applied",
+  blocked: "Cannot continue yet",
+  aborted: "Stopped by you — not fully applied",
+  complete: "Profile applied successfully",
+};
+
+function friendlyStepReason(step) {
+  const reason = String(step.reason || "");
+  if (step.classification === "already_matching_skipped") {
+    return "The camera already matches this profile. Nothing will be changed.";
+  }
+  if (["simulator_automatic", "physical_automatic"].includes(step.classification)) {
+    return "Camera Lab can make this change and immediately verify the camera reports the requested value.";
+  }
+  if (step.classification === "manual") {
+    return "Change this on the camera using the route shown, then confirm it here.";
+  }
+  if (reason.includes("has not passed reversible qualification")) {
+    return "Automatic changing is not enabled for this value yet. Open Advanced setup above to test and enable it safely.";
+  }
+  if (reason.includes("outside the reviewed write-qualification allowlist")) {
+    return "Camera Lab cannot change this setting automatically. Change it on the camera, rescan, and review the profile again.";
+  }
+  if (reason.includes("descriptor")) {
+    return "The camera does not currently offer this value for automatic changing. Check the camera mode, change it manually if needed, then rescan.";
+  }
+  if (reason.includes("context remains unresolved")) {
+    return "Choose the missing subject or shooting condition in the comparison, then review again.";
+  }
+  return reason || "Resolve this item before starting.";
+}
+
+function guardedStepInstruction(step, position, total) {
+  return `${position} of ${total}: ${step.label} → ${step.target}:`;
+}
+
+function renderApplyResult(run, counts, completed, total) {
+  const steps = run.steps || [];
+  const actions = run.summary?.actions || { completed: completed, total: total, remaining: total - completed };
+  const operatorActions = run.summary?.operator_actions || actions;
+  const automaticActions = run.summary?.automatic_actions || {completed: 0, total: 0};
+  const verifiedSteps = steps.filter((step) => ["camera_verified", "simulator_verified"].includes(step.status));
+  const unchangedSteps = steps.filter((step) => step.status === "skipped");
+  const manualSteps = steps.filter((step) => step.status === "manual_user_confirmed");
+  const verified = verifiedSteps.length;
+  const unchanged = unchangedSteps.length;
+  const manual = manualSteps.length;
+  const blocked = steps.filter((step) => step.classification === "blocked_or_unsupported");
+  elements.applyResult.className = "apply-result";
+  elements.applyResultDetails.replaceChildren();
+
+  let title = "";
+  let summary = "";
+  let details = [];
+  if (run.status === "planned" && blocked.length) {
+    title = "Not ready to apply";
+    summary = `${blocked.length} ${blocked.length === 1 ? "item needs" : "items need"} attention. Nothing has changed.`;
+    details = blocked.map((step) => `${step.label}: ${friendlyStepReason(step)}`);
+    elements.applyResult.classList.add("needs-attention");
+  } else if (run.status === "planned") {
+    title = "Ready to apply";
+    summary = `Review complete: ${operatorActions.total} actions for you, ${automaticActions.total} handled automatically, and ${counts.already_matching_skipped || 0} plan items requiring no action.`;
+    details = ["Nothing has changed yet. Camera Lab will automatically clear already-correct items and simulator-safe changes after confirmation."];
+    elements.applyResult.classList.add("ready");
+  } else if (run.status === "complete") {
+    title = "Profile applied successfully";
+    summary = `All ${operatorActions.total} operator ${operatorActions.total === 1 ? "action" : "actions"} finished. Camera Lab handled ${automaticActions.completed} simulator-safe ${automaticActions.completed === 1 ? "change" : "changes"} automatically, verified ${verified}, and accounted for ${unchanged} items without a change.`;
+    details = [
+      `Verified automatically: ${verifiedSteps.length ? verifiedSteps.map((step) => `${step.label} = ${step.target}`).join("; ") : "None"}.`,
+      `Confirmed by you: ${manualSteps.length ? manualSteps.map((step) => `${step.label} = ${step.target}`).join("; ") : "None"}.`,
+      `Already correct: ${unchangedSteps.length ? unchangedSteps.map((step) => step.label).join("; ") : "None"}.`,
+      "No failed or unfinished steps remain.",
+    ];
+    elements.applyResult.classList.add("success");
+  } else if (["failed", "blocked", "aborted"].includes(run.status)) {
+    title = run.status === "aborted" ? "Stopped by you — profile not fully applied" : "Stopped — profile not fully applied";
+    summary = `${operatorActions.completed} of ${operatorActions.total} operator actions finished. Do not treat this profile as complete.`;
+    const failedStep = steps.find((step) => step.status === "failed" || step.status === "blocked");
+    details = [
+      run.failure || "Review the unfinished step before continuing or starting again.",
+      failedStep ? `Stopped at: ${failedStep.label} → ${failedStep.target}.` : "Review the next unfinished step before continuing.",
+      `Finished before stopping: ${steps.filter((step) => ["camera_verified", "simulator_verified", "manual_user_confirmed", "skipped"].includes(step.status)).map((step) => step.label).join("; ") || "None"}.`,
+    ];
+    elements.applyResult.classList.add("stopped");
+  }
+  elements.applyResult.hidden = !title;
+  elements.applyResultTitle.textContent = title;
+  elements.applyResultSummary.textContent = summary;
+  elements.applyResultDetails.replaceChildren(...details.map((detail) => {
+    const item = document.createElement("li");
+    item.textContent = detail;
+    return item;
+  }));
+}
+
+function comparisonCurrentMode() {
+  for (const finding of allComparisonFindings()) {
+    const items = finding.items || [finding];
+    const mode = items.find((item) => item.path === "exposure.mode");
+    if (mode?.actual) return mode.actual;
+  }
+  return "";
+}
+
+function openGuardedPreflight() {
+  const available = statusState?.backend_mode === "simulated" || statusState?.physical_guarded_runs;
+  if (!comparisonState || !available) return;
+  elements.guardedRunPanel.hidden = false;
+  const profileName = comparisonState.profile.display_title || comparisonState.profile.title || comparisonState.profile.name;
+  elements.applyProfileTitle.textContent = `Apply ${profileName} to camera`;
+  elements.applyProfileIntro.textContent = `Camera Lab will check readiness and show every ${profileName} change before anything happens.`;
+  elements.guardedCameraIdentity.textContent = `${valueOrUnavailable(statusState.camera?.product_name)} · ${valueOrUnavailable(statusState.camera?.body_id)}`;
+  elements.guardedCameraFirmware.textContent = valueOrUnavailable(statusState.camera?.firmware_version);
+  elements.guardedCameraPower.textContent = powerStatus(statusState.camera?.battery_raw);
+  restoreGuardedPreflight();
+  const cameraLens = String(statusState.camera?.lens_name || "").trim();
+  elements.guardedLens.value = cameraLens;
+  elements.guardedLens.readOnly = Boolean(cameraLens);
+  elements.guardedLensSource.textContent = cameraLens
+    ? "Read directly from the connected camera; this value overrides manual entry."
+    : "The camera did not report a lens. Enter the attached lens or None and confirm it manually.";
+  if (!elements.guardedCurrentMode.value) elements.guardedCurrentMode.value = comparisonCurrentMode();
+  elements.configureStep.classList.remove("locked");
+  elements.configureStep.classList.add("active");
+  if (statusState?.physical_write_qualification) runAction(loadWriteQualificationCandidates);
+  elements.guardedRunPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderGuardedRun(payload) {
+  guardedRunState = payload.guarded_run;
+  const run = guardedRunState;
+  syncWriteQualificationToReview();
+  const summary = run.summary || {};
+  const counts = summary.classifications || {};
+  const completed = summary.completed_steps || 0;
+  const total = summary.total_steps || 0;
+  const actions = summary.actions || {completed, total, current: 0, remaining: total - completed};
+  const operatorActions = summary.operator_actions || actions;
+  const automaticActions = summary.automatic_actions || {completed: 0, total: 0};
+  elements.guardedRunPanel.hidden = false;
+  elements.guardedPreview.hidden = false;
+  elements.guardedStatus.textContent = guardedStatusLabels[run.status] || run.status;
+  elements.guardedProgressCount.textContent = `${operatorActions.completed} of ${operatorActions.total} your actions · ${automaticActions.completed} automatic`;
+  elements.guardedProgressBar.max = Math.max(operatorActions.total, 1);
+  elements.guardedProgressBar.value = operatorActions.completed;
+  elements.applyReviewMessage.textContent = run.status === "planned"
+    ? "Nothing has changed yet. Check the summary below before starting."
+    : run.status === "complete"
+      ? "Every planned step finished. The result below is your completion receipt."
+      : run.backend === "simulated"
+        ? "Simulator-safe changes and already-correct items were processed automatically. Only work requiring you remains below."
+        : "Already-correct items were cleared automatically. Only actual work remains below.";
+  elements.guardedClassificationCounts.replaceChildren(
+    ...[
+      ["already_matching_skipped", "Already correct", counts.already_matching_skipped || 0],
+      ["automatic", "Camera Lab will change", (counts.simulator_automatic || 0) + (counts.physical_automatic || 0)],
+      ["manual", "You will change", counts.manual || 0],
+      ["blocked_or_unsupported", "Needs attention first", counts.blocked_or_unsupported || 0],
+    ].map(([classification, label, value]) => {
+      const item = document.createElement("div");
+      item.className = `guarded-count guarded-${classification}`;
+      const count = document.createElement("strong");
+      count.textContent = value;
+      const text = document.createElement("span");
+      text.textContent = label;
+      item.append(count, text);
+      return item;
+    })
+  );
+  elements.guardedFailure.hidden = !run.failure;
+  elements.guardedFailure.textContent = run.failure || "";
+  elements.guardedPlanSteps.replaceChildren(
+    ...(run.steps || []).map((step) => {
+      const item = document.createElement("li");
+      item.className = `guarded-plan-step guarded-${step.classification} guarded-step-${step.status}`;
+      const title = document.createElement("strong");
+      title.textContent = `${step.index}. ${step.label} → ${step.target}`;
+      const classification = document.createElement("span");
+      classification.textContent = guardedClassificationLabels[step.classification] || step.classification;
+      const reason = document.createElement("small");
+      reason.textContent = `${friendlyStepReason(step)}${step.result ? ` Result: ${step.result}` : ""}`;
+      item.append(title, classification, reason);
+      return item;
+    })
+  );
+  const processingOneStep = ["confirmed", "in_progress"].includes(run.status);
+  elements.guardedActiveWorkspace.classList.toggle("is-processing", processingOneStep);
+  elements.guardedPlanDetails.hidden = processingOneStep;
+  if (processingOneStep) elements.guardedPlanDetails.open = false;
+
+  const current = (run.steps || [])[run.current_step];
+  const executable = ["confirmed", "in_progress"].includes(run.status) && current;
+  elements.guardedCurrentStep.hidden = !current || run.status === "planned";
+  elements.guardedStepSettings.hidden = true;
+  elements.guardedStepSettings.replaceChildren();
+  if (current) {
+    const manualGroup = current.classification === "manual"
+      ? (run.steps || []).filter((step) => step.classification === "manual"
+        && step.manual_group_key === current.manual_group_key
+        && !["skipped", "simulator_verified", "camera_verified", "manual_user_confirmed"].includes(step.status))
+      : [];
+    if (manualGroup.length > 1) {
+      elements.guardedStepTitle.textContent = `${operatorActions.current} of ${operatorActions.total}: ${current.manual_group_label} (${manualGroup.length} settings):`;
+      elements.guardedStepSettings.hidden = false;
+      elements.guardedStepSettings.replaceChildren(...manualGroup.map((step) => {
+        const item = document.createElement("li");
+        item.textContent = `${step.label} → ${step.target}`;
+        return item;
+      }));
+      elements.guardedStepDetail.textContent = "Set every item in this group, then continue once. Camera Lab will perform one rescan and verify every exact readable match together.";
+      elements.guardedStepRoute.textContent = `Stay in: ${current.manual_group_label}`;
+    } else {
+      const position = current.classification === "simulator_automatic" ? actions.current : operatorActions.current;
+      const actionTotal = current.classification === "simulator_automatic" ? actions.total : operatorActions.total;
+      elements.guardedStepTitle.textContent = guardedStepInstruction(current, position, actionTotal);
+      const before = current.read_before || current.observed;
+      elements.guardedStepDetail.textContent = before
+        ? `${current.label}: ${before} → ${current.target}. ${friendlyStepReason(current)}`
+        : `${current.label}: set to ${current.target}. ${friendlyStepReason(current)}`;
+      elements.guardedStepRoute.textContent = current.access_paths?.length
+        ? `Route: ${current.access_paths.map((route) => route.label).join("; ")}`
+        : "No reviewed camera route; follow the manual explanation.";
+    }
+  }
+  elements.guardedConfirmButton.hidden = run.status !== "planned";
+  elements.guardedConfirmButton.disabled = (counts.blocked_or_unsupported || 0) > 0 || requestPending;
+  elements.guardedNextButton.hidden = !executable;
+  if (current) {
+    elements.guardedNextButton.textContent = current.classification === "simulator_automatic"
+      ? `Apply and verify ${current.label}`
+      : current.classification === "physical_automatic"
+        ? `Apply and verify ${current.label}`
+      : current.classification === "manual"
+        ? ((run.steps || []).filter((step) => step.classification === "manual"
+          && step.manual_group_key === current.manual_group_key
+          && !["skipped", "simulator_verified", "camera_verified", "manual_user_confirmed"].includes(step.status)).length > 1
+          ? "I changed these settings — rescan once"
+          : "I changed this setting — rescan")
+        : "Confirm and continue";
+  }
+  elements.guardedAbortButton.hidden = ["complete", "aborted"].includes(run.status);
+  elements.guardedResumeButton.hidden = run.status !== "failed";
+  elements.guardedResumeButton.dataset.sessionId = run.session_id;
+  elements.guardedResumeButton.textContent = "Continue stopped attempt";
+  renderApplyResult(run, counts, completed, total);
+  elements.configureStep.classList.remove("locked");
+  elements.configureStep.classList.toggle("active", run.status !== "complete");
+}
+
+function guardedPreflightPayload() {
+  return {
+    still_movie_context: elements.guardedStillMovie.value,
+    current_mode: elements.guardedCurrentMode.value,
+    lens: elements.guardedLens.value,
+    flash: elements.guardedFlash.value,
+    cards: elements.guardedCards.value,
+    applications_closed: elements.guardedAppsClosed.checked,
+    camera_backup_confirmed: elements.guardedBackupConfirmed.checked,
+    backup_filename: elements.guardedBackupFilename.value,
+  };
+}
+
+function guardedPreflightStorageKey() {
+  const camera = statusState?.camera || {};
+  const identity = [camera.product_name, camera.body_id, camera.firmware_version, camera.lens_name]
+    .map((value) => String(value || "").trim())
+    .join("|");
+  return identity.replaceAll("|", "") ? `camera-lab-preflight:${identity}` : null;
+}
+
+function persistGuardedPreflight() {
+  const key = guardedPreflightStorageKey();
+  if (!key) return;
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(guardedPreflightPayload()));
+  } catch (_error) {
+    // Session retention is an optional convenience; preflight validation remains authoritative.
+  }
+}
+
+function restoreGuardedPreflight() {
+  const key = guardedPreflightStorageKey();
+  if (!key) return;
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(key) || "null");
+    if (!saved) return;
+    elements.guardedStillMovie.value = saved.still_movie_context || "still";
+    elements.guardedCurrentMode.value = saved.current_mode || "";
+    if (!statusState?.camera?.lens_name) elements.guardedLens.value = saved.lens || "";
+    elements.guardedFlash.value = saved.flash || "";
+    elements.guardedCards.value = saved.cards || "";
+    elements.guardedAppsClosed.checked = saved.applications_closed === true;
+    elements.guardedBackupConfirmed.checked = saved.camera_backup_confirmed === true;
+    elements.guardedBackupFilename.value = saved.backup_filename || "C123_CFG.CSD";
+  } catch (_error) {
+    // Ignore unavailable or invalid session-only convenience state.
+  }
+}
+
+async function prepareGuardedRun() {
+  const result = await request("/api/camera-control/guarded-run/prepare", {
+    method: "POST",
+    body: JSON.stringify({
+      profile: comparisonState.profile.name,
+      context_choices: contextSelections,
+      preflight: guardedPreflightPayload(),
+    }),
+  });
+  renderGuardedRun(result);
+}
+
+function showGuardedConfirmation() {
+  if (!guardedRunState || guardedRunState.status !== "planned") return;
+  const physical = guardedRunState.backend === "edsdk";
+  elements.guardedConfirmDialog.querySelector(".label").textContent = physical
+    ? "Final confirmation" : "Simulator confirmation";
+  elements.guardedConfirmDialog.querySelector("h2").textContent = physical
+    ? "Apply these changes to your EOS R5?" : "Try these changes in the simulator?";
+  elements.guardedConfirmExecute.textContent = physical
+    ? "Start applying profile" : "Start simulator test";
+  elements.guardedConfirmMessage.textContent = physical
+    ? "Camera Lab will automatically clear items that still match, keep one deliberate action for each physical write, and group manual changes by camera route."
+    : "Camera Lab will automatically process every simulator-safe change, verifying each one independently and stopping at the first problem. It will then show only grouped manual work.";
+  elements.guardedConfirmSafety.textContent = physical
+    ? "Camera Lab stops at the first problem and will never report a partial attempt as complete. C1–C3 registration remains manual."
+    : "This simulator test cannot change the physical EOS R5.";
+  if (typeof elements.guardedConfirmDialog.showModal === "function") {
+    elements.guardedConfirmDialog.showModal();
+  } else {
+    elements.guardedConfirmDialog.setAttribute("open", "");
+  }
+}
+
+function requiredWriteQualification() {
+  return (guardedRunState?.steps || []).find((step) => (
+    step.classification === "blocked_or_unsupported"
+    && step.property_key
+    && Number.isInteger(step.target_raw)
+    && String(step.reason || "").includes("has not passed reversible qualification")
+  ));
+}
+
+function updateWriteQualificationTargets(preferredTargetRaw = null) {
+  const candidate = writeQualificationCandidates.find(
+    (item) => item.key === elements.writeQualificationProperty.value
+  );
+  elements.writeQualificationTarget.replaceChildren(
+    ...(candidate?.targets || []).map((target) => {
+      const option = document.createElement("option");
+      option.value = String(target.value_raw);
+      option.textContent = `${target.label} (camera code ${target.value_raw})`;
+      return option;
+    })
+  );
+  if (Number.isInteger(preferredTargetRaw)) {
+    const preferred = [...elements.writeQualificationTarget.options].find(
+      (option) => Number(option.value) === preferredTargetRaw
+    );
+    if (preferred) elements.writeQualificationTarget.value = preferred.value;
+  }
+  elements.writeQualificationPrepare.disabled = !candidate || !(candidate.targets || []).length;
+}
+
+function syncWriteQualificationToReview() {
+  if (!elements.writeQualificationNeeded) return;
+  elements.writeQualificationProperty.disabled = false;
+  elements.writeQualificationTarget.disabled = false;
+  const required = requiredWriteQualification();
+  if (!required) {
+    elements.writeQualificationNeeded.textContent = "Review what will change first. Camera Lab will then select the exact blocked setting and value here.";
+    return;
+  }
+  const candidate = writeQualificationCandidates.find((item) => item.key === required.property_key);
+  const target = candidate?.targets?.find((item) => item.value_raw === required.target_raw);
+  if (!candidate || !target) {
+    elements.writeQualificationNeeded.textContent = `This review needs ${required.label} → ${required.target}, but that exact value is not available for a safety test in the current camera descriptor.`;
+    return;
+  }
+  elements.writeQualificationProperty.value = required.property_key;
+  updateWriteQualificationTargets(required.target_raw);
+  elements.writeQualificationProperty.disabled = true;
+  elements.writeQualificationTarget.disabled = true;
+  elements.writeQualificationNeeded.textContent = `Required by this review: ${required.label} → ${required.target} (camera code ${required.target_raw}). The safety test below is set to that exact value.`;
+}
+
+async function loadWriteQualificationCandidates() {
+  const result = await request("/api/camera-control/write-qualification/candidates");
+  writeQualificationCandidates = result.candidates || [];
+  elements.writeQualificationProperty.replaceChildren(
+    ...writeQualificationCandidates.map((candidate) => {
+      const option = document.createElement("option");
+      option.value = candidate.key;
+      option.textContent = `${candidate.label} — currently ${candidate.current}`;
+      return option;
+    })
+  );
+  updateWriteQualificationTargets();
+  syncWriteQualificationToReview();
+}
+
+function renderWriteQualification(payload) {
+  writeQualificationState = payload.qualification;
+  const qualification = writeQualificationState;
+  elements.writeQualificationPreview.hidden = false;
+  elements.writeQualificationSummary.textContent = `${qualification.label}: temporarily change ${qualification.original} to ${qualification.target}, verify it, restore ${qualification.original}, and verify restoration.`;
+  elements.writeQualificationDialogSummary.textContent = `Test only ${qualification.label} → ${qualification.target} (camera code ${qualification.target_raw}), then restore ${qualification.original}. This does not enable any other ${qualification.label} value.`;
+  elements.writeQualificationResult.hidden = !qualification.failure && qualification.status !== "qualification_complete";
+  elements.writeQualificationResult.textContent = qualification.failure
+    || (qualification.status === "qualification_complete"
+      ? `Safety test passed for ${qualification.label} → ${qualification.target} (camera code ${qualification.target_raw}). Camera Lab verified that exact value and restored ${qualification.original}; no other ${qualification.label} value was enabled.`
+      : "");
+  elements.writeQualificationConfirm.hidden = qualification.status !== "qualification_planned";
+  elements.writeQualificationExecute.hidden = qualification.status !== "qualification_confirmed";
+}
+
+async function prepareWriteQualification() {
+  if (!elements.guardedPreflightForm.reportValidity()) return;
+  const result = await request("/api/camera-control/write-qualification/prepare", {
+    method: "POST",
+    body: JSON.stringify({
+      property_key: elements.writeQualificationProperty.value,
+      target_raw: Number(elements.writeQualificationTarget.value),
+      preflight: guardedPreflightPayload(),
+    }),
+  });
+  renderWriteQualification(result);
+}
+
+function showWriteQualificationConfirmation() {
+  if (!writeQualificationState || writeQualificationState.status !== "qualification_planned") return;
+  if (typeof elements.writeQualificationDialog.showModal === "function") {
+    elements.writeQualificationDialog.showModal();
+  } else {
+    elements.writeQualificationDialog.setAttribute("open", "");
+  }
+}
+
+async function confirmWriteQualification() {
+  elements.writeQualificationDialog.close();
+  const result = await request("/api/camera-control/write-qualification/confirm", {
+    method: "POST",
+    body: JSON.stringify({session_id: writeQualificationState.session_id, confirmed: true}),
+  });
+  renderWriteQualification(result);
+}
+
+async function executeWriteQualification() {
+  const result = await request("/api/camera-control/write-qualification/execute", {
+    method: "POST",
+    body: JSON.stringify({session_id: writeQualificationState.session_id}),
+  });
+  renderWriteQualification(result);
+  await refreshStatus({quiet: true});
+  if (result.qualification?.status === "qualification_complete" && guardedRunState?.status === "planned") {
+    await prepareGuardedRun();
+    elements.writeQualificationResult.textContent += " The profile review below has been refreshed automatically.";
+  }
+}
+
+async function confirmGuardedRun() {
+  elements.guardedConfirmDialog.close();
+  const result = await request("/api/camera-control/guarded-run/confirm", {
+    method: "POST",
+    body: JSON.stringify({ session_id: guardedRunState.session_id, confirmed: true }),
+  });
+  renderGuardedRun(result);
+  if (!elements.guardedCurrentStep.hidden) {
+    elements.guardedActiveWorkspace.scrollIntoView({behavior: "smooth", block: "center"});
+    window.setTimeout(() => elements.guardedNextButton.focus({preventScroll: true}), 350);
+  }
+}
+
+async function executeNextGuardedStep() {
+  const scrollPosition = window.scrollY;
+  const current = guardedRunState.steps[guardedRunState.current_step];
+  const completedManualGroup = current?.classification === "manual";
+  const result = await request("/api/camera-control/guarded-run/next", {
+    method: "POST",
+    body: JSON.stringify({
+      session_id: guardedRunState.session_id,
+      manual_confirmed: current?.classification === "manual",
+    }),
+  });
+  renderGuardedRun(result);
+  if (completedManualGroup) await compareSelectedProfile({recordScan: true});
+  window.scrollTo({top: scrollPosition, behavior: "auto"});
+  if (!elements.guardedNextButton.hidden) elements.guardedNextButton.focus({preventScroll: true});
+}
+
+async function resumeGuardedRun() {
+  const sessionId = guardedRunState?.session_id || elements.guardedResumeButton.dataset.sessionId;
+  if (!sessionId) return;
+  if (!guardedRunState) {
+    const recorded = await request(`/api/camera-control/guarded-run?session_id=${encodeURIComponent(sessionId)}`);
+    renderGuardedRun(recorded);
+    if (recorded.guarded_run.status === "planned" || recorded.guarded_run.status === "blocked") return;
+  }
+  const result = await request("/api/camera-control/guarded-run/resume", {
+    method: "POST",
+    body: JSON.stringify({ session_id: sessionId }),
+  });
+  renderGuardedRun(result);
+}
+
+async function abortGuardedRun() {
+  if (!guardedRunState || !window.confirm("Stop applying this profile? Completed steps will remain recorded, but the profile will not be marked complete.")) return;
+  const result = await request("/api/camera-control/guarded-run/abort", {
+    method: "POST",
+    body: JSON.stringify({ session_id: guardedRunState.session_id }),
+  });
+  renderGuardedRun(result);
 }
 
 function openCxChecklist(profileName) {
@@ -1023,6 +1778,8 @@ async function compareSelectedProfile({ recordScan = false } = {}) {
   for (const [path, choice] of Object.entries(contextSelections)) {
     query.append("context", `${path}|${choice}`);
   }
+  const manualContext = sharedManualContext();
+  if (manualContext) query.set("manual_context", JSON.stringify(manualContext));
   const result = await request(`/api/camera-control/comparison?${query.toString()}`);
   renderComparison(result, { recordScan });
 }
@@ -1062,6 +1819,8 @@ elements.disconnectButton.addEventListener("click", () => runAction(async () => 
 elements.stopCameraLabButton.addEventListener("click", stopCameraLab);
 elements.backendSwitchButton.addEventListener("click", showBackendSwitchConfirmation);
 elements.backendSwitchConfirm.addEventListener("click", restartWithSelectedBackend);
+elements.physicalWriteModeButton.addEventListener("click", showPhysicalWriteModeConfirmation);
+elements.physicalWriteModeConfirm.addEventListener("click", restartWithPhysicalWriteMode);
 
 elements.scanButton.addEventListener("click", () => runAction(scanAndCompare));
 
@@ -1069,6 +1828,7 @@ elements.profileSelect.addEventListener("change", () => {
   contextSelections = {};
   comparisonState = null;
   elements.comparisonResults.hidden = true;
+  elements.prepareGuardedButton.hidden = true;
   setBusy(requestPending);
 });
 
@@ -1078,17 +1838,38 @@ elements.cxSlotCards.addEventListener("click", (event) => {
 });
 
 elements.compareButton.addEventListener("click", () => runAction(scanAndCompare));
+elements.prepareGuardedButton.addEventListener("click", openGuardedPreflight);
+elements.guardedPreflightForm.addEventListener("input", persistGuardedPreflight);
+elements.guardedPreflightForm.addEventListener("change", persistGuardedPreflight);
+elements.guardedPreflightForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!elements.guardedPreflightForm.reportValidity()) return;
+  runAction(prepareGuardedRun);
+});
+elements.guardedConfirmButton.addEventListener("click", showGuardedConfirmation);
+elements.guardedConfirmExecute.addEventListener("click", () => runAction(confirmGuardedRun));
+elements.guardedNextButton.addEventListener("click", () => runAction(executeNextGuardedStep));
+elements.guardedResumeButton.addEventListener("click", () => runAction(resumeGuardedRun));
+elements.guardedAbortButton.addEventListener("click", () => runAction(abortGuardedRun));
+elements.writeQualificationProperty.addEventListener("change", () => updateWriteQualificationTargets());
+elements.writeQualificationPrepare.addEventListener("click", () => runAction(prepareWriteQualification));
+elements.writeQualificationConfirm.addEventListener("click", showWriteQualificationConfirmation);
+elements.writeQualificationDialogConfirm.addEventListener("click", () => runAction(confirmWriteQualification));
+elements.writeQualificationExecute.addEventListener("click", () => runAction(executeWriteQualification));
 
 elements.checklistRescanButton.addEventListener("click", () => runAction(scanAndCompare));
 
 elements.checklistClearButton.addEventListener("click", () => {
   const record = activeChecklistRecord();
-  if (!record || !Object.keys(record.confirmations || {}).length) return;
+  const sharedFindings = allComparisonFindings().filter((finding) => finding.shared_manual_confirmation);
+  if ((!record || !Object.keys(record.confirmations || {}).length) && !sharedFindings.length) return;
   if (!window.confirm("Clear every saved manual confirmation for this profile and camera context?")) return;
-  record.confirmations = {};
+  if (record) record.confirmations = {};
   saveChecklistState();
-  renderComparisonTables();
-  renderChecklistSummary();
+  runAction(async () => {
+    for (const finding of sharedFindings) await revokeSharedManualConfirmation(finding);
+    await compareSelectedProfile();
+  });
 });
 
 elements.comparisonOrder.addEventListener("change", renderComparisonTables);
@@ -1113,6 +1894,8 @@ elements.applyScenarioButton.addEventListener("click", () => runAction(async () 
     body: JSON.stringify({ scenario: elements.scenarioSelect.value }),
   });
   elements.cameraChoices.replaceChildren();
+  guardedRunState = null;
+  elements.guardedPreview.hidden = true;
 }));
 
 elements.simulateDisconnectButton.addEventListener("click", () => runAction(async () => {

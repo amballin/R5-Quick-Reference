@@ -24,10 +24,12 @@ def load_capability_properties():
 CAPABILITY_PROPERTIES = load_capability_properties()
 
 
-def simulated_capabilities():
+def simulated_capabilities(values=None):
+    values = values or {}
     properties = []
     unreadable_errors = {"noise_reduction": 80, "subject_detection": 7}
-    for key, label, property_id, value in CAPABILITY_PROPERTIES:
+    for key, label, property_id, default_value in CAPABILITY_PROPERTIES:
+        value = values.get(key, default_value)
         is_readable = key not in unreadable_errors
         properties.append(
             {

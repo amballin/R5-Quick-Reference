@@ -8,6 +8,7 @@
 static EdsCameraRef g_camera = NULL;
 static int g_session_open = 0;
 static int g_sdk_initialized = 0;
+static int g_physical_writes_enabled = 0;
 
 static EdsError EDSCALLBACK property_event_handler(
     EdsPropertyEvent event,
@@ -121,6 +122,28 @@ static const CapabilitySpec CAPABILITY_SPECS[] = {
     {"eye_detection", "Eye detection", kEdsPropID_AFEyeDetect},
     {"subject_detection", "Subject to detect", kEdsPropID_AFTrackingObject}
 };
+
+static const CapabilitySpec *find_capability(const char *key) {
+    size_t index;
+    for (index = 0; index < sizeof(CAPABILITY_SPECS) / sizeof(CAPABILITY_SPECS[0]); index++) {
+        if (strcmp(CAPABILITY_SPECS[index].key, key) == 0) {
+            return &CAPABILITY_SPECS[index];
+        }
+    }
+    return NULL;
+}
+
+static int is_write_qualification_candidate(const char *key) {
+    static const char *CANDIDATES[] = {
+        "white_balance", "picture_style", "drive_mode", "metering_mode", "af_mode",
+        "af_method", "cropping_aspect_ratio", "continuous_af", "eye_detection"
+    };
+    size_t index;
+    for (index = 0; index < sizeof(CANDIDATES) / sizeof(CANDIDATES[0]); index++) {
+        if (strcmp(CANDIDATES[index], key) == 0) return 1;
+    }
+    return 0;
+}
 
 typedef struct {
     EdsPropertyID property;
@@ -298,14 +321,83 @@ static void emit_capabilities(void) {
     fflush(stdout);
 }
 
+static void write_qualified_candidate(const char *key, EdsUInt32 value) {
+    const CapabilitySpec *spec = find_capability(key);
+    EdsPropertyDesc descriptor;
+    EdsDataType data_type = kEdsDataType_Unknown;
+    EdsUInt32 size = 0;
+    EdsError error;
+    EdsInt32 index;
+    int allowed = 0;
+
+    if (!g_physical_writes_enabled) {
+        emit_error("PhysicalWritesNotEnabled", EDS_ERR_NOT_SUPPORTED);
+        return;
+    }
+    if (g_camera == NULL || !g_session_open) {
+        emit_error("WriteWithoutSession", EDS_ERR_NOT_SUPPORTED);
+        return;
+    }
+    if (spec == NULL || !is_write_qualification_candidate(key)) {
+        emit_error("WritePropertyNotAllowlisted", EDS_ERR_NOT_SUPPORTED);
+        return;
+    }
+    error = pump_camera_events();
+    if (error != EDS_ERR_OK) {
+        emit_error("EdsGetEvent(BeforeWrite)", error);
+        return;
+    }
+    error = EdsGetPropertySize(g_camera, spec->property, 0, &data_type, &size);
+    if (error != EDS_ERR_OK) {
+        emit_error("EdsGetPropertySize(Write)", error);
+        return;
+    }
+    if (size != sizeof(EdsUInt32) || (data_type != kEdsDataType_UInt32 && data_type != kEdsDataType_Int32)) {
+        emit_error("UnsupportedWriteDataType", EDS_ERR_NOT_SUPPORTED);
+        return;
+    }
+    memset(&descriptor, 0, sizeof(descriptor));
+    error = EdsGetPropertyDesc(g_camera, spec->property, &descriptor);
+    if (error != EDS_ERR_OK) {
+        emit_error("EdsGetPropertyDesc(Write)", error);
+        return;
+    }
+    for (index = 0; index < descriptor.numElements && index < 128; index++) {
+        if ((EdsUInt32)descriptor.propDesc[index] == value) {
+            allowed = 1;
+            break;
+        }
+    }
+    if (!allowed) {
+        emit_error("WriteValueNotInDescriptor", EDS_ERR_NOT_SUPPORTED);
+        return;
+    }
+    error = EdsSetPropertyData(g_camera, spec->property, 0, sizeof(value), &value);
+    if (error != EDS_ERR_OK) {
+        emit_error("GuardedPropertyWrite", error);
+        return;
+    }
+    error = pump_camera_events();
+    if (error != EDS_ERR_OK) {
+        emit_error("EdsGetEvent(AfterWrite)", error);
+        return;
+    }
+    fputs("{\"ok\":true,\"property_key\":", stdout);
+    json_string(key);
+    fprintf(stdout, ",\"value_raw\":%u}\n", (unsigned int)value);
+    fflush(stdout);
+}
+
 static void emit_camera_details(EdsCameraRef camera) {
     char product[256];
     char body_id[256];
     char firmware[256];
+    char lens_name[256];
     EdsUInt32 battery = 0;
     int has_product = read_string(camera, kEdsPropID_ProductName, product, sizeof(product));
     int has_body_id = read_string(camera, kEdsPropID_BodyIDEx, body_id, sizeof(body_id));
     int has_firmware = read_string(camera, kEdsPropID_FirmwareVersion, firmware, sizeof(firmware));
+    int has_lens_name = read_string(camera, kEdsPropID_LensName, lens_name, sizeof(lens_name));
     int has_battery = read_uint32(camera, kEdsPropID_BatteryLevel, &battery);
 
     fputs("{\"ok\":true,\"product_name\":", stdout);
@@ -314,6 +406,8 @@ static void emit_camera_details(EdsCameraRef camera) {
     json_string(has_body_id ? body_id : NULL);
     fputs(",\"firmware_version\":", stdout);
     json_string(has_firmware ? firmware : NULL);
+    fputs(",\"lens_name\":", stdout);
+    json_string(has_lens_name ? lens_name : NULL);
     if (has_battery) {
         fprintf(stdout, ",\"battery_raw\":%u", (unsigned int)battery);
     } else {
@@ -442,9 +536,16 @@ static void poll_camera(void) {
     fflush(stdout);
 }
 
-int main(void) {
+int main(int argc, char **argv) {
     char command[256];
     EdsError error;
+    if (argc == 2 && strcmp(argv[1], "--enable-physical-writes") == 0) {
+        g_physical_writes_enabled = 1;
+    } else if (argc != 1) {
+        fputs("{\"ok\":false,\"operation\":\"InvalidLaunchArguments\",\"code\":7}\n", stdout);
+        fflush(stdout);
+        return 2;
+    }
     atexit(cleanup);
     error = EdsInitializeSDK();
     if (error != EDS_ERR_OK) {
@@ -480,6 +581,15 @@ int main(void) {
             poll_camera();
         } else if (strcmp(command, "CAPABILITIES") == 0) {
             emit_capabilities();
+        } else if (strncmp(command, "WRITE ", 6) == 0) {
+            char key[64];
+            unsigned long raw_value;
+            char trailing;
+            if (sscanf(command + 6, "%63s %lu %c", key, &raw_value, &trailing) != 2 || raw_value > 0xffffffffUL) {
+                emit_error("InvalidWriteCommand", EDS_ERR_NOT_SUPPORTED);
+            } else {
+                write_qualified_candidate(key, (EdsUInt32)raw_value);
+            }
         } else if (strcmp(command, "DISCONNECT") == 0) {
             close_camera();
             fputs("{\"ok\":true}\n", stdout);

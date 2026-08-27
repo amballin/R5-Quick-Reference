@@ -8,6 +8,8 @@ write_policy:
   enabled: false
   descriptor_is_write_proof: false
   required_evidence: sdk_written_and_verified
+  evidence_scope: exact body, firmware, EDSDK version, property, and raw value
+  machine_local_evidence: Camera Lab/Physical Write Evidence.json
 properties:
   - key: battery_level
     label: Battery / power
@@ -36,6 +38,7 @@ properties:
     simulated_value_raw: 0
     profile_paths: [image.white_balance]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [still-photo mode]
   - key: color_space
     label: Color space
@@ -50,6 +53,7 @@ properties:
     simulated_value_raw: 129
     profile_paths: [image.picture_style]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [still-photo mode]
   - key: exposure_mode
     label: Exposure mode
@@ -64,6 +68,7 @@ properties:
     simulated_value_raw: 0
     profile_paths: [drive.mode]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [shutter mode and special shooting features]
   - key: iso_speed
     label: ISO speed
@@ -78,6 +83,7 @@ properties:
     simulated_value_raw: 3
     profile_paths: [exposure.metering]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [shooting mode]
   - key: af_mode
     label: AF operation
@@ -85,6 +91,7 @@ properties:
     simulated_value_raw: 0
     profile_paths: [autofocus.operation]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [lens AF-MF switch and shooting mode]
   - key: aperture
     label: Aperture
@@ -134,6 +141,7 @@ properties:
     simulated_value_raw: 2
     profile_paths: [autofocus.method]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [live view and AF operating context]
   - key: cropping_aspect_ratio
     label: Cropping / aspect ratio
@@ -141,6 +149,7 @@ properties:
     simulated_value_raw: 0
     profile_paths: [image.cropping_aspect_ratio]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [Canon limited-property activation before opening the session]
   - key: continuous_af
     label: Preview AF / continuous AF
@@ -148,6 +157,7 @@ properties:
     simulated_value_raw: 0
     profile_paths: [camera_setup.continuous_af]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [Canon limited-property activation before opening the session]
   - key: eye_detection
     label: Eye detection
@@ -155,6 +165,7 @@ properties:
     simulated_value_raw: 1
     profile_paths: [autofocus.eye_detection]
     capability_classification: sdk_readable
+    write_qualification_candidate: true
     dependencies: [Face + Tracking AF method, Canon limited-property activation before opening the session]
   - key: subject_detection
     label: Subject to detect

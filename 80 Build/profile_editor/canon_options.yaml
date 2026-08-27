@@ -195,9 +195,9 @@ settings:
     allow_custom: false
     source: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0110.html
     choices:
-      - {value: Initial priority, label: Initial priority, origin: canon}
-      - {value: On subject, label: On subject, origin: canon}
-      - {value: Switch subject, label: Switch subject, origin: canon}
+      - {value: Initial priority, label: "Initial priority (0)", origin: canon}
+      - {value: On subject, label: "On subject (1)", origin: canon}
+      - {value: Switch subject, label: "Switch subject (2)", origin: canon}
 
   autofocus.method:
     section: autofocus

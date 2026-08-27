@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Loopback-only Camera Lab server for rapid USB interface development."""
+"""Loopback-only Camera Lab server with explicit guarded physical-write gates."""
 
 from __future__ import annotations
 
@@ -42,16 +42,23 @@ ALLOWED_STATIC = {
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description="Run the standalone read-only EOS R5 Camera Lab.")
+    parser = argparse.ArgumentParser(description="Run EOS R5 Camera Lab with a read-only real-camera backend.")
     parser.add_argument("--backend", choices=("simulated", "edsdk"), default="simulated")
     parser.add_argument("--sdk-path", help="Canon-provided EDSDK framework directory or binary.")
     parser.add_argument("--scenario", default="ready", help="Initial simulated scenario.")
+    parser.add_argument(
+        "--enable-physical-writes",
+        action="store_true",
+        help="Expose reversible qualification and evidence-gated writes in EDSDK mode.",
+    )
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     args = parser.parse_args(argv)
     if args.port < 1 or args.port > 65535:
         parser.error("--port must be between 1 and 65535")
     if args.backend == "edsdk" and args.scenario != "ready":
         parser.error("--scenario is available only with the simulated backend")
+    if args.backend != "edsdk" and args.enable_physical_writes:
+        parser.error("--enable-physical-writes is available only with the EDSDK backend")
     return args
 
 
@@ -127,6 +134,12 @@ class CameraLabHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _guarded_endpoint_available(self):
+        return self.service.backend_mode == "simulated" or self.service.physical_write_enabled
+
+    def _qualification_endpoint_available(self):
+        return self.service.backend_mode == "edsdk" and self.service.physical_write_enabled
+
     def do_GET(self):
         if not self._host_is_allowed():
             self._send_error(HTTPStatus.FORBIDDEN, "invalid_host", "Camera Lab accepts loopback requests only.")
@@ -157,7 +170,32 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                     if not separator or not context_path or not choice:
                         raise ValueError("context query parameters must use path|choice")
                     context_choices[context_path] = choice
-                self._send_json(self.service.compare_profile(profile, context_choices))
+                manual_context = None
+                encoded_manual_context = (query.get("manual_context") or [None])[0]
+                if encoded_manual_context:
+                    manual_context = json.loads(encoded_manual_context)
+                    if not isinstance(manual_context, dict) or any(
+                        key not in {"still_movie_context", "flash", "cards"}
+                        or not isinstance(value, str)
+                        or len(value) > 500
+                        for key, value in manual_context.items()
+                    ):
+                        raise ValueError("manual_context must contain only short still/movie, flash, and cards text")
+                self._send_json(self.service.compare_profile(profile, context_choices, manual_context))
+            elif path == "/api/camera-control/guarded-run" and self._guarded_endpoint_available():
+                query = parse_qs(parsed.query)
+                session_id = (query.get("session_id") or [None])[0]
+                if not session_id:
+                    raise ValueError("session_id query parameter is required")
+                self._send_json(self.service.guarded_run(session_id))
+            elif path == "/api/camera-control/write-qualification/candidates" and self._qualification_endpoint_available():
+                self._send_json(self.service.physical_write_candidates())
+            elif path == "/api/camera-control/write-qualification" and self._qualification_endpoint_available():
+                query = parse_qs(parsed.query)
+                session_id = (query.get("session_id") or [None])[0]
+                if not session_id:
+                    raise ValueError("session_id query parameter is required")
+                self._send_json(self.service.write_qualification(session_id))
             elif path.startswith("/api/"):
                 self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
             else:
@@ -179,6 +217,12 @@ class CameraLabHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             payload = self._read_json()
+            if path.startswith("/api/camera-control/guarded-run/") and not self._guarded_endpoint_available():
+                self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
+                return
+            if path.startswith("/api/camera-control/write-qualification/") and not self._qualification_endpoint_available():
+                self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
+                return
             if path == "/api/camera-control/connect":
                 index = payload.get("camera_index")
                 if index is not None and (not isinstance(index, int) or isinstance(index, bool) or index < 0):
@@ -193,12 +237,62 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                 result = self.service.set_simulated_scenario(scenario)
             elif path == "/api/camera-control/simulate-disconnect":
                 result = self.service.simulate_disconnect()
+            elif path == "/api/camera-control/guarded-run/prepare":
+                profile = payload.get("profile")
+                if not isinstance(profile, str) or not profile:
+                    raise ValueError("profile is required")
+                preflight = payload.get("preflight")
+                context_choices = payload.get("context_choices") or {}
+                if not isinstance(context_choices, dict) or any(
+                    not isinstance(key, str) or not isinstance(value, str)
+                    for key, value in context_choices.items()
+                ):
+                    raise ValueError("context_choices must be a string map")
+                result = self.service.prepare_guarded_run(profile, preflight, context_choices)
+            elif path == "/api/camera-control/guarded-run/confirm":
+                result = self.service.confirm_guarded_run(payload.get("session_id"), payload.get("confirmed"))
+            elif path == "/api/camera-control/guarded-run/next":
+                result = self.service.execute_guarded_step(
+                    payload.get("session_id"), payload.get("manual_confirmed") is True
+                )
+            elif path == "/api/camera-control/guarded-run/resume":
+                result = self.service.resume_guarded_run(payload.get("session_id"))
+            elif path == "/api/camera-control/guarded-run/abort":
+                result = self.service.abort_guarded_run(payload.get("session_id"))
+            elif path == "/api/camera-control/manual-confirmations/revoke":
+                confirmations = payload.get("confirmations")
+                if not isinstance(confirmations, list) or any(
+                    not isinstance(item, dict)
+                    or not isinstance(item.get("path"), str)
+                    or not isinstance(item.get("target"), str)
+                    for item in confirmations
+                ):
+                    raise ValueError("confirmations must contain path and target strings")
+                result = self.service.revoke_manual_confirmations(confirmations, payload.get("manual_context"))
+            elif path == "/api/camera-control/write-qualification/prepare":
+                result = self.service.prepare_write_qualification(
+                    payload.get("property_key"), payload.get("target_raw"), payload.get("preflight")
+                )
+            elif path == "/api/camera-control/write-qualification/confirm":
+                result = self.service.confirm_write_qualification(
+                    payload.get("session_id"), payload.get("confirmed")
+                )
+            elif path == "/api/camera-control/write-qualification/execute":
+                result = self.service.execute_write_qualification(payload.get("session_id"))
             elif path == "/api/camera-control/restart-backend":
                 backend = payload.get("backend")
                 if backend not in {"edsdk", "simulated"}:
                     raise ValueError("backend must be edsdk or simulated")
-                if backend == self.service.backend_mode:
-                    raise ValueError(f"Camera Lab is already running in {backend} mode")
+                physical_write_enabled = payload.get("physical_write_enabled", False)
+                if not isinstance(physical_write_enabled, bool):
+                    raise ValueError("physical_write_enabled must be true or false")
+                if backend != "edsdk" and physical_write_enabled:
+                    raise ValueError("Physical writes can be enabled only with the EDSDK backend")
+                if (
+                    backend == self.service.backend_mode
+                    and physical_write_enabled == self.service.physical_write_enabled
+                ):
+                    raise ValueError("Camera Lab is already running in the requested mode")
                 if backend == "edsdk" and (
                     self.server.restart_sdk_path is None
                     or not self.server.restart_sdk_path.is_dir()
@@ -208,10 +302,12 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                     )
                 self.service.close()
                 self.server.restart_backend = backend
+                self.server.restart_physical_writes = physical_write_enabled
                 result = {
                     "ok": True,
                     "restarting": True,
                     "backend": backend,
+                    "physical_write_enabled": physical_write_enabled,
                     "camera_session_closed": True,
                 }
             elif path == "/api/camera-control/shutdown":
@@ -243,6 +339,7 @@ def create_server(service, port=DEFAULT_PORT, token=None, restart_sdk_path=None)
     )
     server = ThreadingHTTPServer((HOST, port), handler)
     server.restart_backend = None
+    server.restart_physical_writes = False
     server.restart_sdk_path = (
         Path(restart_sdk_path).expanduser().resolve()
         if restart_sdk_path
@@ -264,6 +361,7 @@ def main(argv=None):
         backend_mode=args.backend,
         sdk_path=args.sdk_path,
         simulated_scenario=args.scenario,
+        physical_write_enabled=args.enable_physical_writes,
     )
     server = create_server(
         service,
@@ -271,15 +369,18 @@ def main(argv=None):
         restart_sdk_path=restart_sdk_path,
     )
     print(f"EOS R5 Camera Lab: http://{HOST}:{server.server_port}/")
-    print(f"Backend: {args.backend} • Camera-setting writes: disabled")
+    write_state = "explicitly enabled" if service.physical_write_enabled else "disabled"
+    print(f"Backend: {args.backend} • Real-camera setting writes: {write_state}")
     print("Press Control-C to stop.")
     restart_backend = None
+    restart_physical_writes = False
     try:
         server.serve_forever(poll_interval=0.25)
     except KeyboardInterrupt:
         print("\nStopping Camera Lab.")
     finally:
         restart_backend = server.restart_backend
+        restart_physical_writes = server.restart_physical_writes
         server.server_close()
         service.close()
     if restart_backend:
@@ -294,6 +395,8 @@ def main(argv=None):
             "--port",
             str(args.port),
         ]
+        if restart_physical_writes and restart_backend == "edsdk":
+            restart_args.append("--enable-physical-writes")
         os.execv(sys.executable, restart_args)
     return 0
 

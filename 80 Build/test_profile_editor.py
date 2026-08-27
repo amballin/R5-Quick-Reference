@@ -31,6 +31,7 @@ from profile_editor import (
     default_editor_port,
 )
 from profile_loader import load_yaml
+from application_version import application_version_info
 from project_context import project_context_info
 from validators import control_validator, profile_validator, spreadsheet_spec_validator
 
@@ -606,7 +607,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         first = self.model.editor_info()
         second = self.model.editor_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], "0.42.6")
+        self.assertEqual(first["version"], application_version_info(PROJECT_ROOT)["version"])
         self.assertEqual(first["context_name"], "Unknown")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
         self.assertEqual(first["project_context"]["kind"], "unknown")

@@ -55,7 +55,7 @@ def validate(root):
             issues.append(error("camera_capabilities", path, "Every observation must cover the complete reviewed property set."))
         for item in observed_properties:
             if item.get("write_classification") != "unverified":
-                issues.append(error("camera_capabilities", path, "Write classifications must remain unverified in Phase 0."))
+                issues.append(error("camera_capabilities", path, "Real-camera write classifications must remain unverified during simulator-only Phase 2A."))
     return issues
 
 

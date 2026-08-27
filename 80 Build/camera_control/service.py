@@ -1,4 +1,4 @@
-"""Stateful read-only service shared by Camera Lab and future editor integration."""
+"""Stateful camera service shared by Camera Lab and future editor integration."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import threading
+import uuid
 
 from application_version import application_version_info
 
@@ -22,6 +23,10 @@ from .errors import (
 )
 from .simulated_backend import SCENARIOS, SimulatedBackend
 from .native_backend import NativeHelperBackend
+from .guarded_run import GuardedRunManager
+from .manual_confirmation_ledger import ManualConfirmationLedger
+from .physical_write_policy import PhysicalWriteEvidence
+from .write_qualification import PhysicalWriteQualificationManager
 from .profile_comparison import compare_profile as build_profile_comparison
 from .profile_comparison import list_profiles
 
@@ -70,7 +75,16 @@ def camera_lab_info():
 class CameraControlService:
     """Own at most one SDK backend and camera session."""
 
-    def __init__(self, backend_mode="simulated", sdk_path=None, simulated_scenario="ready"):
+    def __init__(
+        self,
+        backend_mode="simulated",
+        sdk_path=None,
+        simulated_scenario="ready",
+        journal_root=None,
+        physical_write_enabled=False,
+        physical_evidence_path=None,
+        manual_confirmation_path=None,
+    ):
         if backend_mode not in {"simulated", "edsdk"}:
             raise ValueError("backend_mode must be simulated or edsdk")
         if simulated_scenario not in SCENARIOS:
@@ -78,15 +92,32 @@ class CameraControlService:
         self.backend_mode = backend_mode
         self.sdk_path = sdk_path
         self.simulated_scenario = simulated_scenario
+        self.physical_write_enabled = bool(physical_write_enabled and backend_mode == "edsdk")
         self.backend = None
         self.camera = None
         self.sdk = None
         self.capabilities = None
+        self.camera_session_id = None
         self.last_camera_index = None
         self.last_error = None
         self.app_info = camera_lab_info()
         self.events = deque(maxlen=100)
         self.lock = threading.RLock()
+        self.physical_write_evidence = PhysicalWriteEvidence(physical_evidence_path)
+        if manual_confirmation_path is None and journal_root:
+            manual_confirmation_path = Path(journal_root) / "manual-confirmations.json"
+        self.manual_confirmations = ManualConfirmationLedger(manual_confirmation_path)
+        self.guarded_runs = GuardedRunManager(
+            self,
+            journal_root=journal_root,
+            manual_confirmations=self.manual_confirmations,
+        )
+        qualification_root = Path(journal_root) / "qualifications" if journal_root else None
+        self.write_qualifications = PhysicalWriteQualificationManager(
+            self,
+            journal_root=qualification_root,
+            evidence_path=physical_evidence_path,
+        )
         self._event("service_ready", f"Camera Lab started in {backend_mode} mode.")
 
     def _event(self, kind, message):
@@ -101,7 +132,7 @@ class CameraControlService:
     def _new_backend(self):
         if self.backend_mode == "simulated":
             return SimulatedBackend(self.simulated_scenario)
-        return NativeHelperBackend(self.sdk_path)
+        return NativeHelperBackend(self.sdk_path, physical_write_enabled=self.physical_write_enabled)
 
     @staticmethod
     def _camera_choices(cameras):
@@ -132,6 +163,7 @@ class CameraControlService:
         backend = self.backend
         self.backend = None
         self.camera = None
+        self.camera_session_id = None
         self.sdk = None
         self.capabilities = None
         if backend is not None:
@@ -171,7 +203,22 @@ class CameraControlService:
                 "capabilities": dict(self.capabilities) if self.capabilities else None,
                 "reconnect_available": self.last_camera_index is not None,
                 "last_error": dict(self.last_error) if self.last_error else None,
-                "read_only": True,
+                "read_only": not self.physical_write_enabled,
+                "real_camera_read_only": not self.physical_write_enabled,
+                "simulated_guarded_runs": self.backend_mode == "simulated",
+                "physical_write_enabled": self.physical_write_enabled,
+                "physical_write_qualification": self.backend_mode == "edsdk" and self.physical_write_enabled,
+                "physical_guarded_runs": self.backend_mode == "edsdk" and self.physical_write_enabled,
+                "physical_write_evidence": (
+                    self.physical_write_evidence.public_summary(self.camera, self.sdk or {})
+                    if self.backend_mode == "edsdk" and self.physical_write_enabled and self.camera
+                    else None
+                ),
+                "guarded_run": (
+                    self.guarded_runs.available_summary()
+                    if self.backend_mode == "simulated" or self.physical_write_enabled
+                    else None
+                ),
                 "available_scenarios": SCENARIOS if self.backend_mode == "simulated" else {},
             }
 
@@ -221,8 +268,10 @@ class CameraControlService:
                     "body_id": details.get("body_id"),
                     "firmware_version": details.get("firmware_version"),
                     "battery_raw": details.get("battery_raw"),
+                    "lens_name": details.get("lens_name"),
                 }
                 self.last_camera_index = selected["index"]
+                self.camera_session_id = uuid.uuid4().hex
                 self.sdk = backend.sdk_details()
                 self.last_error = None
                 self._event("connected", f"Connected to {product_name} at index {selected['index']}.")
@@ -311,32 +360,9 @@ class CameraControlService:
                     error = self._scan_recovery_error(recovery_exc)
                     self._record_error(error)
                     raise error from recovery_exc
-            normalized = []
-            for observed in properties:
-                item = dict(observed)
-                item["write_tested"] = False
-                item["write_classification"] = "unverified"
-                item["descriptor_suggests_configurable"] = (
-                    item.get("descriptor_status") == "sdk_verified"
-                    and item.get("descriptor_access") in {"write", "read_write"}
-                )
-                normalized.append(item)
-            normalized = enrich_properties(normalized)
-            readable = sum(item.get("read_status") == "sdk_verified" for item in normalized)
-            descriptors = sum(item.get("descriptor_status") == "sdk_verified" for item in normalized)
-            self.capabilities = {
-                "evidence_method": "sdk_verified",
-                "read_only": True,
-                "write_testing_performed": False,
-                "properties": normalized,
-                "summary": {
-                    "total": len(normalized),
-                    "readable": readable,
-                    "unreadable": len(normalized) - readable,
-                    "descriptors_available": descriptors,
-                },
-                "coverage": capability_coverage(),
-            }
+            self.capabilities = self._capability_payload(properties)
+            normalized = self.capabilities["properties"]
+            readable = self.capabilities["summary"]["readable"]
             self._event(
                 "capability_scan",
                 f"Read {readable} of {len(normalized)} capability properties; no writes attempted.",
@@ -367,21 +393,193 @@ class CameraControlService:
     def profiles(self):
         return {"ok": True, "profiles": list_profiles()}
 
-    def compare_profile(self, profile_name, context_choices=None):
+    def _capability_payload(self, properties):
+        normalized = []
+        for observed in properties:
+            item = dict(observed)
+            item["write_tested"] = False
+            item["write_classification"] = "unverified"
+            if self.backend_mode == "edsdk" and self.camera and self.sdk:
+                verified_values = sorted(
+                    self.physical_write_evidence.verified_values(
+                        self.camera, self.sdk, item.get("key")
+                    )
+                )
+                if verified_values:
+                    item["write_tested"] = True
+                    item["write_classification"] = "machine_local_sdk_written_and_verified"
+                    item["verified_write_values_raw"] = verified_values
+            item["descriptor_suggests_configurable"] = (
+                item.get("descriptor_status") == "sdk_verified"
+                and item.get("descriptor_access") in {"write", "read_write"}
+            )
+            normalized.append(item)
+        normalized = enrich_properties(normalized)
+        readable = sum(item.get("read_status") == "sdk_verified" for item in normalized)
+        descriptors = sum(item.get("descriptor_status") == "sdk_verified" for item in normalized)
+        write_testing_performed = any(item.get("write_tested") is True for item in normalized)
+        return {
+            "evidence_method": "sdk_verified",
+            "read_only": True,
+            "write_testing_performed": write_testing_performed,
+            "properties": normalized,
+            "summary": {
+                "total": len(normalized),
+                "readable": readable,
+                "unreadable": len(normalized) - readable,
+                "descriptors_available": descriptors,
+            },
+            "coverage": capability_coverage(),
+        }
+
+    def _build_comparison(self, profile_name, context_choices=None):
+        try:
+            return build_profile_comparison(
+                profile_name,
+                self.capabilities["properties"],
+                context_choices=context_choices,
+            )
+        except ValueError as exc:
+            raise CameraSessionError(str(exc)) from exc
+
+    def _current_mode(self):
+        for item in (self.capabilities or {}).get("properties") or []:
+            if item.get("key") == "exposure_mode" and item.get("read_status") == "sdk_verified":
+                return str(item.get("value_display") or "").strip()
+        return ""
+
+    def _manual_confirmation_context(self, context):
+        if not isinstance(context, dict):
+            return None
+        cleaned = {
+            "still_movie_context": str(context.get("still_movie_context") or "").strip(),
+            "flash": str(context.get("flash") or "").strip(),
+            "cards": str(context.get("cards") or "").strip(),
+            "current_mode": self._current_mode(),
+        }
+        return cleaned if all(cleaned.values()) else None
+
+    def _annotate_manual_confirmations(self, comparison, context):
+        scoped_context = self._manual_confirmation_context(context)
+        if not scoped_context or not self.camera_session_id:
+            return comparison
+        for finding in comparison["card_findings"] + comparison["additional_findings"]:
+            items = finding.get("items") or [finding]
+            manual_items = [
+                item for item in items
+                if item.get("status") in {"manual_confirmation_needed", "conditional", "unreadable"}
+            ]
+            if not manual_items:
+                continue
+            matches = [
+                self.manual_confirmations.match(
+                    self.camera or {},
+                    self.camera_session_id,
+                    scoped_context,
+                    item.get("path"),
+                    item.get("expected"),
+                )
+                for item in manual_items
+            ]
+            if all(matches):
+                finding["shared_manual_confirmation"] = {
+                    "evidence_method": "manual_confirmation_shared_from_guarded_run",
+                    "confirmed_at": max(item.get("confirmed_at", "") for item in matches),
+                    "source_profile": matches[0].get("profile"),
+                    "setting_count": len(matches),
+                }
+        return comparison
+
+    def compare_profile(self, profile_name, context_choices=None, manual_confirmation_context=None):
         with self.lock:
             status = self.status(check_connection=True)
             if not status["connected"] or self.capabilities is None:
                 raise CameraSessionError("Connect the EOS R5 and scan capabilities before comparing a profile.")
-            try:
-                comparison = build_profile_comparison(
-                    profile_name,
-                    self.capabilities["properties"],
-                    context_choices=context_choices,
-                )
-            except ValueError as exc:
-                raise CameraSessionError(str(exc)) from exc
+            comparison = self._build_comparison(profile_name, context_choices)
+            comparison = self._annotate_manual_confirmations(comparison, manual_confirmation_context)
             self._event("profile_comparison", f"Compared {comparison['profile']['title']} without changing the camera.")
             return {"ok": True, **comparison}
+
+    def revoke_manual_confirmations(self, confirmations, context):
+        with self.lock:
+            scoped_context = self._manual_confirmation_context(context)
+            if not scoped_context or not self.camera_session_id:
+                raise CameraSessionError("The exact connected-camera confirmation context is unavailable.")
+            removed = 0
+            for item in confirmations or []:
+                removed += self.manual_confirmations.revoke(
+                    self.camera or {},
+                    self.camera_session_id,
+                    scoped_context,
+                    item.get("path"),
+                    item.get("target"),
+                )
+            self._event("manual_confirmation_revoked", f"Removed {removed} shared manual confirmation(s).")
+            return {"ok": True, "removed": removed}
+
+    def prepare_guarded_run(self, profile_name, preflight, context_choices=None):
+        with self.lock:
+            result = self.guarded_runs.prepare(profile_name, preflight, context_choices)
+            self._event("guarded_plan", f"Prepared a {self.backend_mode} guarded run for {profile_name}.")
+            return result
+
+    def confirm_guarded_run(self, session_id, confirmed):
+        with self.lock:
+            result = self.guarded_runs.confirm(session_id, confirmed)
+            self._event("guarded_confirmed", f"{self.backend_mode} guarded execution was explicitly confirmed.")
+            return result
+
+    def execute_guarded_step(self, session_id, manual_confirmed=False):
+        with self.lock:
+            result = self.guarded_runs.execute_next(session_id, manual_confirmed)
+            run = result["guarded_run"]
+            self._event("guarded_step", f"Guarded run {session_id} is {run['status']} at step {run['current_step']}.")
+            return result
+
+    def guarded_run(self, session_id):
+        with self.lock:
+            return self.guarded_runs.get(session_id)
+
+    def resume_guarded_run(self, session_id):
+        with self.lock:
+            result = self.guarded_runs.resume(session_id)
+            self._event("guarded_resume", f"Guarded run {session_id} was deliberately resumed.")
+            return result
+
+    def abort_guarded_run(self, session_id):
+        with self.lock:
+            result = self.guarded_runs.abort(session_id)
+            self._event("guarded_abort", f"Guarded run {session_id} was deliberately aborted.")
+            return result
+
+    def physical_write_candidates(self):
+        with self.lock:
+            return self.write_qualifications.candidates()
+
+    def prepare_write_qualification(self, property_key, target_raw, preflight):
+        with self.lock:
+            result = self.write_qualifications.prepare(property_key, target_raw, preflight)
+            self._event("write_qualification_plan", f"Prepared reversible qualification for {property_key}.")
+            return result
+
+    def confirm_write_qualification(self, session_id, confirmed):
+        with self.lock:
+            result = self.write_qualifications.confirm(session_id, confirmed)
+            self._event("write_qualification_confirmed", "Physical write qualification was explicitly confirmed.")
+            return result
+
+    def execute_write_qualification(self, session_id):
+        with self.lock:
+            result = self.write_qualifications.execute(session_id)
+            qualification = result["qualification"]
+            self._event("write_qualification", f"Qualification {session_id} is {qualification['status']}.")
+            if qualification["status"] == "qualification_complete" and self.capabilities is not None:
+                self.capabilities = self._capability_payload(self.backend.read_capabilities())
+            return result
+
+    def write_qualification(self, session_id):
+        with self.lock:
+            return self.write_qualifications.get(session_id)
 
     def event_log(self):
         with self.lock:

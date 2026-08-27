@@ -57,6 +57,19 @@ REFERENCE_GUIDANCE_PATHS = {
     "shutter.efcs.status",
 }
 
+NUMBERED_CAMERA_VALUES = {
+    "autofocus.switching_tracked_subjects": {
+        "Initial priority": "Initial priority (0)",
+        "On subject": "On subject (1)",
+        "Switch subject": "Switch subject (2)",
+    },
+}
+
+
+def _display_value(path, value):
+    text = "Not set" if value is None else str(value)
+    return NUMBERED_CAMERA_VALUES.get(path, {}).get(text, text)
+
 
 def list_profiles(paths=PATHS):
     loaded_profiles = []
@@ -150,7 +163,7 @@ def compare_profile(profile_name, properties, context_choices=None):
             {
                 "key": row["key"],
                 "label": row["label"],
-                "expected": str(row["value"]),
+                "expected": _display_value(row["key"], row["value"]),
                 "expected_color": value_colors.get(row["key"]),
                 "actual": _card_actual(items),
                 "actual_raw": _card_actual_raw(items),
@@ -287,7 +300,7 @@ def _compare_path(path, expected, merged_fields, properties_by_path, context_cho
     finding = {
         "path": path,
         "label": LABEL.get(path, _path_label(path)),
-        "expected": "Not set" if expected is None else str(expected),
+        "expected": _display_value(path, expected),
         "actual": None,
         "actual_raw": None,
         "status": "manual_confirmation_needed",
@@ -614,7 +627,7 @@ def _normalize(value):
 
 
 def _normalized_alias(value):
-    normalized = _normalize(value)
+    normalized = _normalize(re.sub(r"\s*\(\d+\)\s*$", "", str(value or "")))
     return {
         "single shot": "single shooting",
         "enabled": "enable",

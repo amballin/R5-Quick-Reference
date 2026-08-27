@@ -14,6 +14,7 @@ import threading
 
 from .edsdk_backend import NativeSdkError, resolve_sdk_binary
 from .errors import CameraSessionError, SdkUnavailableError
+from .physical_write_policy import qualification_candidates
 
 
 SOURCE_FILE = Path(__file__).resolve().parent / "native" / "edsdk_helper.c"
@@ -214,8 +215,9 @@ def build_native_helper(sdk_path):
 class NativeHelperBackend:
     """Use a small ad-hoc-signed helper process to own the EDSDK session."""
 
-    def __init__(self, sdk_path=None):
+    def __init__(self, sdk_path=None, physical_write_enabled=False):
         self.sdk_path = sdk_path
+        self.physical_write_enabled = bool(physical_write_enabled)
         self.process = None
         self.helper_path = None
         self.framework = None
@@ -247,8 +249,11 @@ class NativeHelperBackend:
 
     def initialize(self):
         self.helper_path, self.framework = build_native_helper(self.sdk_path)
+        command = [str(self.helper_path)]
+        if self.physical_write_enabled:
+            command.append("--enable-physical-writes")
         self.process = subprocess.Popen(
-            [str(self.helper_path)],
+            command,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -271,6 +276,7 @@ class NativeHelperBackend:
             "body_id": self.details.get("body_id"),
             "firmware_version": self.details.get("firmware_version"),
             "battery_raw": self.details.get("battery_raw"),
+            "lens_name": self.details.get("lens_name"),
         }
 
     def poll_product_name(self):
@@ -278,6 +284,26 @@ class NativeHelperBackend:
 
     def read_capabilities(self):
         return self._command("CAPABILITIES")["properties"]
+
+    def read_physical_setting(self, key):
+        if key not in qualification_candidates():
+            raise CameraSessionError(f"Physical setting is not qualification-allowlisted: {key}")
+        observed = next(
+            (item for item in self.read_capabilities() if item.get("key") == key),
+            None,
+        )
+        if observed is None or observed.get("read_status") != "sdk_verified":
+            raise CameraSessionError(f"Physical setting is not readable: {key}")
+        return observed.get("value_raw")
+
+    def write_physical_setting(self, key, value_raw):
+        if not self.physical_write_enabled:
+            raise CameraSessionError("Native physical setting writes were not explicitly enabled at launch.")
+        if key not in qualification_candidates():
+            raise CameraSessionError(f"Physical setting is not qualification-allowlisted: {key}")
+        if isinstance(value_raw, bool) or not isinstance(value_raw, int) or not 0 <= value_raw <= 0xFFFFFFFF:
+            raise CameraSessionError("Physical write value must be an unsigned 32-bit integer.")
+        return self._command(f"WRITE {key} {value_raw}")
 
     def sdk_details(self):
         return {
