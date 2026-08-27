@@ -53,10 +53,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/baseline_migration.py",
             "80 Build/card_identity.py",
             "80 Build/cx_route_analysis.py",
+            "80 Build/feature_interactions.py",
+            "80 Build/lens_guidance.py",
             "80 Build/html_renderer.py",
             "80 Build/my_menu.py",
             "80 Build/my_menu_colors.py",
             "80 Build/my_menu_reference.py",
+            "80 Build/control_reference.py",
             "80 Build/profile_editor.py",
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
@@ -87,6 +90,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": detail["displayCategory"],
             "release": detail["metadata"]["release"],
             "overrides": detail["originalOverrides"],
+            "lensChoices": detail["lensChoices"],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         payload.update(changes)
         return payload
@@ -105,6 +110,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 "displayCategory": "subject",
                 "release": False,
                 "overrides": draft["originalOverrides"],
+                "lensChoices": [
+                    {
+                        "lensId": "rf_24_240_is",
+                        "accessoryId": "",
+                        "role": "primary",
+                        "useWhen": "General field use",
+                        "fieldCheck": "Confirm framing and stabilization",
+                    }
+                ],
+                "lensGuidanceFingerprint": draft["lensGuidanceFingerprint"],
             }
         )
         self.model.save_profile(review["reviewToken"])
@@ -138,6 +153,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
     def test_updates_existing_profile_after_exact_review(self):
         review = self.model.review_profile(self.payload(title="Fireworks Review Test"))
         self.assertIn("Fireworks Review Test", review["diff"])
+        self.assertEqual(review["sourceFiles"], ["10 Profiles/Fireworks.yaml"])
         result = self.model.save_profile(review["reviewToken"])
         saved = load_yaml(self.root / "10 Profiles" / "Fireworks.yaml")
         self.assertEqual(saved["title"], "Fireworks Review Test")
@@ -357,6 +373,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": "subject",
             "release": True,
             "overrides": {"drive.mode": "Single Shot"},
+            "lensChoices": [
+                {
+                    "lensId": "rf_24_240_is",
+                    "accessoryId": "",
+                    "role": "primary",
+                    "useWhen": "General field use",
+                    "fieldCheck": "Confirm framing and stabilization",
+                }
+            ],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         self.assertEqual(detail["metadata"], {"status": "Draft", "release": False})
         review = self.model.review_profile(payload)
@@ -388,6 +414,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": "subject",
             "release": False,
             "overrides": detail["originalOverrides"],
+            "lensChoices": [
+                {
+                    "lensId": "rf_24_240_is",
+                    "accessoryId": "",
+                    "role": "primary",
+                    "useWhen": "General field use",
+                    "fieldCheck": "Confirm framing and stabilization",
+                }
+            ],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         with self.assertRaisesRegex(ProfileConflictError, "already exists"):
             self.model.review_profile(payload)
@@ -405,6 +441,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": "reference",
             "release": False,
             "overrides": detail["originalOverrides"],
+            "lensChoices": [],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         review = self.model.review_profile(payload)
         self.model.save_profile(review["reviewToken"])
@@ -507,6 +545,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": "subject",
             "release": True,
             "overrides": detail["originalOverrides"],
+            "lensChoices": detail["lensChoices"],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         review = self.model.review_profile(payload)
         self.model.save_profile(review["reviewToken"])
@@ -539,6 +579,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "displayCategory": detail["displayCategory"],
             "release": detail["metadata"]["release"],
             "overrides": detail["originalOverrides"],
+            "lensChoices": detail["lensChoices"],
+            "lensGuidanceFingerprint": detail["lensGuidanceFingerprint"],
         }
         review = failing.review_profile(payload)
         with self.assertRaisesRegex(PrototypeError, "restored automatically"):
@@ -948,6 +990,73 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         saved_preview = self.model.preview("Birds in Flight", detail["originalOverrides"]).read_text(encoding="utf-8")
         saved_mode_row = next(row for row in saved_preview.split("</tr>") if ">Mode<" in row)
         self.assertNotIn("Δ", saved_mode_row)
+
+    def test_preview_surfaces_structured_compatibility_notes(self):
+        detail = self.model.profile_detail("Macro")
+        rendered = self.model.preview("Macro", detail["originalOverrides"]).read_text(encoding="utf-8")
+        self.assertIn("<h2>Lens Choices</h2>", rendered)
+        self.assertIn("EF 100mm Macro", rendered)
+        self.assertIn("MP-E 65mm", rendered)
+        self.assertIn("<h2>Compatibility</h2>", rendered)
+        self.assertIn("Flash photography is unavailable during EOS R5 Focus Bracketing", rendered)
+
+    def test_lens_choice_draft_controls_primary_order_preview_and_guarded_save(self):
+        detail = self.model.profile_detail("Macro")
+        choices = deepcopy(detail["lensChoices"])
+        choices.reverse()
+        choices[0]["role"] = "primary"
+        choices[1]["role"] = "alternative"
+        choices[0]["useWhen"] = "Extreme magnification is the assignment"
+        payload = self.payload("Macro", lensChoices=choices)
+
+        preview = self.model.preview_draft(payload).read_text(encoding="utf-8")
+        self.assertLess(preview.index("MP-E 65mm"), preview.index("EF 100mm Macro"))
+        self.assertIn("Extreme magnification is the assignment", preview)
+
+        review = self.model.review_profile(payload)
+        self.assertIn("00 Master/profile_lens_guidance.yaml", review["sourceFiles"])
+        self.assertIn("role: primary", review["diff"])
+        result = self.model.save_profile(review["reviewToken"])
+        self.assertEqual(result["sourceFiles"], ["00 Master/profile_lens_guidance.yaml"])
+
+        saved = self.model.profile_detail("Macro")["lensChoices"]
+        self.assertEqual(saved[0]["lensId"], "mp_e_65")
+        self.assertEqual(saved[0]["role"], "primary")
+        self.assertEqual(saved[1]["role"], "alternative")
+
+    def test_lens_choice_review_rejects_missing_primary_and_concurrent_guidance_change(self):
+        detail = self.model.profile_detail("Travel")
+        invalid = deepcopy(detail["lensChoices"])
+        for choice in invalid:
+            choice["role"] = "alternative"
+        with self.assertRaisesRegex(PrototypeError, "exactly one primary"):
+            self.model.review_profile(self.payload("Travel", lensChoices=invalid))
+
+        changed = deepcopy(detail["lensChoices"])
+        changed[0]["fieldCheck"] = "Confirm the intended field check"
+        review = self.model.review_profile(self.payload("Travel", lensChoices=changed))
+        source = self.root / "00 Master" / "profile_lens_guidance.yaml"
+        source.write_text(source.read_text(encoding="utf-8") + "\n# external change\n", encoding="utf-8")
+        with self.assertRaisesRegex(ProfileConflictError, "Lens guidance changed after review"):
+            self.model.save_profile(review["reviewToken"])
+
+    def test_profile_editor_exposes_owned_lens_controls(self):
+        detail = self.model.profile_detail("Birds in Flight")
+        self.assertEqual(len(detail["lensChoices"]), 3)
+        self.assertTrue(any(item["id"] == "ef_s_10_18_is_stm" for item in detail["lensCatalog"]))
+        extender_lens = next(item for item in detail["lensCatalog"] if item["id"] == "ef_100_400_is_ii")
+        self.assertEqual(extender_lens["accessories"][0]["id"], "extender_ef_1_4x")
+        html = (self.root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
+        script = (self.root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('id="lens-guidance-group"', html)
+        self.assertIn("function renderLensChoices()", script)
+        self.assertIn("function moveLensChoice(from, to)", script)
+
+    def test_desktop_preview_frame_fits_inside_sticky_panel(self):
+        styles = (self.root / "80 Build" / "profile_editor" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn("height: calc(100vh - 2rem)", styles)
+        self.assertIn("#preview-frame { display: block; flex: 1 1 auto", styles)
+        self.assertIn("height: auto; min-height: 0", styles)
 
     def test_reviews_and_saves_named_my_menu_color_assignments(self):
         assignments = dict(self.model.my_menu_colors["assignments"])

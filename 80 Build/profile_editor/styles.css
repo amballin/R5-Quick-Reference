@@ -568,6 +568,25 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .profile-save-bar[hidden] { display: none; }
 
 .settings { display: grid; gap: 1rem; }
+.lens-guidance-group { overflow: hidden; }
+.lens-choice-editor-list { display: grid; }
+.lens-choice-editor-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 1.1fr) minmax(150px, .9fr) minmax(130px, .75fr) auto;
+  gap: .75rem;
+  padding: 1rem;
+  border-top: 1px solid #edf1f4;
+  background: white;
+}
+.lens-choice-editor-row:first-child { border-top: 0; }
+.lens-choice-editor-row.is-primary { background: #f1faf7; }
+.lens-choice-editor-row label { display: grid; gap: .3rem; color: var(--muted); font-size: .75rem; font-weight: 750; }
+.lens-choice-editor-row label span { color: var(--ink); }
+.lens-choice-copy { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.lens-choice-order { display: flex; align-items: end; gap: .35rem; }
+.lens-choice-order button { min-width: 40px; min-height: 40px; padding: .35rem .55rem; }
+.lens-choice-actions { padding: .85rem 1rem; border-top: 1px solid var(--line); background: var(--soft); }
+.lens-choice-empty { margin: 0; padding: 1rem; color: var(--muted); }
 .setting-section { overflow: hidden; }
 .section-heading, .preview-heading {
   display: flex;
@@ -613,7 +632,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .reference-card table { width: 100%; border-collapse: collapse; }
 .reference-card th, .reference-card td { padding: .65rem; border-bottom: 1px solid var(--line); text-align: left; }
 
-.preview-panel { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: hidden; }
+.preview-panel { display: flex; flex-direction: column; position: sticky; top: 1rem; height: calc(100vh - 2rem); max-height: calc(100vh - 2rem); overflow: hidden; }
 .preview-heading { align-items: flex-start; }
 .preview-heading .eyebrow { color: var(--muted); }
 .preview-heading h2 { margin-bottom: 0; }
@@ -627,7 +646,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .preview-empty { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .45rem; min-height: 520px; padding: 2rem; color: var(--muted); text-align: center; }
 .preview-empty strong { color: var(--ink); }
 .preview-empty span { max-width: 280px; font-size: .82rem; line-height: 1.45; }
-#preview-frame { display: block; width: 100%; height: calc(100vh - 150px); min-height: 620px; border: 0; background: white; }
+#preview-frame { display: block; flex: 1 1 auto; width: 100%; height: auto; min-height: 0; border: 0; background: white; }
 #preview-frame[hidden], .preview-empty[hidden] { display: none; }
 .floating-return { position: fixed; right: max(14px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); z-index: 20; display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid #b8c7d9; border-radius: 50%; color: #165d9c; background: rgba(255,255,255,.96); box-shadow: 0 2px 10px rgba(23,32,51,.18); font-size: 1.45rem; font-weight: 800; line-height: 1; }
 .floating-return:hover { transform: translateY(-1px); }
@@ -741,7 +760,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .mobile-pane-tab.is-active { color: white; background: var(--navy); }
   .profile-workspace:not(.show-preview) .preview-panel { display: none; }
   .profile-workspace.show-preview .profile-editor-pane { display: none; }
-  .preview-panel { position: static; max-height: none; }
+  .preview-panel { display: block; position: static; height: auto; max-height: none; }
   #preview-frame { height: 72vh; min-height: 560px; }
 }
 
@@ -758,6 +777,8 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .cx-mode:last-child { border-bottom: 0; }
   .session-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cx-assignment-grid, .cx-fit-results { grid-template-columns: 1fr; }
+  .lens-choice-editor-row, .lens-choice-copy { grid-template-columns: 1fr; }
+  .lens-choice-order { align-items: center; }
   .cx-assignment-card, .cx-fit-option { border-right: 0; border-bottom: 1px solid var(--line); }
   .cx-fit-option:nth-child(2) { border-bottom: 1px solid var(--line); }
   .cx-assignment-card:last-child, .cx-fit-option:last-child { border-bottom: 0; }

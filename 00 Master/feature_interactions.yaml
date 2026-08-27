@@ -1,0 +1,286 @@
+schema_version: 1
+
+camera:
+  manufacturer: Canon
+  model: EOS R5
+
+rules:
+  - id: manual_focus_disables_af_features
+    evidence_class: verified_canon_capability
+    when:
+      all:
+        - path: autofocus.operation
+          operator: equals
+          value: Manual Focus
+    effects:
+      - behavior: inactive
+        setting_paths:
+          - autofocus.method
+          - autofocus.subject_detection
+          - autofocus.eye_detection
+    message: Manual Focus makes AF Method, Subject Detection, and Eye Detection inactive.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Manual Focus
+        url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0090.html
+
+  - id: subject_detection_requires_compatible_af_method
+    evidence_class: verified_canon_capability
+    when:
+      all:
+        - path: autofocus.subject_detection
+          operator: not_equals
+          value: None
+        - path: autofocus.method
+          operator: not_in
+          values:
+            - Face + Tracking
+            - Zone AF
+            - Large Zone AF
+            - Large Zone AF (horizontal)
+            - Large Zone AF (vertical)
+    effects:
+      - behavior: inactive
+        setting_paths: [autofocus.subject_detection]
+    message: Subject Detection is inactive with this AF Method; it takes effect with Face + Tracking, Zone AF, or Large Zone AF.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Selecting the AF Method
+        url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+
+  - id: eye_detection_requires_face_tracking
+    evidence_class: verified_canon_capability
+    when:
+      all:
+        - path: autofocus.eye_detection
+          operator: equals
+          value: Enable
+        - path: autofocus.method
+          operator: not_equals
+          value: Face + Tracking
+    effects:
+      - behavior: inactive
+        setting_paths: [autofocus.eye_detection]
+    message: Eye Detection is inactive unless AF Method is Face + Tracking.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Selecting the AF Method
+        url: https://cam.start.canon/en/C003/manual/html/UG-04_AF-Drive_0050.html
+
+  - id: high_speed_display_selectable_context
+    evidence_class: verified_canon_capability
+    when:
+      all:
+        - path: display.high_speed_display
+          operator: equals
+          value: Enable
+        - path: drive.mode
+          operator: not_equals
+          value: High Speed Continuous
+        - path: shutter.type
+          operator: not_equals
+          value: Electronic
+    effects:
+      - behavior: inactive
+        setting_paths: [display.high_speed_display]
+    message: The stored High Speed Display setting is inactive in this starting configuration; selectable use requires regular High Speed Continuous, while Electronic shutter supplies high-speed display behavior automatically.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — High-Speed Display
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0340.html
+
+  - id: focus_bracketing_disables_flash
+    evidence_class: verified_canon_capability
+    when:
+      all:
+        - path: image.focus_bracketing
+          operator: equals
+          value: Enable
+    effects:
+      - behavior: restricted
+        setting_paths: [image.focus_bracketing]
+    message: Flash photography is unavailable during EOS R5 Focus Bracketing; use ambient or continuous light, or a separately controlled manual stack.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Focus Bracketing
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html
+
+  - id: lens_is_switch_replaces_camera_menu
+    evidence_class: verified_canon_capability
+    context_requirements:
+      - context.lens.has_optical_is
+      - context.lens.has_is_switch
+    when:
+      all:
+        - path: context.lens.has_optical_is
+          operator: equals
+          value: true
+        - path: context.lens.has_is_switch
+          operator: equals
+          value: true
+    effects:
+      - behavior: replaced
+        setting_paths:
+          - stabilization.image_stabilization.mode
+          - stabilization.lens_is
+    message: This lens's Image Stabilizer switch replaces the camera-menu On/Off control; use a physical mode selector only when the lens provides one.
+    surfaces: [editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html
+
+  - id: lens_and_body_is_coordinate
+    evidence_class: verified_canon_capability
+    context_requirements:
+      - context.lens.has_optical_is
+      - context.lens.is_enabled
+    when:
+      all:
+        - path: context.lens.has_optical_is
+          operator: equals
+          value: true
+        - path: context.lens.is_enabled
+          operator: equals
+          value: true
+        - path: stabilization.ibis
+          operator: equals
+          value: "On"
+    effects:
+      - behavior: coordinated
+        setting_paths:
+          - stabilization.ibis
+          - stabilization.lens_is
+    message: With compatible lens IS enabled, lens optical stabilization and EOS R5 in-body stabilization coordinate automatically.
+    surfaces: [editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html
+
+  - id: adapted_lens_control_ring_available
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.mount]
+    when:
+      all:
+        - path: context.lens.mount
+          operator: in
+          values: [EF, EF-S]
+    effects:
+      - behavior: available
+        setting_paths: [exposure.exposure_compensation]
+    message: EF and EF-S choices require the Control Ring Mount Adapter EF-EOS R; its programmable ring remains available for a field control such as exposure compensation.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon Control Ring Mount Adapter EF-EOS R
+        url: https://www.usa.canon.com/shop/cameras/camera-accessories/adapters-cables/p/control-ring-mount-adapter-ef-eos-r
+
+  - id: extender_ef_1_4x_tradeoffs
+    evidence_class: verified_canon_capability
+    context_requirements: [context.accessory.id]
+    when:
+      all:
+        - path: context.accessory.id
+          operator: equals
+          value: extender_ef_1_4x
+    effects:
+      - behavior: restricted
+        setting_paths:
+          - autofocus.method
+          - lens.aperture.target
+    message: With the EF 1.4× Extender, the EF 100–400mm becomes 140–560mm f/6.3–8; expect less light and somewhat slower autofocus.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EF 100-400mm f/4.5-5.6L IS II USM Instructions
+        url: https://gdlp01.c-wss.com/gds/6/0300017486/01/ef100-400f45-56lisiiusm-im-e.pdf
+
+  - id: macro_hybrid_is_close_distance_limit
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.id]
+    when:
+      all:
+        - path: context.lens.id
+          operator: equals
+          value: ef_100_macro_is
+    effects:
+      - behavior: restricted
+        setting_paths:
+          - stabilization.ibis
+          - stabilization.lens_is
+    message: With the EF 100mm Macro at close distances, Hybrid IS effectiveness is lower; solid support and careful technique remain important.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EF100mm f/2.8L Macro IS USM Instructions
+        url: https://gdlp01.c-wss.com/gds/2/0300003522/02/ef100f28l-macroisusm-im2-eng.pdf
+
+  - id: ef_50_has_no_optical_is
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.id]
+    when:
+      all:
+        - path: context.lens.id
+          operator: equals
+          value: ef_50_f14
+    effects:
+      - behavior: inactive
+        setting_paths: [stabilization.lens_is]
+    message: The EF 50mm has no optical IS; use the EOS R5 body IS menu when available and protect shutter speed for moving subjects.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EF 50mm f/1.4 USM Support and Specifications
+        url: https://www.usa.canon.com/support/p/ef-50mm-f-1-4-usm
+
+  - id: rf_24_240_uses_automatic_is_behavior
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.id]
+    when:
+      all:
+        - path: context.lens.id
+          operator: equals
+          value: rf_24_240_is
+    effects:
+      - behavior: automatic
+        setting_paths:
+          - stabilization.ibis
+          - stabilization.lens_is
+    message: The RF 24–240mm has an IS On/Off switch but no Mode 1 / 2 / 3 selector; stabilization behavior is automatic.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon RF24-240mm F4-6.3 IS USM Instructions
+        url: https://gdlp01.c-wss.com/gds/6/0300036346/02/rf24-240-f4-63isusm-im4-eng.pdf
+
+  - id: mp_e_65_manual_focus_only
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.id]
+    when:
+      all:
+        - path: context.lens.id
+          operator: equals
+          value: mp_e_65
+    effects:
+      - behavior: inactive
+        setting_paths:
+          - autofocus.method
+          - image.focus_bracketing
+    message: The MP-E 65mm is manual-focus only from 1× through 5×; focus by moving the camera or subject, and do not use EOS R5 automated Focus Bracketing.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon MP-E 65mm f/2.8 1-5× Macro Photo Support
+        url: https://www.usa.canon.com/support/p/mp-e-65mm-f-2-8-1-5x-macro-photo
+      - title: Canon EOS R5 Advanced User Guide — Focus Bracketing
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html
+
+  - id: ef_s_lens_forces_crop
+    evidence_class: verified_canon_capability
+    context_requirements: [context.lens.mount]
+    when:
+      all:
+        - path: context.lens.mount
+          operator: equals
+          value: EF-S
+    effects:
+      - behavior: overridden
+        setting_paths: [image.cropping_aspect_ratio]
+    message: An adapted EF-S lens forces 1.6× crop on the EOS R5 (approximately 17.3 MP); Full-frame is unavailable and the excluded RAW area cannot be recovered.
+    surfaces: [card, editor, camera_lab]
+    sources:
+      - title: Canon EOS R5 Advanced User Guide — Still Photo Cropping/Aspect Ratio
+        url: https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html

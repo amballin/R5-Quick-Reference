@@ -90,7 +90,7 @@ class GuardedRunManager:
             self.journal.latest_resumable(backend="simulated" if self.service.backend_mode == "simulated" else "edsdk")
         )
 
-    def prepare(self, profile_name, preflight, context_choices=None):
+    def prepare(self, profile_name, preflight, context_choices=None, equipment_choice=None):
         backend = self._guarded_backend()
         self._validate_connected()
         preflight = self.validate_preflight(preflight)
@@ -100,8 +100,31 @@ class GuardedRunManager:
 
         snapshot_properties = enrich_properties(backend.read_capabilities())
         self.service.capabilities = self.service._capability_payload(snapshot_properties)
-        comparison = self.service._build_comparison(profile_name, context_choices)
-        steps = self._plan_steps(comparison, snapshot_properties, backend)
+        comparison = self.service._build_comparison(profile_name, context_choices, equipment_choice)
+        equipment = comparison.get("equipment") or {}
+        if self.service.backend_mode == "edsdk" and equipment.get("planning_override"):
+            raise CameraSessionError(
+                "The planned lens differs from the camera-reported attached lens. Attach the planned lens and rescan, or use the detected-lens context."
+            )
+        if (
+            self.service.backend_mode == "edsdk"
+            and camera.get("lens_name")
+            and not equipment.get("detected_lens_recognized")
+        ):
+            raise CameraSessionError(
+                "The camera-reported lens is not recognized in the owned-equipment catalog; resolve that equipment identity before applying a profile."
+            )
+        setup_essentials_targets = (
+            self._camera_setup_essentials_targets(equipment_choice)
+            if preflight.get("camera_setup_essentials_confirmed")
+            else {}
+        )
+        steps = self._plan_steps(
+            comparison,
+            snapshot_properties,
+            backend,
+            setup_essentials_targets=setup_essentials_targets,
+        )
         snapshot = [
             {
                 "key": item.get("key"),
@@ -121,6 +144,7 @@ class GuardedRunManager:
                 "profile": comparison["profile"],
                 "camera": camera,
                 "preflight": preflight,
+                "equipment": equipment,
                 "pre_change_snapshot": snapshot,
                 "c123_checkpoint": {
                     "physical_session": 3,
@@ -381,7 +405,22 @@ class GuardedRunManager:
             step["rechecked_at"] = utc_now()
             step["result"] = "Already correct; rechecked automatically without an operator step."
 
-    def _plan_steps(self, comparison, properties, backend):
+    def _camera_setup_essentials_targets(self, equipment_choice):
+        essentials = self.service._build_comparison(
+            "Camera Setup Essentials",
+            equipment_choice=equipment_choice,
+        )
+        targets = {}
+        for finding in essentials.get("card_findings") or []:
+            for item in finding.get("items") or [finding]:
+                path = item.get("path")
+                expected = item.get("expected")
+                if path and expected is not None:
+                    targets[path] = _normalized(expected)
+        return targets
+
+    def _plan_steps(self, comparison, properties, backend, setup_essentials_targets=None):
+        setup_essentials_targets = setup_essentials_targets or {}
         by_path = {
             path: item
             for item in properties
@@ -437,6 +476,18 @@ class GuardedRunManager:
                 else:
                     classification = CLASS_BLOCKED
                     reason = "This exact body, firmware, SDK, property, and value has not passed reversible qualification."
+            essentials_confirmation = bool(
+                classification == CLASS_MANUAL
+                and finding.get("status") in {"manual_confirmation_needed", "unreadable"}
+                and setup_essentials_targets.get(path) == _normalized(finding.get("expected"))
+            )
+            if essentials_confirmation:
+                classification = CLASS_SKIPPED
+                skip_kind = "camera_setup_essentials_confirmation"
+                reason = (
+                    "The operator confirmed Camera Setup Essentials is already set, and this exact Set & Forget "
+                    "target matches the selected profile without contradictory camera readback."
+                )
             manual_group_key, manual_group_label = _manual_group(access_paths)
             initially_skipped = classification == CLASS_SKIPPED
             steps.append(
@@ -456,9 +507,24 @@ class GuardedRunManager:
                     "manual_group_key": manual_group_key if classification == CLASS_MANUAL else None,
                     "manual_group_label": manual_group_label if classification == CLASS_MANUAL else None,
                     "access_paths": deepcopy(access_paths),
-                    "status": "skipped" if initially_skipped else "pending",
+                    "status": (
+                        "manual_user_confirmed"
+                        if essentials_confirmation
+                        else "skipped" if initially_skipped else "pending"
+                    ),
+                    "evidence_method": (
+                        "manual_user_confirmed_camera_setup_essentials"
+                        if essentials_confirmation
+                        else None
+                    ),
                     "completed_at": utc_now() if initially_skipped else None,
-                    "result": "No operator action required; recorded from the fresh pre-change snapshot." if initially_skipped else None,
+                    "result": (
+                        "Confirmed from Camera Setup Essentials for this Apply review."
+                        if essentials_confirmation
+                        else "No operator action required; recorded from the fresh pre-change snapshot."
+                        if initially_skipped
+                        else None
+                    ),
                     "simulated_writes": 0,
                     "physical_writes": 0,
                 }
@@ -490,6 +556,8 @@ class GuardedRunManager:
                 "camera_backup_confirmed": True,
                 "backup_filename": backup_filename,
                 "lens_source": "camera_readback" if camera_lens else "manual_confirmation",
+                "lens_choice": str(preflight.get("lens_choice") or "").strip(),
+                "camera_setup_essentials_confirmed": preflight.get("camera_setup_essentials_confirmed") is True,
             }
         )
         return cleaned

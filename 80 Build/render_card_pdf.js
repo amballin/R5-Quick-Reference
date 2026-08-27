@@ -187,6 +187,8 @@ function cardContent(data) {
   }
   y += data.rows.length ? 18 : 0;
   for (const [title, items] of [
+    ["Lens Choices", data.lens_choices || []],
+    ["Compatibility", data.compatibility || []],
     ["Checklist", data.checklist],
     ["Watch For", data.watch_for],
     ["Common Mistakes", data.common_mistakes],

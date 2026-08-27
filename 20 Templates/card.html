@@ -58,6 +58,14 @@ td.field-value.access-menu-6{color:#ff9b7a}
 .rapid-setup-group:first-child th{border-top:0}
 .rapid-setup-detail{display:block;margin-top:1px;color:#8faec7;font-size:.67rem;font-weight:400;line-height:1.15}
 .rapid-setup-empty{margin:7px 0 12px;color:#b7d2e8}
+.lens-choices{display:grid;gap:6px;margin:5px 0 10px}
+.lens-choice{padding:7px 8px;border:1px solid rgba(141,200,255,.3);border-radius:8px;background:rgba(255,255,255,.035)}
+.lens-choice-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.lens-choice-heading strong{font-size:.92rem}
+.lens-choice-heading span{color:#8dc8ff;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.lens-choice p{margin:3px 0 0;color:#fff;font-size:.78rem;line-height:1.25}
+.lens-choice small{display:block;margin-top:3px;color:#b7d2e8;font-size:.7rem;line-height:1.25}
+.lens-choice small strong{color:#8dc8ff}
 .setting-label{display:inline-flex;align-items:center;gap:7px;max-width:100%}
 .setting-icon{display:block;width:22px;height:22px;object-fit:contain;flex:0 0 22px;filter:brightness(0) saturate(100%) invert(76%) sepia(32%) saturate(784%) hue-rotate(178deg) brightness(103%) contrast(101%)}
 .setting-icon[src$="af_point_button.svg"]{width:31px;height:18px;flex-basis:31px;object-fit:contain}
@@ -83,6 +91,8 @@ a{color:#b7dfff;text-underline-offset:2px}
 {{FIELD_SETUP_STRIP}}
 </div>
 {{SETTINGS_SECTION}}
+{{LENS_SECTION}}
+{{COMPATIBILITY_SECTION}}
 <h2>Checklist</h2>
 {{CHECKLIST}}
 <h2>Watch For</h2>

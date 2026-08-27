@@ -36,6 +36,7 @@ def validate(root):
         "ui": root / "80 Build/camera_control/static/app.js",
         "html": root / "80 Build/camera_control/static/index.html",
         "comparison": root / "80 Build/camera_control/profile_comparison.py",
+        "equipment": root / "80 Build/camera_control/equipment_context.py",
         "editor_options": root / "80 Build/profile_editor/canon_options.yaml",
     }
     if any(not path.is_file() for path in paths.values()):
@@ -57,6 +58,7 @@ def validate(root):
     ui = paths["ui"].read_text(encoding="utf-8")
     html = paths["html"].read_text(encoding="utf-8")
     comparison = paths["comparison"].read_text(encoding="utf-8")
+    equipment = paths["equipment"].read_text(encoding="utf-8")
     editor_options = paths["editor_options"].read_text(encoding="utf-8")
 
     for scenario in sorted(REQUIRED_SCENARIOS):
@@ -88,6 +90,9 @@ def validate(root):
         '"firmware_version"',
         '"lens_name"',
         '"current_mode"',
+        '"selected_lens_id"',
+        '"selected_accessory_id"',
+        '"selected_is_mode"',
     ):
         if required not in manual_confirmations:
             issues.append(error("camera_guarded_run", paths["manual_confirmations"], f"Shared manual-confirmation scope is missing: {required}"))
@@ -189,6 +194,33 @@ def validate(root):
             issues.append(error("camera_guarded_run", paths["ui"], f"Explicit write-mode restart guard is missing: {required}"))
     if "kEdsPropID_LensName" not in helper or '"lens_name"' not in paths["native"].read_text(encoding="utf-8"):
         issues.append(error("camera_guarded_run", paths["helper"], "Connected-lens readback must be retained for guarded preflight."))
+    for required in (
+        "from lens_guidance import load_sources, resolved_choices",
+        "load_interaction_catalog",
+        "selected_is_mode not in supported_mode_values",
+        'surface="camera_lab"',
+    ):
+        if required not in equipment:
+            issues.append(error("camera_guarded_run", paths["equipment"], f"Canonical equipment context is missing: {required}"))
+    for required in (
+        'id="equipment-context"',
+        'id="lens-choice-select"',
+        'id="is-mode-select"',
+        'id="equipment-interaction-list"',
+    ):
+        if required not in html:
+            issues.append(error("camera_guarded_run", paths["html"], f"Lens-aware comparison control is missing: {required}"))
+    for required in (
+        "renderEquipmentContext",
+        "equipmentSelection",
+        'query.set("lens_choice"',
+        'query.set("is_mode"',
+        "selectedEquipmentPayload",
+    ):
+        if required not in ui:
+            issues.append(error("camera_guarded_run", paths["ui"], f"Lens-aware comparison behavior is missing: {required}"))
+    if "planned lens differs from the camera-reported attached lens" not in guarded:
+        issues.append(error("camera_guarded_run", paths["guarded"], "Physical guarded runs must reject a planning-lens mismatch."))
     for label in ("Initial priority (0)", "On subject (1)", "Switch subject (2)"):
         if label not in comparison or label not in editor_options:
             issues.append(error("camera_guarded_run", paths["comparison"], f"Numbered Switching tracked subjects label is missing: {label}"))

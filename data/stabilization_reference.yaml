@@ -15,9 +15,30 @@ camera:
       title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
       url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
 
+adapter:
+  id: control_ring_mount_adapter_ef_eos_r
+  name: "Canon Control Ring Mount Adapter EF-EOS R"
+  compatible_mounts: [EF, EF-S]
+  card_note: "EF and EF-S lenses use the Control Ring Mount Adapter EF-EOS R; its programmable control ring remains available for a field control such as exposure compensation."
+  source:
+    title: "Canon Control Ring Mount Adapter EF-EOS R"
+    url: "https://www.usa.canon.com/shop/cameras/camera-accessories/adapters-cables/p/control-ring-mount-adapter-ef-eos-r"
+
+accessories:
+  - id: extender_ef_1_4x
+    name: "Canon Extender EF 1.4×"
+    compatible_lens_ids: [ef_100_400_is_ii]
+    display_suffix: "+ EF 1.4× Extender"
+    card_note: "With the EF 1.4× Extender, the EF 100–400mm becomes 140–560mm f/6.3–8; expect less light and somewhat slower autofocus."
+    sources:
+      - title: "Canon EF 100-400mm f/4.5-5.6L IS II USM Instructions"
+        url: "https://gdlp01.c-wss.com/gds/6/0300017486/01/ef100-400f45-56lisiiusm-im-e.pdf"
+
 lenses:
   - id: ef_100_400_is_ii
+    short_name: "EF 100–400mm"
     name: "Canon EF 100-400mm f/4.5-5.6L IS II USM"
+    mount: EF
     optical_is: true
     is_on_off_switch: true
     is_mode_switch: true
@@ -39,7 +60,9 @@ lenses:
         url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
 
   - id: ef_100_macro_is
+    short_name: "EF 100mm Macro"
     name: "Canon EF 100mm f/2.8L Macro IS USM"
+    mount: EF
     optical_is: true
     is_on_off_switch: true
     is_mode_switch: false
@@ -55,7 +78,9 @@ lenses:
         url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
 
   - id: ef_50_f14
+    short_name: "EF 50mm f/1.4"
     name: "Canon EF 50mm f/1.4 USM"
+    mount: EF
     optical_is: false
     is_on_off_switch: false
     is_mode_switch: false
@@ -68,7 +93,9 @@ lenses:
         url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
 
   - id: rf_24_240_is
+    short_name: "RF 24–240mm"
     name: "Canon RF 24-240mm F4-6.3 IS USM"
+    mount: RF
     optical_is: true
     is_on_off_switch: true
     is_mode_switch: false
@@ -82,3 +109,35 @@ lenses:
         url: "https://gdlp01.c-wss.com/gds/6/0300036346/02/rf24-240-f4-63isusm-im4-eng.pdf"
       - title: "Canon EOS R5 Advanced User Guide — Image Stabilizer (IS Mode)"
         url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0310.html"
+
+  - id: mp_e_65
+    short_name: "MP-E 65mm"
+    name: "Canon MP-E 65mm f/2.8 1-5× Macro Photo"
+    mount: EF
+    optical_is: false
+    is_on_off_switch: false
+    is_mode_switch: false
+    control_method: "No lens stabilization control"
+    camera_interaction: "The lens has no optical IS. It is manual-focus only and changes magnification from 1× to 5×; use camera/body support appropriate to the magnification."
+    sources:
+      - title: "Canon MP-E 65mm f/2.8 1-5× Macro Photo Support"
+        url: "https://www.usa.canon.com/support/p/mp-e-65mm-f-2-8-1-5x-macro-photo"
+      - title: "Canon EOS R5 Advanced User Guide — Focus Bracketing"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html"
+
+  - id: ef_s_10_18_is_stm
+    short_name: "EF-S 10–18mm"
+    name: "Canon EF-S 10-18mm f/4.5-5.6 IS STM"
+    mount: EF-S
+    optical_is: true
+    is_on_off_switch: true
+    is_mode_switch: false
+    control_method: "Lens Image Stabilizer On/Off switch; no Mode 1 / 2 / 3 selector"
+    camera_interaction: "Use the lens IS switch. When adapted to the EOS R5, this EF-S lens forces 1.6× crop and the Full-frame option is unavailable."
+    exceptions:
+      - "The EOS R5 records the 1.6× center area at approximately 17.3 MP; image area outside the crop is not recorded, including in RAW or cRAW."
+    sources:
+      - title: "Canon EF-S 10-18mm f/4.5-5.6 IS STM Support"
+        url: "https://www.usa.canon.com/support/p/ef-s-10-18mm-f-4-5-5-6-is-stm"
+      - title: "Canon EOS R5 Advanced User Guide — Still Photo Cropping/Aspect Ratio"
+        url: "https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html"

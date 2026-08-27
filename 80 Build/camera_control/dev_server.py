@@ -170,18 +170,43 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                     if not separator or not context_path or not choice:
                         raise ValueError("context query parameters must use path|choice")
                     context_choices[context_path] = choice
+                equipment_choice = {}
+                selected_lens_choice = (query.get("lens_choice") or [None])[0]
+                selected_is_mode = (query.get("is_mode") or [None])[0]
+                if selected_lens_choice:
+                    if len(selected_lens_choice) > 200:
+                        raise ValueError("lens_choice is too long")
+                    equipment_choice["choice_key"] = selected_lens_choice
+                if selected_is_mode:
+                    if selected_is_mode not in {"1", "2", "3"}:
+                        raise ValueError("is_mode must be 1, 2, or 3")
+                    equipment_choice["is_mode"] = selected_is_mode
                 manual_context = None
                 encoded_manual_context = (query.get("manual_context") or [None])[0]
                 if encoded_manual_context:
                     manual_context = json.loads(encoded_manual_context)
                     if not isinstance(manual_context, dict) or any(
-                        key not in {"still_movie_context", "flash", "cards"}
+                        key not in {
+                            "still_movie_context",
+                            "flash",
+                            "cards",
+                            "selected_lens_id",
+                            "selected_accessory_id",
+                            "selected_is_mode",
+                        }
                         or not isinstance(value, str)
                         or len(value) > 500
                         for key, value in manual_context.items()
                     ):
-                        raise ValueError("manual_context must contain only short still/movie, flash, and cards text")
-                self._send_json(self.service.compare_profile(profile, context_choices, manual_context))
+                        raise ValueError("manual_context must contain only short shooting and equipment context text")
+                self._send_json(
+                    self.service.compare_profile(
+                        profile,
+                        context_choices,
+                        manual_context,
+                        equipment_choice,
+                    )
+                )
             elif path == "/api/camera-control/guarded-run" and self._guarded_endpoint_available():
                 query = parse_qs(parsed.query)
                 session_id = (query.get("session_id") or [None])[0]
@@ -248,7 +273,22 @@ class CameraLabHandler(BaseHTTPRequestHandler):
                     for key, value in context_choices.items()
                 ):
                     raise ValueError("context_choices must be a string map")
-                result = self.service.prepare_guarded_run(profile, preflight, context_choices)
+                equipment_choice = payload.get("equipment_choice") or {}
+                if not isinstance(equipment_choice, dict) or any(
+                    key not in {"choice_key", "is_mode"}
+                    or not isinstance(value, str)
+                    or len(value) > 200
+                    for key, value in equipment_choice.items()
+                ):
+                    raise ValueError("equipment_choice must contain only short choice_key and is_mode strings")
+                if equipment_choice.get("is_mode") not in {None, "1", "2", "3"}:
+                    raise ValueError("equipment_choice is_mode must be 1, 2, or 3")
+                result = self.service.prepare_guarded_run(
+                    profile,
+                    preflight,
+                    context_choices,
+                    equipment_choice,
+                )
             elif path == "/api/camera-control/guarded-run/confirm":
                 result = self.service.confirm_guarded_run(payload.get("session_id"), payload.get("confirmed"))
             elif path == "/api/camera-control/guarded-run/next":

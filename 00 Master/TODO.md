@@ -53,46 +53,11 @@ Confirm that Servo AF opens the complete Case 1–4 / Case A selector and does n
 
 ## Architecture and Validation Improvements
 
-- Generate duplicate control tables from one authoritative machine-readable control source.
-- Add validation that rejects the deprecated registered-AF workflow terminology.
+### Future, Demand-Driven: Portable Tracker and Status Migration
 
-### Profile Editor Terminal-free Application
+Consider a repository-independent way for another photographer to use a released Setup & Verification Tracker on their own computer and carry their local progress into a later tracker revision. This is explicitly future, demand-driven work rather than committed implementation. Its value may be limited if another photographer configures the camera differently enough that the project's checklist requirements, C1-C3 targets, or evidence model are not useful to them.
 
-Update **R5 Profile Editor.app** later so it owns the local Profile Editor server without opening Terminal, matching the Camera Lab application lifecycle. Add a clear authenticated **Stop Profile Editor** action that shuts down the server and ends the background app process, show startup or unexpected-stop failures in a macOS alert, retain diagnostic output in the machine-local `Logs/` folder, and preserve **Start Profile Editor.command** as the Terminal-based diagnostic and recovery path.
-
-### Profile Editor Camera Lab Launcher
-
-Add a later launcher-only integration from Profile Editor to the standalone Camera Lab. Preserve Camera Lab as the owner of the Canon EDSDK process, camera session, read-only comparison workflow, checklist state, and future camera-operation safeguards rather than embedding or duplicating those capabilities inside Profile Editor.
-
-The launcher should:
-
-- start Camera Lab only when its loopback service is not already running;
-- pass the currently selected **saved** profile so Camera Lab can preselect it, while never sending an unsaved browser draft to the camera workflow;
-- open Camera Lab in a separate browser tab and preserve Profile Editor independently;
-- detect and report startup, port-conflict, missing-helper, and already-running states clearly;
-- depend on Camera Lab's authenticated graceful-stop action so the camera session, EDSDK helper, and local server have one explicit owner and shutdown path; and
-- retain Terminal Control-C as the recovery fallback rather than treating browser tab closure as reliable process control.
-
-Do not add deeper Profile Editor embedding unless a later approved requirement needs shared unsaved-draft comparison, a unified camera-write journal, or coordinated backup/write transactions. Because this launcher crosses the isolated Camera Lab/Profile Editor boundary, implement and validate it as an integration checkpoint with the normal source-validation, development-build, and full-validation sequence.
-
-### Feature Interaction Rules
-
-Create a structured way to capture and surface important Canon feature interactions and conditional menu behavior.
-
-Examples include:
-
-- A setting disappearing or changing when a particular lens is attached.
-- Lens switches overriding or replacing camera-menu controls.
-- Lens optical IS coordinating with camera IBIS.
-- Flash restrictions.
-- Electronic-shutter restrictions.
-- Drive-mode restrictions.
-- Focus-bracketing compatibility.
-- HDR-related compatibility.
-
-### Portable Tracker and Status Migration
-
-Consider a repository-independent way for another photographer to use a released Setup & Verification Tracker on their own computer and carry their local progress into a later tracker revision. Treat this as a demand-dependent enhancement rather than committed work: its value may be limited if the other photographer configures the camera differently enough that the project's checklist requirements, C1-C3 targets, or evidence model are not useful to them.
+Camera Lab validation does **not** currently update this tracker automatically. Lab comparison, camera-readback evidence, guarded-run journals, and manual-confirmation ledgers remain machine-local working evidence. A future Lab-to-tracker importer may be considered separately if repeated unique physical testing creates enough value to justify reviewed evidence mapping, deduplication, conflict handling, and explicit promotion into tracker fields. Do not equate an automatic import with Canon verification: imported entries must retain their Lab evidence class and context.
 
 If pursued, build a small local **Tracker Upgrader**, not a portable copy of the project's Git/YAML synchronization workflow. The user's workbook should remain their sole source of truth. The upgrader must not require this repository, Git, GitHub access, a project clone, or knowledge of the machine-local project workspace.
 

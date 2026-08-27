@@ -203,6 +203,19 @@ button:disabled { cursor: wait; opacity: 0.55; }
 .comparison-panel { margin-top: 18px; border-left: 5px solid var(--blue); }
 .profile-controls { display: grid; grid-template-columns: auto minmax(220px, 1fr) auto; gap: 10px; align-items: center; }
 .profile-controls label { color: var(--muted); font-weight: 700; }
+.equipment-context { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr); gap: 14px; margin-top: 16px; padding: 16px; border: 1px solid #b8c7d9; border-radius: 10px; background: #f8fbff; }
+.equipment-context[hidden] { display: none; }
+.equipment-context.equipment-warning { border-color: #d7aa2d; background: var(--amber-soft); }
+.equipment-context h3 { margin: 2px 0 0; }
+.equipment-context p:not(.label) { margin: 7px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.4; }
+.equipment-context > label { display: grid; align-content: start; gap: 6px; color: var(--muted); font-size: .8rem; font-weight: 800; }
+.equipment-context > label[hidden] { display: none; }
+.equipment-context select { width: 100%; min-width: 0; }
+.equipment-context small { color: var(--muted); font-weight: 500; line-height: 1.4; }
+.equipment-interactions { grid-column: 1 / -1; padding-top: 12px; border-top: 1px solid var(--line); }
+.equipment-interactions ul, .finding-interactions { margin: 7px 0 0; padding-left: 20px; }
+.equipment-interactions li + li, .finding-interactions li + li { margin-top: 5px; }
+.finding-interactions { color: #604900; font-size: .76rem; font-weight: 600; line-height: 1.35; }
 .comparison-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-top: 18px; }
 .comparison-toolbar label { color: var(--muted); font-weight: 700; }
 .comparison-toolbar select { min-width: 150px; }
@@ -364,6 +377,8 @@ footer { padding: 24px; color: var(--muted); text-align: center; font-size: 0.82
   .dashboard-grid { grid-template-columns: 1fr; }
   .simulation-controls { grid-template-columns: 1fr; align-items: stretch; }
   .profile-controls { grid-template-columns: 1fr; align-items: stretch; }
+  .equipment-context { grid-template-columns: 1fr; }
+  .equipment-interactions { grid-column: 1; }
   .comparison-toolbar { align-items: stretch; flex-direction: column; }
   .coverage-grid { grid-template-columns: 1fr; }
   .guarded-preflight, .guarded-progress { grid-template-columns: 1fr; }

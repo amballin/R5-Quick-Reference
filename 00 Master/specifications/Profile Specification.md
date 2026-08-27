@@ -59,18 +59,20 @@ The local loopback profile editor may perform only these writes under `10 Profil
 - restore an exact held shooting-profile source from the machine-local Deleted Cards area after reviewed conflict checks; or
 - move a saved editable unreleased shooting profile to Deleted Cards after proving it has no structured inbound references.
 
-Reference cards and permanent deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. The dedicated Cx Foundation transaction may update `controls.yaml`, its synchronized current-control record, C1–C3 registration headings and matching workflow labels, and the `card.field_setup.start`/`source_card_id` declarations needed to keep routes aligned. New and duplicated profiles must begin as `Draft` with `metadata.release: false` and a new `card_id`.
+Reference cards and permanent deletion remain read-only. The shared baseline is writable only as part of a complete guarded migration. `00 Master/my_menu.yaml` and `00 Master/my_menu_colors.yaml` are writable only together through the dedicated guarded My Menu review transaction. The dedicated Cx Foundation transaction may update `controls.yaml`, its synchronized current-control record, C1–C3 registration headings and matching workflow labels, and the `card.field_setup.start`/`source_card_id` declarations needed to keep routes aligned. An ordinary subject-profile transaction may also update only that card's immutable-ID entry in `00 Master/profile_lens_guidance.yaml`. New and duplicated profiles must begin as `Draft` with `metadata.release: false` and a new `card_id`.
+
+For each subject profile, the editor presents the owned equipment catalog and the saved ordered lens choices. The user may list one to three unique lens/accessory combinations, designate exactly one as Primary, designate remaining choices as Alternative or Specialist, reorder them, and edit their concise **When to use** and **Field check** text. Accessory choices must be limited to catalog-declared compatible lenses. A Camera Setup & Controls profile has no lens-guidance entry. New subject profiles require a complete primary choice before review; duplicated subject profiles begin with the source card's lens choices. Draft lens choices remain browser-session data, make the retained preview stale, participate in pending-draft and Camera Lab launch blocking, and drive both Lens Choices and automatically evaluated Compatibility in temporary previews without writing source.
 
 Every editor save must follow one guarded transaction:
 
-1. Validate structured input, remove overrides equal to the baseline, and deterministically synchronize the candidate's visible card cues with the persisted global My Menu layout.
-2. Confirm the source fingerprint and target-name availability.
-3. Build and validate the complete candidate in an isolated temporary source layout.
-4. Show the exact YAML diff and bind those candidate bytes to a short-lived one-time review token.
-5. Reconfirm source and target state immediately before saving.
+1. Validate structured input, remove overrides equal to the baseline, validate lens/accessory relationships, and deterministically synchronize the candidate's visible card cues with the persisted global My Menu layout when profile fields changed.
+2. Confirm the profile and lens-guidance source fingerprints and target-name availability.
+3. Build and validate the complete profile and lens-guidance candidates together in an isolated temporary source layout.
+4. Show one exact YAML diff containing only changed source files and bind those candidate bytes to a short-lived one-time review token.
+5. Reconfirm both source files and target state immediately before saving.
 6. Create a timestamped recovery backup under the designated machine-local `Backups/` directory.
-7. Replace the profile atomically and run source validation.
-8. Restore the prior source state automatically if post-save validation fails.
+7. Replace only the reviewed changed profile and/or lens-guidance source atomically and run source validation.
+8. Restore every written source to its prior state automatically if post-save validation fails.
 
 The editor does not commit, push, publish, change website version metadata, rename, or permanently delete. It may move an eligible unreleased card into recoverable Deleted Cards and restore it through the dedicated guarded transactions. It may run the guarded local validation/build sequence defined in the Build and Validation Specification; Git and publication remain separate operator-authorized workflows.
 

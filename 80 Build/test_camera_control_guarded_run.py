@@ -26,7 +26,7 @@ PREFLIGHT = {
     "current_mode": "Fv",
     "lens": "RF 100-500mm F4.5-7.1 L IS USM",
     "flash": "None",
-    "cards": "CFexpress + SD",
+    "cards": "CFexpress & SD",
     "applications_closed": True,
     "camera_backup_confirmed": True,
     "backup_filename": "C123_CFG.CSD",
@@ -152,9 +152,9 @@ class GuardedRunTests(unittest.TestCase):
         self.assertEqual(run["camera"]["product_name"], "EOS R5")
         self.assertTrue(run["pre_change_snapshot"])
         self.assertEqual(run["c123_checkpoint"]["registrations"]["C2"], "Birds in Flight")
-        self.assertEqual(run["summary"]["completed_steps"], 15)
-        self.assertEqual(run["summary"]["actions"]["total"], 17)
-        self.assertEqual(run["summary"]["operator_actions"]["total"], 13)
+        self.assertEqual(run["summary"]["completed_steps"], 17)
+        self.assertEqual(run["summary"]["actions"]["total"], 16)
+        self.assertEqual(run["summary"]["operator_actions"]["total"], 12)
         self.assertTrue(
             all(
                 step["status"] == "skipped"
@@ -202,6 +202,35 @@ class GuardedRunTests(unittest.TestCase):
         with self.assertRaisesRegex(CameraSessionError, "Explicit"):
             service.confirm_guarded_run(run["session_id"], False)
 
+    def test_camera_setup_essentials_confirmation_clears_only_matching_unreadable_targets(self):
+        service = self.service()
+        ordinary = service.prepare_guarded_run("Birds Perched", dict(PREFLIGHT))["guarded_run"]
+        confirmed_preflight = dict(PREFLIGHT, camera_setup_essentials_confirmed=True)
+        confirmed = service.prepare_guarded_run("Birds Perched", confirmed_preflight)["guarded_run"]
+        reused = [
+            step for step in confirmed["steps"]
+            if step.get("skip_kind") == "camera_setup_essentials_confirmation"
+        ]
+
+        self.assertTrue(reused)
+        self.assertIn("display.high_speed_display", {step["path"] for step in reused})
+        self.assertTrue(all(step["status"] == "manual_user_confirmed" for step in reused))
+        self.assertTrue(
+            all(step["evidence_method"] == "manual_user_confirmed_camera_setup_essentials" for step in reused)
+        )
+        self.assertTrue(
+            all(step["comparison_status"] in {"manual_confirmation_needed", "unreadable"} for step in reused)
+        )
+        self.assertEqual(
+            confirmed["summary"]["classifications"]["simulator_automatic"],
+            ordinary["summary"]["classifications"]["simulator_automatic"],
+        )
+        self.assertLess(
+            confirmed["summary"]["classifications"]["manual"],
+            ordinary["summary"]["classifications"]["manual"],
+        )
+        self.assertTrue(confirmed["preflight"]["camera_setup_essentials_confirmed"])
+
     def test_already_correct_items_auto_clear_but_are_rechecked_before_start(self):
         service = self.service()
         run = self.prepare(service)
@@ -248,7 +277,14 @@ class GuardedRunTests(unittest.TestCase):
         current = started["steps"][started["current_step"]]
         self.assertEqual(current["manual_group_label"], "Exposure controls")
         service.execute_guarded_step(run["session_id"], manual_confirmed=True)
-        context = {"still_movie_context": "still", "flash": "None", "cards": "CFexpress + SD"}
+        context = {
+            "still_movie_context": "still",
+            "flash": "None",
+            "cards": "CFexpress & SD",
+            "selected_lens_id": "rf_24_240_is",
+            "selected_accessory_id": "",
+            "selected_is_mode": "",
+        }
 
         travel = service.compare_profile("Travel", manual_confirmation_context=context)
         shared = [
@@ -256,6 +292,17 @@ class GuardedRunTests(unittest.TestCase):
             if finding.get("shared_manual_confirmation")
         ]
         self.assertTrue(any(finding["label"] == "Shutter" and finding["expected"] == "Auto" for finding in shared))
+        other_lens = service.compare_profile(
+            "Travel",
+            manual_confirmation_context=context,
+            equipment_choice={"choice_key": "ef_50_f14::"},
+        )
+        other_lens_shutter = next(
+            finding
+            for finding in other_lens["card_findings"] + other_lens["additional_findings"]
+            if finding["label"] == "Shutter" and finding["expected"] == "Auto"
+        )
+        self.assertNotIn("shared_manual_confirmation", other_lens_shutter)
         fireworks = service.compare_profile("Fireworks", manual_confirmation_context=context)
         self.assertFalse(
             any(finding.get("shared_manual_confirmation") for finding in fireworks["card_findings"] + fireworks["additional_findings"])
@@ -344,6 +391,15 @@ class GuardedRunTests(unittest.TestCase):
         with self.assertRaisesRegex(CameraSessionError, "still-photo"):
             service.prepare_guarded_run("Landscape", movie)
 
+    def test_physical_guarded_run_rejects_a_planning_lens_that_is_not_attached(self):
+        service = self.physical_service()
+        with self.assertRaisesRegex(CameraSessionError, "planned lens differs"):
+            service.prepare_guarded_run(
+                "Landscape",
+                dict(PREFLIGHT),
+                equipment_choice={"choice_key": "ef_100_400_is_ii::"},
+            )
+
     def test_abort_preserves_noncomplete_journal(self):
         service = self.service()
         run = self.prepare(service)
@@ -430,7 +486,7 @@ class GuardedRunTests(unittest.TestCase):
         service.backend.write_calls.clear()
 
         run = service.prepare_guarded_run("Fireworks", dict(PREFLIGHT))["guarded_run"]
-        self.assertEqual(run["summary"]["classifications"]["physical_automatic"], 3)
+        self.assertEqual(run["summary"]["classifications"]["physical_automatic"], 2)
         self.assertEqual(run["summary"]["classifications"]["blocked_or_unsupported"], 0)
         result = service.confirm_guarded_run(run["session_id"], True)
         while result["guarded_run"]["status"] not in {"complete", "failed", "blocked"}:
@@ -443,7 +499,7 @@ class GuardedRunTests(unittest.TestCase):
         automatic = [step for step in complete["steps"] if step["classification"] == "physical_automatic"]
         self.assertTrue(all(step["status"] == "camera_verified" for step in automatic))
         self.assertTrue(all(step["physical_writes"] == 1 for step in automatic))
-        self.assertEqual(len(service.backend.write_calls), 3)
+        self.assertEqual(len(service.backend.write_calls), 2)
 
 
 if __name__ == "__main__":

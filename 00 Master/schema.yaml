@@ -34,6 +34,7 @@ field_setup my_menus item:
   settings: non-empty list of unique card setting paths colored for this tab
 
 reference_settings: optional list for card_type reference
+reference_source: optional my_menu|controls for a derived reference card; derived cards omit reference_settings
 reference_settings item:
   control: string
   assignment: string

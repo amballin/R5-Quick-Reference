@@ -63,9 +63,10 @@ def validate(root):
             if "overrides" in data:
                 issues.append(error("profiles", path, "Reference cards must not define shooting-profile overrides."))
             reference_source = data.get("reference_source")
-            if reference_source == "my_menu":
+            if reference_source in {"my_menu", "controls"}:
                 if "reference_settings" in data:
-                    issues.append(error("profiles", path, "My Menu reference rows are derived and must not be authored."))
+                    label = "My Menu" if reference_source == "my_menu" else "Camera Buttons"
+                    issues.append(error("profiles", path, f"{label} reference rows are derived and must not be authored."))
             else:
                 if reference_source is not None:
                     issues.append(error("profiles", path, f"Unknown reference_source: {reference_source}."))

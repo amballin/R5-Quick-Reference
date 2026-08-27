@@ -10,6 +10,7 @@ import yaml
 
 from asset_manager import ProjectPaths
 from baseline import merge
+from camera_control.equipment_context import interaction_effects_for_path, resolve_equipment
 from html_renderer import (
     LABEL,
     card_setting_order,
@@ -129,7 +130,14 @@ def list_profiles(paths=PATHS):
     return profiles
 
 
-def compare_profile(profile_name, properties, context_choices=None):
+def compare_profile(
+    profile_name,
+    properties,
+    context_choices=None,
+    equipment_choice=None,
+    detected_lens_name=None,
+    physical_camera=False,
+):
     context_choices = context_choices or {}
     profile_info = next((item for item in list_profiles() if item["name"] == profile_name), None)
     if profile_info is None:
@@ -139,6 +147,16 @@ def compare_profile(profile_name, properties, context_choices=None):
     baseline = _load_yaml(PATHS.baseline_file)
     merged = merge(baseline["defaults"], profile.get("overrides") or {})
     merged_fields = flatten(merged)
+    equipment_choice = equipment_choice or {}
+    equipment = resolve_equipment(
+        PATHS.root,
+        profile,
+        merged,
+        detected_lens_name=detected_lens_name,
+        selected_choice_key=equipment_choice.get("choice_key"),
+        selected_is_mode=equipment_choice.get("is_mode"),
+        physical_camera=physical_camera,
+    )
     properties_by_path = _properties_by_path(properties)
     access_config = (_load_yaml(PATHS.setting_access_file) or {}).get("setting_access") or {}
     menu_access = _saved_menu_access()
@@ -150,49 +168,62 @@ def compare_profile(profile_name, properties, context_choices=None):
         paths = [path for path in COMBINED_PATHS.get(row["key"], [row["key"]]) if path in merged_fields]
         represented.update(paths)
         items = [
+            _apply_context(
+                _compare_path(
+                    path,
+                    merged_fields[path],
+                    merged_fields,
+                    properties_by_path,
+                    context_choices,
+                ),
+                equipment,
+            )
+            for path in paths
+        ]
+        row_interactions = _unique_interactions(items)
+        card_findings.append(
+            {
+                "key": row["key"],
+                "label": row["label"],
+                "expected": items[0]["expected"] if len(items) == 1 else _display_value(row["key"], row["value"]),
+                "expected_color": value_colors.get(row["key"]),
+                "actual": _card_actual(items),
+                "actual_raw": _card_actual_raw(items),
+                "status": _combined_status(items),
+                "items": items,
+                "interactions": row_interactions,
+                "context_prompts": [
+                    item["context_prompt"] for item in items if item.get("context_prompt")
+                ],
+                "access_paths": _contextual_access_paths(
+                    items,
+                    _access_paths(paths, access_config, menu_access),
+                ),
+            }
+        )
+
+    ordered_paths = [path for path in card_setting_order(PATHS) if path in merged_fields]
+    ordered_paths.extend(sorted(set(merged_fields) - set(ordered_paths)))
+    additional_findings = []
+    for path in ordered_paths:
+        if path in represented:
+            continue
+        finding = _apply_context(
             _compare_path(
                 path,
                 merged_fields[path],
                 merged_fields,
                 properties_by_path,
                 context_choices,
-            )
-            for path in paths
-        ]
-        card_findings.append(
-            {
-                "key": row["key"],
-                "label": row["label"],
-                "expected": _display_value(row["key"], row["value"]),
-                "expected_color": value_colors.get(row["key"]),
-                "actual": _card_actual(items),
-                "actual_raw": _card_actual_raw(items),
-                "status": _combined_status(items),
-                "items": items,
-                "context_prompts": [
-                    item["context_prompt"] for item in items if item.get("context_prompt")
-                ],
-                "access_paths": _access_paths(paths, access_config, menu_access),
-            }
-        )
-
-    ordered_paths = [path for path in card_setting_order(PATHS) if path in merged_fields]
-    ordered_paths.extend(sorted(set(merged_fields) - set(ordered_paths)))
-    additional_findings = [
-        {
-            **_compare_path(
-                path,
-                merged_fields[path],
-                merged_fields,
-                properties_by_path,
-                context_choices,
             ),
-            "expected_color": value_colors.get(path),
-            "access_paths": _access_paths([path], access_config, menu_access),
-        }
-        for path in ordered_paths
-        if path not in represented
-    ]
+            equipment,
+        )
+        finding["expected_color"] = value_colors.get(path)
+        finding["access_paths"] = _contextual_access_paths(
+            [finding],
+            _access_paths([path], access_config, menu_access),
+        )
+        additional_findings.append(finding)
 
     statuses = Counter(item["status"] for item in card_findings + additional_findings)
     return {
@@ -200,6 +231,8 @@ def compare_profile(profile_name, properties, context_choices=None):
         "read_only": True,
         "write_testing_performed": False,
         "ordering": "subject_profile_card_then_additional",
+        "equipment": equipment,
+        "interactions": equipment["interactions"],
         "card_findings": card_findings,
         "additional_findings": additional_findings,
         "summary": {
@@ -208,6 +241,87 @@ def compare_profile(profile_name, properties, context_choices=None):
             "statuses": dict(sorted(statuses.items())),
         },
     }
+
+
+def _apply_context(finding, equipment):
+    path = finding["path"]
+    effects = interaction_effects_for_path(equipment.get("interactions"), path)
+    finding["interactions"] = effects
+
+    stabilization = equipment.get("stabilization") or {}
+    if path == "stabilization.image_stabilization.mode":
+        if stabilization.get("control") == "lens_mode_switch":
+            selected_mode = stabilization.get("selected_mode")
+            finding.update(
+                expected=f"Mode {selected_mode}" if selected_mode else finding["expected"],
+                actual=None,
+                actual_raw=None,
+                status="manual_confirmation_needed" if selected_mode else "conditional",
+                evidence_method="lens_capability_context",
+                reason=(
+                    f"Set IS Mode {selected_mode} on the selected lens's physical mode switch."
+                    if selected_mode
+                    else "Choose one of the selected lens's supported IS modes before evaluating this target."
+                ),
+                contextual_access_paths=[{"kind": "lens", "label": "Lens IS mode switch"}],
+            )
+        elif stabilization.get("control") == "lens_switch_automatic":
+            finding.update(
+                expected="Automatic lens behavior",
+                actual="Automatic when Lens IS is On",
+                actual_raw=None,
+                status="not_applicable",
+                evidence_method="lens_capability_context",
+                reason=stabilization["summary"],
+                contextual_access_paths=[{"kind": "lens", "label": "Lens IS On/Off switch"}],
+            )
+
+    decisive = next(
+        (effect for effect in effects if effect["behavior"] in {"inactive", "overridden"}),
+        None,
+    )
+    if decisive:
+        actual = "Inactive in this context" if decisive["behavior"] == "inactive" else "Controlled automatically by equipment"
+        finding.update(
+            actual=actual,
+            actual_raw=None,
+            status="not_applicable",
+            evidence_method="canon_feature_interaction",
+            reason=decisive["message"],
+        )
+    return finding
+
+
+def _unique_interactions(items):
+    unique = []
+    seen = set()
+    for item in items:
+        for interaction in item.get("interactions") or []:
+            key = (interaction["id"], interaction["behavior"])
+            if key in seen:
+                continue
+            seen.add(key)
+            unique.append(interaction)
+    return unique
+
+
+def _contextual_access_paths(items, default_paths):
+    contextual = [
+        route
+        for item in items
+        for route in item.get("contextual_access_paths") or []
+    ]
+    if not contextual:
+        return default_paths
+    unique = []
+    seen = set()
+    for route in contextual + default_paths:
+        key = (route.get("kind"), route.get("label"))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(route)
+    return unique
 
 
 def _load_yaml(path):

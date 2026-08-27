@@ -75,6 +75,10 @@ const elements = {
   settings: document.querySelector("#settings"),
   message: document.querySelector("#message"),
   referenceCard: document.querySelector("#reference-card"),
+  lensGuidanceGroup: document.querySelector("#lens-guidance-group"),
+  lensChoiceList: document.querySelector("#lens-choice-list"),
+  lensChoiceCount: document.querySelector("#lens-choice-count"),
+  addLensChoice: document.querySelector("#add-lens-choice"),
   profileWorkspace: document.querySelector("#profile-workspace"),
   profileSaveBar: document.querySelector("#profile-save-bar"),
   workflowSteps: [...document.querySelectorAll(".workflow-step")],
@@ -152,6 +156,8 @@ const state = {
   detail: null,
   originalOverrides: {},
   draftOverrides: {},
+  originalLensChoices: [],
+  draftLensChoices: [],
   reviewToken: null,
   discardReviewToken: null,
   restoreReviewToken: null,
@@ -630,7 +636,8 @@ function profilePayloadChanged(payload, detail = state.detail) {
     || payload.status !== (detail.metadata?.status || "Draft")
     || payload.displayCategory !== (detail.displayCategory || "subject")
     || payload.release !== Boolean(detail.metadata?.release)
-    || !equal(payload.overrides, detail.originalOverrides || {});
+    || !equal(payload.overrides, detail.originalOverrides || {})
+    || !equal(payload.lensChoices, detail.lensChoices || []);
 }
 
 function captureCurrentProfileDraft() {
@@ -1287,6 +1294,8 @@ function applyProfileDetail(detail, restoredDraft = null) {
   state.currentDraftKey = profileDraftKey(detail);
   state.originalOverrides = clone(detail.originalOverrides || {});
   state.draftOverrides = clone(restoredDraft?.payload?.overrides || state.originalOverrides);
+  state.originalLensChoices = clone(detail.lensChoices || []);
+  state.draftLensChoices = clone(restoredDraft?.payload?.lensChoices || state.originalLensChoices);
   state.reviewToken = null;
   state.discardReviewToken = null;
   elements.profileTitle.textContent = restoredDraft?.payload?.title || detail.title;
@@ -1329,6 +1338,7 @@ function render() {
   elements.settings.replaceChildren();
   elements.cardSettings.replaceChildren();
   elements.referenceCard.hidden = true;
+  elements.lensGuidanceGroup.hidden = true;
   const editable = state.detail?.editableDraft;
   elements.profileMetadata.hidden = !editable;
   elements.cardSettingsGroup.hidden = !editable;
@@ -1352,6 +1362,7 @@ function render() {
   }
   renderMetadataState();
   showMessage("");
+  renderLensChoices();
   renderProfileSettings();
   updateCounts();
 }
@@ -1381,6 +1392,183 @@ function renderProfileSettings() {
     renderSection({ ...section, settings }, elements.settings);
   }
   elements.additionalSettingsCount.textContent = `${additionalCount} ${additionalCount === 1 ? "control" : "controls"}`;
+}
+
+function renderLensChoices() {
+  const visible = Boolean(state.detail?.editableDraft)
+    && elements.displayCategoryInput.value === "subject";
+  elements.lensGuidanceGroup.hidden = !visible;
+  elements.lensChoiceList.replaceChildren();
+  if (!visible) return;
+  const catalog = state.detail.lensCatalog || [];
+  elements.lensChoiceCount.textContent = `${state.draftLensChoices.length} of 3`;
+  elements.addLensChoice.disabled = state.draftLensChoices.length >= 3 || catalog.length === 0;
+  if (!state.draftLensChoices.length) {
+    const empty = document.createElement("p");
+    empty.className = "lens-choice-empty";
+    empty.textContent = "Add at least one lens. The first choice becomes primary.";
+    elements.lensChoiceList.append(empty);
+    return;
+  }
+  state.draftLensChoices.forEach((choice, index) => {
+    const row = document.createElement("div");
+    row.className = `lens-choice-editor-row${choice.role === "primary" ? " is-primary" : ""}`;
+
+    const lensLabel = document.createElement("label");
+    lensLabel.innerHTML = "<span>Lens</span>";
+    const lensSelect = document.createElement("select");
+    for (const lens of catalog) {
+      const option = document.createElement("option");
+      option.value = lens.id;
+      option.textContent = lens.name;
+      option.selected = lens.id === choice.lensId;
+      lensSelect.append(option);
+    }
+    lensSelect.addEventListener("change", () => {
+      choice.lensId = lensSelect.value;
+      const compatible = catalog.find((lens) => lens.id === choice.lensId)?.accessories || [];
+      if (!compatible.some((accessory) => accessory.id === choice.accessoryId)) choice.accessoryId = "";
+      lensDraftChanged(true);
+    });
+    lensLabel.append(lensSelect);
+
+    const accessoryLabel = document.createElement("label");
+    accessoryLabel.innerHTML = "<span>Accessory</span>";
+    const accessorySelect = document.createElement("select");
+    const noAccessory = document.createElement("option");
+    noAccessory.value = "";
+    noAccessory.textContent = "None";
+    accessorySelect.append(noAccessory);
+    const accessories = catalog.find((lens) => lens.id === choice.lensId)?.accessories || [];
+    for (const accessory of accessories) {
+      const option = document.createElement("option");
+      option.value = accessory.id;
+      option.textContent = accessory.name;
+      option.selected = accessory.id === choice.accessoryId;
+      accessorySelect.append(option);
+    }
+    accessorySelect.disabled = accessories.length === 0;
+    accessorySelect.value = choice.accessoryId || "";
+    accessorySelect.addEventListener("change", () => {
+      choice.accessoryId = accessorySelect.value;
+      lensDraftChanged(true);
+    });
+    accessoryLabel.append(accessorySelect);
+
+    const roleLabel = document.createElement("label");
+    roleLabel.innerHTML = "<span>Role</span>";
+    const roleSelect = document.createElement("select");
+    for (const [value, label] of [["primary", "Primary"], ["alternative", "Alternative"], ["specialist", "Specialist"]]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      option.selected = value === choice.role;
+      roleSelect.append(option);
+    }
+    roleSelect.addEventListener("change", () => {
+      const wasPrimary = choice.role === "primary";
+      choice.role = roleSelect.value;
+      if (choice.role === "primary") {
+        state.draftLensChoices.forEach((item, itemIndex) => {
+          if (itemIndex !== index && item.role === "primary") item.role = "alternative";
+        });
+      } else if (wasPrimary) {
+        const replacement = state.draftLensChoices.find((_item, itemIndex) => itemIndex !== index);
+        if (replacement) replacement.role = "primary";
+        else choice.role = "primary";
+      }
+      lensDraftChanged(true);
+    });
+    roleLabel.append(roleSelect);
+
+    const order = document.createElement("div");
+    order.className = "lens-choice-order";
+    const up = document.createElement("button");
+    up.type = "button";
+    up.className = "secondary";
+    up.textContent = "↑";
+    up.title = "Move lens choice earlier";
+    up.disabled = index === 0;
+    up.addEventListener("click", () => moveLensChoice(index, index - 1));
+    const down = document.createElement("button");
+    down.type = "button";
+    down.className = "secondary";
+    down.textContent = "↓";
+    down.title = "Move lens choice later";
+    down.disabled = index === state.draftLensChoices.length - 1;
+    down.addEventListener("click", () => moveLensChoice(index, index + 1));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "secondary danger-action";
+    remove.textContent = "Remove";
+    remove.addEventListener("click", () => removeLensChoice(index));
+    order.append(up, down, remove);
+
+    const copy = document.createElement("div");
+    copy.className = "lens-choice-copy";
+    const whenLabel = document.createElement("label");
+    whenLabel.innerHTML = "<span>When to use</span>";
+    const whenInput = document.createElement("input");
+    whenInput.type = "text";
+    whenInput.maxLength = 240;
+    whenInput.value = choice.useWhen || "";
+    whenInput.addEventListener("input", () => {
+      choice.useWhen = whenInput.value;
+      lensDraftChanged(false);
+    });
+    whenLabel.append(whenInput);
+    const checkLabel = document.createElement("label");
+    checkLabel.innerHTML = "<span>Field check</span>";
+    const checkInput = document.createElement("input");
+    checkInput.type = "text";
+    checkInput.maxLength = 240;
+    checkInput.value = choice.fieldCheck || "";
+    checkInput.addEventListener("input", () => {
+      choice.fieldCheck = checkInput.value;
+      lensDraftChanged(false);
+    });
+    checkLabel.append(checkInput);
+    copy.append(whenLabel, checkLabel);
+
+    row.append(lensLabel, accessoryLabel, roleLabel, order, copy);
+    elements.lensChoiceList.append(row);
+  });
+}
+
+function lensDraftChanged(rerender) {
+  draftChanged();
+  if (rerender) renderLensChoices();
+}
+
+function moveLensChoice(from, to) {
+  if (to < 0 || to >= state.draftLensChoices.length) return;
+  const [choice] = state.draftLensChoices.splice(from, 1);
+  state.draftLensChoices.splice(to, 0, choice);
+  lensDraftChanged(true);
+}
+
+function removeLensChoice(index) {
+  const [removed] = state.draftLensChoices.splice(index, 1);
+  if (removed?.role === "primary" && state.draftLensChoices.length) {
+    state.draftLensChoices[0].role = "primary";
+  }
+  lensDraftChanged(true);
+}
+
+function addLensChoice() {
+  if (state.draftLensChoices.length >= 3) return;
+  const catalog = state.detail?.lensCatalog || [];
+  const used = new Set(state.draftLensChoices.map((choice) => `${choice.lensId}:${choice.accessoryId || ""}`));
+  const lens = catalog.find((item) => !used.has(`${item.id}:`)) || catalog[0];
+  if (!lens) return;
+  state.draftLensChoices.push({
+    lensId: lens.id,
+    accessoryId: "",
+    role: state.draftLensChoices.length ? "alternative" : "primary",
+    useWhen: "",
+    fieldCheck: "",
+  });
+  lensDraftChanged(true);
 }
 
 function renderMetadataState() {
@@ -2537,6 +2725,8 @@ function profileDraftPayload() {
     displayCategory: elements.displayCategoryInput.value,
     release: elements.releaseInput.checked,
     overrides: state.draftOverrides,
+    lensChoices: state.draftLensChoices,
+    lensGuidanceFingerprint: state.detail.lensGuidanceFingerprint,
   };
 }
 
@@ -2596,7 +2786,8 @@ async function saveReviewedProfile() {
     elements.reviewDialog.close();
     await loadProfiles(result.savedProfile);
     await loadCxFoundations(true);
-    showMessage(`Saved ${result.sourceFile}. Validation passed. Recovery backup: ${result.backup}`);
+    const savedFiles = (result.sourceFiles || [result.sourceFile]).join(" and ");
+    showMessage(`Saved ${savedFiles}. Validation passed. Recovery backup: ${result.backup}`);
   } catch (error) {
     state.reviewToken = null;
     elements.reviewDialog.close();
@@ -2838,6 +3029,7 @@ elements.reloadButton.addEventListener("click", async () => {
   showMessage("Draft discarded and original source values reloaded. No profile was saved.");
 });
 elements.previewButton.addEventListener("click", preview);
+elements.addLensChoice.addEventListener("click", addLensChoice);
 elements.returnToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 window.addEventListener("scroll", updateFloatingReturn, { passive: true });
 elements.reviewButton.addEventListener("click", reviewChanges);
@@ -2863,6 +3055,7 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
     }
     draftChanged();
     renderMetadataState();
+    if (input === elements.displayCategoryInput) renderLensChoices();
   });
   input.addEventListener("change", () => {
     if (input === elements.filenameInput && state.detail?.operation === "create") {
@@ -2872,6 +3065,7 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
     }
     draftChanged();
     renderMetadataState();
+    if (input === elements.displayCategoryInput) renderLensChoices();
   });
 }
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));

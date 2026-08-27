@@ -1,0 +1,151 @@
+schema_version: 1
+
+camera:
+  manufacturer: Canon
+  model: EOS R5
+
+profiles:
+  - card_id: d2609cc6-8056-5632-932d-45dcb4416185
+    choices:
+      - lens_id: ef_100_400_is_ii
+        role: primary
+        use_when: Normal flight and distant action
+        field_check: AF; 3 m–∞ limiter; IS Mode 3
+      - lens_id: ef_100_400_is_ii
+        accessory_id: extender_ef_1_4x
+        role: alternative
+        use_when: The bird is distant and light is strong
+        field_check: 140–560mm f/6.3–8; support if needed
+      - lens_id: rf_24_240_is
+        role: alternative
+        use_when: Birds are closer or habitat framing matters
+        field_check: IS On; stabilization mode is automatic
+
+  - card_id: 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+    choices:
+      - lens_id: ef_100_400_is_ii
+        role: primary
+        use_when: Normal perched birds and distant details
+        field_check: AF; choose limiter range; IS Mode 1
+      - lens_id: ef_100_400_is_ii
+        accessory_id: extender_ef_1_4x
+        role: alternative
+        use_when: Extra reach matters more than speed
+        field_check: 140–560mm f/6.3–8; IS Mode 1
+      - lens_id: rf_24_240_is
+        role: alternative
+        use_when: The bird is close or environmental context matters
+        field_check: IS On; stabilization mode is automatic
+
+  - card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42
+    choices:
+      - lens_id: ef_100_400_is_ii
+        role: primary
+        use_when: General wildlife and distant animals
+        field_check: Mode 3 for action; Mode 1 for resting subjects
+      - lens_id: ef_100_400_is_ii
+        accessory_id: extender_ef_1_4x
+        role: alternative
+        use_when: Wildlife is distant and light is strong
+        field_check: 140–560mm f/6.3–8; protect shutter speed
+      - lens_id: rf_24_240_is
+        role: alternative
+        use_when: Animals are close or habitat framing matters
+        field_check: IS On; stabilization mode is automatic
+
+  - card_id: 355bb069-fb1e-520f-8a4d-e992925bee0b
+    choices:
+      - lens_id: ef_100_400_is_ii
+        role: primary
+        use_when: Outdoor field action and distant subjects
+        field_check: Mode 3 for erratic action; Mode 2 for pans
+      - lens_id: rf_24_240_is
+        role: alternative
+        use_when: Action is closer or framing changes quickly
+        field_check: IS On; stabilization mode is automatic
+      - lens_id: ef_50_f14
+        role: alternative
+        use_when: Indoor or close-position action needs more light
+        field_check: No lens IS; protect shutter speed
+
+  - card_id: 24553406-f5c7-535b-9822-706b50a87dce
+    choices:
+      - lens_id: ef_50_f14
+        role: primary
+        use_when: Low light, shallow depth of field, or a simple portrait kit
+        field_check: AF; no lens IS; watch focus depth
+      - lens_id: rf_24_240_is
+        role: alternative
+        use_when: Framing flexibility matters more than maximum aperture
+        field_check: IS On; stabilization mode is automatic
+      - lens_id: ef_100_macro_is
+        role: alternative
+        use_when: Tighter portraits or close details are wanted
+        field_check: Choose the focus limiter range; Lens IS On
+
+  - card_id: 03b72e12-ee0e-5cbc-afd0-c13261db4611
+    choices:
+      - lens_id: rf_24_240_is
+        role: primary
+        use_when: One-lens walking, family, and changing subjects
+        field_check: IS On; stabilization mode is automatic
+      - lens_id: ef_50_f14
+        role: alternative
+        use_when: Low light or a smaller, simpler kit matters
+        field_check: No lens IS; raise shutter speed or ISO as needed
+      - lens_id: ef_s_10_18_is_stm
+        role: alternative
+        use_when: Ultra-wide interiors, architecture, or expansive scenes
+        field_check: Forced 1.6× crop; Lens IS On
+
+  - card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+    choices:
+      - lens_id: rf_24_240_is
+        role: primary
+        use_when: General landscape framing and a full-resolution file are priorities
+        field_check: Turn IS off on a locked tripod
+      - lens_id: ef_s_10_18_is_stm
+        role: alternative
+        use_when: An ultra-wide composition matters more than full-frame resolution
+        field_check: Forced 1.6× crop; turn IS off on a locked tripod
+      - lens_id: ef_100_400_is_ii
+        role: alternative
+        use_when: Compressing distant layers or isolating details
+        field_check: IS off on a locked tripod; Mode 1 handheld
+
+  - card_id: 48850916-669d-592f-9e3f-defc3994445e
+    choices:
+      - lens_id: ef_100_macro_is
+        role: primary
+        use_when: General macro, flowers, products, or automated focus bracketing
+        field_check: Choose AF or MF; use support for repeatable framing
+      - lens_id: mp_e_65
+        role: specialist
+        use_when: Life-size through 5× magnification is required
+        field_check: Manual focus only; focus by moving the camera or subject
+
+  - card_id: e12e4a0f-4591-5920-ab0d-6ca307aa7066
+    choices:
+      - lens_id: ef_100_macro_is
+        role: primary
+        use_when: Normal collision framing and repeatable working distance
+        field_check: Manual focus; locked tripod; Lens IS Off
+      - lens_id: mp_e_65
+        role: specialist
+        use_when: Extreme magnification of a small collision region is intentional
+        field_check: Manual focus only; rail movement; locked support
+
+  - card_id: 4c14a449-ef29-5769-a4fd-a595b0b8209d
+    choices:
+      - lens_id: rf_24_240_is
+        role: primary
+        use_when: Focal-length flexibility helps frame the show
+        field_check: Manual focus; locked tripod; Lens IS Off
+      - lens_id: ef_s_10_18_is_stm
+        role: alternative
+        use_when: The display or foreground requires an ultra-wide view
+        field_check: Forced 1.6× crop; manual focus; Lens IS Off
+      - lens_id: ef_50_f14
+        role: alternative
+        use_when: A fixed normal-angle composition fits the scene
+        field_check: Manual focus; no lens IS; locked tripod

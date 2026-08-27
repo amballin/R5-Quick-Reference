@@ -64,9 +64,11 @@ from card_identity import (
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
+from lens_guidance import load_sources as load_lens_sources
 from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
 from my_menu_colors import MyMenuColorError, load_my_menu_colors, validate_my_menu_colors
 from my_menu_reference import reference_settings as my_menu_reference_settings
+from control_reference import card_reference_settings as control_reference_settings
 from profile_loader import load_baseline, load_yaml
 from project_context import project_context_info
 from utilities import flatten
@@ -107,14 +109,18 @@ TOGGLE_SETS = (
 REFERENCE_CLASSIFICATIONS = {"Set Once", "Situational", "Ignore", "Avoid", "Unresolved"}
 PROFILE_STATUSES = {"Draft", "Review", "Final"}
 DISPLAY_CATEGORIES = {"subject", "reference"}
+LENS_ROLES = {"primary", "alternative", "specialist"}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
 EDITOR_BUILD_FILES = (
     "00 Master/application_version.yaml",
+    "00 Master/feature_interactions.yaml",
+    "00 Master/profile_lens_guidance.yaml",
     "80 Build/application_version.py",
     "controls.yaml",
     "data/canon_r5_custom_controls_current.yaml",
+    "data/stabilization_reference.yaml",
     "00 Master/my_menu.yaml",
     "00 Master/my_menu_colors.yaml",
     "10 Profiles/My Menu.yaml",
@@ -124,6 +130,9 @@ EDITOR_BUILD_FILES = (
     "80 Build/baseline_migration.py",
     "80 Build/card_identity.py",
     "80 Build/cx_route_analysis.py",
+    "80 Build/feature_interactions.py",
+    "80 Build/lens_guidance.py",
+    "80 Build/control_reference.py",
     "80 Build/html_renderer.py",
     "80 Build/my_menu_colors.py",
     "80 Build/my_menu.py",
@@ -151,6 +160,13 @@ class PrototypeError(ValueError):
 
 class ProfileConflictError(PrototypeError):
     pass
+
+
+class IndentedYamlDumper(yaml.SafeDumper):
+    """Keep canonical nested list indentation used by lens-guidance source."""
+
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
 
 
 class CameraLabLauncher:
@@ -266,6 +282,7 @@ class ProfileEditorModel:
         self.my_menu_catalog = self.option_catalog.get("my_menu") or {}
         self._validate_reference_catalog()
         self.my_menu = load_my_menu(self.paths, self._all_my_menu_item_ids())
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
         self._source_validator = source_validator or self._validate_project_sources
@@ -467,6 +484,142 @@ class ProfileEditorModel:
                 }
             )
         return sorted(items, key=lambda item: (item["cardType"] == "reference", item["title"].casefold()))
+
+    def _lens_choice_catalog(self):
+        accessories = {
+            item.get("id"): item
+            for item in self.lens_equipment.get("accessories") or []
+            if isinstance(item, dict) and item.get("id")
+        }
+        catalog = []
+        for lens in self.lens_equipment.get("lenses") or []:
+            if not isinstance(lens, dict) or not lens.get("id"):
+                continue
+            compatible = [
+                {
+                    "id": accessory_id,
+                    "name": accessory.get("name", accessory_id),
+                    "displaySuffix": accessory.get("display_suffix", ""),
+                }
+                for accessory_id, accessory in accessories.items()
+                if lens["id"] in (accessory.get("compatible_lens_ids") or [])
+            ]
+            catalog.append(
+                {
+                    "id": lens["id"],
+                    "name": lens.get("short_name") or lens.get("name") or lens["id"],
+                    "fullName": lens.get("name") or lens.get("short_name") or lens["id"],
+                    "mount": lens.get("mount"),
+                    "accessories": compatible,
+                }
+            )
+        return catalog
+
+    def _lens_choices_for_card_id(self, card_id):
+        entry = next(
+            (
+                item
+                for item in self.lens_guidance.get("profiles") or []
+                if isinstance(item, dict) and item.get("card_id") == card_id
+            ),
+            None,
+        )
+        choices = []
+        for choice in (entry or {}).get("choices") or []:
+            choices.append(
+                {
+                    "lensId": choice.get("lens_id"),
+                    "accessoryId": choice.get("accessory_id") or "",
+                    "role": choice.get("role"),
+                    "useWhen": choice.get("use_when", ""),
+                    "fieldCheck": choice.get("field_check", ""),
+                }
+            )
+        return choices
+
+    def _clean_lens_choices(self, choices, *, required):
+        if choices is None:
+            choices = []
+        if not isinstance(choices, list):
+            raise PrototypeError("Lens choices must be a list.")
+        if len(choices) > 3:
+            raise PrototypeError("A card can list at most three lens choices.")
+        if required and not choices:
+            raise PrototypeError("A subject card requires at least one lens choice.")
+        lenses = {
+            item.get("id"): item
+            for item in self.lens_equipment.get("lenses") or []
+            if isinstance(item, dict)
+        }
+        accessories = {
+            item.get("id"): item
+            for item in self.lens_equipment.get("accessories") or []
+            if isinstance(item, dict)
+        }
+        clean = []
+        seen = set()
+        for index, choice in enumerate(choices, start=1):
+            if not isinstance(choice, dict):
+                raise PrototypeError(f"Lens choice {index} must be an object.")
+            lens_id = str(choice.get("lensId") or "")
+            accessory_id = str(choice.get("accessoryId") or "")
+            role = str(choice.get("role") or "")
+            if lens_id not in lenses:
+                raise PrototypeError(f"Lens choice {index} is not in the owned-lens catalog.")
+            if role not in LENS_ROLES:
+                raise PrototypeError(f"Lens choice {index} has an invalid role.")
+            if accessory_id:
+                accessory = accessories.get(accessory_id)
+                if accessory is None or lens_id not in (accessory.get("compatible_lens_ids") or []):
+                    raise PrototypeError(f"Lens choice {index} uses an incompatible accessory.")
+            key = (lens_id, accessory_id)
+            if key in seen:
+                raise PrototypeError("The same lens and accessory combination cannot be listed twice.")
+            seen.add(key)
+            use_when = self._single_line(choice.get("useWhen"), "When to use", 240, required=True)
+            field_check = self._single_line(choice.get("fieldCheck"), "Field check", 240, required=True)
+            configured = {
+                "lens_id": lens_id,
+                "role": role,
+                "use_when": use_when,
+                "field_check": field_check,
+            }
+            if accessory_id:
+                configured["accessory_id"] = accessory_id
+            clean.append(configured)
+        if required and sum(choice["role"] == "primary" for choice in clean) != 1:
+            raise PrototypeError("A subject card requires exactly one primary lens choice.")
+        return clean
+
+    def _candidate_lens_guidance(self, profile, payload, operation, source_name):
+        display_category = payload.get("displayCategory")
+        required = display_category == "subject"
+        choices = payload.get("lensChoices")
+        if choices is None:
+            if operation == "create":
+                choices = []
+            else:
+                choices = self._lens_choices_for_card_id(self._profile(source_name).get("card_id"))
+        clean = self._clean_lens_choices(choices, required=required)
+        candidate = copy.deepcopy(self.lens_guidance)
+        profiles = list(candidate.get("profiles") or [])
+        if operation == "update" and source_name:
+            source_card_id = self._profile(source_name).get("card_id")
+            source_index = next(
+                (index for index, item in enumerate(profiles) if item.get("card_id") == source_card_id),
+                None,
+            )
+            replacement = {"card_id": profile.get("card_id"), "choices": clean}
+            if required and source_index is not None:
+                profiles[source_index] = replacement
+            elif required:
+                profiles.append(replacement)
+            elif source_index is not None:
+                profiles.pop(source_index)
+        elif required:
+            profiles.append({"card_id": profile.get("card_id"), "choices": clean})
+        candidate["profiles"] = profiles
+        return candidate
 
     def cx_foundation_detail(self, profile_name=None, assignments=None, flat_overrides=None):
         """Return global assignments and advisory fit for one shooting profile."""
@@ -1617,11 +1770,12 @@ class ProfileEditorModel:
         profile = self._profile(name)
         fingerprint = self._profile_fingerprint(name)
         if is_reference_card(profile):
-            reference_settings = (
-                my_menu_reference_settings(self.paths)
-                if profile.get("reference_source") == "my_menu"
-                else profile.get("reference_settings") or []
-            )
+            if profile.get("reference_source") == "my_menu":
+                reference_settings = my_menu_reference_settings(self.paths)
+            elif profile.get("reference_source") == "controls":
+                reference_settings = control_reference_settings(self.paths)
+            else:
+                reference_settings = profile.get("reference_settings") or []
             return {
                 "name": name,
                 "cardId": profile.get("card_id"),
@@ -1695,6 +1849,10 @@ class ProfileEditorModel:
     ):
 
         original = flatten(profile.get("overrides") or {})
+        lens_source_id = profile.get("card_id")
+        if operation == "duplicate" and source_name:
+            lens_source_id = self._profile(source_name).get("card_id")
+        lens_choices = self._lens_choices_for_card_id(lens_source_id) if operation != "create" else []
         effective = flatten(merge(self.defaults, profile.get("overrides") or {}))
         sections = []
         section_map = {}
@@ -1756,6 +1914,11 @@ class ProfileEditorModel:
             "settingOrder": [path for path in self.setting_order if path in self.default_fields],
             "cardSettingPaths": self._card_setting_paths(profile),
             "originalOverrides": original,
+            "lensChoices": lens_choices,
+            "lensCatalog": self._lens_choice_catalog(),
+            "lensGuidanceFingerprint": self._sha256(
+                (self.paths.root / "00 Master" / "profile_lens_guidance.yaml").read_bytes()
+            ),
         }
 
     def _card_setting_paths(self, profile):
@@ -1844,6 +2007,10 @@ class ProfileEditorModel:
             "operation": review["operation"],
             "targetName": review["target_name"],
             "sourceFile": f"10 Profiles/{review['target_name']}.yaml",
+            "sourceFiles": [
+                *([f"10 Profiles/{review['target_name']}.yaml"] if review["profile_changed"] else []),
+                *(["00 Master/profile_lens_guidance.yaml"] if review["guidance_changed"] else []),
+            ],
             "diff": review["diff"],
             "candidateYaml": review["candidate"].decode("utf-8"),
             "summary": review["summary"],
@@ -1859,22 +2026,40 @@ class ProfileEditorModel:
             if review is None:
                 raise ProfileConflictError("This review expired or was already used. Review the current draft again.")
             self._confirm_review_source(review)
-            self._validate_candidate(review["target_name"], review["candidate"])
+            self._validate_candidate(
+                review["target_name"], review["candidate"], review["guidance_candidate"]
+            )
             target = self._profile_path(review["target_name"])
             before = target.read_bytes() if target.exists() else None
-            backup = self._create_transaction_backup(review, before)
+            guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+            guidance_before = guidance_path.read_bytes()
+            backup = self._create_transaction_backup(review, before, guidance_before)
             try:
-                self._atomic_write(target, review["candidate"], before)
+                if review["profile_changed"]:
+                    self._atomic_write(target, review["candidate"], before)
+                if review["guidance_changed"]:
+                    self._atomic_write(
+                        guidance_path, review["guidance_candidate"], guidance_before
+                    )
                 errors = list(self._source_validator(self.paths.root))
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
                 rollback_error = None
                 try:
-                    if before is None:
-                        target.unlink(missing_ok=True)
-                    else:
-                        self._atomic_write(target, before, target.read_bytes() if target.exists() else None)
+                    if review["guidance_changed"]:
+                        self._atomic_write(
+                            guidance_path,
+                            guidance_before,
+                            guidance_path.read_bytes() if guidance_path.exists() else None,
+                        )
+                    if review["profile_changed"]:
+                        if before is None:
+                            target.unlink(missing_ok=True)
+                        else:
+                            self._atomic_write(
+                                target, before, target.read_bytes() if target.exists() else None
+                            )
                 except Exception as rollback_exc:  # pragma: no cover - catastrophic filesystem failure
                     rollback_error = rollback_exc
                 if rollback_error is not None:
@@ -1891,6 +2076,10 @@ class ProfileEditorModel:
             return {
                 "savedProfile": review["target_name"],
                 "sourceFile": f"10 Profiles/{review['target_name']}.yaml",
+                "sourceFiles": [
+                    *([f"10 Profiles/{review['target_name']}.yaml"] if review["profile_changed"] else []),
+                    *(["00 Master/profile_lens_guidance.yaml"] if review["guidance_changed"] else []),
+                ],
                 "backup": str(backup),
                 "sourceFingerprint": self._profile_fingerprint(review["target_name"]),
                 "validation": "passed",
@@ -2114,18 +2303,32 @@ class ProfileEditorModel:
             return result
 
     def preview_draft(self, payload):
-        profile, target_name, _operation, _source_name, _fingerprint = self._candidate_profile(payload)
-        return self._render_preview(target_name, profile)
+        profile, target_name, operation, source_name, _fingerprint = self._candidate_profile(payload)
+        guidance = self._candidate_lens_guidance(profile, payload, operation, source_name)
+        return self._render_preview(target_name, profile, guidance)
 
     def _prepare_review(self, payload):
         profile, target_name, operation, source_name, source_fingerprint = self._candidate_profile(payload)
         candidate = self._dump_profile(profile)
+        guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+        guidance_before = guidance_path.read_bytes()
+        guidance_source_sha256 = payload.get("lensGuidanceFingerprint")
+        if not isinstance(guidance_source_sha256, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", guidance_source_sha256
+        ):
+            raise PrototypeError("The lens-guidance source fingerprint is missing or invalid.")
+        if self._sha256(guidance_before) != guidance_source_sha256:
+            raise ProfileConflictError(
+                "Lens guidance changed after this profile was loaded. Reload the profile and review again."
+            )
+        guidance_data = self._candidate_lens_guidance(profile, payload, operation, source_name)
+        guidance_candidate = self._dump_lens_guidance(guidance_data)
         self._confirm_target_state(operation, source_name, target_name, source_fingerprint)
-        self._validate_candidate(target_name, candidate)
+        self._validate_candidate(target_name, candidate, guidance_candidate)
         target = self._profile_path(target_name)
         before = target.read_text(encoding="utf-8") if target.exists() else ""
         before_label = f"a/10 Profiles/{target_name}.yaml" if before else "/dev/null"
-        diff = "".join(
+        profile_diff = "".join(
             difflib.unified_diff(
                 before.splitlines(keepends=True),
                 candidate.decode("utf-8").splitlines(keepends=True),
@@ -2133,6 +2336,15 @@ class ProfileEditorModel:
                 tofile=f"b/10 Profiles/{target_name}.yaml",
             )
         )
+        guidance_diff = "".join(
+            difflib.unified_diff(
+                guidance_before.decode("utf-8").splitlines(keepends=True),
+                guidance_candidate.decode("utf-8").splitlines(keepends=True),
+                fromfile="a/00 Master/profile_lens_guidance.yaml",
+                tofile="b/00 Master/profile_lens_guidance.yaml",
+            )
+        )
+        diff = profile_diff + guidance_diff
         if not diff:
             raise PrototypeError("The draft does not change the selected profile.")
         return {
@@ -2144,8 +2356,17 @@ class ProfileEditorModel:
             "target_absent": not target.exists(),
             "candidate": candidate,
             "candidate_sha256": self._sha256(candidate),
+            "profile_changed": bool(profile_diff),
+            "guidance_candidate": guidance_candidate,
+            "guidance_candidate_sha256": self._sha256(guidance_candidate),
+            "guidance_source_sha256": guidance_source_sha256,
+            "guidance_changed": bool(guidance_diff),
             "diff": diff,
-            "summary": self._review_summary(operation, source_name, target_name),
+            "summary": (
+                f"Update lens choices for {target_name}."
+                if guidance_diff and not profile_diff
+                else self._review_summary(operation, source_name, target_name)
+            ),
             "effective_changes": self._effective_setting_changes(operation, source_name, profile),
         }
 
@@ -2202,6 +2423,7 @@ class ProfileEditorModel:
         if display_category not in DISPLAY_CATEGORIES:
             raise PrototypeError("Card section must be Subjects or Camera Setup & Controls.")
 
+        source_profile_snapshot = None
         if operation == "create":
             if source_name not in {None, ""} or source_fingerprint not in {None, ""}:
                 raise PrototypeError("A baseline-derived profile must not identify a source profile.")
@@ -2216,6 +2438,7 @@ class ProfileEditorModel:
             if not isinstance(source_name, str) or not source_name:
                 raise PrototypeError("The source profile is required.")
             source = copy.deepcopy(self._profile(source_name))
+            source_profile_snapshot = copy.deepcopy(source)
             if is_reference_card(source):
                 raise PrototypeError("Reference cards remain read-only.")
             if not isinstance(source_fingerprint, str) or not re.fullmatch(r"[0-9a-f]{64}", source_fingerprint):
@@ -2236,7 +2459,6 @@ class ProfileEditorModel:
                     raise PrototypeError("Profile release state must be true or false.")
                 metadata["status"] = status
                 metadata["release"] = release
-                metadata["last_updated"] = date.today()
             profile["title"] = title
             profile["inherits"] = "baseline"
             profile["overrides"] = nested_from_flat(clean_overrides)
@@ -2248,7 +2470,10 @@ class ProfileEditorModel:
             profile["subtitle"] = subtitle
         else:
             profile.pop("subtitle", None)
-        self._synchronize_profile_my_menu_cues(profile)
+        if operation != "update" or profile != source_profile_snapshot:
+            self._synchronize_profile_my_menu_cues(profile)
+        if operation == "update" and profile != source_profile_snapshot:
+            profile.setdefault("metadata", {})["last_updated"] = date.today()
         return profile, target_name, operation, source_name or None, source_fingerprint or None
 
     def _synchronize_profile_my_menu_cues(self, profile):
@@ -2303,6 +2528,13 @@ class ProfileEditorModel:
         target = self._profile_path(review["target_name"])
         if review["target_absent"] != (not target.exists()):
             raise ProfileConflictError("The target profile changed after review. Reload and review again.")
+        guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+        if self._sha256(guidance_path.read_bytes()) != review["guidance_source_sha256"]:
+            raise ProfileConflictError(
+                "Lens guidance changed after review. Reload the profile and review again."
+            )
+        if self._sha256(review["guidance_candidate"]) != review["guidance_candidate_sha256"]:
+            raise ProfileConflictError("The reviewed lens-guidance candidate is no longer valid.")
 
     def _confirm_target_state(self, operation, source_name, target_name, source_fingerprint):
         target = self._profile_path(target_name)
@@ -2317,8 +2549,8 @@ class ProfileEditorModel:
                     f"{source_name}.yaml changed after it was loaded. Reload the profile before reviewing or saving."
                 )
 
-    def _validate_candidate(self, target_name, candidate):
-        from validators import profile_validator
+    def _validate_candidate(self, target_name, candidate, guidance_candidate=None):
+        from validators import lens_guidance_validator, profile_validator
         from validators.common import load_yaml_checked
 
         with tempfile.TemporaryDirectory(prefix="profile-editor-candidate-") as temporary:
@@ -2326,6 +2558,7 @@ class ProfileEditorModel:
             (shadow / "00 Master").mkdir(parents=True)
             (shadow / "10 Profiles").mkdir()
             (shadow / "50 Field Guide").mkdir()
+            (shadow / "data").mkdir()
             for relative in (
                 "00 Master/baseline.yaml",
                 "00 Master/card_layout.yaml",
@@ -2334,6 +2567,10 @@ class ProfileEditorModel:
                 source = self.paths.root / relative
                 destination = shadow / relative
                 shutil.copy2(source, destination)
+            shutil.copy2(
+                self.paths.root / "data" / "stabilization_reference.yaml",
+                shadow / "data" / "stabilization_reference.yaml",
+            )
             for source in discover_profiles(self.paths):
                 if source.stem != target_name:
                     shutil.copy2(source, shadow / "10 Profiles" / source.name)
@@ -2346,10 +2583,19 @@ class ProfileEditorModel:
             if not isinstance(loaded, dict):
                 raise PrototypeError("Candidate profile must be a YAML mapping.")
             errors = [issue.message for issue in profile_validator.validate(shadow) if issue.level == "error"]
+            if guidance_candidate is not None:
+                (shadow / "00 Master" / "profile_lens_guidance.yaml").write_bytes(
+                    guidance_candidate
+                )
+                errors.extend(
+                    issue.message
+                    for issue in lens_guidance_validator.validate(shadow)
+                    if issue.level == "error"
+                )
             if errors:
                 raise PrototypeError("Candidate profile validation failed: " + "; ".join(errors))
 
-    def _create_transaction_backup(self, review, before):
+    def _create_transaction_backup(self, review, before, guidance_before):
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", review["target_name"]).strip("-").lower()
         base = self.paths.backups_dir / f"{timestamp}-profile-editor-{review['operation']}-{safe_name}"
@@ -2365,6 +2611,15 @@ class ProfileEditorModel:
         if before is not None:
             (before_dir / f"{review['target_name']}.yaml").write_bytes(before)
         (candidate_dir / f"{review['target_name']}.yaml").write_bytes(review["candidate"])
+        if review["guidance_changed"]:
+            guidance_before_dir = backup / "before" / "00 Master"
+            guidance_candidate_dir = backup / "candidate" / "00 Master"
+            guidance_before_dir.mkdir(parents=True)
+            guidance_candidate_dir.mkdir(parents=True)
+            (guidance_before_dir / "profile_lens_guidance.yaml").write_bytes(guidance_before)
+            (guidance_candidate_dir / "profile_lens_guidance.yaml").write_bytes(
+                review["guidance_candidate"]
+            )
         manifest = {
             "version": 1,
             "created": datetime.now().astimezone().isoformat(),
@@ -2374,6 +2629,9 @@ class ProfileEditorModel:
             "target_profile": review["target_name"],
             "target_existed": before is not None,
             "candidate_sha256": review["candidate_sha256"],
+            "lens_guidance_changed": review["guidance_changed"],
+            "lens_guidance_source_sha256": review["guidance_source_sha256"],
+            "lens_guidance_candidate_sha256": review["guidance_candidate_sha256"],
         }
         (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         return backup
@@ -2518,6 +2776,26 @@ class ProfileEditorModel:
         ).encode("utf-8")
 
     @staticmethod
+    def _dump_lens_guidance(guidance):
+        rendered = yaml.dump(
+            guidance,
+            Dumper=IndentedYamlDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            width=1000,
+            default_flow_style=False,
+        )
+        rendered = rendered.replace(
+            "schema_version: 1\ncamera:", "schema_version: 1\n\ncamera:"
+        ).replace("  model: EOS R5\nprofiles:", "  model: EOS R5\n\nprofiles:")
+        parts = rendered.split("\n  - card_id:")
+        rendered = parts[0] + "".join(
+            ("\n" if index > 1 else "") + "\n  - card_id:" + part
+            for index, part in enumerate(parts[1:], start=1)
+        )
+        return rendered.encode("utf-8")
+
+    @staticmethod
     def _new_profile_metadata(existing=None):
         version = (existing or {}).get("version", 1.0)
         return {
@@ -2529,6 +2807,7 @@ class ProfileEditorModel:
 
     def _reload_profiles(self):
         self.profiles = self._load_profiles()
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
         self.choices = self._choice_catalog()
 
     def _reload_project_data(self):
@@ -2536,6 +2815,7 @@ class ProfileEditorModel:
         self.defaults = self.baseline.get("defaults") or {}
         self.default_fields = flatten(self.defaults)
         self.profiles = self._load_profiles()
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
         self._validate_option_catalog()
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
@@ -2703,7 +2983,7 @@ class ProfileEditorModel:
         profile["overrides"] = nested
         return self._render_preview(name, profile)
 
-    def _render_preview(self, name, profile):
+    def _render_preview(self, name, profile, lens_guidance_data=None):
         merged = merge(self.defaults, profile.get("overrides") or {})
         template = self.paths.card_template.read_text(encoding="utf-8")
         html = render_card(
@@ -2714,6 +2994,8 @@ class ProfileEditorModel:
             IconManager(self.paths),
             self.baseline,
             self.paths,
+            lens_guidance_data=lens_guidance_data,
+            lens_equipment_data=self.lens_equipment,
         )
         html = self._rewrite_preview_links(html)
         output = self.paths.html_output_dir / PREVIEW_NAME

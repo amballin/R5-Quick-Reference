@@ -148,6 +148,25 @@
         <select id="profile-select"><option value="">Loading profiles…</option></select>
         <button id="compare-button" class="primary" type="button" disabled>Scan &amp; compare</button>
       </div>
+      <section id="equipment-context" class="equipment-context" hidden aria-labelledby="equipment-context-heading">
+        <div>
+          <p class="label">Equipment context</p>
+          <h3 id="equipment-context-heading">Lens-specific choices</h3>
+          <p id="equipment-context-source"></p>
+        </div>
+        <label>Lens for this comparison
+          <select id="lens-choice-select"></select>
+          <small id="lens-choice-guidance"></small>
+        </label>
+        <label id="is-mode-control">Lens IS mode
+          <select id="is-mode-select"></select>
+          <small id="is-mode-guidance"></small>
+        </label>
+        <div class="equipment-interactions">
+          <strong>What this equipment or setting combination changes</strong>
+          <ul id="equipment-interaction-list"></ul>
+        </div>
+      </section>
       <div id="comparison-results" hidden>
         <div class="comparison-toolbar">
           <label for="comparison-order">Order</label>
@@ -223,18 +242,29 @@
           <input id="guarded-current-mode" type="text" placeholder="Fv, P, Tv, Av, M, or recalled Cx">
         </label>
         <label>Lens
-          <input id="guarded-lens" type="text" required placeholder="Attached lens or None">
-          <small id="guarded-lens-source">Camera readback is used when available.</small>
+          <select id="guarded-lens" required>
+            <option value="__automatic__">Attached lens or card Primary</option>
+          </select>
+          <small id="guarded-lens-source">The attached lens is used by default; authored choices for this card are available for planning.</small>
         </label>
         <label>Flash
-          <input id="guarded-flash" type="text" required placeholder="Attached flash/trigger or None">
+          <select id="guarded-flash" required>
+            <option value="None" selected>None</option>
+            <option value="Flash Attached">Flash Attached</option>
+            <option value="Trigger">Trigger</option>
+          </select>
         </label>
         <label>Cards
-          <input id="guarded-cards" type="text" required placeholder="CFexpress/SD presence and status">
+          <select id="guarded-cards" required>
+            <option value="CFexpress &amp; SD" selected>CFexpress &amp; SD</option>
+            <option value="CFexpress">CFexpress</option>
+            <option value="SD">SD</option>
+          </select>
         </label>
         <label>Recovery backup on the camera card
           <input id="guarded-backup-filename" type="text" required value="C123_CFG.CSD">
         </label>
+        <label class="guarded-checkbox"><input id="guarded-setup-essentials-confirmed" type="checkbox"> Camera Setup Essentials is already set. Use my confirmation for matching Set &amp; Forget targets that Camera Lab cannot verify directly.</label>
         <label class="guarded-checkbox"><input id="guarded-apps-closed" type="checkbox" required> EOS Utility and every other camera-control application are closed.</label>
         <label class="guarded-checkbox"><input id="guarded-backup-confirmed" type="checkbox" required> The recorded camera-side CSD backup is recoverable.</label>
         <p class="guarded-context-note"><strong>Recovery checkpoint:</strong> <code>C123_CFG.CSD</code> contains the verified C1 Wildlife, C2 Birds in Flight, and C3 Landscape registrations. Camera Lab will not register C1–C3 or transfer this file.</p>

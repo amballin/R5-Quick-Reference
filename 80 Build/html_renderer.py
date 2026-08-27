@@ -14,6 +14,8 @@ from cx_route_analysis import (
 from my_menu import load_my_menu, used_tabs
 from my_menu_colors import load_my_menu_colors, menu_color
 from my_menu_reference import catalog_items, reference_rows as my_menu_reference_rows
+from control_reference import card_reference_rows
+from lens_guidance import compatibility_messages, resolved_choices
 
 from utilities import flatten
 
@@ -133,6 +135,10 @@ def settings_rows(profile, merged, paths=None):
             if paths is None:
                 return []
             return my_menu_reference_rows(paths)
+        if profile.get("reference_source") == "controls":
+            if paths is None:
+                return []
+            return card_reference_rows(paths)
         return [
             {
                 "key": reference_setting_key(item["control"]),
@@ -589,7 +595,17 @@ def bullets(items):
     return "<ul>" + "".join(f"<li>{item}</li>" for item in items) + "</ul>"
 
 
-def render_card(template, profile_name, profile, merged, icon_manager=None, baseline=None, paths=None):
+def render_card(
+    template,
+    profile_name,
+    profile,
+    merged,
+    icon_manager=None,
+    baseline=None,
+    paths=None,
+    lens_guidance_data=None,
+    lens_equipment_data=None,
+):
     """Replace the existing card template placeholders."""
     colors = card_colors(profile, baseline)
     return (
@@ -610,6 +626,16 @@ def render_card(template, profile_name, profile, merged, icon_manager=None, base
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
         .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths, baseline))
+        .replace(
+            "{{LENS_SECTION}}",
+            lens_choices_section(profile, paths, lens_guidance_data, lens_equipment_data),
+        )
+        .replace(
+            "{{COMPATIBILITY_SECTION}}",
+            compatibility_section(
+                profile, merged, paths, lens_guidance_data, lens_equipment_data
+            ),
+        )
         .replace("{{CHECKLIST}}", bullets(profile.get("checklist") or []))
         .replace("{{WATCH}}", bullets(profile.get("watch_for") or []))
         .replace("{{MISTAKES}}", bullets(profile.get("common_mistakes") or []))
@@ -650,6 +676,45 @@ def card_note_items(profile, paths=None, merged=None):
         href = f"{href}?return={return_target}"
         items.append(f'<a href="{href}">{escape(link["label"])}</a>')
     return items
+
+
+def lens_choices_section(profile, paths=None, guidance=None, equipment=None):
+    if paths is None:
+        return ""
+    choices = resolved_choices(
+        profile, paths.root, guidance=guidance, equipment=equipment
+    )
+    if not choices:
+        return ""
+    rendered = '<h2>Lens Choices</h2><div class="lens-choices">'
+    for choice in choices:
+        rendered += (
+            '<div class="lens-choice">'
+            '<div class="lens-choice-heading">'
+            f'<strong>{escape(choice["display_name"])}</strong>'
+            f'<span>{escape(choice["role_label"])}</span>'
+            '</div>'
+            f'<p>{escape(choice["use_when"])}</p>'
+            f'<small><strong>Check:</strong> {escape(choice["field_check"])}</small>'
+            '</div>'
+        )
+    return rendered + "</div>"
+
+
+def compatibility_section(profile, merged, paths=None, guidance=None, equipment=None):
+    if paths is None or profile.get("card_type", "profile") != "profile":
+        return ""
+    messages = compatibility_messages(
+        profile,
+        merged,
+        paths.root,
+        surface="card",
+        guidance=guidance,
+        equipment=equipment,
+    )
+    if not messages:
+        return ""
+    return "<h2>Compatibility</h2>" + bullets([escape(message) for message in messages])
 
 
 def settings_section(profile, merged, icon_manager=None, paths=None, baseline=None):

@@ -52,6 +52,7 @@ buttons:
     status: owner_confirmed
   - control: Depth-of-field preview
     assignment: One-Shot AF / Servo AF
+    operation: Changes AF Operation
     status: owner_confirmed
   - control: SET
     assignment: Eye detection

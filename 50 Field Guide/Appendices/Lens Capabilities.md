@@ -11,28 +11,30 @@ For normal stabilization, first look for physical controls on the attached lens.
 1. [Match by Subject](#match-by-subject)
 2. [Canon EF 100-400mm f/4.5-5.6L IS II USM](#canon-ef-100-400mm-f-4-5-5-6l-is-ii-usm)
 3. [Canon EF 100mm f/2.8L Macro IS USM](#canon-ef-100mm-f-2-8l-macro-is-usm)
-4. [Canon EF 50mm f/1.4 USM](#canon-ef-50mm-f-1-4-usm)
-5. [Canon Extender EF 1.4x](#canon-extender-ef-1-4x)
-6. [EF-EOS R Control Ring Adapter](#ef-eos-r-control-ring-adapter)
-7. [Crop Mode and RF-S/EF-S Lenses](#crop-mode-and-rf-s-ef-s-lenses)
-8. [Canon RF 24-240mm F4-6.3 IS USM](#canon-rf-24-240mm-f4-6-3-is-usm)
-9. [Common Mistakes](#common-mistakes)
-10. [Cross References](#cross-references)
+4. [Canon MP-E 65mm f/2.8 1-5x Macro Photo](#canon-mp-e-65mm-f-2-8-1-5x-macro-photo)
+5. [Canon EF 50mm f/1.4 USM](#canon-ef-50mm-f-1-4-usm)
+6. [Canon EF-S 10-18mm f/4.5-5.6 IS STM](#canon-ef-s-10-18mm-f-4-5-5-6-is-stm)
+7. [Canon Extender EF 1.4x](#canon-extender-ef-1-4x)
+8. [EF-EOS R Control Ring Adapter](#ef-eos-r-control-ring-adapter)
+9. [Crop Mode and RF-S/EF-S Lenses](#crop-mode-and-rf-s-ef-s-lenses)
+10. [Canon RF 24-240mm F4-6.3 IS USM](#canon-rf-24-240mm-f4-6-3-is-usm)
+11. [Common Mistakes](#common-mistakes)
+12. [Cross References](#cross-references)
 
 ## Match by Subject
 
 | Card / Subject | Best lens starting point | Support | Setup hint |
 | --- | --- | --- | --- |
-| Birds in Flight | EF 100-400L, optionally 1.4x when light is strong | Handheld or gimbal | IS Mode 3 for erratic flight; Mode 2 only for smooth panning |
-| Birds Perched | EF 100-400L, optionally 1.4x | Handheld, monopod, tripod, or gimbal | IS Mode 1 for static subjects; turn IS off on a locked tripod |
-| Wildlife | EF 100-400L, optionally 1.4x | Handheld or gimbal | Mode 3 for active animals, Mode 1 for resting animals |
-| Sports | EF 100-400L | Monopod or gimbal for long sessions | Mode 3 for erratic field action, Mode 2 for deliberate pans |
+| Birds in Flight | EF 100-400L; add 1.4x in strong light; RF 24-240 for closer/environmental views | Handheld or gimbal | IS Mode 3 for erratic flight; Mode 2 only for smooth panning |
+| Birds Perched | EF 100-400L; optional 1.4x; RF 24-240 for closer subjects | Handheld, monopod, tripod, or gimbal | IS Mode 1 for static subjects; turn IS off on a locked tripod |
+| Wildlife | EF 100-400L; optional 1.4x; RF 24-240 for close or habitat views | Handheld or gimbal | Mode 3 for active animals, Mode 1 for resting animals |
+| Sports | EF 100-400L outdoors; RF 24-240 closer; EF 50mm for nearby low-light action | Monopod or gimbal for long sessions | Mode 3 for erratic field action, Mode 2 for deliberate pans |
 | People | EF 50mm f/1.4, RF 24-240, or EF 100L Macro | Handheld | Use EF 50 for low light or shallow depth of field; use RF 24-240 for flexibility |
-| Travel | RF 24-240 or EF 50mm f/1.4 | Handheld | Use RF 24-240 as the walk-around lens; use EF 50 for low light/simple kit |
-| Landscape | RF 24-240 or EF 100-400L for compressed scenes | Tripod for careful framing | Turn stabilization off on a solid tripod |
-| Macro | EF 100L Macro | Tripod for serious close-up work | Use manual focus or careful AF; consider focus bracketing for depth |
-| Waterdrops | EF 100L Macro | Tripod required | Manual focus, controlled light, stabilization off on a locked setup |
-| Fireworks | RF 24-240, EF 50mm f/1.4, or wider lens if available | Tripod required | Manual focus, stabilization off, remote or timer release |
+| Travel | RF 24-240; EF 50mm for low light; EF-S 10-18 for ultra-wide scenes | Handheld | Remember that EF-S 10-18 forces the R5 to 1.6× crop |
+| Landscape | RF 24-240; EF-S 10-18 ultra-wide; EF 100-400L for compression | Tripod for careful framing | Turn stabilization off on a solid tripod; EF-S forces 1.6× crop |
+| Macro | EF 100L Macro; MP-E 65mm for specialist 1×–5× work | Tripod or rail for serious close-up work | The MP-E is manual-focus only and cannot use automated Focus Bracketing |
+| Waterdrops | EF 100L Macro; MP-E 65mm only for intentional extreme magnification | Tripod required | Manual focus, controlled light, stabilization off on a locked setup |
+| Fireworks | RF 24-240; EF-S 10-18 ultra-wide; EF 50mm fixed view | Tripod required | Manual focus, stabilization off, remote or timer release |
 
 ## Canon EF 100-400mm f/4.5-5.6L IS II USM
 
@@ -85,6 +87,18 @@ Use the EF-EOS R control ring adapter with this EF lens. The adapter does not ch
 
 Do not plan on using the EF 1.4x extender with the EF 100L Macro as a normal field setup. Canon EF extenders are intended for compatible telephoto lenses and are not the practical choice for this macro lens.
 
+## Canon MP-E 65mm f/2.8 1-5x Macro Photo
+
+Best for specialist life-size through 5× macro where the subject, camera, lighting, and support can be controlled. It is not the general substitute for the EF 100L Macro.
+
+The MP-E 65mm is manual-focus only. Set magnification on the lens, then establish focus by moving the camera or subject. At high magnification, use a focusing rail or other precise support, controlled lighting, and very small physical adjustments. The EOS R5 automated Focus Bracketing workflow requires autofocus lens control and is unavailable with this lens.
+
+<!-- STABILIZATION_REFERENCE: mp_e_65 -->
+
+Use the Control Ring Mount Adapter EF-EOS R. The adapter's programmable control ring remains available even though the MP-E itself is manual-focus only. The lens has no optical IS, so support and technique dominate stabilization at these magnifications.
+
+Canon references: [MP-E 65mm support](https://www.usa.canon.com/support/p/mp-e-65mm-f-2-8-1-5x-macro-photo) and [EOS R5 Focus Bracketing](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0300.html).
+
 ## Canon EF 50mm f/1.4 USM
 
 Best for people, low-light details, travel-light, casual portraits, indoor family work, and natural-light scenes.
@@ -106,6 +120,18 @@ Handheld is the normal use. Use a tripod for deliberate low-light static scenes,
 
 Use the EF-EOS R control ring adapter with this lens. Do not use the EF 1.4x extender with it; the extender is for compatible telephoto lenses, not this normal prime.
 
+## Canon EF-S 10-18mm f/4.5-5.6 IS STM
+
+Best for ultra-wide travel, interiors, architecture, foreground-heavy landscapes, and wide fireworks compositions when its crop-mode tradeoff is acceptable.
+
+<!-- STABILIZATION_REFERENCE: ef_s_10_18_is_stm -->
+
+Use the Control Ring Mount Adapter EF-EOS R. Its programmable control ring remains available for exposure compensation or another assigned field control. The lens provides an Image Stabilizer On/Off switch but no Mode 1 / 2 / 3 selector.
+
+Because this is an EF-S lens, the EOS R5 automatically forces **1.6× crop** and makes Full-frame unavailable while the lens is attached. The camera records approximately 17.3 MP at 5088×3392, and areas outside the crop are not recoverable from RAW or cRAW. Treat the lens as an intentional ultra-wide crop-mode option, not as a way to retain the R5's full-frame capture area.
+
+Canon references: [EF-S 10-18mm support](https://www.usa.canon.com/support/p/ef-s-10-18mm-f-4-5-5-6-is-stm) and [EOS R5 Still Photo Cropping/Aspect Ratio](https://cam.start.canon/en/C003/manual/html/UG-03_Shooting-1_0050.html).
+
 ## Canon Extender EF 1.4x
 
 Use the 1.4x extender only when the extra reach is worth the tradeoffs.
@@ -124,15 +150,17 @@ Use the 1.4x extender only when the extra reach is worth the tradeoffs.
 | EF 100-400mm f/4.5-5.6L IS II USM | Yes; best pairing in this kit, becomes 140-560mm f/6.3-8 |
 | EF 100mm f/2.8L Macro IS USM | No practical field use |
 | EF 50mm f/1.4 USM | No; not a compatible telephoto pairing |
+| MP-E 65mm f/2.8 1-5x Macro Photo | No; specialist macro lens, not a compatible extender pairing |
+| EF-S 10-18mm f/4.5-5.6 IS STM | No; not a compatible telephoto pairing |
 | RF 24-240mm F4-6.3 IS USM | No; RF lens, not used with EF extender |
 
 Avoid using it as an always-on accessory. Add it when the subject is distant, light is strong, and you can keep shutter speed high enough.
 
 ## EF-EOS R Control Ring Adapter
 
-Use this adapter for EF lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, and EF 50mm f/1.4 USM. It is not used with the RF 24-240mm F4-6.3 IS USM.
+Use the owned **Control Ring Mount Adapter EF-EOS R** for EF and EF-S lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, MP-E 65mm f/2.8 1-5x Macro Photo, EF 50mm f/1.4 USM, and EF-S 10-18mm f/4.5-5.6 IS STM. It is not used with the RF 24-240mm F4-6.3 IS USM.
 
-It preserves normal EF lens use and adds a programmable control ring.
+It preserves normal compatible EF/EF-S lens use and adds the programmable control ring that would otherwise be supplied by many RF lenses. The ring remains available with every adapted lens in this kit.
 
 Recommended control ring choices:
 
@@ -190,6 +218,8 @@ Do not use the EF 1.4x extender with this RF lens. It is not an EF lens and does
 - Confusing an adapted EF lens with EF-S and expecting the adapter itself to force 1.6× crop.
 - Leaving manual 1.6× crop enabled after a distant-subject session.
 - Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.
+- Forgetting that the EF-S 10-18mm forces 1.6× crop and reduces the recorded R5 image to approximately 17.3 MP.
+- Expecting autofocus or automated Focus Bracketing from the manual-focus MP-E 65mm.
 - Using the macro lens handheld when the subject really needs a tripod.
 - Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed.
 

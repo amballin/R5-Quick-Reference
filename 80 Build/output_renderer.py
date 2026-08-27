@@ -17,6 +17,7 @@ from html_renderer import (
     profile_subtitle,
     settings_rows,
 )
+from lens_guidance import compatibility_messages, resolved_choices
 
 
 DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
@@ -90,6 +91,14 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
         },
         "pdf": str(paths.pdf_output_file(profile_name)),
         "rows": rows,
+        "lens_choices": [
+            (
+                f'{choice["role_label"]} — {choice["display_name"]}: '
+                f'{choice["use_when"]}. Check: {choice["field_check"]}'
+            )
+            for choice in resolved_choices(profile, paths.root)
+        ],
+        "compatibility": compatibility_messages(profile, merged, paths.root, surface="card"),
         "checklist": _plain_text_items(profile.get("checklist") or []),
         "watch_for": _plain_text_items(profile.get("watch_for") or []),
         "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),

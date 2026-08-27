@@ -16,6 +16,7 @@ controls:
   - control: Shutter half-press
     assignment: Metering start
     status: owner_confirmed
+    notes: Does not start autofocus.
   - control: AF-ON
     assignment: Metering and AF start
     status: owner_confirmed
@@ -39,8 +40,10 @@ controls:
   - control: Lens AF button
     assignment: AF Off
     status: owner_confirmed
+    notes: Stops AF while the lens button is used.
   - control: Depth-of-field preview
     assignment: One-Shot AF / Servo AF
+    operation: Changes AF Operation
     status: owner_confirmed
   - control: SET
     assignment: Eye detection
@@ -50,15 +53,19 @@ controls:
     assignment: Direct AF point selection
     operation: Move the AF point directly; press straight in to recenter it
     status: owner_confirmed
+    notes: During Face + Tracking adjustment, selects among detected faces or eyes; additional observed Face Select behavior is pending physical verification.
   - control: Movie Record
     assignment: Leave default
     status: owner_confirmed
+    notes: No custom assignment in this architecture.
   - control: MODE
     assignment: Leave default
     status: owner_confirmed
+    notes: No custom assignment in this architecture.
   - control: LCD panel illumination
     assignment: Leave default
     status: owner_confirmed
+    notes: No custom assignment in this architecture.
   - control: M-Fn
     assignment: Switch to Custom shooting mode
     operation: Press repeatedly to switch among C1, C2, and C3
@@ -69,15 +76,19 @@ dials:
   - control: Main Dial
     assignment: Shutter Speed
     status: owner_confirmed
+    notes: Direct exposure control.
   - control: Rear Wheel
     assignment: Aperture
     status: owner_confirmed
+    notes: Direct exposure control.
   - control: Top Rear Dial
     assignment: ISO Speed
     status: owner_confirmed
+    notes: Direct exposure control.
   - control: Control Ring
     assignment: Exposure Compensation
     status: owner_confirmed
+    notes: In Manual exposure, compensation requires Auto ISO.
 
 custom_shooting_modes:
   architecture: Complete shooting configurations within the baseline-plus-overrides system

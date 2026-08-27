@@ -52,6 +52,14 @@ const elements = {
   comparisonPanel: document.querySelector("#comparison-panel"),
   profileSelect: document.querySelector("#profile-select"),
   compareButton: document.querySelector("#compare-button"),
+  equipmentContext: document.querySelector("#equipment-context"),
+  equipmentContextSource: document.querySelector("#equipment-context-source"),
+  lensChoiceSelect: document.querySelector("#lens-choice-select"),
+  lensChoiceGuidance: document.querySelector("#lens-choice-guidance"),
+  isModeControl: document.querySelector("#is-mode-control"),
+  isModeSelect: document.querySelector("#is-mode-select"),
+  isModeGuidance: document.querySelector("#is-mode-guidance"),
+  equipmentInteractionList: document.querySelector("#equipment-interaction-list"),
   comparisonResults: document.querySelector("#comparison-results"),
   comparisonSummary: document.querySelector("#comparison-summary"),
   comparisonOrder: document.querySelector("#comparison-order"),
@@ -103,6 +111,7 @@ const elements = {
   guardedFlash: document.querySelector("#guarded-flash"),
   guardedCards: document.querySelector("#guarded-cards"),
   guardedBackupFilename: document.querySelector("#guarded-backup-filename"),
+  guardedSetupEssentialsConfirmed: document.querySelector("#guarded-setup-essentials-confirmed"),
   guardedAppsClosed: document.querySelector("#guarded-apps-closed"),
   guardedBackupConfirmed: document.querySelector("#guarded-backup-confirmed"),
   guardedPlanButton: document.querySelector("#guarded-plan-button"),
@@ -150,6 +159,7 @@ let requestPending = false;
 let cameraLabStopped = false;
 let statusPollId = null;
 let contextSelections = {};
+let equipmentSelection = { choiceKey: "", isMode: "" };
 let requestedBackendMode = null;
 let requestedPhysicalWriteMode = null;
 let guardedRunState = null;
@@ -183,9 +193,15 @@ function cameraContextKey() {
 function activeChecklistRecord(create = false) {
   if (!comparisonState) return null;
   const profileName = comparisonState.profile.name || elements.profileSelect.value;
-  const recordKey = `${cameraContextKey()}|${profileName}`;
+  const equipment = comparisonState.equipment || {};
+  const equipmentKey = [
+    equipment.selected_lens_id || "unresolved-lens",
+    equipment.selected_accessory_id || "no-accessory",
+    equipment.stabilization?.selected_mode || equipment.stabilization?.control || "unresolved-is",
+  ].join("|");
+  const recordKey = `${cameraContextKey()}|${profileName}|${equipmentKey}`;
   if (!checklistState.profiles[recordKey] && create) {
-    checklistState.profiles[recordKey] = { profile: profileName, camera_context: cameraContextKey(), confirmations: {}, last_scan_at: null };
+    checklistState.profiles[recordKey] = { profile: profileName, camera_context: cameraContextKey(), equipment_context: equipmentKey, confirmations: {}, last_scan_at: null };
   }
   return checklistState.profiles[recordKey] || null;
 }
@@ -244,6 +260,9 @@ function sharedManualContext() {
       still_movie_context: saved.still_movie_context,
       flash: saved.flash,
       cards: saved.cards,
+      selected_lens_id: comparisonState?.equipment?.selected_lens_id || "",
+      selected_accessory_id: comparisonState?.equipment?.selected_accessory_id || "",
+      selected_is_mode: comparisonState?.equipment?.stabilization?.selected_mode || "",
     };
   } catch (_error) {
     return null;
@@ -846,6 +865,17 @@ function findingRow(finding, cardRow = false) {
   expectedValue.textContent = finding.expected;
   if (finding.expected_color) expectedValue.style.color = finding.expected_color;
   expected.append(title, expectedValue);
+  const interactions = finding.interactions || [];
+  if (interactions.length) {
+    const interactionList = document.createElement("ul");
+    interactionList.className = "finding-interactions";
+    for (const interaction of interactions) {
+      const item = document.createElement("li");
+      item.textContent = `${interaction.behavior}: ${interaction.message}`;
+      interactionList.append(item);
+    }
+    expected.append(interactionList);
+  }
   const contextPrompt = contextPromptForFinding(finding);
   if (contextPrompt) {
     const contextControl = document.createElement("label");
@@ -1063,11 +1093,13 @@ function renderComparisonTables() {
 
 function renderComparison(comparison, { recordScan = false } = {}) {
   comparisonState = comparison;
+  renderEquipmentContext(comparison.equipment);
   const record = activeChecklistRecord(true);
   if (recordScan) record.last_scan_at = new Date().toISOString();
   saveChecklistState();
   elements.comparisonResults.hidden = false;
-  elements.comparisonSummary.textContent = `${comparison.profile.display_title || comparison.profile.title}: ${comparison.summary.card_rows} card rows followed by ${comparison.summary.additional_settings} additional settings. Camera settings were not changed.`;
+  const equipmentName = comparison.equipment?.selected_lens_name || "unresolved lens";
+  elements.comparisonSummary.textContent = `${comparison.profile.display_title || comparison.profile.title} with ${equipmentName}: ${comparison.summary.card_rows} card rows followed by ${comparison.summary.additional_settings} additional settings. Camera settings were not changed.`;
   renderComparisonTables();
   renderChecklistSummary();
   elements.compareStep.classList.remove("locked");
@@ -1075,6 +1107,84 @@ function renderComparison(comparison, { recordScan = false } = {}) {
   const guardedAvailable = statusState?.backend_mode === "simulated" || statusState?.physical_guarded_runs;
   elements.prepareGuardedButton.hidden = !guardedAvailable;
   elements.configureStep.classList.toggle("locked", !guardedAvailable);
+}
+
+function renderEquipmentContext(equipment) {
+  if (!equipment) {
+    elements.equipmentContext.hidden = true;
+    return;
+  }
+  elements.equipmentContext.hidden = false;
+  const detected = equipment.detected_lens_name;
+  if (equipment.planning_override) {
+    elements.equipmentContextSource.textContent = `Planning override: ${equipment.selected_lens_name}. The connected camera reports ${detected}; a physical guarded run will require the planned lens to be attached.`;
+    elements.equipmentContext.classList.add("equipment-warning");
+  } else if (equipment.selection_source === "camera_readback") {
+    elements.equipmentContextSource.textContent = `Using the camera-reported attached lens: ${detected}.`;
+    elements.equipmentContext.classList.remove("equipment-warning");
+  } else if (equipment.selection_source === "profile_primary") {
+    elements.equipmentContextSource.textContent = `No authored camera lens match is available, so planning defaults to the card's Primary lens: ${equipment.selected_lens_name}.`;
+    elements.equipmentContext.classList.remove("equipment-warning");
+  } else {
+    elements.equipmentContextSource.textContent = equipment.selected_lens_name
+      ? `Using ${equipment.selected_lens_name} for this comparison.`
+      : "Choose or connect a recognized lens to resolve equipment-dependent settings.";
+    elements.equipmentContext.classList.remove("equipment-warning");
+  }
+
+  const automatic = document.createElement("option");
+  automatic.value = "";
+  const primaryChoice = (equipment.options || []).find((item) => item.role === "primary");
+  automatic.textContent = equipment.detected_lens_recognized
+    ? `Automatic — camera reports ${detected}`
+    : `Automatic — card Primary (${primaryChoice?.display_name || "unresolved"})`;
+  elements.lensChoiceSelect.replaceChildren(
+    automatic,
+    ...(equipment.options || []).map((item) => {
+      const option = document.createElement("option");
+      option.value = item.key;
+      option.textContent = `${item.display_name} — ${item.role_label}`;
+      return option;
+    })
+  );
+  elements.lensChoiceSelect.value = equipmentSelection.choiceKey || "";
+  const guidance = equipment.selected_guidance;
+  elements.lensChoiceGuidance.textContent = guidance
+    ? `${guidance.use_when}. Field check: ${guidance.field_check}.`
+    : "The attached lens is not an authored choice for this card.";
+
+  const stabilization = equipment.stabilization || {};
+  const modes = stabilization.supported_modes || [];
+  elements.isModeControl.hidden = !modes.length;
+  if (modes.length) {
+    const profileDefault = document.createElement("option");
+    profileDefault.value = "";
+    profileDefault.textContent = stabilization.profile_mode
+      ? `Profile default — Mode ${stabilization.profile_mode}`
+      : "Choose a supported mode";
+    elements.isModeSelect.replaceChildren(
+      profileDefault,
+      ...modes.map((mode) => {
+        const option = document.createElement("option");
+        option.value = String(mode.value);
+        option.textContent = `Mode ${mode.value} — ${mode.purpose}`;
+        return option;
+      })
+    );
+    elements.isModeSelect.value = equipmentSelection.isMode || "";
+  }
+  elements.isModeGuidance.textContent = stabilization.mode_override
+    ? `${stabilization.summary} Override active: Mode ${stabilization.selected_mode} replaces the profile default Mode ${stabilization.profile_mode} for this comparison.`
+    : stabilization.summary || "";
+
+  const interactions = equipment.interactions || [];
+  elements.equipmentInteractionList.replaceChildren(
+    ...(interactions.length ? interactions : [{message: "No additional conditional rules are active."}]).map((interaction) => {
+      const item = document.createElement("li");
+      item.textContent = interaction.message;
+      return item;
+    })
+  );
 }
 
 const guardedClassificationLabels = {
@@ -1203,13 +1313,17 @@ function openGuardedPreflight() {
   elements.guardedCameraIdentity.textContent = `${valueOrUnavailable(statusState.camera?.product_name)} · ${valueOrUnavailable(statusState.camera?.body_id)}`;
   elements.guardedCameraFirmware.textContent = valueOrUnavailable(statusState.camera?.firmware_version);
   elements.guardedCameraPower.textContent = powerStatus(statusState.camera?.battery_raw);
-  restoreGuardedPreflight();
-  const cameraLens = String(statusState.camera?.lens_name || "").trim();
-  elements.guardedLens.value = cameraLens;
-  elements.guardedLens.readOnly = Boolean(cameraLens);
-  elements.guardedLensSource.textContent = cameraLens
-    ? "Read directly from the connected camera; this value overrides manual entry."
-    : "The camera did not report a lens. Enter the attached lens or None and confirm it manually.";
+  if (guardedRunState && ["planned", "confirmed", "in_progress"].includes(guardedRunState.status)) {
+    syncGuardedPreflightFromRun(guardedRunState);
+    if (["confirmed", "in_progress"].includes(guardedRunState.status)) {
+      setMessage("The readiness choices are locked to this active Apply plan. Stop applying and create a new review to change them.", "info");
+    }
+    elements.guardedRunPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  setGuardedReadinessLocked(false);
+  const restoredPreflight = restoreGuardedPreflight();
+  populateGuardedLensOptions(restoredPreflight?.lens_choice);
   if (!elements.guardedCurrentMode.value) elements.guardedCurrentMode.value = comparisonCurrentMode();
   elements.configureStep.classList.remove("locked");
   elements.configureStep.classList.add("active");
@@ -1217,9 +1331,69 @@ function openGuardedPreflight() {
   elements.guardedRunPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function populateGuardedLensOptions(preferredValue = null, equipmentOverride = null) {
+  const equipment = equipmentOverride || comparisonState?.equipment || {};
+  const cameraLens = String(statusState?.camera?.lens_name || "").trim();
+  const automatic = document.createElement("option");
+  automatic.value = "__automatic__";
+  automatic.dataset.lensName = cameraLens || equipment.selected_lens_name || "None";
+  automatic.textContent = cameraLens
+    ? `Attached — ${cameraLens}`
+    : `Card Primary — ${equipment.selected_lens_name || "None"}`;
+  const choices = (equipment.options || []).map((item) => {
+    const option = document.createElement("option");
+    option.value = item.key;
+    option.dataset.lensName = item.display_name;
+    option.textContent = `${item.display_name} — ${item.role_label}`;
+    return option;
+  });
+  elements.guardedLens.replaceChildren(automatic, ...choices);
+  const requested = preferredValue || (cameraLens ? "__automatic__" : equipmentSelection.choiceKey || "__automatic__");
+  elements.guardedLens.value = [...elements.guardedLens.options].some((option) => option.value === requested)
+    ? requested
+    : "__automatic__";
+  elements.guardedLensSource.textContent = cameraLens
+    ? "The camera-reported attached lens is selected by default. Choose another authored card lens only to plan for changing lenses; physical Apply requires that lens to be attached and rescanned."
+      : "The card's Primary lens is selected by default. Choose another authored lens for this card when planning requires it.";
+}
+
+function guardedReadinessControls() {
+  return [
+    elements.guardedStillMovie,
+    elements.guardedCurrentMode,
+    elements.guardedLens,
+    elements.guardedFlash,
+    elements.guardedCards,
+    elements.guardedBackupFilename,
+    elements.guardedSetupEssentialsConfirmed,
+    elements.guardedAppsClosed,
+    elements.guardedBackupConfirmed,
+  ];
+}
+
+function setGuardedReadinessLocked(locked) {
+  for (const control of guardedReadinessControls()) control.disabled = locked;
+}
+
+function syncGuardedPreflightFromRun(run) {
+  const preflight = run.preflight || {};
+  const preferredLens = preflight.lens_choice || (preflight.lens_source === "camera_readback" ? "__automatic__" : null);
+  populateGuardedLensOptions(preferredLens, run.equipment);
+  elements.guardedStillMovie.value = preflight.still_movie_context || "still";
+  elements.guardedCurrentMode.value = preflight.current_mode || "";
+  elements.guardedFlash.value = preflight.flash || "None";
+  elements.guardedCards.value = preflight.cards || "CFexpress & SD";
+  elements.guardedBackupFilename.value = preflight.backup_filename || "C123_CFG.CSD";
+  elements.guardedSetupEssentialsConfirmed.checked = preflight.camera_setup_essentials_confirmed === true;
+  elements.guardedAppsClosed.checked = preflight.applications_closed === true;
+  elements.guardedBackupConfirmed.checked = preflight.camera_backup_confirmed === true;
+  setGuardedReadinessLocked(run.status !== "planned");
+}
+
 function renderGuardedRun(payload) {
   guardedRunState = payload.guarded_run;
   const run = guardedRunState;
+  syncGuardedPreflightFromRun(run);
   syncWriteQualificationToReview();
   const summary = run.summary || {};
   const counts = summary.classifications || {};
@@ -1339,16 +1513,29 @@ function renderGuardedRun(payload) {
 }
 
 function guardedPreflightPayload() {
+  const selectedLens = elements.guardedLens.selectedOptions[0];
   return {
     still_movie_context: elements.guardedStillMovie.value,
     current_mode: elements.guardedCurrentMode.value,
-    lens: elements.guardedLens.value,
+    lens: selectedLens?.dataset.lensName || "None",
+    lens_choice: elements.guardedLens.value,
     flash: elements.guardedFlash.value,
     cards: elements.guardedCards.value,
+    camera_setup_essentials_confirmed: elements.guardedSetupEssentialsConfirmed.checked,
     applications_closed: elements.guardedAppsClosed.checked,
     camera_backup_confirmed: elements.guardedBackupConfirmed.checked,
     backup_filename: elements.guardedBackupFilename.value,
   };
+}
+
+function selectedEquipmentPayload() {
+  const payload = {};
+  const guardedChoice = !elements.guardedRunPanel.hidden
+    ? (elements.guardedLens.value === "__automatic__" ? "" : elements.guardedLens.value)
+    : equipmentSelection.choiceKey;
+  if (guardedChoice) payload.choice_key = guardedChoice;
+  if (equipmentSelection.isMode) payload.is_mode = equipmentSelection.isMode;
+  return payload;
 }
 
 function guardedPreflightStorageKey() {
@@ -1371,20 +1558,22 @@ function persistGuardedPreflight() {
 
 function restoreGuardedPreflight() {
   const key = guardedPreflightStorageKey();
-  if (!key) return;
+  if (!key) return null;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(key) || "null");
-    if (!saved) return;
+    if (!saved) return null;
     elements.guardedStillMovie.value = saved.still_movie_context || "still";
     elements.guardedCurrentMode.value = saved.current_mode || "";
-    if (!statusState?.camera?.lens_name) elements.guardedLens.value = saved.lens || "";
-    elements.guardedFlash.value = saved.flash || "";
-    elements.guardedCards.value = saved.cards || "";
+    elements.guardedFlash.value = saved.flash || "None";
+    elements.guardedCards.value = saved.cards || "CFexpress & SD";
+    elements.guardedSetupEssentialsConfirmed.checked = saved.camera_setup_essentials_confirmed === true;
     elements.guardedAppsClosed.checked = saved.applications_closed === true;
     elements.guardedBackupConfirmed.checked = saved.camera_backup_confirmed === true;
     elements.guardedBackupFilename.value = saved.backup_filename || "C123_CFG.CSD";
+    return saved;
   } catch (_error) {
     // Ignore unavailable or invalid session-only convenience state.
+    return null;
   }
 }
 
@@ -1394,6 +1583,7 @@ async function prepareGuardedRun() {
     body: JSON.stringify({
       profile: comparisonState.profile.name,
       context_choices: contextSelections,
+      equipment_choice: selectedEquipmentPayload(),
       preflight: guardedPreflightPayload(),
     }),
   });
@@ -1607,7 +1797,9 @@ function openCxChecklist(profileName) {
   if (!option) return;
   elements.profileSelect.value = profileName;
   contextSelections = {};
+  equipmentSelection = { choiceKey: "", isMode: "" };
   comparisonState = null;
+  elements.equipmentContext.hidden = true;
   elements.comparisonResults.hidden = true;
   setBusy(requestPending);
   elements.comparisonPanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1778,6 +1970,8 @@ async function compareSelectedProfile({ recordScan = false } = {}) {
   for (const [path, choice] of Object.entries(contextSelections)) {
     query.append("context", `${path}|${choice}`);
   }
+  if (equipmentSelection.choiceKey) query.set("lens_choice", equipmentSelection.choiceKey);
+  if (equipmentSelection.isMode) query.set("is_mode", equipmentSelection.isMode);
   const manualContext = sharedManualContext();
   if (manualContext) query.set("manual_context", JSON.stringify(manualContext));
   const result = await request(`/api/camera-control/comparison?${query.toString()}`);
@@ -1826,10 +2020,26 @@ elements.scanButton.addEventListener("click", () => runAction(scanAndCompare));
 
 elements.profileSelect.addEventListener("change", () => {
   contextSelections = {};
+  equipmentSelection = { choiceKey: "", isMode: "" };
   comparisonState = null;
+  elements.equipmentContext.hidden = true;
   elements.comparisonResults.hidden = true;
   elements.prepareGuardedButton.hidden = true;
   setBusy(requestPending);
+  if (elements.profileSelect.value && (statusState?.connected || statusState?.reconnect_available)) {
+    runAction(scanAndCompare);
+  }
+});
+
+elements.lensChoiceSelect.addEventListener("change", () => {
+  equipmentSelection.choiceKey = elements.lensChoiceSelect.value;
+  equipmentSelection.isMode = "";
+  runAction(compareSelectedProfile);
+});
+
+elements.isModeSelect.addEventListener("change", () => {
+  equipmentSelection.isMode = elements.isModeSelect.value;
+  runAction(compareSelectedProfile);
 });
 
 elements.cxSlotCards.addEventListener("click", (event) => {
@@ -1839,8 +2049,23 @@ elements.cxSlotCards.addEventListener("click", (event) => {
 
 elements.compareButton.addEventListener("click", () => runAction(scanAndCompare));
 elements.prepareGuardedButton.addEventListener("click", openGuardedPreflight);
+elements.guardedLens.addEventListener("change", () => {
+  const selected = elements.guardedLens.value;
+  equipmentSelection.choiceKey = selected === "__automatic__" ? "" : selected;
+  equipmentSelection.isMode = "";
+  runAction(async () => {
+    await compareSelectedProfile();
+    populateGuardedLensOptions(selected);
+    if (guardedRunState?.status === "planned") await prepareGuardedRun();
+  });
+});
 elements.guardedPreflightForm.addEventListener("input", persistGuardedPreflight);
-elements.guardedPreflightForm.addEventListener("change", persistGuardedPreflight);
+elements.guardedPreflightForm.addEventListener("change", (event) => {
+  persistGuardedPreflight();
+  if (event.target !== elements.guardedLens && guardedRunState?.status === "planned") {
+    runAction(prepareGuardedRun);
+  }
+});
 elements.guardedPreflightForm.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!elements.guardedPreflightForm.reportValidity()) return;

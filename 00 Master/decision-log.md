@@ -2,6 +2,55 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Lens-Aware Camera Lab Context and Conditional Availability
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Resolve Camera Lab equipment through the same canonical profile lens guidance, owned-equipment catalog, and structured Canon feature-interaction rules used elsewhere in the project. Match a recognized camera-reported lens automatically in physical mode; when no recognized attached-lens match exists, default planning to the card's Primary lens. Permit another authored lens/accessory choice as an explicitly labelled planning override, but never let that choice contradict camera readback during physical guarded execution.
+
+Derive stabilization controls from the selected lens rather than from the profile target alone. Offer only catalogued physical modes, use the merged profile Mode 1 / 2 / 3 target as the default when the lens supports it, and permit deliberate override only among supported modes. Treat a profile mode as not applicable when an IS lens has only automatic stabilization behavior, and retain the EOS R5 body route when the lens has no optical IS.
+
+Apply every matching `camera_lab` rule from the canonical feature-interaction catalog to the affected comparison findings. Make inactive and equipment-overridden settings no-action rows; retain explicit behavior and guidance for restrictions, replacement controls, coordinated or automatic operation, and newly available controls. Persist the reviewed equipment and mode context in guarded-run journals, reject a physical planning-lens mismatch or unrecognized camera-reported lens, and keep operator-confirmed accessories distinct from camera-read evidence.
+
+## Field-Card Lens Choices and Dedicated Compatibility
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Make the field cards self-contained without depending on portable Camera Lab access. Add a Lens Choices section immediately after Settings and a dedicated Compatibility section before Checklist. Map each subject card by immutable card ID to one primary and up to two alternative or specialist choices from the owner's EF 100–400mm, EF 100mm Macro, MP-E 65mm, RF 24–240mm, EF 50mm, and EF-S 10–18mm kit, plus the compatible EF 1.4× Extender. Treat these as recommended field options, never as evidence of what is attached.
+
+Use the owned Control Ring Mount Adapter EF-EOS R for every adapted EF or EF-S option and explicitly retain its programmable control-ring availability. Resolve lens names, mounts, stabilization controls, adapter/accessory relationships, and Canon sources from the structured equipment catalog. Evaluate structured Compatibility rules once for the profile and separately for each recommended lens/accessory context, then de-duplicate the resulting guidance. Include MP-E manual-focus and automated-bracketing limits, EF-S forced 1.6× crop, extender tradeoffs, and relevant stabilization behavior.
+
+Keep Lens Choices and Compatibility out of profile YAML. Use the same renderer for generated cards and Profile Editor previews. In the desktop editor, fit the preview iframe inside the available sticky-panel height so its complete independently scrollable card is not clipped below the panel.
+
+## Structured Canon Feature Interactions
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Store reviewed Canon feature interactions and conditional menu behavior in `00 Master/feature_interactions.yaml`. Require each rule to declare explicit conditions, effects, evidence classification, user-facing guidance, intended surfaces, and Canon sources. Evaluate rules through one shared repository module rather than duplicating compatibility logic in cards or browser applications.
+
+The first release covers manual-focus AF inactivity, AF-method requirements for Subject Detection and Eye Detection, High Speed Display drive/shutter context, the Focus Bracketing flash restriction, and lens/body stabilization control and coordination. Cards and Profile Editor previews surface only rules that can be resolved from merged profile settings. Lens-dependent rules require explicit equipment context and remain inactive when that context is unavailable; no consumer may guess the attached lens, switch state, flash, or another missing physical condition. This structured guidance does not change profile targets, camera-write authorization, or evidence of current camera state.
+
+## Reject Deprecated Registered-AF Workflow Terminology
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Reject retired registered-AF operating language in active profiles, control records, Field Guides, workflows, and verification sources. This includes **Switch to registered AF function**, registered-AF behavior/function/override wording, AF presets, and **Register/Recall Shooting Function** when presented as the operating workflow. Direct authors to the current constant-control model: AF-ON temporarily selects Face + Tracking, AE Lock temporarily selects 1-Point AF, both maintain AF Operation and Servo AF characteristics, and C1-C3 are complete registered shooting environments.
+
+Permit those terms only in governance/history or a literal official-Canon reference that is clearly outside active operating guidance. Enforce the boundary in source-only and full validation so retired instructions cannot re-enter generated cards or guides.
+
+## Canonical Generated Control References
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Use `controls.yaml` as the canonical content source for the concise Camera Buttons assignments and for the complete controls and dials tables repeated in the Custom Controls current-configuration appendix and Custom Controls & Menus Deep Dive. Camera Buttons declares `reference_source: controls` and does not author duplicate `reference_settings`. The appendix renderer expands explicit control-table markers in memory, leaving surrounding educational and evidence-boundary prose authored in Markdown.
+
+Keep display-label normalization, concise-card omissions, and table formatting in the build system rather than profile YAML. Preserve the separate current-configuration evidence record and its existing agreement validation because it serves an evidence role rather than a presentation-table role. Validation must require the derived Camera Buttons source, both table markers in each governed guide, successful expansion, and complete canonical control and assignment coverage.
+
 ## Operator-Facing Apply Profile Workflow
 
 **Status:** Accepted
@@ -843,6 +892,17 @@ The existing `python build.py Fireworks` single-profile behavior remains documen
 **Superseded by:** Documentation Governance Consolidation (2026-07-11)
 
 The proposal anticipated permanent architecture, profile, asset, and build documentation. The accepted consolidation implements and expands that documentation set.
+
+## Profile Editor Lens-Choice Authoring
+
+**Status:** Accepted
+**Date:** 2026-08-27
+
+Add subject-card lens-choice authoring to the existing Profiles workspace without redesigning the field card. The editor presents only the owned equipment catalog, permits one to three ordered lens/accessory combinations, requires exactly one Primary choice, permits Alternative and Specialist roles, and edits the concise When to use and Field check text. Accessory selection is constrained by the structured equipment compatibility catalog.
+
+Keep lens guidance in `00 Master/profile_lens_guidance.yaml`, keyed by immutable card identity, rather than adding equipment recommendations to profile YAML. Treat lens choices as part of the browser's ordinary profile draft: they invalidate preview, block Camera Lab launch until saved or discarded, and drive both Lens Choices and Compatibility in the temporary preview. A reviewed save fingerprints and validates the profile plus lens-guidance candidates together, shows one exact multi-file diff, backs up prior and candidate bytes, writes only changed sources atomically, and restores every written source on failure.
+
+Retain the portable tracker upgrader and any Camera Lab-to-tracker evidence importer only as future demand-driven ideas. Camera Lab evidence remains machine-local and does not automatically update the Setup & Verification Tracker.
 
 ## Card Visual Format
 

@@ -51,29 +51,11 @@ The physical layout is shared across the baseline and all subject profiles. The 
 
 ### Controls
 
-| Physical control | Assignment | INFO details or operation |
-|---|---|---|
-| **Shutter half-press** | **Metering start** | Does not start autofocus. |
-| **AF-ON** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **Face + Tracking**; Servo AF characteristics: **Maintain current setting**. |
-| **AE Lock** | **Metering and AF start** | AF Operation: **Maintain current setting**; AF Method: **1-Point AF**; Servo AF characteristics: **Maintain current setting**; uses the last 1-Point position. |
-| **AF Point Selection** | **AF point selection** | Use the **Main Dial** to change the selection; with Face + Tracking active, INFO toggles Eye detection. |
-| **Lens AF button** | **AF Off** | Stops AF while the lens button is used. |
-| **DOF button** | **One-Shot AF ↔ Servo AF** | Changes AF Operation. |
-| **SET** | **Eye detection** | Toggles the stored state when the active AF method supports Eye detection; no effect with 1-Point AF or Spot AF. |
-| **Joystick** | **Direct AF point selection** | Moves the AF point or starting position; during Face + Tracking adjustment, selects among detected faces or eyes. Straight press centers in Canon's documented AF-point workflow; additional observed Face Select behavior is pending the physical test. |
-| **Movie Record button** | **Leave default** | No custom assignment in this architecture. |
-| **MODE button** | **Leave default** | No custom assignment in this architecture. |
-| **LCD panel illumination button** | **Leave default** | No custom assignment in this architecture. |
-| **M-Fn** | **Switch to Custom shooting mode** | Press repeatedly to switch among C1, C2, and C3. |
+<!-- CONTROL_REFERENCE_TABLE: controls -->
 
 ### Dials and Control Ring
 
-| Physical control | Assignment | Operation |
-|---|---|---|
-| **Main Dial** | **Shutter Speed** | Direct exposure control. |
-| **Rear Wheel** | **Aperture** | Direct exposure control. |
-| **Top Rear Dial** | **ISO Speed** | Direct exposure control. |
-| **Control Ring** | **Exposure Compensation** | In Manual exposure, compensation requires Auto ISO. |
+<!-- CONTROL_REFERENCE_TABLE: dials -->
 
 ## Recommended Field Flow
 

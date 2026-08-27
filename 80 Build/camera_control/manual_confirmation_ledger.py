@@ -32,7 +32,14 @@ class ManualConfirmationLedger:
         payload = self._load()
         confirmations = payload["confirmations"]
         camera = self._camera_scope(run.get("camera") or {})
-        context = self._context_scope(run.get("preflight") or {}, current_mode)
+        context_source = dict(run.get("preflight") or {})
+        equipment = run.get("equipment") or {}
+        context_source.update(
+            selected_lens_id=equipment.get("selected_lens_id"),
+            selected_accessory_id=equipment.get("selected_accessory_id"),
+            selected_is_mode=(equipment.get("stabilization") or {}).get("selected_mode"),
+        )
+        context = self._context_scope(context_source, current_mode)
         for step in steps:
             if step.get("status") not in {"manual_user_confirmed", "camera_verified"}:
                 continue
@@ -115,6 +122,9 @@ class ManualConfirmationLedger:
             "current_mode": _text(current_mode),
             "flash": _text(context.get("flash")),
             "cards": _text(context.get("cards")),
+            "selected_lens_id": _text(context.get("selected_lens_id")),
+            "selected_accessory_id": _text(context.get("selected_accessory_id")),
+            "selected_is_mode": _text(context.get("selected_is_mode")),
         }
 
     def _load(self):

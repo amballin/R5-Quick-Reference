@@ -9,36 +9,10 @@ subtitle: Confirmed Layout + Approved Target
 display_category: reference
 display_order: 10
 card_type: reference
+reference_source: controls
 card:
   icons:
     left: camera_default
-reference_settings:
-  - control: Shutter button half-press
-    assignment: Metering start
-  - control: AF-ON button
-    assignment: Metering and AF start (Face + Tracking)
-  - control: AE Lock button
-    assignment: Metering and AF start (1-Point AF override; remembers last point position)
-  - control: AF Point Selection button
-    assignment: AF point selection; Main Dial changes selection; INFO toggles Eye detection when available
-  - control: Lens AF button
-    assignment: AF Off
-  - control: SET button
-    assignment: Eye detection toggle when supported by the active AF method
-  - control: DOF button
-    assignment: One-Shot AF ↔ Servo AF
-  - control: Joystick
-    assignment: Direct AF point selection; press straight in to recenter
-  - control: Main Dial
-    assignment: Shutter Speed
-  - control: Rear Wheel
-    assignment: Aperture
-  - control: Top Rear Dial
-    assignment: ISO Speed
-  - control: Control Ring
-    assignment: Exposure Compensation
-  - control: M-Fn button
-    assignment: Switch to Custom shooting mode (C1 → C2 → C3)
 checklist:
   - Practice back-button AF before a critical shoot.
   - Use SET to choose eye priority before AF-ON when Face + Tracking is active.

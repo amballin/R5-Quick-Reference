@@ -1,3 +1,8 @@
+from collections import Counter
+import re
+
+from control_reference import CONTROL_TABLE_PATTERN, card_reference_rows, inject_control_tables
+
 from .common import error, load_yaml_checked
 
 
@@ -13,6 +18,19 @@ DEPRECATED_SETTING_VALUES = {
     "One Shot AF": "One-Shot AF",
     "Single Shooting": "Single Shot",
 }
+
+DEPRECATED_AF_WORKFLOW_PATTERN = re.compile(
+    r"\bregistered[- ]AF\b|"
+    r"\bAF presets?\b|"
+    r"\bregister\s*/\s*recall shooting func(?:tion|\.)?\b",
+    re.IGNORECASE,
+)
+
+DEPRECATED_AF_REPLACEMENT = (
+    "Use the current control model: AF-ON temporarily selects Face + Tracking, "
+    "AE Lock temporarily selects 1-Point AF, both maintain AF Operation and Servo AF "
+    "characteristics, and C1-C3 are complete registered shooting environments."
+)
 
 
 def validate(root):
@@ -100,6 +118,56 @@ def validate(root):
             )
 
     issues.extend(_canonical_setting_issues(root))
+    issues.extend(_deprecated_af_workflow_issues(root))
+    issues.extend(_derived_reference_issues(root, project))
+    return issues
+
+
+def _derived_reference_issues(root, project):
+    issues = []
+    card_path = root / "10 Profiles" / "Camera Buttons.yaml"
+    try:
+        card = load_yaml_checked(card_path) or {}
+        if card.get("reference_source") != "controls":
+            issues.append(error("controls", card_path, "Camera Buttons must derive its rows from controls.yaml."))
+        if "reference_settings" in card:
+            issues.append(error("controls", card_path, "Derived Camera Buttons rows must not be authored in profile YAML."))
+        if not card_reference_rows(root):
+            issues.append(error("controls", card_path, "Canonical control data produced no Camera Buttons rows."))
+    except Exception as exc:
+        issues.append(error("controls", card_path, f"Derived Camera Buttons readiness failed: {exc}"))
+
+    markdown_paths = (
+        root / "50 Field Guide" / "Appendices" / "Canon EOS R5 Custom Controls Current Configuration.md",
+        root / "50 Field Guide" / "Setting Deep Dives" / "Custom Controls & Menus, Back-Button AF & Dial Strategies.md",
+    )
+    expected = Counter({"controls": 1, "dials": 1})
+    for path in markdown_paths:
+        try:
+            source = path.read_text(encoding="utf-8")
+            markers = Counter(item.casefold() for item in CONTROL_TABLE_PATTERN.findall(source))
+            if markers != expected:
+                issues.append(
+                    error(
+                        "controls",
+                        path,
+                        "Canonical control references require exactly one controls marker and one dials marker.",
+                    )
+                )
+                continue
+            rendered = inject_control_tables(source, root)
+            if CONTROL_TABLE_PATTERN.search(rendered):
+                issues.append(error("controls", path, "Canonical control-table marker was not expanded."))
+            for group in ("controls", "dials"):
+                for entry in project.get(group) or []:
+                    control = entry.get("control") if isinstance(entry, dict) else None
+                    assignment = entry.get("assignment") if isinstance(entry, dict) else None
+                    if control and control not in rendered:
+                        issues.append(error("controls", path, f"Generated table is missing control: {control}"))
+                    if assignment and assignment not in rendered:
+                        issues.append(error("controls", path, f"Generated table is missing assignment: {assignment}"))
+        except Exception as exc:
+            issues.append(error("controls", path, f"Canonical control-table generation failed: {exc}"))
     return issues
 
 
@@ -173,6 +241,47 @@ def _canonical_setting_issues(root):
             replacement = DEPRECATED_SETTING_VALUES.get(value)
             if replacement:
                 issues.append(error("controls", path, f"Use canonical setting value {replacement!r}, not {value!r}."))
+    return issues
+
+
+def _deprecated_af_workflow_issues(root):
+    """Reject retired registered-AF operating language in active user-facing sources."""
+    issues = []
+    excluded = {
+        root / "50 Field Guide" / "Appendices" / "Canon EOS R5 Official Icon Reference.md",
+    }
+    paths = [
+        root / "controls.yaml",
+        root / "data" / "canon_r5_custom_controls_current.yaml",
+    ]
+    for directory, patterns in (
+        (root / "10 Profiles", ("*.yaml",)),
+        (root / "50 Field Guide", ("*.md",)),
+        (root / "WORKFLOWS", ("*.md",)),
+        (root / "90 Testing", ("*.md", "*.yaml")),
+    ):
+        for pattern in patterns:
+            paths.extend(directory.rglob(pattern))
+
+    for path in sorted(set(paths)):
+        if path in excluded or not path.is_file():
+            continue
+        try:
+            source = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            issues.append(error("controls", path, f"Could not inspect AF terminology: {exc}"))
+            continue
+        for line_number, line in enumerate(source.splitlines(), start=1):
+            match = DEPRECATED_AF_WORKFLOW_PATTERN.search(line)
+            if match:
+                issues.append(
+                    error(
+                        "controls",
+                        path,
+                        f"Line {line_number} uses deprecated AF workflow terminology "
+                        f"{match.group(0)!r}. {DEPRECATED_AF_REPLACEMENT}",
+                    )
+                )
     return issues
 
 

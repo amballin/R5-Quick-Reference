@@ -432,12 +432,15 @@ class CameraControlService:
             "coverage": capability_coverage(),
         }
 
-    def _build_comparison(self, profile_name, context_choices=None):
+    def _build_comparison(self, profile_name, context_choices=None, equipment_choice=None):
         try:
             return build_profile_comparison(
                 profile_name,
                 self.capabilities["properties"],
                 context_choices=context_choices,
+                equipment_choice=equipment_choice,
+                detected_lens_name=(self.camera or {}).get("lens_name"),
+                physical_camera=self.backend_mode == "edsdk",
             )
         except ValueError as exc:
             raise CameraSessionError(str(exc)) from exc
@@ -456,11 +459,22 @@ class CameraControlService:
             "flash": str(context.get("flash") or "").strip(),
             "cards": str(context.get("cards") or "").strip(),
             "current_mode": self._current_mode(),
+            "selected_lens_id": str(context.get("selected_lens_id") or "").strip(),
+            "selected_accessory_id": str(context.get("selected_accessory_id") or "").strip(),
+            "selected_is_mode": str(context.get("selected_is_mode") or "").strip(),
         }
-        return cleaned if all(cleaned.values()) else None
+        required = ("still_movie_context", "flash", "cards", "current_mode")
+        return cleaned if all(cleaned[key] for key in required) else None
 
     def _annotate_manual_confirmations(self, comparison, context):
-        scoped_context = self._manual_confirmation_context(context)
+        effective_context = dict(context or {})
+        equipment = comparison.get("equipment") or {}
+        effective_context.update(
+            selected_lens_id=equipment.get("selected_lens_id"),
+            selected_accessory_id=equipment.get("selected_accessory_id"),
+            selected_is_mode=(equipment.get("stabilization") or {}).get("selected_mode"),
+        )
+        scoped_context = self._manual_confirmation_context(effective_context)
         if not scoped_context or not self.camera_session_id:
             return comparison
         for finding in comparison["card_findings"] + comparison["additional_findings"]:
@@ -490,12 +504,18 @@ class CameraControlService:
                 }
         return comparison
 
-    def compare_profile(self, profile_name, context_choices=None, manual_confirmation_context=None):
+    def compare_profile(
+        self,
+        profile_name,
+        context_choices=None,
+        manual_confirmation_context=None,
+        equipment_choice=None,
+    ):
         with self.lock:
             status = self.status(check_connection=True)
             if not status["connected"] or self.capabilities is None:
                 raise CameraSessionError("Connect the EOS R5 and scan capabilities before comparing a profile.")
-            comparison = self._build_comparison(profile_name, context_choices)
+            comparison = self._build_comparison(profile_name, context_choices, equipment_choice)
             comparison = self._annotate_manual_confirmations(comparison, manual_confirmation_context)
             self._event("profile_comparison", f"Compared {comparison['profile']['title']} without changing the camera.")
             return {"ok": True, **comparison}
@@ -517,9 +537,9 @@ class CameraControlService:
             self._event("manual_confirmation_revoked", f"Removed {removed} shared manual confirmation(s).")
             return {"ok": True, "removed": removed}
 
-    def prepare_guarded_run(self, profile_name, preflight, context_choices=None):
+    def prepare_guarded_run(self, profile_name, preflight, context_choices=None, equipment_choice=None):
         with self.lock:
-            result = self.guarded_runs.prepare(profile_name, preflight, context_choices)
+            result = self.guarded_runs.prepare(profile_name, preflight, context_choices, equipment_choice)
             self._event("guarded_plan", f"Prepared a {self.backend_mode} guarded run for {profile_name}.")
             return result
 

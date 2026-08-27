@@ -13,6 +13,7 @@ from validators.common import load_yaml_checked
 from generated_output import clean_generated_tree, mirror_tree
 from html_renderer import shared_header_icon_path
 from my_menu_colors import load_my_menu_colors, menu_color
+from control_reference import inject_control_tables
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
 
 
@@ -71,6 +72,7 @@ def render_appendices(paths, include_pdf=False):
             title = entry.get("title") or source.stem
             markdown = source.read_text(encoding="utf-8", errors="replace")
             markdown = _inject_stabilization_references(markdown, paths)
+            markdown = inject_control_tables(markdown, paths)
             html_path = html_stage_dir / f"{source.stem}.html"
             final_html_path = html_dir / html_path.name
             published_html_path = paths.merged_build_output_dir / "appendices" / html_path.name

@@ -8,29 +8,11 @@ The previous custom-control screenshots (`IMG_6335`–`IMG_6340`) are retired hi
 
 ## Owner-Confirmed Buttons and Controls
 
-| Physical control | Assignment | INFO details or operation |
-|---|---|---|
-| Shutter half-press | Metering start | — |
-| AF-ON | Metering and AF start | AF Operation: Maintain current setting; AF Method: Face + Tracking; Servo AF characteristics: Maintain current setting |
-| AE Lock | Metering and AF start | AF Operation: Maintain current setting; AF Method: 1-Point AF; Servo AF characteristics: Maintain current setting; uses the last 1-Point position |
-| AF Point Selection | AF point selection | Use Main Dial to change selection; when Face + Tracking is active, INFO toggles Eye detection |
-| Lens AF button | AF Off | — |
-| Depth-of-field preview | One-Shot AF / Servo AF | Toggles AF operation |
-| SET | Eye detection | Toggles the stored Eye detection state when supported by the active AF method; no effect with 1-Point AF or Spot AF |
-| Joystick | Direct AF point selection | Move the AF point directly; press straight in to recenter it |
-| Movie Record | Leave default | — |
-| MODE | Leave default | — |
-| LCD panel illumination | Leave default | — |
-| M-Fn | Switch to Custom shooting mode | Press repeatedly to switch among C1, C2, and C3; assignment and switching behavior physically verified |
+<!-- CONTROL_REFERENCE_TABLE: controls -->
 
 ## Owner-Confirmed Dials and Control Ring
 
-| Physical control | Assignment |
-|---|---|
-| Main Dial | Shutter Speed |
-| Rear Wheel | Aperture |
-| Top Rear Dial | ISO Speed |
-| Control Ring | Exposure Compensation |
+<!-- CONTROL_REFERENCE_TABLE: dials -->
 
 The project uses these plain-language control names. Numbered quick-dial terminology is intentionally avoided.
 

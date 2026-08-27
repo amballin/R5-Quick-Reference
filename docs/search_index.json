@@ -429,7 +429,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "index",
-    "text": "1. Match by Subject\n2. Canon EF 100-400mm f/4.5-5.6L IS II USM\n3. Canon EF 100mm f/2.8L Macro IS USM\n4. Canon EF 50mm f/1.4 USM\n5. Canon Extender EF 1.4x\n6. EF-EOS R Control Ring Adapter\n7. Crop Mode and RF-S/EF-S Lenses\n8. Canon RF 24-240mm F4-6.3 IS USM\n9. Common Mistakes\n10. Cross References"
+    "text": "1. Match by Subject\n2. Canon EF 100-400mm f/4.5-5.6L IS II USM\n3. Canon EF 100mm f/2.8L Macro IS USM\n4. Canon MP-E 65mm f/2.8 1-5x Macro Photo\n5. Canon EF 50mm f/1.4 USM\n6. Canon EF-S 10-18mm f/4.5-5.6 IS STM\n7. Canon Extender EF 1.4x\n8. EF-EOS R Control Ring Adapter\n9. Crop Mode and RF-S/EF-S Lenses\n10. Canon RF 24-240mm F4-6.3 IS USM\n11. Common Mistakes\n12. Cross References"
   },
   {
     "appendix_id": "lens_settings",
@@ -438,7 +438,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "match-by-subject",
-    "text": "  Card / Subject   Best lens starting point   Support   Setup hint  \n  ---   ---   ---   ---  \n  Birds in Flight   EF 100-400L, optionally 1.4x when light is strong   Handheld or gimbal   IS Mode 3 for erratic flight; Mode 2 only for smooth panning  \n  Birds Perched   EF 100-400L, optionally 1.4x   Handheld, monopod, tripod, or gimbal   IS Mode 1 for static subjects; turn IS off on a locked tripod  \n  Wildlife   EF 100-400L, optionally 1.4x   Handheld or gimbal   Mode 3 for active animals, Mode 1 for resting animals  \n  Sports   EF 100-400L   Monopod or gimbal for long sessions   Mode 3 for erratic field action, Mode 2 for deliberate pans  \n  People   EF 50mm f/1.4, RF 24-240, or EF 100L Macro   Handheld   Use EF 50 for low light or shallow depth of field; use RF 24-240 for flexibility  \n  Travel   RF 24-240 or EF 50mm f/1.4   Handheld   Use RF 24-240 as the walk-around lens; use EF 50 for low light/simple kit  \n  Landscape   RF 24-240 or EF 100-400L for compressed scenes   Tripod for careful framing   Turn stabilization off on a solid tripod  \n  Macro   EF 100L Macro   Tripod for serious close-up work   Use manual focus or careful AF; consider focus bracketing for depth  \n  Waterdrops   EF 100L Macro   Tripod required   Manual focus, controlled light, stabilization off on a locked setup  \n  Fireworks   RF 24-240, EF 50mm f/1.4, or wider lens if available   Tripod required   Manual focus, stabilization off, remote or timer release  "
+    "text": "  Card / Subject   Best lens starting point   Support   Setup hint  \n  ---   ---   ---   ---  \n  Birds in Flight   EF 100-400L; add 1.4x in strong light; RF 24-240 for closer/environmental views   Handheld or gimbal   IS Mode 3 for erratic flight; Mode 2 only for smooth panning  \n  Birds Perched   EF 100-400L; optional 1.4x; RF 24-240 for closer subjects   Handheld, monopod, tripod, or gimbal   IS Mode 1 for static subjects; turn IS off on a locked tripod  \n  Wildlife   EF 100-400L; optional 1.4x; RF 24-240 for close or habitat views   Handheld or gimbal   Mode 3 for active animals, Mode 1 for resting animals  \n  Sports   EF 100-400L outdoors; RF 24-240 closer; EF 50mm for nearby low-light action   Monopod or gimbal for long sessions   Mode 3 for erratic field action, Mode 2 for deliberate pans  \n  People   EF 50mm f/1.4, RF 24-240, or EF 100L Macro   Handheld   Use EF 50 for low light or shallow depth of field; use RF 24-240 for flexibility  \n  Travel   RF 24-240; EF 50mm for low light; EF-S 10-18 for ultra-wide scenes   Handheld   Remember that EF-S 10-18 forces the R5 to 1.6\u00d7 crop  \n  Landscape   RF 24-240; EF-S 10-18 ultra-wide; EF 100-400L for compression   Tripod for careful framing   Turn stabilization off on a solid tripod; EF-S forces 1.6\u00d7 crop  \n  Macro   EF 100L Macro; MP-E 65mm for specialist 1\u00d7\u20135\u00d7 work   Tripod or rail for serious close-up work   The MP-E is manual-focus only and cannot use automated Focus Bracketing  \n  Waterdrops   EF 100L Macro; MP-E 65mm only for intentional extreme magnification   Tripod required   Manual focus, controlled light, stabilization off on a locked setup  \n  Fireworks   RF 24-240; EF-S 10-18 ultra-wide; EF 50mm fixed view   Tripod required   Manual focus, stabilization off, remote or timer release  "
   },
   {
     "appendix_id": "lens_settings",
@@ -533,6 +533,24 @@
   {
     "appendix_id": "lens_settings",
     "title": "Lens Capabilities",
+    "section": "Canon MP-E 65mm f/2.8 1-5x Macro Photo",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "canon-mp-e-65mm-f-2-8-1-5x-macro-photo",
+    "text": "Best for specialist life-size through 5\u00d7 macro where the subject, camera, lighting, and support can be controlled. It is not the general substitute for the EF 100L Macro.\nThe MP-E 65mm is manual-focus only. Set magnification on the lens, then establish focus by moving the camera or subject. At high magnification, use a focusing rail or other precise support, controlled lighting, and very small physical adjustments. The EOS R5 automated Focus Bracketing workflow requires autofocus lens control and is unavailable with this lens."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon MP-E 65mm f/2.8 1-5\u00d7 Macro Photo",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-mp-e-65mm-f-2-8-1-5-macro-photo",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   No  \n  **IS switch**   Not present  \n  **IS mode switch**   Not present  \n  **Control**   No lens stabilization control  \n  **Camera interaction**   The lens has no optical IS. It is manual-focus only and changes magnification from 1\u00d7 to 5\u00d7; use camera/body support appropriate to the magnification.  \n  **Canon sources**   Canon MP-E 65mm f/2.8 1-5\u00d7 Macro Photo Support; Canon EOS R5 Advanced User Guide \u2014 Focus Bracketing  \nUse the Control Ring Mount Adapter EF-EOS R. The adapter's programmable control ring remains available even though the MP-E itself is manual-focus only. The lens has no optical IS, so support and technique dominate stabilization at these magnifications.\nCanon references: MP-E 65mm support and EOS R5 Focus Bracketing."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
     "section": "Canon EF 50mm f/1.4 USM",
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
@@ -578,6 +596,24 @@
   {
     "appendix_id": "lens_settings",
     "title": "Lens Capabilities",
+    "section": "Canon EF-S 10-18mm f/4.5-5.6 IS STM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "canon-ef-s-10-18mm-f-4-5-5-6-is-stm",
+    "text": "Best for ultra-wide travel, interiors, architecture, foreground-heavy landscapes, and wide fireworks compositions when its crop-mode tradeoff is acceptable."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
+    "section": "Image Stabilization Controls \u2014 Canon EF-S 10-18mm f/4.5-5.6 IS STM",
+    "source": "Appendices/Lens Capabilities.md",
+    "html": "appendices/Lens Capabilities.html",
+    "anchor": "image-stabilization-controls-canon-ef-s-10-18mm-f-4-5-5-6-is-stm",
+    "text": "  Control   Documented behavior  \n  ---   ---  \n  **Optical IS**   Yes  \n  **IS switch**   On / Off  \n  **IS mode switch**   Not present  \n  **Control**   Lens Image Stabilizer On/Off switch; no Mode 1 / 2 / 3 selector  \n  **Camera interaction**   Use the lens IS switch. When adapted to the EOS R5, this EF-S lens forces 1.6\u00d7 crop and the Full-frame option is unavailable.  \n  **Canon-specific note**   The EOS R5 records the 1.6\u00d7 center area at approximately 17.3 MP; image area outside the crop is not recorded, including in RAW or cRAW.  \n  **Canon sources**   Canon EF-S 10-18mm f/4.5-5.6 IS STM Support; Canon EOS R5 Advanced User Guide \u2014 Still Photo Cropping/Aspect Ratio  \nUse the Control Ring Mount Adapter EF-EOS R. Its programmable control ring remains available for exposure compensation or another assigned field control. The lens provides an Image Stabilizer On/Off switch but no Mode 1 / 2 / 3 selector.\nBecause this is an EF-S lens, the EOS R5 automatically forces **1.6\u00d7 crop** and makes Full-frame unavailable while the lens is attached. The camera records approximately 17.3 MP at 5088\u00d73392, and areas outside the crop are not recoverable from RAW or cRAW. Treat the lens as an intentional ultra-wide crop-mode option, not as a way to retain the R5's full-frame capture area.\nCanon references: EF-S 10-18mm support and EOS R5 Still Photo Cropping/Aspect Ratio."
+  },
+  {
+    "appendix_id": "lens_settings",
+    "title": "Lens Capabilities",
     "section": "Canon Extender EF 1.4x",
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
@@ -591,7 +627,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "compatibility-in-this-kit",
-    "text": "  Owned lens   1.4x use  \n  ---   ---  \n  EF 100-400mm f/4.5-5.6L IS II USM   Yes; best pairing in this kit, becomes 140-560mm f/6.3-8  \n  EF 100mm f/2.8L Macro IS USM   No practical field use  \n  EF 50mm f/1.4 USM   No; not a compatible telephoto pairing  \n  RF 24-240mm F4-6.3 IS USM   No; RF lens, not used with EF extender  \nAvoid using it as an always-on accessory. Add it when the subject is distant, light is strong, and you can keep shutter speed high enough."
+    "text": "  Owned lens   1.4x use  \n  ---   ---  \n  EF 100-400mm f/4.5-5.6L IS II USM   Yes; best pairing in this kit, becomes 140-560mm f/6.3-8  \n  EF 100mm f/2.8L Macro IS USM   No practical field use  \n  EF 50mm f/1.4 USM   No; not a compatible telephoto pairing  \n  MP-E 65mm f/2.8 1-5x Macro Photo   No; specialist macro lens, not a compatible extender pairing  \n  EF-S 10-18mm f/4.5-5.6 IS STM   No; not a compatible telephoto pairing  \n  RF 24-240mm F4-6.3 IS USM   No; RF lens, not used with EF extender  \nAvoid using it as an always-on accessory. Add it when the subject is distant, light is strong, and you can keep shutter speed high enough."
   },
   {
     "appendix_id": "lens_settings",
@@ -600,7 +636,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "ef-eos-r-control-ring-adapter",
-    "text": "Use this adapter for EF lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, and EF 50mm f/1.4 USM. It is not used with the RF 24-240mm F4-6.3 IS USM.\nIt preserves normal EF lens use and adds a programmable control ring.\nRecommended control ring choices:\n  Control ring assignment   Why use it  \n  ---   ---  \n  Exposure compensation   Fast field correction for birds, wildlife, people, and travel  \n  ISO   Useful in Manual exposure when shutter and aperture are already occupied  \n  Aperture   Useful for Av or Manual when you want lens-like aperture control  \nFor this system, exposure compensation is the strongest default recommendation because many profiles already rely on exposure compensation decisions in changing light."
+    "text": "Use the owned **Control Ring Mount Adapter EF-EOS R** for EF and EF-S lenses on the R5: EF 100-400mm f/4.5-5.6L IS II USM, EF 100mm f/2.8L Macro IS USM, MP-E 65mm f/2.8 1-5x Macro Photo, EF 50mm f/1.4 USM, and EF-S 10-18mm f/4.5-5.6 IS STM. It is not used with the RF 24-240mm F4-6.3 IS USM.\nIt preserves normal compatible EF/EF-S lens use and adds the programmable control ring that would otherwise be supplied by many RF lenses. The ring remains available with every adapted lens in this kit.\nRecommended control ring choices:\n  Control ring assignment   Why use it  \n  ---   ---  \n  Exposure compensation   Fast field correction for birds, wildlife, people, and travel  \n  ISO   Useful in Manual exposure when shutter and aperture are already occupied  \n  Aperture   Useful for Av or Manual when you want lens-like aperture control  \nFor this system, exposure compensation is the strongest default recommendation because many profiles already rely on exposure compensation decisions in changing light."
   },
   {
     "appendix_id": "lens_settings",
@@ -663,7 +699,7 @@
     "source": "Appendices/Lens Capabilities.md",
     "html": "appendices/Lens Capabilities.html",
     "anchor": "common-mistakes",
-    "text": "- Leaving IS on for locked tripod long exposures.\n- Leaving Mode 2 on after a panning session.\n- Using the 1.4x extender when light is too low for a clean shutter speed.\n- Forgetting that the EF control ring adapter changes controls, not optics.\n- Confusing an adapted EF lens with EF-S and expecting the adapter itself to force 1.6\u00d7 crop.\n- Leaving manual 1.6\u00d7 crop enabled after a distant-subject session.\n- Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.\n- Using the macro lens handheld when the subject really needs a tripod.\n- Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed."
+    "text": "- Leaving IS on for locked tripod long exposures.\n- Leaving Mode 2 on after a panning session.\n- Using the 1.4x extender when light is too low for a clean shutter speed.\n- Forgetting that the EF control ring adapter changes controls, not optics.\n- Confusing an adapted EF lens with EF-S and expecting the adapter itself to force 1.6\u00d7 crop.\n- Leaving manual 1.6\u00d7 crop enabled after a distant-subject session.\n- Forgetting the EF 50mm has no stabilization and needs shutter speed, ISO, or tripod support in low light.\n- Forgetting that the EF-S 10-18mm forces 1.6\u00d7 crop and reduces the recorded R5 image to approximately 17.3 MP.\n- Expecting autofocus or automated Focus Bracketing from the manual-focus MP-E 65mm.\n- Using the macro lens handheld when the subject really needs a tripod.\n- Carrying the EF 100-400L with the zoom touch adjustment too loose, then finding the focal length changed."
   },
   {
     "appendix_id": "lens_settings",
@@ -1158,7 +1194,7 @@
     "source": "Setting Deep Dives/Custom Controls & Menus, Back-Button AF & Dial Strategies.md",
     "html": "appendices/Custom Controls & Menus, Back-Button AF & Dial Strategies.html",
     "anchor": "controls",
-    "text": "  Physical control   Assignment   INFO details or operation  \n --- --- --- \n  **Shutter half-press**   **Metering start**   Does not start autofocus.  \n  **AF-ON**   **Metering and AF start**   AF Operation: **Maintain current setting**; AF Method: **Face + Tracking**; Servo AF characteristics: **Maintain current setting**.  \n  **AE Lock**   **Metering and AF start**   AF Operation: **Maintain current setting**; AF Method: **1-Point AF**; Servo AF characteristics: **Maintain current setting**; uses the last 1-Point position.  \n  **AF Point Selection**   **AF point selection**   Use the **Main Dial** to change the selection; with Face + Tracking active, INFO toggles Eye detection.  \n  **Lens AF button**   **AF Off**   Stops AF while the lens button is used.  \n  **DOF button**   **One-Shot AF \u2194 Servo AF**   Changes AF Operation.  \n  **SET**   **Eye detection**   Toggles the stored state when the active AF method supports Eye detection; no effect with 1-Point AF or Spot AF.  \n  **Joystick**   **Direct AF point selection**   Moves the AF point or starting position; during Face + Tracking adjustment, selects among detected faces or eyes. Straight press centers in Canon's documented AF-point workflow; additional observed Face Select behavior is pending the physical test.  \n  **Movie Record button**   **Leave default**   No custom assignment in this architecture.  \n  **MODE button**   **Leave default**   No custom assignment in this architecture.  \n  **LCD panel illumination button**   **Leave default**   No custom assignment in this architecture.  \n  **M-Fn**   **Switch to Custom shooting mode**   Press repeatedly to switch among C1, C2, and C3.  "
+    "text": "  Physical control   Assignment   INFO details or operation  \n --- --- --- \n  Shutter half-press   Metering start   Does not start autofocus  \n  AF-ON   Metering and AF start   AF Operation: Maintain current setting; AF Method: Face + Tracking; Servo AF characteristics: Maintain current setting; Uses the stored Eye detection state, including a state changed with the SET button  \n  AE Lock   Metering and AF start   AF Operation: Maintain current setting; AF Method: 1-Point AF; Servo AF characteristics: Maintain current setting; Uses the last 1-Point AF position; it does not automatically recenter the point  \n  AF Point Selection   AF point selection   Use Main Dial to change selection; when Face + Tracking is active, INFO toggles Eye detection  \n  Lens AF button   AF Off   Stops AF while the lens button is used  \n  Depth-of-field preview   One-Shot AF / Servo AF   Changes AF Operation  \n  SET   Eye detection   Toggles the stored Eye detection state when the active AF method supports it; it has no effect with 1-Point AF or Spot AF  \n  Joystick   Direct AF point selection   Move the AF point directly; press straight in to recenter it; During Face + Tracking adjustment, selects among detected faces or eyes; additional observed Face Select behavior is pending physical verification  \n  Movie Record   Leave default   No custom assignment in this architecture  \n  MODE   Leave default   No custom assignment in this architecture  \n  LCD panel illumination   Leave default   No custom assignment in this architecture  \n  M-Fn   Switch to Custom shooting mode   Press repeatedly to switch among C1, C2, and C3; The assignment and C1-C3 switching behavior were physically tested. Current registration evidence is recorded separately below  "
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",
@@ -1167,7 +1203,7 @@
     "source": "Setting Deep Dives/Custom Controls & Menus, Back-Button AF & Dial Strategies.md",
     "html": "appendices/Custom Controls & Menus, Back-Button AF & Dial Strategies.html",
     "anchor": "dials-and-control-ring",
-    "text": "  Physical control   Assignment   Operation  \n --- --- --- \n  **Main Dial**   **Shutter Speed**   Direct exposure control.  \n  **Rear Wheel**   **Aperture**   Direct exposure control.  \n  **Top Rear Dial**   **ISO Speed**   Direct exposure control.  \n  **Control Ring**   **Exposure Compensation**   In Manual exposure, compensation requires Auto ISO.  "
+    "text": "  Physical control   Assignment   Operation  \n --- --- --- \n  Main Dial   Shutter Speed   Direct exposure control  \n  Rear Wheel   Aperture   Direct exposure control  \n  Top Rear Dial   ISO Speed   Direct exposure control  \n  Control Ring   Exposure Compensation   In Manual exposure, compensation requires Auto ISO  "
   },
   {
     "appendix_id": "back_button_af_custom_button_strategies",

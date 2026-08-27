@@ -510,6 +510,85 @@ class CameraControlServiceTests(unittest.TestCase):
             ]
         )
 
+    def test_profile_comparison_resolves_lens_capabilities_and_supported_is_modes(self):
+        service = CameraControlService()
+        service.connect()
+        service.scan_capabilities()
+
+        flight = service.compare_profile("Birds in Flight")
+        equipment = flight["equipment"]
+        self.assertEqual(equipment["selected_lens_id"], "ef_100_400_is_ii")
+        self.assertEqual(equipment["selection_source"], "profile_primary")
+        self.assertEqual(equipment["stabilization"]["selected_mode"], "3")
+        self.assertEqual(
+            [item["value"] for item in equipment["stabilization"]["supported_modes"]],
+            ["1", "2", "3"],
+        )
+        mode = next(
+            item for item in flight["card_findings"] + flight["additional_findings"]
+            if (item.get("key") or item.get("path")) == "stabilization.image_stabilization.mode"
+        )
+        self.assertEqual(mode["expected"], "Mode 3")
+        self.assertEqual(mode["access_paths"][0]["label"], "Lens IS mode switch")
+
+        panning = service.compare_profile(
+            "Birds in Flight",
+            equipment_choice={"choice_key": "ef_100_400_is_ii::", "is_mode": "2"},
+        )
+        self.assertTrue(panning["equipment"]["stabilization"]["mode_override"])
+        self.assertEqual(panning["equipment"]["stabilization"]["selected_mode"], "2")
+
+        travel_zoom = service.compare_profile(
+            "Birds in Flight",
+            equipment_choice={"choice_key": "rf_24_240_is::"},
+        )
+        self.assertEqual(travel_zoom["equipment"]["stabilization"]["control"], "lens_switch_automatic")
+        automatic_mode = next(
+            item for item in travel_zoom["card_findings"] + travel_zoom["additional_findings"]
+            if (item.get("key") or item.get("path")) == "stabilization.image_stabilization.mode"
+        )
+        self.assertEqual(automatic_mode["status"], "not_applicable")
+        self.assertEqual(automatic_mode["expected"], "Automatic lens behavior")
+        with self.assertRaisesRegex(CameraSessionError, "not supported"):
+            service.compare_profile(
+                "Birds in Flight",
+                equipment_choice={"choice_key": "rf_24_240_is::", "is_mode": "3"},
+            )
+
+    def test_profile_comparison_applies_structured_feature_interactions(self):
+        service = CameraControlService()
+        service.connect()
+        service.scan_capabilities()
+
+        macro = service.compare_profile(
+            "Macro",
+            equipment_choice={"choice_key": "mp_e_65::"},
+        )
+        interaction_ids = {item["id"] for item in macro["interactions"]}
+        self.assertIn("mp_e_65_manual_focus_only", interaction_ids)
+        by_path = {
+            item["path"]: item
+            for finding in macro["card_findings"] + macro["additional_findings"]
+            for item in finding.get("items", [finding])
+        }
+        self.assertEqual(by_path["autofocus.method"]["status"], "not_applicable")
+        self.assertEqual(by_path["image.focus_bracketing"]["status"], "not_applicable")
+
+        fireworks = service.compare_profile("Fireworks")
+        self.assertIn(
+            "manual_focus_disables_af_features",
+            {item["id"] for item in fireworks["interactions"]},
+        )
+
+        flight = service.compare_profile("Birds in Flight")
+        by_path = {
+            item["path"]: item
+            for finding in flight["card_findings"] + flight["additional_findings"]
+            for item in finding.get("items", [finding])
+        }
+        self.assertEqual(by_path["display.high_speed_display"]["status"], "not_applicable")
+        self.assertTrue(by_path["stabilization.lens_is"]["interactions"])
+
     def test_profile_comparison_exposes_context_then_uses_selected_authored_target(self):
         service = CameraControlService()
         service.connect()
@@ -652,6 +731,14 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('id="write-qualification-needed"', body)
         self.assertIn('id="write-qualification-dialog"', body)
         self.assertIn('id="write-qualification-dialog-summary"', body)
+        self.assertIn('id="guarded-lens"', body)
+        self.assertIn('<option value="None" selected>None</option>', body)
+        self.assertIn('<option value="Flash Attached">Flash Attached</option>', body)
+        self.assertIn('<option value="Trigger">Trigger</option>', body)
+        self.assertIn('<option value="CFexpress &amp; SD" selected>CFexpress &amp; SD</option>', body)
+        self.assertIn('<option value="CFexpress">CFexpress</option>', body)
+        self.assertIn('<option value="SD">SD</option>', body)
+        self.assertIn('id="guarded-setup-essentials-confirmed"', body)
         self.assertIn("Apply this profile to camera", body)
         self.assertIn("Review what will change", body)
         self.assertIn("Advanced setup — safely enable additional automatic settings", body)
@@ -697,6 +784,10 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("window.localStorage.setItem(checklistStorageKey", body)
         self.assertIn('elements.comparisonOrder.value === "setup"', body)
         self.assertIn("contextSelections", body)
+        self.assertIn("equipmentSelection", body)
+        self.assertIn("renderEquipmentContext", body)
+        self.assertIn('query.set("lens_choice"', body)
+        self.assertIn('query.set("is_mode"', body)
         self.assertIn("Choose context before evaluating", body)
         self.assertIn('query.append("context"', body)
         self.assertIn("function updateFloatingReturn()", body)
@@ -714,7 +805,14 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("function restartWithPhysicalWriteMode()", body)
         self.assertIn("elements.physicalWriteModeConfirm.addEventListener", body)
         self.assertIn("physical_write_enabled: physicalWriteEnabled", body)
-        self.assertIn("Read directly from the connected camera", body)
+        self.assertIn("camera-reported attached lens is selected by default", body)
+        self.assertIn("function populateGuardedLensOptions", body)
+        self.assertIn("function syncGuardedPreflightFromRun", body)
+        self.assertIn("setGuardedReadinessLocked(run.status !== \"planned\")", body)
+        self.assertIn("if (guardedRunState?.status === \"planned\") await prepareGuardedRun()", body)
+        self.assertIn("event.target !== elements.guardedLens && guardedRunState?.status === \"planned\"", body)
+        self.assertIn("runAction(scanAndCompare)", body)
+        self.assertIn("camera_setup_essentials_confirmed", body)
         self.assertLess(
             body.index("elements.backendSwitchDialog.showModal()"),
             body.index('request("/api/camera-control/restart-backend"'),
@@ -928,7 +1026,7 @@ class CameraLabHttpTests(unittest.TestCase):
             "current_mode": "Fv",
             "lens": "RF 24-105",
             "flash": "None",
-            "cards": "CFexpress + SD",
+            "cards": "CFexpress & SD",
             "applications_closed": True,
             "camera_backup_confirmed": True,
             "backup_filename": "C123_CFG.CSD",
@@ -970,7 +1068,14 @@ class CameraLabHttpTests(unittest.TestCase):
             token=self.token,
         )
         self.assertEqual(status, 200)
-        manual_context = {"still_movie_context": "still", "flash": "None", "cards": "CFexpress + SD"}
+        manual_context = {
+            "still_movie_context": "still",
+            "flash": "None",
+            "cards": "CFexpress & SD",
+            "selected_lens_id": "rf_24_240_is",
+            "selected_accessory_id": "",
+            "selected_is_mode": "",
+        }
         query = urlencode({"profile": "Travel", "manual_context": json.dumps(manual_context)})
         status, _, body = self.request("GET", f"/api/camera-control/comparison?{query}")
         self.assertEqual(status, 200)
