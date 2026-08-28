@@ -15,6 +15,7 @@ REQUIRED_FILES = (
     "80 Build/baseline_impact_check.py",
     "80 Build/baseline_migration.py",
     "80 Build/profile_editor.py",
+    "80 Build/publication_workflow.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/canon_options.yaml",
     "80 Build/profile_editor/index.html",
@@ -91,6 +92,16 @@ def validate(root):
         for endpoint in ("/api/cx-foundation-fit", "/api/cx-assignment-reviews", "/api/cx-selection-reviews", "/api/cx-foundation-saves"):
             if endpoint not in script:
                 issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Cx Foundation browser endpoint is missing: {endpoint}"))
+        for endpoint in (
+            "/api/publication-status",
+            "/api/publication-notes-review",
+            "/api/publication-notes-save",
+            "/api/publication-review",
+            "/api/publication-start",
+            "/api/main-editor-launch",
+        ):
+            if endpoint not in script:
+                issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Publication browser endpoint is missing: {endpoint}"))
     except Exception as exc:
         issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", f"Profile editor readiness failed: {exc}"))
     return issues

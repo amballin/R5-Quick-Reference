@@ -736,23 +736,89 @@
         <div>
           <p class="eyebrow">Occasional release workflow</p>
           <h2>Release &amp; Publish</h2>
-          <p class="muted">Publishing is intentionally separate from routine daily work. A prototype branch may use Finish Day to synchronize its matching prototype branch, but only <code>main</code> can publish the live website.</p>
+          <p class="muted">Prepare the exact release, then deliberately update and verify the live website. Publication remains available only from the Main project editor.</p>
         </div>
-        <a class="primary action-link" href="/source/WORKFLOWS/publish.html" target="_blank" rel="noreferrer">Open publish guide</a>
+        <div class="finish-day-header-actions">
+          <span id="publication-context" class="project-context-badge unknown">Checking project…</span>
+          <button id="refresh-publication" class="secondary" type="button">Refresh status</button>
+        </div>
       </div>
-      <section class="release-gate">
-        <ol class="release-steps">
-          <li><strong>Approve release notes</strong><span>Curated reader-facing highlights must match the exact upcoming version.</span></li>
-          <li><strong>Verify spreadsheet downloads</strong><span>Refresh only the workbook families whose inputs changed.</span></li>
-          <li><strong>Integrate into main</strong><span>Prototype work must be reviewed and integrated before live publication.</span></li>
-          <li><strong>Publish through the supported script</strong><span>The main-only publisher stops on every prototype branch. This workspace does not run Git or publication commands.</span></li>
-          <li><strong>Verify publication and Git state</strong><span>Require both the publication receipt and a clean, synchronized status.</span></li>
+      <div id="publication-message" class="message" role="status" hidden></div>
+      <section class="publication-panel">
+        <ol class="finish-day-steps publication-steps" aria-label="Publication stages">
+          <li><strong>1</strong><span><b>Check</b><small>Main, drafts, and synchronization</small></span></li>
+          <li><strong>2</strong><span><b>Notes</b><small>Review upcoming-version highlights</small></span></li>
+          <li><strong>3</strong><span><b>Options</b><small>Version and spreadsheet downloads</small></span></li>
+          <li><strong>4</strong><span><b>Publish</b><small>Explicit live-site confirmation</small></span></li>
+          <li><strong>5</strong><span><b>Verify</b><small>Publication receipt and clean main</small></span></li>
         </ol>
-        <div class="release-actions">
-          <a class="secondary action-link" href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Review Finish Day</a>
-          <a class="primary action-link" href="/source/WORKFLOWS/publish.html" target="_blank" rel="noreferrer">Review publication steps</a>
-        </div>
+
+        <section class="finish-day-stage">
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Current state</p><h3>Publication readiness</h3></div>
+            <span id="publication-status-badge" class="workflow-status checking">Checking…</span>
+          </div>
+          <p id="publication-summary" class="muted">Checking the current project and publication inputs.</p>
+          <details id="publication-details" class="workflow-details" hidden>
+            <summary>Show readiness details</summary>
+            <pre id="publication-output"></pre>
+          </details>
+        </section>
+
+        <section id="publication-main-handoff" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading"><div><p class="eyebrow">Prototype handoff</p><h3>Continue in the Main project</h3></div></div>
+          <p class="muted">Finish Day and Integrate Branch must synchronize approved work first. Then open the Main project editor here; no Terminal step is required.</p>
+          <button id="open-main-editor" class="primary" type="button">Open Main project editor</button>
+        </section>
+
+        <section id="publication-notes-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Reader-facing source</p><h3>Release notes for <span id="publication-notes-version">the next version</span></h3></div>
+          </div>
+          <div class="publication-version-grid">
+            <label>Release type
+              <select id="publication-version-kind">
+                <option value="minor">Next minor version</option>
+                <option value="major">New major series</option>
+              </select>
+            </label>
+            <label id="publication-major-field" hidden>New major number
+              <input id="publication-major-version" type="number" min="1" step="1">
+            </label>
+          </div>
+          <label class="publication-highlights">Release highlights, one per line
+            <textarea id="publication-highlights" rows="7" maxlength="4000" placeholder="Describe what readers will notice in this release."></textarea>
+          </label>
+          <p class="muted">Saving notes creates a recovery backup and runs source validation. Finish Day must then commit and push the notes before publication can continue.</p>
+          <button id="review-publication-notes" class="primary" type="button">Review release notes</button>
+        </section>
+
+        <section id="publication-options-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Exact release</p><h3>Publish <span id="publication-version-label">the next version</span></h3></div>
+          </div>
+          <fieldset class="publication-options">
+            <legend>Spreadsheet downloads</legend>
+            <label><input type="radio" name="publication-spreadsheets" value="preserve" checked><span><strong>Preserve current downloads</strong><small>Keep the exact verified workbook files already published.</small></span></label>
+            <label><input type="radio" name="publication-spreadsheets" value="replace"><span><strong>Rebuild and replace both families</strong><small>Prepare current Excel and Numbers downloads before publishing.</small></span></label>
+            <label><input type="radio" name="publication-spreadsheets" value="remove"><span><strong>Remove all spreadsheet downloads</strong><small>Deliberately remove both workbook families from the live site.</small></span></label>
+          </fieldset>
+          <p id="publication-spreadsheet-status" class="muted"></p>
+          <button id="review-publication" class="save-action" type="button">Review live publication</button>
+        </section>
+
+        <section id="publication-progress" class="finish-day-stage" hidden>
+          <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="publication-progress-stage">Starting…</strong><span id="publication-progress-elapsed" class="muted"></span></div>
+          <code id="publication-progress-command" class="workflow-progress-command"></code>
+          <details><summary>Watch publication log</summary><pre id="publication-progress-log" tabindex="0"></pre></details>
+        </section>
+
+        <section id="publication-complete" class="finish-day-complete" hidden>
+          <strong>Publication complete</strong>
+          <span id="publication-complete-message">The live website is verified and Main is synchronized.</span>
+        </section>
       </section>
+      <div class="finish-day-footer"><a href="/source/WORKFLOWS/publish.html" target="_blank" rel="noreferrer">Open the complete publishing reference</a></div>
     </section>
 
     <section id="setup-sharing-view" class="app-view" hidden>
@@ -906,6 +972,33 @@
     <div class="review-actions">
       <button id="build-confirm-cancel" class="secondary" type="button">Cancel</button>
       <button id="build-confirm-run" class="save-action" type="button">Run validated local build</button>
+    </div>
+  </dialog>
+
+  <dialog id="publication-notes-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div><p class="eyebrow">Release-note review</p><h2>Review the exact source addition</h2></div>
+      <button id="publication-notes-close" class="secondary" type="button" aria-label="Close release-note review">Close</button>
+    </div>
+    <pre id="publication-notes-diff" class="review-diff"></pre>
+    <label class="finish-day-confirm"><input id="publication-notes-confirm" type="checkbox"><span>Save exactly these reader-facing highlights for the displayed upcoming version.</span></label>
+    <div class="review-actions">
+      <button id="publication-notes-cancel" class="secondary" type="button">Cancel</button>
+      <button id="save-publication-notes" class="save-action" type="button" disabled>Save reviewed release notes</button>
+    </div>
+  </dialog>
+
+  <dialog id="publication-confirm-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div><p class="eyebrow">Live publication confirmation</p><h2>Update the live website</h2></div>
+      <button id="publication-confirm-close" class="secondary" type="button" aria-label="Close publication confirmation">Close</button>
+    </div>
+    <p id="publication-review-summary" class="review-warning"></p>
+    <ul id="publication-review-highlights" class="reference-warning-list"></ul>
+    <label class="finish-day-confirm"><input id="publication-confirm-live" type="checkbox"><span>I intend to update the live GitHub Pages website, create and push the publication commit, and use the exact version and spreadsheet choice shown above.</span></label>
+    <div class="review-actions">
+      <button id="publication-confirm-cancel" class="secondary" type="button">Cancel</button>
+      <button id="start-publication" class="danger-save-action" type="button" disabled>Publish live website</button>
     </div>
   </dialog>
 

@@ -115,6 +115,7 @@
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Publish the Website</h1>
 <p>Publishing intentionally updates the live GitHub Pages site, version, date, and publication commit. It is separate from Finish Day and ordinary Git pushes.</p>
+<p>For normal use, open <strong>Release &amp; Publish</strong> in the Main project Profile Editor. It provides the complete guarded workflow without Terminal: readiness, reviewed release notes, version and spreadsheet choices, a separate live-site confirmation, reconnectable progress, and final verification. The commands below remain equivalent recovery and diagnostic interfaces.</p>
 <p>The supported publisher runs only from <code>main</code>. A prototype branch may be committed and pushed to its matching prototype upstream through Finish Day, but that is a Git handoff—not publication. Integrate approved prototype work into <code>main</code> before starting this workflow.</p>
 <section class="step"><h2>Before publishing</h2>
 <ul>
@@ -141,6 +142,7 @@
 <p>Do not consider the site published unless the command ends with:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>PUBLICATION COMPLETE AND VERIFIED.</code></pre></div>
 <p>Every run writes a timestamped log under the machine-local <code>Logs/</code> folder.</p>
+<p>In Profile Editor, the matching completion receipt states that the selected version is published and verified and that Main is clean and synchronized. The workspace requires both underlying success results before showing that receipt.</p>
 <p>For spreadsheet publication, independently verify:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
 <p>Then verify the final Git state:</p>

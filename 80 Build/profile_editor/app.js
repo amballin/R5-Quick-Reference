@@ -107,6 +107,47 @@ const elements = {
   cleanupConfirmDelete: document.querySelector("#cleanup-confirm-delete"),
   cleanupSelectedSummary: document.querySelector("#cleanup-selected-summary"),
   deleteCleanupCandidates: document.querySelector("#delete-cleanup-candidates"),
+  refreshPublication: document.querySelector("#refresh-publication"),
+  publicationContext: document.querySelector("#publication-context"),
+  publicationMessage: document.querySelector("#publication-message"),
+  publicationStatusBadge: document.querySelector("#publication-status-badge"),
+  publicationSummary: document.querySelector("#publication-summary"),
+  publicationDetails: document.querySelector("#publication-details"),
+  publicationOutput: document.querySelector("#publication-output"),
+  publicationMainHandoff: document.querySelector("#publication-main-handoff"),
+  openMainEditor: document.querySelector("#open-main-editor"),
+  publicationNotesPanel: document.querySelector("#publication-notes-panel"),
+  publicationNotesVersion: document.querySelector("#publication-notes-version"),
+  publicationVersionKind: document.querySelector("#publication-version-kind"),
+  publicationMajorField: document.querySelector("#publication-major-field"),
+  publicationMajorVersion: document.querySelector("#publication-major-version"),
+  publicationHighlights: document.querySelector("#publication-highlights"),
+  reviewPublicationNotes: document.querySelector("#review-publication-notes"),
+  publicationOptionsPanel: document.querySelector("#publication-options-panel"),
+  publicationVersionLabel: document.querySelector("#publication-version-label"),
+  publicationSpreadsheetStatus: document.querySelector("#publication-spreadsheet-status"),
+  publicationSpreadsheetChoices: [...document.querySelectorAll('input[name="publication-spreadsheets"]')],
+  reviewPublication: document.querySelector("#review-publication"),
+  publicationProgress: document.querySelector("#publication-progress"),
+  publicationProgressStage: document.querySelector("#publication-progress-stage"),
+  publicationProgressElapsed: document.querySelector("#publication-progress-elapsed"),
+  publicationProgressCommand: document.querySelector("#publication-progress-command"),
+  publicationProgressLog: document.querySelector("#publication-progress-log"),
+  publicationComplete: document.querySelector("#publication-complete"),
+  publicationCompleteMessage: document.querySelector("#publication-complete-message"),
+  publicationNotesDialog: document.querySelector("#publication-notes-dialog"),
+  publicationNotesDiff: document.querySelector("#publication-notes-diff"),
+  publicationNotesClose: document.querySelector("#publication-notes-close"),
+  publicationNotesCancel: document.querySelector("#publication-notes-cancel"),
+  publicationNotesConfirm: document.querySelector("#publication-notes-confirm"),
+  savePublicationNotes: document.querySelector("#save-publication-notes"),
+  publicationConfirmDialog: document.querySelector("#publication-confirm-dialog"),
+  publicationConfirmClose: document.querySelector("#publication-confirm-close"),
+  publicationConfirmCancel: document.querySelector("#publication-confirm-cancel"),
+  publicationReviewSummary: document.querySelector("#publication-review-summary"),
+  publicationReviewHighlights: document.querySelector("#publication-review-highlights"),
+  publicationConfirmLive: document.querySelector("#publication-confirm-live"),
+  startPublication: document.querySelector("#start-publication"),
   dictionarySource: document.querySelector("#dictionary-source"),
   dictionarySearch: document.querySelector("#dictionary-search"),
   dictionaryClassification: document.querySelector("#dictionary-classification"),
@@ -270,6 +311,10 @@ const state = {
   cleanupReview: null,
   cleanupReviewToken: null,
   cleanupBusy: false,
+  publication: null,
+  publicationNotesReviewToken: null,
+  publicationReviewToken: null,
+  publicationBusy: false,
   dayPhase: "start",
   activeView: "today",
   loadSequence: 0,
@@ -414,6 +459,7 @@ function renderTodayWorkflow() {
 const GUARDED_JOB_KEYS = {
   finishDay: "profileEditor.finishDayPrepareJob",
   branchIntegration: "profileEditor.branchIntegrationPrepareJob",
+  publication: "profileEditor.publicationJob",
 };
 
 function waitMilliseconds(milliseconds) {
@@ -470,6 +516,14 @@ const branchIntegrationProgressElements = {
   elapsed: elements.branchIntegrationProgressElapsed,
   command: elements.branchIntegrationProgressCommand,
   log: elements.branchIntegrationProgressLog,
+};
+
+const publicationProgressElements = {
+  panel: elements.publicationProgress,
+  stage: elements.publicationProgressStage,
+  elapsed: elements.publicationProgressElapsed,
+  command: elements.publicationProgressCommand,
+  log: elements.publicationProgressLog,
 };
 
 function showFinishDayMessage(text, error = false) {
@@ -843,6 +897,227 @@ async function resyncIntegratedBranch() {
   } finally {
     state.branchIntegrationBusy = false;
     renderBranchIntegration();
+  }
+}
+
+function selectedPublicationMajor() {
+  if (elements.publicationVersionKind.value !== "major") return null;
+  const value = Number.parseInt(elements.publicationMajorVersion.value, 10);
+  return Number.isInteger(value) ? value : elements.publicationMajorVersion.value;
+}
+
+function selectedSpreadsheetMode() {
+  return elements.publicationSpreadsheetChoices.find((choice) => choice.checked)?.value || "preserve";
+}
+
+function releaseHighlights() {
+  return elements.publicationHighlights.value.split("\n").map((line) => line.trim()).filter(Boolean);
+}
+
+function showPublicationMessage(text, error = false) {
+  elements.publicationMessage.textContent = text;
+  elements.publicationMessage.classList.toggle("error", error);
+  elements.publicationMessage.hidden = !text;
+}
+
+function renderPublication() {
+  const result = state.publication;
+  const phase = result?.phase || "checking";
+  const branch = result?.branch;
+  elements.publicationContext.textContent = branch === "main" ? "Main project" : branch ? `Prototype · ${branch}` : "Checking project…";
+  elements.publicationContext.className = `project-context-badge ${branch === "main" ? "main" : branch ? "prototype" : "unknown"}`;
+  const blocked = phase === "blocked" || phase === "main-handoff";
+  elements.publicationStatusBadge.className = `workflow-status ${phase === "complete" || phase === "ready" ? "ready" : blocked ? "blocked" : phase === "checking" ? "checking" : "notice"}`;
+  elements.publicationStatusBadge.textContent = phase === "ready" ? "Ready to review" : phase === "complete" ? "Verified" : blocked ? "Blocked" : phase === "checking" ? "Checking…" : "Preparation needed";
+  const summaries = {
+    checking: "Checking the current project and publication inputs.",
+    "main-handoff": "Live publication must continue in the Main project editor after approved work is integrated.",
+    blocked: (result?.blockers || []).join(" ") || "Publication is blocked by the current project state.",
+    "release-notes": `Reader-facing highlights are required for Version ${result?.nextVersion || "the next version"}.`,
+    ready: `Version ${result?.nextVersion} is ready for an exact publication review.`,
+    complete: result?.message || "The live website is published and verified.",
+  };
+  elements.publicationSummary.textContent = summaries[phase] || summaries.checking;
+  elements.publicationOutput.textContent = [result?.output, result?.spreadsheetState?.output].filter(Boolean).join("\n\n");
+  elements.publicationDetails.hidden = !elements.publicationOutput.textContent;
+  elements.publicationMainHandoff.hidden = phase !== "main-handoff";
+  elements.publicationNotesPanel.hidden = phase !== "release-notes";
+  elements.publicationOptionsPanel.hidden = phase !== "ready";
+  elements.publicationComplete.hidden = phase !== "complete";
+  elements.publicationNotesVersion.textContent = result?.nextVersion ? `Version ${result.nextVersion}` : "the next version";
+  elements.publicationVersionLabel.textContent = result?.nextVersion ? `Version ${result.nextVersion}` : "the next version";
+  if (result?.highlights?.length && !elements.publicationHighlights.value.trim()) elements.publicationHighlights.value = result.highlights.join("\n");
+  const sheetStatus = result?.spreadsheetState?.status;
+  elements.publicationSpreadsheetStatus.textContent = sheetStatus === "current"
+    ? "Spreadsheet downloads are current."
+    : sheetStatus === "refresh-needed"
+      ? "Spreadsheet inputs changed. Choose rebuild and replace, or deliberately remove the downloads."
+      : sheetStatus === "blocked" ? "Spreadsheet readiness is blocked; review the details above." : "";
+  elements.reviewPublicationNotes.disabled = state.publicationBusy || !releaseHighlights().length;
+  elements.reviewPublication.disabled = state.publicationBusy || phase !== "ready";
+  elements.refreshPublication.disabled = state.publicationBusy;
+  elements.openMainEditor.disabled = state.publicationBusy;
+  if (phase === "complete") elements.publicationCompleteMessage.textContent = result.message;
+}
+
+async function refreshPublication() {
+  captureCurrentProfileDraft();
+  const runningJobId = sessionStorage.getItem(GUARDED_JOB_KEYS.publication);
+  if (runningJobId) {
+    state.publicationBusy = true;
+    elements.publicationProgress.hidden = false;
+    showPublicationMessage("Reconnected to the running publication.");
+    renderPublication();
+    try {
+      const result = await waitForGuardedJob(runningJobId, GUARDED_JOB_KEYS.publication, publicationProgressElements);
+      state.publication = result;
+      showPublicationMessage(result.message || "Publication complete and verified.");
+    } catch (error) {
+      showPublicationMessage(error.message, true);
+    } finally {
+      state.publicationBusy = false;
+      renderPublication();
+    }
+    return;
+  }
+  state.publicationBusy = true;
+  state.publicationReviewToken = null;
+  showPublicationMessage("");
+  renderPublication();
+  try {
+    state.publication = await request("/api/publication-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, majorVersion: selectedPublicationMajor() }),
+    });
+  } catch (error) {
+    state.publication = { phase: "blocked", blockers: [error.message] };
+    showPublicationMessage(error.message, true);
+  } finally {
+    state.publicationBusy = false;
+    renderPublication();
+  }
+}
+
+async function openMainEditor() {
+  elements.openMainEditor.disabled = true;
+  showPublicationMessage("Opening the Main project editor…");
+  try {
+    await request("/api/main-editor-launch", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    showPublicationMessage("The Main project editor is opening in Chrome.");
+  } catch (error) {
+    showPublicationMessage(error.message, true);
+  } finally {
+    elements.openMainEditor.disabled = false;
+  }
+}
+
+async function reviewPublicationNotes() {
+  elements.reviewPublicationNotes.disabled = true;
+  showPublicationMessage("Validating the highlights and preparing the exact source addition…");
+  try {
+    const result = await request("/api/publication-notes-review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ majorVersion: selectedPublicationMajor(), highlights: releaseHighlights() }),
+    });
+    state.publicationNotesReviewToken = result.reviewToken;
+    elements.publicationNotesDiff.textContent = result.diff;
+    elements.publicationNotesConfirm.checked = false;
+    elements.savePublicationNotes.disabled = true;
+    elements.publicationNotesDialog.showModal();
+    showPublicationMessage("Review the exact release-note addition before saving.");
+  } catch (error) {
+    showPublicationMessage(error.message, true);
+  } finally {
+    renderPublication();
+  }
+}
+
+function closePublicationNotesReview() {
+  state.publicationNotesReviewToken = null;
+  elements.publicationNotesDialog.close();
+}
+
+async function savePublicationNotes() {
+  elements.savePublicationNotes.disabled = true;
+  showPublicationMessage("Creating a recovery backup and validating the reviewed release notes…");
+  try {
+    const result = await request("/api/publication-notes-save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.publicationNotesReviewToken, confirmSave: true }),
+    });
+    state.publicationNotesReviewToken = null;
+    elements.publicationNotesDialog.close();
+    invalidateBuildReadiness();
+    showPublicationMessage(`${result.message} Recovery backup: ${result.backup}`);
+    switchView("finish-day");
+  } catch (error) {
+    state.publicationNotesReviewToken = null;
+    elements.publicationNotesDialog.close();
+    showPublicationMessage(error.message, true);
+  }
+}
+
+async function reviewPublication() {
+  elements.reviewPublication.disabled = true;
+  showPublicationMessage("Binding the exact version, source state, and spreadsheet choice…");
+  try {
+    const result = await request("/api/publication-review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, majorVersion: selectedPublicationMajor(), spreadsheetMode: selectedSpreadsheetMode() }),
+    });
+    state.publicationReviewToken = result.reviewToken;
+    elements.publicationReviewSummary.textContent = result.summary;
+    elements.publicationReviewHighlights.replaceChildren();
+    for (const highlight of result.highlights || []) {
+      const item = document.createElement("li");
+      item.textContent = highlight;
+      elements.publicationReviewHighlights.append(item);
+    }
+    elements.publicationConfirmLive.checked = false;
+    elements.startPublication.disabled = true;
+    elements.publicationConfirmDialog.showModal();
+    showPublicationMessage("Review the exact live publication and confirm only when ready.");
+  } catch (error) {
+    state.publicationReviewToken = null;
+    showPublicationMessage(error.message, true);
+  } finally {
+    renderPublication();
+  }
+}
+
+function closePublicationConfirmation() {
+  state.publicationReviewToken = null;
+  elements.publicationConfirmDialog.close();
+}
+
+async function startPublication() {
+  const reviewToken = state.publicationReviewToken;
+  if (!reviewToken) return;
+  state.publicationReviewToken = null;
+  elements.publicationConfirmDialog.close();
+  state.publicationBusy = true;
+  elements.publicationProgress.hidden = false;
+  showPublicationMessage("Publishing the reviewed release. Keep this editor open; refreshing will reconnect.");
+  renderPublication();
+  try {
+    const started = await request("/api/publication-start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken, confirmPublish: true }),
+    });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.publication, started.jobId);
+    const result = await waitForGuardedJob(started.jobId, GUARDED_JOB_KEYS.publication, publicationProgressElements);
+    state.publication = result;
+    showPublicationMessage(result.message || "Publication complete and verified.");
+  } catch (error) {
+    showPublicationMessage(error.message, true);
+  } finally {
+    state.publicationBusy = false;
+    renderPublication();
   }
 }
 
@@ -1341,6 +1616,7 @@ function switchView(viewName) {
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
   if (viewName === "cleanup-review" && !state.cleanupBusy) refreshCleanupReview();
+  if (viewName === "release-publish" && !state.publicationBusy) refreshPublication();
   window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -3797,6 +4073,33 @@ elements.integrationOpenCleanup.addEventListener("click", () => switchView("clea
 elements.refreshCleanupReview.addEventListener("click", refreshCleanupReview);
 elements.cleanupConfirmDelete.addEventListener("change", renderCleanupSelection);
 elements.deleteCleanupCandidates.addEventListener("click", deleteCleanupCandidates);
+elements.refreshPublication.addEventListener("click", refreshPublication);
+elements.openMainEditor.addEventListener("click", openMainEditor);
+elements.publicationVersionKind.addEventListener("change", () => {
+  elements.publicationMajorField.hidden = elements.publicationVersionKind.value !== "major";
+  if (elements.publicationVersionKind.value === "major" && !elements.publicationMajorVersion.value) {
+    const currentMajor = Number.parseInt(state.publication?.currentVersion?.split(".")[0], 10);
+    if (Number.isInteger(currentMajor)) elements.publicationMajorVersion.value = String(currentMajor + 1);
+  }
+  state.publication = null;
+  refreshPublication();
+});
+elements.publicationMajorVersion.addEventListener("change", refreshPublication);
+elements.publicationHighlights.addEventListener("input", renderPublication);
+elements.reviewPublicationNotes.addEventListener("click", reviewPublicationNotes);
+elements.publicationNotesClose.addEventListener("click", closePublicationNotesReview);
+elements.publicationNotesCancel.addEventListener("click", closePublicationNotesReview);
+elements.publicationNotesConfirm.addEventListener("change", () => {
+  elements.savePublicationNotes.disabled = !elements.publicationNotesConfirm.checked;
+});
+elements.savePublicationNotes.addEventListener("click", savePublicationNotes);
+elements.reviewPublication.addEventListener("click", reviewPublication);
+elements.publicationConfirmClose.addEventListener("click", closePublicationConfirmation);
+elements.publicationConfirmCancel.addEventListener("click", closePublicationConfirmation);
+elements.publicationConfirmLive.addEventListener("change", () => {
+  elements.startPublication.disabled = !elements.publicationConfirmLive.checked;
+});
+elements.startPublication.addEventListener("click", startPublication);
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => {
   elements.profileActionMenu.open = false;
@@ -3919,5 +4222,7 @@ if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
   switchView("finish-day");
 } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
   switchView("branch-integration");
+} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.publication)) {
+  switchView("release-publish");
 }
 updateFloatingReturn();

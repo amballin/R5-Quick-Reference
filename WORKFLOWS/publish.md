@@ -2,6 +2,8 @@
 
 Publishing intentionally updates the live GitHub Pages site, version, date, and publication commit. It is separate from Finish Day and ordinary Git pushes.
 
+For normal use, open **Release & Publish** in the Main project Profile Editor. It provides the complete guarded workflow without Terminal: readiness, reviewed release notes, version and spreadsheet choices, a separate live-site confirmation, reconnectable progress, and final verification. The commands below remain equivalent recovery and diagnostic interfaces.
+
 The supported publisher runs only from `main`. A prototype branch may be committed and pushed to its matching prototype upstream through Finish Day, but that is a Git handoff—not publication. Integrate approved prototype work into `main` before starting this workflow.
 
 ## Before publishing
@@ -51,6 +53,8 @@ PUBLICATION COMPLETE AND VERIFIED.
 ```
 
 Every run writes a timestamped log under the machine-local `Logs/` folder.
+
+In Profile Editor, the matching completion receipt states that the selected version is published and verified and that Main is clean and synchronized. The workspace requires both underlying success results before showing that receipt.
 
 For spreadsheet publication, independently verify:
 

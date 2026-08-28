@@ -68,6 +68,7 @@ REQUIRED_FILES = [
     "80 Build/test_camera_control_lab.py",
     "80 Build/test_camera_control_guarded_run.py",
     "80 Build/release_notes.py",
+    "80 Build/publication_workflow.py",
     "80 Build/validators/release_notes_validator.py",
     "80 Build/validators/application_version_validator.py",
     "80 Build/validators/project_identity_validator.py",

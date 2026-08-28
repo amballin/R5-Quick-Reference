@@ -74,6 +74,11 @@ from my_menu_reference import reference_settings as my_menu_reference_settings
 from control_reference import card_reference_settings as control_reference_settings
 from profile_loader import load_baseline, load_yaml
 from project_context import project_context_info
+from publication_workflow import (
+    MainEditorLauncher,
+    PublicationWorkflow,
+    PublicationWorkflowError,
+)
 from utilities import flatten
 
 
@@ -148,6 +153,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/project_context.py",
+    "80 Build/publication_workflow.py",
     "80 Build/scripts/profile-editor-runtime.sh",
     "80 Build/scripts/start-profile-editor.sh",
     "80 Build/scripts/stop-profile-editor.sh",
@@ -352,6 +358,8 @@ class ProfileEditorModel:
         finish_day_workflow=None,
         branch_integration_workflow=None,
         cleanup_review=None,
+        publication_workflow=None,
+        main_editor_launcher=None,
     ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
@@ -389,6 +397,8 @@ class ProfileEditorModel:
         self.finish_day_workflow = finish_day_workflow or FinishDayWorkflow(self.paths.root)
         self.branch_integration_workflow = branch_integration_workflow or BranchIntegrationWorkflow(self.paths.root)
         self.cleanup_review = cleanup_review or CleanupReview(self.paths.root)
+        self.publication_workflow = publication_workflow or PublicationWorkflow(self.paths.root)
+        self.main_editor_launcher = main_editor_launcher or MainEditorLauncher(self.paths.root)
 
     def launch_camera_lab(self, profile_name):
         name = self._validate_profile_name(profile_name)
@@ -1739,6 +1749,64 @@ class ProfileEditorModel:
                 pending_changes, confirmed, progress_callback=progress
             ),
         )
+
+    def publication_status(self, pending_changes, major_version=None):
+        try:
+            return self.publication_workflow.inspect(pending_changes, major_version)
+        except PublicationWorkflowError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def review_publication_notes(self, major_version, highlights):
+        try:
+            return self.publication_workflow.review_release_notes(major_version, highlights)
+        except PublicationWorkflowError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def save_publication_notes(self, review_token, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded workflow action is already running.")
+        try:
+            try:
+                return self.publication_workflow.save_release_notes(review_token, confirmed)
+            except PublicationWorkflowError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def review_publication(self, pending_changes, major_version, spreadsheet_mode):
+        try:
+            return self.publication_workflow.review_publication(
+                pending_changes, major_version, spreadsheet_mode
+            )
+        except PublicationWorkflowError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def publish_website(self, review_token, confirmed, progress_callback=None):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded workflow action is already running.")
+        try:
+            try:
+                return self.publication_workflow.publish(
+                    review_token, confirmed, progress=progress_callback
+                )
+            except PublicationWorkflowError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def start_website_publication(self, review_token, confirmed):
+        return self.guarded_jobs.start(
+            "website-publication",
+            lambda progress: self.publish_website(
+                review_token, confirmed, progress_callback=progress
+            ),
+        )
+
+    def launch_main_editor(self):
+        try:
+            return self.main_editor_launcher.launch()
+        except PublicationWorkflowError as exc:
+            raise PrototypeError(str(exc)) from exc
 
     def guarded_job_status(self, job_id):
         return self.guarded_jobs.status(job_id)
@@ -3404,6 +3472,12 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/guarded-job-status",
             "/api/cleanup-status",
             "/api/cleanup-delete",
+            "/api/publication-status",
+            "/api/publication-notes-review",
+            "/api/publication-notes-save",
+            "/api/publication-review",
+            "/api/publication-start",
+            "/api/main-editor-launch",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         protected_lifecycle_paths = {
@@ -3422,6 +3496,12 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/guarded-job-status",
             "/api/cleanup-status",
             "/api/cleanup-delete",
+            "/api/publication-status",
+            "/api/publication-notes-review",
+            "/api/publication-notes-save",
+            "/api/publication-review",
+            "/api/publication-start",
+            "/api/main-editor-launch",
         }
         if parsed.path in protected_lifecycle_paths and not secrets.compare_digest(
             self.headers.get("X-Profile-Editor-Token", ""), self.request_token
@@ -3561,6 +3641,40 @@ class EditorHandler(BaseHTTPRequestHandler):
                         payload.get("confirmDelete"),
                     )
                 )
+            if parsed.path == "/api/publication-status":
+                return self._json(
+                    self.model.publication_status(
+                        payload.get("pendingChanges"), payload.get("majorVersion")
+                    )
+                )
+            if parsed.path == "/api/publication-notes-review":
+                return self._json(
+                    self.model.review_publication_notes(
+                        payload.get("majorVersion"), payload.get("highlights")
+                    )
+                )
+            if parsed.path == "/api/publication-notes-save":
+                return self._json(
+                    self.model.save_publication_notes(
+                        payload.get("reviewToken"), payload.get("confirmSave")
+                    )
+                )
+            if parsed.path == "/api/publication-review":
+                return self._json(
+                    self.model.review_publication(
+                        payload.get("pendingChanges"),
+                        payload.get("majorVersion"),
+                        payload.get("spreadsheetMode"),
+                    )
+                )
+            if parsed.path == "/api/publication-start":
+                return self._json(
+                    self.model.start_website_publication(
+                        payload.get("reviewToken"), payload.get("confirmPublish")
+                    )
+                )
+            if parsed.path == "/api/main-editor-launch":
+                return self._json(self.model.launch_main_editor())
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
                 card_setting_paths = self.model.draft_card_setting_paths(payload)
