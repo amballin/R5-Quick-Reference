@@ -80,6 +80,7 @@ body {
 .source-hash { display: block; margin-top: 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; }
 .stop-server-button { min-height: 32px; padding: 6px 10px; color: white; border-color: rgba(255, 255, 255, 0.55); background: transparent; font-size: 0.78rem; }
 .stop-server-button:hover:not(:disabled) { border-color: white; background: rgba(255, 255, 255, 0.12); }
+.header-link { display: inline-flex; align-items: center; justify-content: center; border: 1px solid; border-radius: 8px; font-weight: 700; text-decoration: none; }
 
 main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 48px; }
 

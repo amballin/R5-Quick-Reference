@@ -32,12 +32,15 @@ MAX_REQUEST_BYTES = 64 * 1024
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SILVER_CAMERA_LOGO = PROJECT_ROOT / "60 Assets" / "Card Logos" / "png" / "Silver Logo.png"
+WORKFLOW_DIR = PROJECT_ROOT / "WORKFLOWS"
 ALLOWED_STATIC = {
     "/": STATIC_DIR / "index.html",
     "/index.html": STATIC_DIR / "index.html",
     "/app.js": STATIC_DIR / "app.js",
     "/styles.css": STATIC_DIR / "styles.css",
     "/silver-camera-logo.png": SILVER_CAMERA_LOGO,
+    "/FINISH_DAY.html": PROJECT_ROOT / "FINISH_DAY.html",
+    **{f"/workflow/{source.name}": source for source in WORKFLOW_DIR.glob("*.html")},
 }
 
 
@@ -74,15 +77,16 @@ class CameraLabHandler(BaseHTTPRequestHandler):
         host = self.headers.get("Host", "").split(":", 1)[0].strip("[]").lower()
         return host in {"127.0.0.1", "localhost", "::1"}
 
-    def _security_headers(self, content_type):
+    def _security_headers(self, content_type, allow_inline=False):
         self.send_header("Content-Type", content_type)
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
+        inline = " 'unsafe-inline'" if allow_inline else ""
         self.send_header(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+            f"default-src 'self'; script-src 'self'{inline}; style-src 'self'{inline}; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
         )
 
     def _send_json(self, payload, status=HTTPStatus.OK):
@@ -129,7 +133,8 @@ class CameraLabHandler(BaseHTTPRequestHandler):
         if content_type.startswith("text/") or content_type == "application/javascript":
             content_type += "; charset=utf-8"
         self.send_response(HTTPStatus.OK)
-        self._security_headers(content_type)
+        allow_inline = source.parent == WORKFLOW_DIR or source.name == "FINISH_DAY.html"
+        self._security_headers(content_type, allow_inline=allow_inline)
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)

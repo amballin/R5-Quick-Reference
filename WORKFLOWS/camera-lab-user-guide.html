@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera Lab User Guide</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    h3 { margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Camera Lab User Guide</h1>
+<p>Camera Lab compares the current Canon EOS R5 with a saved Subject/Profile Card, organizes the work into efficient camera routes, and verifies the result. It starts read-only. Camera changes remain unavailable until you deliberately enable them and approve a reviewed apply plan.</p>
+<p>Use the <strong>User Guide</strong> button in the Camera Lab header to reopen this page at any time. For SDK installation, development, physical-write qualification, and detailed evidence rules, use the <a href="usb-camera-configuration.html">USB Camera Configuration advanced reference</a>.</p>
+<section class="step"><h2>Start Camera Lab</h2>
+<p>For routine use, double-click <strong>R5 Camera Lab.app</strong> in the machine-local <code>Applications</code> folder. It runs in the background without opening Terminal and opens Google Chrome automatically.</p>
+<p>You can also select a saved, unchanged Subject/Profile Card in Profile Editor and choose <strong>Open in Camera Lab</strong>. Camera Lab opens or reuses its window with that profile selected. It still waits for you to connect and scan; the handoff does not change the camera.</p>
+<p>Check the header before working:</p>
+<ul>
+<li><strong>Main</strong> or <strong>Prototype</strong> identifies the checkout supplying the profiles and C1–C3 assignments.</li>
+<li><strong>Read-only</strong> means Camera Lab can inspect but cannot write camera settings.</li>
+<li><strong>Simulator</strong> identifies a rehearsal. It cannot change a physical EOS R5.</li>
+<li>The version badge expands to show a diagnostic source hash.</li>
+</ul>
+<p>Reopen the app if its Chrome window is missing. Choose <strong>Stop Camera Lab</strong> when finished; it closes the camera session and only the Camera Lab server.</p>
+</section>
+<section class="step"><h2>Choose physical camera or simulator</h2>
+<p>The ordinary app starts with Canon EDSDK for a physical EOS R5. Use this mode for actual readback, comparison, manual setup, and verified guarded changes.</p>
+<p>Choose <strong>Use Simulator</strong> to rehearse without a camera. Confirming the switch ends the current session and restarts the same Camera Lab in simulated mode. Choose <strong>Use Physical Camera</strong> to return to Canon EDSDK. Switching modes clears the current scan and comparison.</p>
+<p>Camera Lab never runs the simulator and physical-camera backend at the same time.</p>
+</section>
+<section class="step"><h2>Connect and scan</h2>
+<p>Before connecting a physical camera:</p>
+<ol>
+<li>Close EOS Utility and every other application that may control the camera.</li>
+<li>Connect only the intended EOS R5 with a known-good data-capable USB cable.</li>
+<li>Turn the camera on in still-photo mode and keep it awake.</li>
+<li>Use adequate battery power or supported external power.</li>
+</ol>
+<p>Choose <strong>Discover cameras</strong>, select the intended EOS R5 if asked, and choose <strong>Connect</strong>. Camera Lab confirms the model, body identifier, firmware, power status, attached lens, EDSDK version, and access mode.</p>
+<p>Choose <strong>Scan capabilities</strong> for an initial inventory, or go directly to <strong>Scan &amp; compare</strong> after selecting a profile. <strong>Scan &amp; compare</strong> always performs a fresh scan first. If the camera slept or stopped responding, Camera Lab attempts one clean reconnection and then shows recovery steps if that fails.</p>
+</section>
+<section class="step"><h2>Compare a Subject/Profile Card</h2>
+<p>Select a <strong>Subject/Profile Card</strong> and choose <strong>Scan &amp; compare</strong>. Saved C1–C3 foundations appear first, followed by the remaining profiles. A label such as <strong>Sports ← C2 (Birds in Flight)</strong> means that Sports starts from the saved C2 foundation.</p>
+<p>After the first comparison, selecting another profile automatically rescans and compares it. Permanent reference cards are not offered because they are not complete camera-state targets.</p>
+<h3>Choose the equipment context</h3>
+<p>Camera Lab selects the recognized attached lens when it matches a lens authored for the card. Otherwise it starts with the card&#x27;s <strong>Primary</strong> lens.</p>
+<p>Use <strong>Lens for this comparison</strong> to plan with another authored lens or accessory combination. A selection that differs from the physically attached lens is clearly marked as a planning override. Attach the selected lens and rescan before applying the profile.</p>
+<p>When the selected lens has a Mode 1, 2, or 3 switch, <strong>Lens IS mode</strong> offers only supported modes. <strong>Profile default</strong> follows the card target. Read <strong>What this equipment or setting combination changes</strong> because a lens, accessory, IS mode, flash, card, or other dependency can make a setting unavailable, automatic, coordinated, or unnecessary.</p>
+<h3>Read the findings</h3>
+<p>Each setting shows the card target, camera value, status, quickest reviewed access path, and checklist state. Common statuses are:</p>
+<ul>
+<li><strong>Match</strong> — the readable camera value equals the target.</li>
+<li><strong>Equivalent</strong> — the value safely satisfies an authored range or equivalent condition.</li>
+<li><strong>Different</strong> — change the setting and rescan.</li>
+<li><strong>Manual</strong> or <strong>Unreadable</strong> — the SDK cannot verify the completed action; review it on the camera.</li>
+<li><strong>Conditional</strong> — choose the requested shooting context before evaluation, or apply the authored guidance manually.</li>
+<li><strong>Not applicable</strong> — the current equipment or setting context requires no action.</li>
+</ul>
+<p>Use <strong>Setup route</strong> for efficient camera setup, <strong>Card order</strong> to follow the card presentation, or <strong>Status</strong> to group discrepancies. Setup route visits physical controls, the Q screen, My Menu tabs, and Canon menu pages in practical order.</p>
+<p>The collapsed <strong>Camera capabilities</strong> panel is supporting diagnostic detail. It is not required for an ordinary comparison.</p>
+</section>
+<section class="step"><h2>Complete a read-only setup</h2>
+<p>The <strong>Setup checklist</strong> can complete a profile without enabling camera writes:</p>
+<ol>
+<li>For a readable <strong>Different</strong> item, use its displayed access route to change the camera, then choose <strong>Rescan camera</strong>. Only a matching readback completes it as camera-verified.</li>
+<li>For an eligible Manual, Conditional, or Unreadable item, review or set it on the camera and select <strong>Reviewed/set manually</strong>.</li>
+<li>Answer any requested shooting-context choice before confirming that finding.</li>
+<li>Continue until <strong>Unresolved</strong> and <strong>Blocked</strong> both show zero.</li>
+</ol>
+<p>Manual confirmations are browser-session evidence for the selected profile, expected target, and connected-camera context. They do not become camera verification or update project source. Choose <strong>Clear manual confirmations</strong> when deliberately starting a new review.</p>
+</section>
+<section class="step"><h2>Maintain or revalidate C1–C3</h2>
+<p>Expand <strong>C1–C3 Maintenance &amp; Validation</strong> only after an assignment change, reset, restore, or deliberate re-registration. Routine profile comparison does not require this section.</p>
+<p>Camera Lab guides this process but does not register C1, C2, or C3 automatically:</p>
+<ol>
+<li>Disconnect USB and save an independent pre-configuration camera-settings backup to a card.</li>
+<li>Reconnect and begin from a normal shooting mode, not a recalled C1–C3 state.</li>
+<li>Keep <strong>Custom shooting mode Auto update</strong> disabled.</li>
+<li>Choose <strong>Open Cx checklist</strong> for the displayed assignment and complete its comparison.</li>
+<li>Register the state manually through <strong>Set-up 5 → Custom shooting mode (C1-C3) → Register settings → Cx</strong>.</li>
+<li>Recall that slot, rescan it, and recheck earlier slots after each later registration.</li>
+<li>Confirm Auto update is still disabled and save a separate post-configuration backup to a card.</li>
+</ol>
+<p>The original EOS R5 does not provide a supported Camera Lab computer-backup button. Pre- and post-configuration backups remain camera-side card operations.</p>
+</section>
+<section class="step"><h2>Rehearse an apply in the simulator</h2>
+<p>Use the simulator before a physical apply when you want to learn the flow or test stop conditions.</p>
+<ol>
+<li>Choose <strong>Use Simulator</strong>, connect, select a profile, and choose <strong>Scan &amp; compare</strong>.</li>
+<li>Choose <strong>Apply this profile to camera</strong>.</li>
+<li>Confirm the planned lens, flash, cards, recovery information, and optional Camera Setup Essentials evidence.</li>
+<li>Choose <strong>Review what will change</strong> and read all four groups: <strong>Already correct</strong>, <strong>Camera Lab will change</strong>, <strong>You will change</strong>, and <strong>Needs attention first</strong>.</li>
+<li>Choose <strong>Start simulator test</strong> only when the plan says it is ready.</li>
+<li>Follow the stationary <strong>Do this now</strong> card for each remaining manual route group.</li>
+</ol>
+<p>The simulator performs and verifies simulator-safe automatic steps, stops at the first problem, and ends with <strong>Profile applied successfully</strong> or <strong>Profile not fully applied</strong>. It cannot change the physical camera.</p>
+</section>
+<section class="step"><h2>Apply a profile to the physical camera</h2>
+<p>Physical camera changes are a separate, deliberately enabled mode.</p>
+<ol>
+<li>Start in physical-camera read-only mode and choose <strong>Enable camera changes</strong>.</li>
+<li>Read the warning and confirm the safe restart. Enabling changes does not itself change a setting.</li>
+<li>Reconnect, scan, and compare the intended profile.</li>
+<li>Choose <strong>Apply this profile to camera</strong>.</li>
+<li>Verify the camera identity, power, attached equipment, lens, flash, cards, and the required recovery-backup filename. A planning lens override must be resolved before apply.</li>
+<li>Optionally confirm <strong>Camera Setup Essentials is already set</strong> only when that is true. This clears matching Set &amp; Forget targets that Camera Lab cannot read directly; it never overrides contradictory readback.</li>
+<li>Choose <strong>Review what will change</strong>. Nothing changes during review.</li>
+<li>Resolve every <strong>Needs attention first</strong> item. Start only when the plan says <strong>Ready to apply</strong>.</li>
+<li>Approve the separate final confirmation and follow the stationary <strong>Do this now</strong> card.</li>
+</ol>
+<p>Already-correct and no-action rows are removed from the work queue. A setting is changed automatically only when exact physical-write evidence authorizes that property and value for the connected body, firmware, and EDSDK context. All remaining work stays manual and is grouped by camera route with one rescan per group.</p>
+<p>Do not use <strong>Advanced setup — safely enable additional automatic settings</strong> during routine operation. It is a reversible physical-write qualification workflow for deliberately expanding verified automatic support and requires its own review, approval, test, readback, and restoration.</p>
+<p>When finished, read the receipt. <strong>Profile applied successfully</strong> means the reviewed plan completed and verified under its recorded evidence rules. <strong>Profile not fully applied</strong> identifies the stopping point and does not imply completion. Save the required independent post-configuration camera-settings backup, then choose <strong>Return to read-only</strong>.</p>
+</section>
+<section class="step"><h2>Recover from a stop or connection problem</h2>
+<ul>
+<li><strong>Camera slept or timed out:</strong> wake it and use <strong>Reconnect and scan</strong> when prompted.</li>
+<li><strong>EOS Utility owns the camera:</strong> close EOS Utility and other camera-control software, reconnect, and retry.</li>
+<li><strong>Equipment or identity changed:</strong> stop the apply attempt, restore the reviewed equipment context, and create a new review.</li>
+<li><strong>Apply stopped:</strong> read the exact stopping reason. <strong>Continue stopped attempt</strong> first rechecks the recorded identity and context; otherwise stop and plan again.</li>
+<li><strong>Camera Lab window is missing:</strong> reopen <strong>R5 Camera Lab.app</strong> to recover it.</li>
+<li><strong>Camera Lab is unresponsive:</strong> stop it, disconnect the camera if needed, and reopen the app. Never force a prior reviewed plan through a changed session.</li>
+</ul>
+<p>Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update the verification tracker.</p>
+</section>
+<section class="step"><h2>Get more help</h2>
+<p>Use the <a href="usb-camera-configuration.html">USB Camera Configuration advanced reference</a> for Canon EDSDK location, development commands, capability details, physical-write evidence, safety qualification, and troubleshooting depth. Use the <a href="editor-user-guide.html">Profile Editor User Guide</a> to change profile targets, lens choices, C1–C3 foundations, My Menu, and shared baseline settings.</p>
+</section>
+    <footer>Generated from WORKFLOWS/camera-lab-user-guide.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

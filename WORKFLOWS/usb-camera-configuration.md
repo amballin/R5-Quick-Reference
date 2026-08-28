@@ -2,6 +2,8 @@
 
 Use this workflow only with the authoritative Canon EOS R5 project. Camera Lab's ordinary physical Canon EDSDK connection, capability scan, and profile comparison remain strictly read-only. The simulator can rehearse applying a profile. Physical camera changes are available only after the operator deliberately chooses **Enable camera changes** and only for values that passed the required reversible safety test.
 
+For ordinary Camera Lab operation, start with the [Camera Lab User Guide](camera-lab-user-guide.html). This page is the advanced reference for Canon EDSDK setup, development, safety qualification, and detailed evidence behavior.
+
 ## Develop in Camera Lab
 
 Camera Lab is the fast standalone interface used before USB controls are integrated into the Profile Editor. It serves direct local files and does not rebuild cards, appendices, spreadsheets, the PWA, or `docs`.

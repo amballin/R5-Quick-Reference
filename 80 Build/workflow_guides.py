@@ -14,6 +14,7 @@ PAGES = {
     "local-build": "Local Build",
     "profile-editor": "Profile Editor",
     "editor-user-guide": "Profile Editor User Guide",
+    "camera-lab-user-guide": "Camera Lab User Guide",
     "spreadsheets": "Spreadsheet Workflows",
     "verification-testing": "On-Camera Verification Testing",
     "usb-camera-configuration": "USB Camera Configuration",

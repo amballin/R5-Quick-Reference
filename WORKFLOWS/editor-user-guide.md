@@ -8,7 +8,7 @@ For routine use, double-click **R5 Profile Editor.app** in the machine-local `Ap
 
 If an editor is running without a visible Chrome window, open that checkout's **R5 Profile Editor.app** again to recover the window. Use **Stop Profile Editor** in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server. If the window cannot be recovered, double-click **Stop Profile Editor.command** in that repository. It clears stale process records, recognizes one verified pre-upgrade prototype left on port 8765, and stops only a server verified as belonging to that exact checkout.
 
-For development or diagnostics, from the project root run:
+The self-contained app is the normal launch method; no npm command is required for routine use. For Profile Editor development or diagnostics only, from the project root run:
 
 ```bash
 npm run ui
@@ -95,14 +95,17 @@ For an editable profile:
 
 1. Follow the profile workflow shown above the workspace: choose, edit, preview, then review and save.
 2. Review the profile title, release information, and **Card section**. Choose **Subjects** or **Camera Setup & Controls** to control where the released card appears in the index. Unchecking release excludes the card from the bundle after review/save; it does not remove active source.
-3. Work through **Shown on this card** in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.
-4. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
-5. Use the state beside each field to see whether the value is inherited or customized.
-6. Change only the fields needed for this profile.
-7. Use **Use baseline** for a field or section when the profile should inherit the shared value again. Clearing any editable field has the same result and immediately redisplays the baseline value. C1/C2/C3 foundations remain starting and comparison references rather than inheritance sources.
-8. Use **Render preview** in the right-hand preview panel. The panel remains visible while the settings column scrolls independently.
-9. Choose **Review changes** from the persistent action bar when the draft is ready.
-10. Save only after the effective before-and-after settings and the exact YAML review match the intended result. When a customization is removed, the review names the resulting inherited baseline value explicitly instead of showing only the YAML deletion. Recognized text choices use their standard capitalization across every setting, so a case-only variation such as `AUto` is treated as `Auto`, while a genuine custom value such as `f/8` is preserved.
+3. For a Subject card, review **Lens Choices**. Every Subject card requires one to three authored lens or lens-and-accessory choices and exactly one **Primary** choice. Use **Alternative** or **Specialist** for the others, explain when to use each, add its field check, and use the arrow controls to set display order. Only compatible accessories are offered for the selected lens.
+4. Work through **Shown on this card** in the exact order used by the generated card. A single card row can be backed by more than one camera control, such as ISO mode and Auto ISO maximum.
+5. Expand **Additional profile settings** only when you need a control that is not currently rendered on the card.
+6. Use the state beside each field to see whether the value is inherited or customized.
+7. Change only the fields needed for this profile.
+8. Use **Use baseline** for a field or section when the profile should inherit the shared value again. Clearing any editable field has the same result and immediately redisplays the baseline value. C1/C2/C3 foundations remain starting and comparison references rather than inheritance sources.
+9. Use **Render preview** in the right-hand preview panel. The panel remains visible while the settings column scrolls independently.
+10. Choose **Review changes** from the persistent action bar when the draft is ready.
+11. Save only after the effective before-and-after settings and both exact YAML reviews match the intended result. A lens edit is stored with the shared lens-guidance source in the same guarded transaction as the profile. When a customization is removed, the review names the resulting inherited baseline value explicitly instead of showing only the YAML deletion. Recognized text choices use their standard capitalization across every setting, so a case-only variation such as `AUto` is treated as `Auto`, while a genuine custom value such as `f/8` is preserved.
+
+The saved Lens Choices are operational data, not just card copy. Camera Lab selects a matching attached lens automatically, otherwise starts from the card's Primary choice, and offers only the authored choices for that card. Selecting another choice creates a planning context; a physical apply is blocked until the attached equipment agrees. Supported lens IS modes and equipment-interaction notes are derived from the saved lens and accessory definitions.
 
 After a setting changes, the existing preview remains available but is labeled as out of date. Choose **Refresh preview** before relying on it. On narrower windows, use the **Settings** and **Preview** controls to switch between the two panes.
 
@@ -160,4 +163,4 @@ The guarded action runs source-only validation, refreshes only safely stale spre
 
 ## Get more help
 
-For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the [Profile Editor workflow reference](profile-editor.html). For camera-field meaning and recommendations, use the linked Canon and project reference materials.
+For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the [Profile Editor workflow reference](profile-editor.html). For physical-camera comparison and guarded application, open the [Camera Lab User Guide](camera-lab-user-guide.html). For camera-field meaning and recommendations, use the linked Canon and project reference materials.

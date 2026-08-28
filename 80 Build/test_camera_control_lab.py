@@ -685,6 +685,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('id="camera-lab-version"', body)
         self.assertIn('id="camera-lab-source-hash"', body)
         self.assertIn('id="stop-camera-lab-button"', body)
+        self.assertIn('id="camera-lab-user-guide"', body)
+        self.assertIn('href="/workflow/camera-lab-user-guide.html"', body)
         self.assertIn('id="backend-switch-button"', body)
         self.assertIn('id="physical-write-mode-button"', body)
         self.assertIn('id="backend-switch-dialog"', body)
@@ -719,8 +721,11 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("Read-only discovery reference", body)
         self.assertIn('aria-label="Return to Compare a Subject/Profile Card"', body)
         self.assertLess(body.index('id="backend-badge"'), body.index('id="backend-switch-button"'))
+        self.assertLess(body.index('id="backend-badge"'), body.index('id="camera-lab-user-guide"'))
+        self.assertLess(body.index('id="camera-lab-user-guide"'), body.index('id="backend-switch-button"'))
         self.assertLess(body.index('id="backend-switch-button"'), body.index('id="physical-write-mode-button"'))
         self.assertLess(body.index('id="physical-write-mode-button"'), body.index('id="stop-camera-lab-button"'))
+
         self.assertLess(body.index("No setting writes"), body.index('id="project-context-badge"'))
         self.assertLess(body.index('id="project-context-badge"'), body.index('id="camera-lab-version"'))
         self.assertLess(body.index('id="cx-setup-panel"'), body.index('id="comparison-panel"'))
@@ -759,6 +764,13 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn(".header-tools .header-version { grid-column: 1; grid-row: 3; justify-self: end; }", styles)
         self.assertIn(".collapse-state::before", styles)
         self.assertIn(".guarded-active-workspace.is-processing { position: sticky", styles)
+
+    def test_camera_lab_user_guide_is_served_from_canonical_workflow_output(self):
+        status, headers, body = self.request("GET", "/workflow/camera-lab-user-guide.html")
+        header_map = dict(headers)
+        self.assertEqual(status, 200)
+        self.assertIn("Camera Lab User Guide", body)
+        self.assertIn("'unsafe-inline'", header_map["Content-Security-Policy"])
 
     def test_camera_lab_script_rescans_comparison_and_exposes_recovery(self):
         status, _, html = self.request("GET", "/")

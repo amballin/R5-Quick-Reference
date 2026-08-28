@@ -44,6 +44,8 @@ CAMERA_LAB_BUILD_INPUTS = (
     PROJECT_ROOT / "00 Master" / "my_menu_colors.yaml",
     PROJECT_ROOT / "00 Master" / "setting_access.yaml",
     PROJECT_ROOT / "controls.yaml",
+    PROJECT_ROOT / "WORKFLOWS" / "camera-lab-user-guide.md",
+    PROJECT_ROOT / "WORKFLOWS" / "camera-lab-user-guide.html",
 )
 CAMERA_LAB_SOURCE_SUFFIXES = {".c", ".css", ".entitlements", ".h", ".html", ".js", ".py"}
 
