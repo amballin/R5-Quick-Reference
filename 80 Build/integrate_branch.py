@@ -223,18 +223,32 @@ class BranchIntegrationWorkflow:
         self._require("Restore generated website files", ["git", "restore", "--staged", "--worktree", "--", "docs"], cwd=worktree)
         self._require("Remove untracked generated website files", ["git", "clean", "-fd", "--", "docs"], cwd=worktree)
 
-    def prepare(self, pending_changes, confirmed):
+    @staticmethod
+    def _notify(progress, stage, command="", output="", completed=False):
+        if progress:
+            progress(stage, command=command, output=output, completed=completed)
+
+    def prepare(self, pending_changes, confirmed, progress=None):
         if self._pending_count(pending_changes):
             raise BranchIntegrationError("Resolve every unsaved browser draft before preparing integration.")
         if confirmed is not True:
             raise BranchIntegrationError("Integration review confirmation is required.")
+        self._notify(progress, "Refreshing and checking branches", "$ git fetch --prune origin")
         state = self.inspect(0)
+        self._notify(progress, "Refreshing and checking branches", output=state.get("output", ""), completed=True)
         if state["phase"] == "blocked":
             raise BranchIntegrationError("Integration is blocked. " + " ".join(state["blockers"]))
         if state["phase"] != "review":
             return state
+        self._notify(progress, "Creating isolated integration worktree", "$ git worktree add --detach <temporary> origin/main")
         worktree = self._add_worktree("origin/main")
+        self._notify(progress, "Creating isolated integration worktree", output=str(worktree), completed=True)
         try:
+            self._notify(
+                progress,
+                "Testing the branch merge",
+                f"$ git merge --no-ff --no-commit {state['branchCommit'][:12]}",
+            )
             merge = self._run(
                 ["git", "merge", "--no-ff", "--no-commit", state["branchCommit"]],
                 cwd=worktree,
@@ -247,6 +261,7 @@ class BranchIntegrationWorkflow:
                 raise BranchIntegrationError(
                     "The working branch conflicts with current main. No branch was changed.\n" + detail
                 )
+            self._notify(progress, "Testing the branch merge", output=merge.stdout.strip(), completed=True)
             if self._git("diff", "--cached", "--name-only", "--", "docs", cwd=worktree):
                 self._run(["git", "merge", "--abort"], cwd=worktree)
                 raise BranchIntegrationError(
@@ -258,15 +273,23 @@ class BranchIntegrationWorkflow:
                 ("Development build", [sys.executable, "80 Build/build.py"], 15 * 60),
                 ("Full validation", [sys.executable, "80 Build/validator.py"], 15 * 60),
             ):
-                steps.append(self._require(label, command, cwd=worktree, timeout=timeout))
+                display_command = "$ " + " ".join(f"'{part}'" if " " in str(part) else str(part) for part in command)
+                self._notify(progress, label, display_command)
+                step = self._require(label, command, cwd=worktree, timeout=timeout)
+                steps.append(step)
+                self._notify(progress, label, output=step["output"], completed=True)
+            self._notify(progress, "Restoring generated website files", "$ git restore --staged --worktree -- docs")
             self._restore_generated_docs(worktree)
+            self._notify(progress, "Restoring generated website files", completed=True)
             if self._git("status", "--porcelain=v1", "--untracked-files=all", "--", "docs", cwd=worktree):
                 raise BranchIntegrationError("Generated website files could not be restored in the isolated review worktree.")
-            self._require(
+            self._notify(progress, "Creating reviewed integration candidate", f"$ git commit -m 'Merge {state['branch']} into main'")
+            candidate_step = self._require(
                 "Create reviewed integration candidate",
                 ["git", "commit", "-m", f"Merge {state['branch']} into main"],
                 cwd=worktree,
             )
+            self._notify(progress, "Creating reviewed integration candidate", output=candidate_step["output"], completed=True)
             candidate = self._git("rev-parse", "HEAD", cwd=worktree)
             tree = self._git("rev-parse", "HEAD^{tree}", cwd=worktree)
             files = [line for line in self._git("diff", "--name-status", f"{state['mainCommit']}..HEAD", cwd=worktree).splitlines() if line]

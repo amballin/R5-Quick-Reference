@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Visible Guarded Progress and Exact Optional Cleanup
+
+**Status:** Accepted
+**Date:** 2026-08-28
+
+Run Finish Day preparation and branch-integration preparation as serialized background jobs so the browser returns immediately and can display the current step, exact safe command, elapsed time, completed steps, and expandable command output. Keep the job identifier in browser session storage so a page refresh can reconnect to the running job. Do not expose environment values, credentials, or an unrestricted terminal, and do not change the existing confirmation, review-token, validation, Git, or publication boundaries.
+
+Add **Cleanup Review** as an optional final workspace, not a required Finish Day or integration stage. Inventory only recognized repository-owned disposable metadata and workflow-created backup directories with established timestamped names. For every recognized backup type and profile-operation target, always protect the newest successful recovery backup and list only superseded entries; apply no arbitrary age threshold. Ignore unrecognized or manually named backups. Select nothing by default, show exact paths, dates, sizes, and reasons, and require item-by-item selection plus a separate permanent-deletion confirmation. Recompute the inventory before deletion and stop if any selected item changed. Never offer canonical source, private-profile data, current deliverables, or temporary integration worktrees that should already be removed automatically.
+
 ## Guarded Working-Branch Integration in Profile Editor
 
 **Status:** Accepted

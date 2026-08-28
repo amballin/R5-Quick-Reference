@@ -137,6 +137,20 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
         self.assertEqual(inspected["phase"], "blocked")
         self.assertTrue(any("Finish Day" in blocker for blocker in inspected["blockers"]))
 
+    def test_prepare_reports_merge_and_validation_progress(self):
+        events = []
+        prepared = self.workflow.prepare(
+            0,
+            True,
+            progress=lambda stage, **details: events.append((stage, details)),
+        )
+        self.assertEqual(prepared["phase"], "merge-main")
+        stages = [stage for stage, _details in events]
+        self.assertIn("Creating isolated integration worktree", stages)
+        self.assertIn("Testing the branch merge", stages)
+        self.assertIn("Development build", stages)
+        self.assertIn("Creating reviewed integration candidate", stages)
+
 
 if __name__ == "__main__":
     unittest.main()

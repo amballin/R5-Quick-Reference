@@ -34,7 +34,7 @@ Review and approve the highlights as reader-facing release notes. Do not continu
 
 ## 2. Finish the source work and synchronize Git
 
-In Profile Editor, open **Finish Day**. It guides the same workflow through four separately guarded stages: **Check**, **Prepare**, **Commit**, and **Push**. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.
+In Profile Editor, open **Finish Day**. It guides the same workflow through four separately guarded stages: **Check**, **Prepare**, **Commit**, and **Push**. Prepare immediately shows the current command, elapsed time, completed steps, and an expandable log; a page refresh reconnects to the running preparation. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.
 
 The terminal interface remains available from the repository root and uses the same shared implementation:
 
@@ -68,7 +68,7 @@ Skip this step when you are stopping for the day or are already working on `main
 In Profile Editor, open **Integrate Branch** only after Finish Day reports that the current non-main branch is clean and synchronized. The workspace uses five separately guarded stages:
 
 1. **Check** refreshes `origin`, verifies the clean current branch and its exact same-named upstream, and targets only `origin/main`.
-2. **Review** creates the proposed merge in a disposable worktree based on current `origin/main`. It stops without changing either real branch on conflicts, rejects proposed `docs/` changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.
+2. **Review** shows the same reconnectable live command progress while it creates the proposed merge in a disposable worktree based on current `origin/main`. It stops without changing either real branch on conflicts, rejects proposed `docs/` changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.
 3. **Merge Main** requires confirmation and applies the exact reviewed tree to a clean local `main`. Nothing is pushed.
 4. **Push Main** requires a separate confirmation and updates only `origin/main`. It does not call `publish.sh`, change release metadata, or publish the website.
 5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.
@@ -76,6 +76,12 @@ In Profile Editor, open **Integrate Branch** only after Finish Day reports that 
 If `main` is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, `origin/main` means the fork owner's main branch; receiving enhancements from a separate upstream repository remains a distinct operation.
 
 Do not continue to publication until Integrate Branch reports that `main` and the working branch are synchronized.
+
+## 2B. Optionally review cleanup
+
+After Finish Day or branch integration completes, choose **Review optional cleanup** when you want to inspect removable items. Cleanup Review lists only recognized superseded timestamped workflow backups and exact `.DS_Store` metadata. It always protects the newest successful recovery backup of each workflow type and profile operation/target, applies no age threshold, ignores manually named or unrecognized backups, and selects nothing automatically.
+
+Review the full path, date, size, and reason for each candidate. Permanent deletion requires selecting each exact item and separately confirming deletion. The editor recomputes the candidates and stops if anything changed. This step never offers canonical source, current deliverables, private profile data, protected newest backups, or automatic temporary integration worktrees.
 
 ## 3. Build and verify both spreadsheet families
 

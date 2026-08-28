@@ -77,6 +77,10 @@
           <span class="nav-note">Plan shared-setting changes</span>
         </button>
         <p class="nav-heading nav-heading-advanced">Occasional</p>
+        <button class="view-tab" type="button" data-view="cleanup-review">
+          <span class="nav-label">Cleanup Review</span>
+          <span class="nav-note">Optional exact deletion review</span>
+        </button>
         <button class="view-tab" type="button" data-view="release-publish">
           <span class="nav-label">Release &amp; Publish</span>
           <span class="nav-note">Deliberate website release</span>
@@ -96,7 +100,7 @@
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
       Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, and branch integration are available only through their separately confirmed guarded workspaces.
+      Reference-card edits, released-card removal, permanent card or source deletion, direct baseline edits, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Optional Cleanup Review may permanently remove only exact separately confirmed workflow-owned disposable items. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, and branch integration are available only through their separately confirmed guarded workspaces.
     </section>
 
     <section id="today-view" class="app-view">
@@ -572,8 +576,13 @@
             <div><p class="eyebrow">Required checkpoint</p><h3>Validate and prepare source</h3></div>
           </div>
           <p class="muted">This runs source validation, the normal development build, and full validation. If the build changes <code>docs/</code>, Finish Day creates a recovery archive and restores those generated files so the handoff cannot publish Pages.</p>
-          <label class="finish-day-confirm"><input id="finish-day-confirm-prepare" type="checkbox"> I understand this may update local build output and will safely restore generated <code>docs/</code>.</label>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-prepare" type="checkbox"><span>I understand this may update local build output and will safely restore generated <code>docs/</code>.</span></label>
           <button id="prepare-finish-day" class="primary" type="button" disabled>Validate and prepare</button>
+          <div id="finish-day-progress" class="workflow-progress" hidden>
+            <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="finish-day-progress-stage">Starting…</strong><span id="finish-day-progress-elapsed" class="muted"></span></div>
+            <code id="finish-day-progress-command" class="workflow-progress-command"></code>
+            <details><summary>Watch command log</summary><pre id="finish-day-progress-log" tabindex="0"></pre></details>
+          </div>
         </section>
 
         <section id="finish-day-commit-panel" class="finish-day-stage" hidden>
@@ -583,7 +592,7 @@
           </div>
           <pre id="finish-day-file-list" class="finish-day-file-list" tabindex="0"></pre>
           <label class="finish-day-field">Commit message<input id="finish-day-commit-message" type="text" maxlength="200" placeholder="Describe this completed update"></label>
-          <label class="finish-day-confirm"><input id="finish-day-confirm-commit" type="checkbox"> Commit exactly the source files listed above. Generated <code>docs/</code> must remain excluded.</label>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-commit" type="checkbox"><span>Commit exactly the source files listed above. Generated <code>docs/</code> must remain excluded.</span></label>
           <button id="commit-finish-day" class="save-action" type="button" disabled>Commit reviewed source</button>
         </section>
 
@@ -592,7 +601,7 @@
             <div><p class="eyebrow">Separate synchronization approval</p><h3>Push the current branch</h3></div>
           </div>
           <p id="finish-day-push-target" class="muted"></p>
-          <label class="finish-day-confirm"><input id="finish-day-confirm-push" type="checkbox"> Push only this branch to its exact matching upstream. This does not publish the website.</label>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-push" type="checkbox"><span>Push only this branch to its exact matching upstream. This does not publish the website.</span></label>
           <button id="push-finish-day" class="save-action" type="button" disabled>Push current branch</button>
         </section>
 
@@ -600,6 +609,7 @@
           <strong>Finished for today</strong>
           <span>The current branch is clean and synchronized. It is safe to stop or switch Macs.</span>
           <button id="open-branch-integration" class="secondary" type="button">Consider integration to main</button>
+          <button id="finish-open-cleanup" class="secondary" type="button">Review optional cleanup</button>
         </section>
       </section>
       <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete Finish Day reference</a></div>
@@ -645,8 +655,13 @@
             <div><p class="eyebrow">Isolated safety check</p><h3>Prepare the exact main result</h3></div>
           </div>
           <p class="muted">This creates a disposable worktree from current <code>origin/main</code>, merges the working branch there, runs source validation, the development build, and full validation, then restores generated <code>docs/</code>. No real branch is changed.</p>
-          <label class="finish-day-confirm"><input id="branch-integration-confirm-prepare" type="checkbox"> Prepare and validate an isolated integration candidate. Stop without changing either branch if conflicts or generated website changes appear.</label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-prepare" type="checkbox"><span>Prepare and validate an isolated integration candidate. Stop without changing either branch if conflicts or generated website changes appear.</span></label>
           <button id="prepare-branch-integration" class="primary" type="button" disabled>Prepare integration review</button>
+          <div id="branch-integration-progress" class="workflow-progress" hidden>
+            <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="branch-integration-progress-stage">Starting…</strong><span id="branch-integration-progress-elapsed" class="muted"></span></div>
+            <code id="branch-integration-progress-command" class="workflow-progress-command"></code>
+            <details><summary>Watch command log</summary><pre id="branch-integration-progress-log" tabindex="0"></pre></details>
+          </div>
         </section>
 
         <section id="branch-integration-merge-panel" class="finish-day-stage" hidden>
@@ -656,7 +671,7 @@
           </div>
           <label class="finish-day-field">Commits proposed for main<pre id="branch-integration-commit-list" class="finish-day-file-list" tabindex="0"></pre></label>
           <label class="finish-day-field">Files changed from current main<pre id="branch-integration-file-list" class="finish-day-file-list" tabindex="0"></pre></label>
-          <label class="finish-day-confirm"><input id="branch-integration-confirm-merge" type="checkbox"> Apply exactly this validated tree to local <code>main</code>. Nothing will be pushed or published.</label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-merge" type="checkbox"><span>Apply exactly this validated tree to local <code>main</code>. Nothing will be pushed or published.</span></label>
           <button id="merge-branch-to-main" class="save-action" type="button" disabled>Merge into local main</button>
         </section>
 
@@ -665,7 +680,7 @@
             <div><p class="eyebrow">Separate remote approval</p><h3>Push main</h3></div>
           </div>
           <p class="muted">Push the reviewed local <code>main</code> commit to <code>origin/main</code>. The website publisher is not called, and no release is created.</p>
-          <label class="finish-day-confirm"><input id="branch-integration-confirm-push" type="checkbox"> Push the reviewed integration commit to <code>origin/main</code>. I understand this changes the shared main branch but does not publish the website.</label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-push" type="checkbox"><span>Push the reviewed integration commit to <code>origin/main</code>. I understand this changes the shared main branch but does not publish the website.</span></label>
           <button id="push-integrated-main" class="save-action" type="button" disabled>Push main</button>
         </section>
 
@@ -674,16 +689,46 @@
             <div><p class="eyebrow">Return to branch work</p><h3>Resynchronize the working branch</h3></div>
           </div>
           <p class="muted">Fast-forward the current working branch to the integrated main commit, then push only its exact same-named upstream. No history is rewritten.</p>
-          <label class="finish-day-confirm"><input id="branch-integration-confirm-resync" type="checkbox"> Fast-forward and push this working branch so it matches integrated <code>main</code>.</label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-resync" type="checkbox"><span>Fast-forward and push this working branch so it matches integrated <code>main</code>.</span></label>
           <button id="resync-integrated-branch" class="save-action" type="button" disabled>Resync working branch</button>
         </section>
 
         <section id="branch-integration-complete-panel" class="finish-day-complete" hidden>
           <strong>Integration complete</strong>
           <span>Main and the working branch are synchronized. The website was not published.</span>
+          <button id="integration-open-cleanup" class="secondary" type="button">Review optional cleanup</button>
         </section>
       </section>
       <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete integration and Finish Day reference</a></div>
+    </section>
+
+    <section id="cleanup-review-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Optional final step</p>
+          <h2>Cleanup Review</h2>
+          <p class="muted">Review only recognized superseded workflow backups and disposable macOS metadata. The newest successful backup of every recognized type is protected, and nothing is selected automatically.</p>
+        </div>
+        <button id="refresh-cleanup-review" class="secondary" type="button">Refresh candidates</button>
+      </div>
+      <div id="cleanup-review-message" class="message" role="status" hidden></div>
+      <section class="cleanup-review-panel">
+        <div class="finish-day-stage-heading">
+          <div><p class="eyebrow">Exact inventory</p><h3>Optional cleanup candidates</h3></div>
+          <span id="cleanup-review-count" class="workflow-status checking">Checking…</span>
+        </div>
+        <p id="cleanup-review-summary" class="muted">Checking workflow-owned backups and disposable metadata.</p>
+        <div id="cleanup-candidate-list" class="cleanup-candidate-list"></div>
+        <details id="cleanup-protected-details" class="workflow-details" hidden>
+          <summary id="cleanup-protected-summary">Show protected newest backups</summary>
+          <div id="cleanup-protected-list" class="cleanup-protected-list"></div>
+        </details>
+        <label class="finish-day-confirm cleanup-delete-confirm"><input id="cleanup-confirm-delete" type="checkbox"><span>Permanently delete only the exact checked items above. This cannot be undone by Profile Editor.</span></label>
+        <div class="day-panel-actions">
+          <span id="cleanup-selected-summary">No items selected.</span>
+          <button id="delete-cleanup-candidates" class="danger-action" type="button" disabled>Delete selected permanently</button>
+        </div>
+      </section>
     </section>
 
     <section id="release-publish-view" class="app-view" hidden>

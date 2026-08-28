@@ -47,6 +47,7 @@ Use the workspace sidebar:
 - **Deleted Cards** — Review and restore unreleased cards removed from active source.
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
 - **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
+- **Cleanup Review** — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.
 - **Release & Publish** — Review the deliberate release sequence and open the authoritative Finish Day and publishing guides. Prototype branches may be synchronized to their matching prototype upstream through **Finish Day**, but live website publication is available only from `main`. This workspace does not run commit, push, or publication commands.
 - **Setup & Sharing** — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.
 - **Camera Reference** — Find and review setup records and their source links.
@@ -70,7 +71,7 @@ The ordinary stopping point is the same on one Mac or two: Finish Day must leave
 Open **Finish Day** only after every browser draft has been saved or discarded. The workspace uses four guarded stages:
 
 1. **Check** refreshes remote-tracking state and verifies the current branch, exact matching upstream, browser drafts, verification status, and ahead/behind state. It never pulls or merges.
-2. **Prepare** requires confirmation, then runs source validation, the normal development build, and full validation. If the build changes `docs/`, it creates a machine-local recovery archive and restores those generated files before source review.
+2. **Prepare** requires confirmation, then immediately opens an in-page progress panel showing the current command, elapsed time, completed steps, and an expandable command log while source validation, the normal development build, and full validation run. Refreshing the page reconnects to the same running preparation. If the build changes `docs/`, it creates a machine-local recovery archive and restores those generated files before source review.
 3. **Commit** displays the exact eligible source list. Enter a concise message, check the exact-review confirmation, and commit. A content-sensitive one-use review expires if any tracked diff or untracked file changes after preparation. Nothing is pushed at this stage.
 4. **Push** requires a new confirmation. It pushes only the current branch to its exact same-named upstream on `origin`, refuses any outgoing `docs/` change, and verifies the final clean synchronized state.
 
@@ -81,12 +82,18 @@ The existing `finish-day.sh` command remains available and uses the same underly
 After Finish Day reports a clean synchronized non-main branch, open **Integrate Branch**. This is optional; finishing the day does not require integration.
 
 1. **Check** refreshes `origin`, confirms the current branch tracks its exact same-named upstream, and requires no local or browser changes.
-2. **Review** creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.
+2. **Review** starts the same reconnectable in-page command progress, creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.
 3. **Merge Main** requires confirmation and applies the exact validated tree to a clean local `main`. Nothing is pushed.
 4. **Push Main** requires a separate confirmation and updates `origin/main`. It does not call the publisher, change website version metadata, or create a release.
 5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It never rebases or rewrites shared history.
 
 If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When `main` is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, `origin/main` is the fork owner's main branch; updates from a separate upstream project remain a different workflow.
+
+## Review optional cleanup
+
+After Finish Day or Integrate Branch completes, choose **Review optional cleanup**, or open **Cleanup Review** directly. The editor lists only exact `.DS_Store` metadata and recognized timestamped workflow backups that have been superseded by a newer successful backup of the same type and profile operation/target. The newest successful recovery backup is always protected. There is no age requirement, and manually named or unrecognized backups are ignored.
+
+Nothing is checked automatically. Review each full path, date, size, and reason. To delete, check the exact items, then separately confirm permanent deletion. The editor checks the candidates again immediately before deletion and stops if one changed. Source files, private profile data, current deliverables, protected backups, and automatic integration worktrees are never offered.
 
 **Setup & Sharing** documents a possible future private profile pack for an independent fork owner. The current implementation does not move profiles or change their source location; they remain part of this repository.
 

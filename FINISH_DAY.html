@@ -134,7 +134,7 @@
 <p>Review and approve the highlights as reader-facing release notes. Do not continue until the exact upcoming version exists in <code>00 Master/release_notes.yaml</code>.</p>
 </section>
 <section class="step"><h2>2. Finish the source work and synchronize Git</h2>
-<p>In Profile Editor, open <strong>Finish Day</strong>. It guides the same workflow through four separately guarded stages: <strong>Check</strong>, <strong>Prepare</strong>, <strong>Commit</strong>, and <strong>Push</strong>. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.</p>
+<p>In Profile Editor, open <strong>Finish Day</strong>. It guides the same workflow through four separately guarded stages: <strong>Check</strong>, <strong>Prepare</strong>, <strong>Commit</strong>, and <strong>Push</strong>. Prepare immediately shows the current command, elapsed time, completed steps, and an expandable log; a page refresh reconnects to the running preparation. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.</p>
 <p>The terminal interface remains available from the repository root and uses the same shared implementation:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/finish-day.sh</code></pre></div>
 <p>After preparation approval, both interfaces run source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then:</p>
@@ -155,13 +155,17 @@
 <p>In Profile Editor, open <strong>Integrate Branch</strong> only after Finish Day reports that the current non-main branch is clean and synchronized. The workspace uses five separately guarded stages:</p>
 <ol>
 <li><strong>Check</strong> refreshes <code>origin</code>, verifies the clean current branch and its exact same-named upstream, and targets only <code>origin/main</code>.</li>
-<li><strong>Review</strong> creates the proposed merge in a disposable worktree based on current <code>origin/main</code>. It stops without changing either real branch on conflicts, rejects proposed <code>docs/</code> changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.</li>
+<li><strong>Review</strong> shows the same reconnectable live command progress while it creates the proposed merge in a disposable worktree based on current <code>origin/main</code>. It stops without changing either real branch on conflicts, rejects proposed <code>docs/</code> changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.</li>
 <li><strong>Merge Main</strong> requires confirmation and applies the exact reviewed tree to a clean local <code>main</code>. Nothing is pushed.</li>
 <li><strong>Push Main</strong> requires a separate confirmation and updates only <code>origin/main</code>. It does not call <code>publish.sh</code>, change release metadata, or publish the website.</li>
 <li><strong>Resync</strong> requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.</li>
 </ol>
 <p>If <code>main</code> is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, <code>origin/main</code> means the fork owner&#x27;s main branch; receiving enhancements from a separate upstream repository remains a distinct operation.</p>
 <p>Do not continue to publication until Integrate Branch reports that <code>main</code> and the working branch are synchronized.</p>
+</section>
+<section class="step"><h2>2B. Optionally review cleanup</h2>
+<p>After Finish Day or branch integration completes, choose <strong>Review optional cleanup</strong> when you want to inspect removable items. Cleanup Review lists only recognized superseded timestamped workflow backups and exact <code>.DS_Store</code> metadata. It always protects the newest successful recovery backup of each workflow type and profile operation/target, applies no age threshold, ignores manually named or unrecognized backups, and selects nothing automatically.</p>
+<p>Review the full path, date, size, and reason for each candidate. Permanent deletion requires selecting each exact item and separately confirming deletion. The editor recomputes the candidates and stops if anything changed. This step never offers canonical source, current deliverables, private profile data, protected newest backups, or automatic temporary integration worktrees.</p>
 </section>
 <section class="step"><h2>3. Build and verify both spreadsheet families</h2>
 <p>Run:</p>
