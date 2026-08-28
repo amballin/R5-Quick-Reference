@@ -85,6 +85,8 @@ Review the full path, date, size, and reason for each candidate. Permanent delet
 
 ## 3. Build and verify both spreadsheet families
 
+For the normal no-Terminal path, choose **Rebuild and replace both families** in Profile Editor's **Release & Publish** review. The editor runs this preparation immediately before the supported publisher. Use the command below only as a recovery or independent preparation interface.
+
 Run:
 
 ```bash
@@ -94,6 +96,8 @@ Run:
 This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup & Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.
 
 ## 4. Choose the website version and publish
+
+In the Main project Profile Editor, open **Release & Publish**. Choose the next minor version or a new major series, confirm that its curated highlights are synchronized, select the spreadsheet action, review the exact release, and separately approve **Publish live website**. The page shows reconnectable progress and calls the same supported publisher described below. From a prototype editor, use **Open Main project editor** only after Integrate Branch is complete.
 
 Confirm that the current branch is `main`. The publisher stops before building or changing files on every other branch.
 
@@ -118,6 +122,8 @@ The command is successful only when it prints `PUBLICATION COMPLETE AND VERIFIED
 Later plain `publish.sh` releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.
 
 ## 5. Verify the final Git state
+
+Profile Editor performs both checks below automatically and shows completion only when publication and final synchronization pass. The commands remain available for recovery or independent verification.
 
 First verify the publication itself:
 

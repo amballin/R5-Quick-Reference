@@ -1,6 +1,6 @@
 # Profile Editor User Guide
 
-Profile Editor 1.0 is the main local interface for routine work: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, optionally integrating a finished branch into `main`, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages linked from the editor for detailed handoff reference, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.
+Profile Editor 1.0 is the main local interface for routine work and deliberate releases: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, optionally integrating a finished branch into `main`, publishing from the Main project, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically.
 
 ## Start the editor
 
@@ -14,9 +14,9 @@ The self-contained app is the normal launch method; no npm command is required f
 npm run ui
 ```
 
-Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press **Control-C** in Terminal when you are finished.
+Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Use **Stop Profile Editor** in the page header; **Control-C** is only the fallback for this diagnostic launch method.
 
-The editor runs only on this Mac. It never publishes the website. Routine source commit and branch push are available only inside **Finish Day**. Merge to main, main push, and branch resynchronization are available only inside **Integrate Branch**, each with exact review and separate confirmation.
+The editor runs only on this Mac. Routine source commit and branch push are available only inside **Finish Day**. Merge to main, main push, and branch resynchronization are available only inside **Integrate Branch**. Live publication is available only inside **Release & Publish** in the Main project editor, after a separate exact review and confirmation.
 
 Before editing, confirm the header badge. **Main project** means the app is running from the authoritative `main` worktree. **Prototype · branch-name** means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.
 
@@ -48,7 +48,7 @@ Use the workspace sidebar:
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
 - **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
 - **Cleanup Review** — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.
-- **Release & Publish** — Review the deliberate release sequence and open the authoritative Finish Day and publishing guides. Prototype branches may be synchronized to their matching prototype upstream through **Finish Day**, but live website publication is available only from `main`. This workspace does not run commit, push, or publication commands.
+- **Release & Publish** — Prepare reader-facing highlights, select a minor or major version, choose how spreadsheet downloads are handled, review the exact live release, publish through the established main-only publisher, and require a verified clean result. A prototype workspace can open the Main project editor after integration.
 - **Setup & Sharing** — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.
 - **Camera Reference** — Find and review setup records and their source links.
 
@@ -88,6 +88,21 @@ After Finish Day reports a clean synchronized non-main branch, open **Integrate 
 5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It never rebases or rewrites shared history.
 
 If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When `main` is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, `origin/main` is the fork owner's main branch; updates from a separate upstream project remain a different workflow.
+
+## Publish without Terminal
+
+Open **Release & Publish** only when you intend to update the live website.
+
+1. From a prototype editor, complete Finish Day and Integrate Branch, then choose **Open Main project editor**. Publication never runs from the prototype branch.
+2. In Main, refresh readiness. The workspace requires no browser drafts, clean synchronized `main`, and exact `origin/main` tracking.
+3. If the upcoming version has no curated notes, choose the next minor release or a new major series, enter one reader-facing highlight per line, review the exact YAML addition, and save it. The editor creates a recovery backup and runs source validation.
+4. Open **Finish Day** to review, commit, and push that release-note source change. Return to **Release & Publish** after Main is clean and synchronized.
+5. Choose how spreadsheet downloads are handled: preserve the exact current verified files, rebuild and replace both workbook families, or deliberately remove all workbook downloads. Preserve is blocked when the published workbook inputs are stale.
+6. Review the exact version, highlights, spreadsheet action, and current main commit. Check the separate live-site confirmation only when those details are correct.
+7. Choose **Publish live website**. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.
+8. Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.
+
+The editor calls the existing supported publisher and does not create another deployment path. A failed run preserves its diagnostic log and never displays the successful receipt.
 
 ## Review optional cleanup
 

@@ -76,6 +76,8 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 ## Publish the website
 
+For normal use, open **Release & Publish** in the Main project Profile Editor. It guides release notes, version selection, spreadsheet handling, exact live-site confirmation, publication progress, and final verification without requiring Terminal. The command below remains the supported recovery and diagnostic interface; the editor calls this same publisher rather than replacing it.
+
 ```bash
 ./80\ Build/scripts/publish.sh
 ```

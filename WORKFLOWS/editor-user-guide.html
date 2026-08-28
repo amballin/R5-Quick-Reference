@@ -114,14 +114,14 @@
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Profile Editor User Guide</h1>
-<p>Profile Editor 1.0 is the main local interface for routine work: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, optionally integrating a finished branch into <code>main</code>, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages linked from the editor for detailed handoff reference, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.</p>
+<p>Profile Editor 1.0 is the main local interface for routine work and deliberate releases: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, optionally integrating a finished branch into <code>main</code>, publishing from the Main project, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically.</p>
 <section class="step"><h2>Start the editor</h2>
 <p>For routine use, double-click <strong>R5 Profile Editor.app</strong> in the machine-local <code>Applications</code> folder. It starts in the background without opening Terminal and opens Google Chrome automatically. The main project uses port 8765 and a development prototype uses port 8766, so both can run at the same time. Their header badges and macOS application identities remain distinct.</p>
 <p>If an editor is running without a visible Chrome window, open that checkout&#x27;s <strong>R5 Profile Editor.app</strong> again to recover the window. Use <strong>Stop Profile Editor</strong> in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server. If the window cannot be recovered, double-click <strong>Stop Profile Editor.command</strong> in that repository. It clears stale process records, recognizes one verified pre-upgrade prototype left on port 8765, and stops only a server verified as belonging to that exact checkout.</p>
 <p>The self-contained app is the normal launch method; no npm command is required for routine use. For Profile Editor development or diagnostics only, from the project root run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
-<p>Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press <strong>Control-C</strong> in Terminal when you are finished.</p>
-<p>The editor runs only on this Mac. It never publishes the website. Routine source commit and branch push are available only inside <strong>Finish Day</strong>. Merge to main, main push, and branch resynchronization are available only inside <strong>Integrate Branch</strong>, each with exact review and separate confirmation.</p>
+<p>Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Use <strong>Stop Profile Editor</strong> in the page header; <strong>Control-C</strong> is only the fallback for this diagnostic launch method.</p>
+<p>The editor runs only on this Mac. Routine source commit and branch push are available only inside <strong>Finish Day</strong>. Merge to main, main push, and branch resynchronization are available only inside <strong>Integrate Branch</strong>. Live publication is available only inside <strong>Release &amp; Publish</strong> in the Main project editor, after a separate exact review and confirmation.</p>
 <p>Before editing, confirm the header badge. <strong>Main project</strong> means the app is running from the authoritative <code>main</code> worktree. <strong>Prototype · branch-name</strong> means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.</p>
 </section>
 <section class="step"><h2>Understand the working model</h2>
@@ -150,7 +150,7 @@
 <li><strong>My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
 <li><strong>Baseline Setup</strong> — Test a proposed shared change and review its effect across profiles.</li>
 <li><strong>Cleanup Review</strong> — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.</li>
-<li><strong>Release &amp; Publish</strong> — Review the deliberate release sequence and open the authoritative Finish Day and publishing guides. Prototype branches may be synchronized to their matching prototype upstream through <strong>Finish Day</strong>, but live website publication is available only from <code>main</code>. This workspace does not run commit, push, or publication commands.</li>
+<li><strong>Release &amp; Publish</strong> — Prepare reader-facing highlights, select a minor or major version, choose how spreadsheet downloads are handled, review the exact live release, publish through the established main-only publisher, and require a verified clean result. A prototype workspace can open the Main project editor after integration.</li>
 <li><strong>Setup &amp; Sharing</strong> — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.</li>
 <li><strong>Camera Reference</strong> — Find and review setup records and their source links.</li>
 </ul>
@@ -186,6 +186,20 @@
 <li><strong>Resync</strong> requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named <code>origin</code> branch. It never rebases or rewrites shared history.</li>
 </ol>
 <p>If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When <code>main</code> is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, <code>origin/main</code> is the fork owner&#x27;s main branch; updates from a separate upstream project remain a different workflow.</p>
+</section>
+<section class="step"><h2>Publish without Terminal</h2>
+<p>Open <strong>Release &amp; Publish</strong> only when you intend to update the live website.</p>
+<ol>
+<li>From a prototype editor, complete Finish Day and Integrate Branch, then choose <strong>Open Main project editor</strong>. Publication never runs from the prototype branch.</li>
+<li>In Main, refresh readiness. The workspace requires no browser drafts, clean synchronized <code>main</code>, and exact <code>origin/main</code> tracking.</li>
+<li>If the upcoming version has no curated notes, choose the next minor release or a new major series, enter one reader-facing highlight per line, review the exact YAML addition, and save it. The editor creates a recovery backup and runs source validation.</li>
+<li>Open <strong>Finish Day</strong> to review, commit, and push that release-note source change. Return to <strong>Release &amp; Publish</strong> after Main is clean and synchronized.</li>
+<li>Choose how spreadsheet downloads are handled: preserve the exact current verified files, rebuild and replace both workbook families, or deliberately remove all workbook downloads. Preserve is blocked when the published workbook inputs are stale.</li>
+<li>Review the exact version, highlights, spreadsheet action, and current main commit. Check the separate live-site confirmation only when those details are correct.</li>
+<li>Choose <strong>Publish live website</strong>. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.</li>
+<li>Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.</li>
+</ol>
+<p>The editor calls the existing supported publisher and does not create another deployment path. A failed run preserves its diagnostic log and never displays the successful receipt.</p>
 </section>
 <section class="step"><h2>Review optional cleanup</h2>
 <p>After Finish Day or Integrate Branch completes, choose <strong>Review optional cleanup</strong>, or open <strong>Cleanup Review</strong> directly. The editor lists only exact <code>.DS_Store</code> metadata and recognized timestamped workflow backups that have been superseded by a newer successful backup of the same type and profile operation/target. The newest successful recovery backup is always protected. There is no age requirement, and manually named or unrecognized backups are ignored.</p>

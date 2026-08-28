@@ -168,11 +168,13 @@
 <p>Review the full path, date, size, and reason for each candidate. Permanent deletion requires selecting each exact item and separately confirming deletion. The editor recomputes the candidates and stops if anything changed. This step never offers canonical source, current deliverables, private profile data, protected newest backups, or automatic temporary integration worktrees.</p>
 </section>
 <section class="step"><h2>3. Build and verify both spreadsheet families</h2>
+<p>For the normal no-Terminal path, choose <strong>Rebuild and replace both families</strong> in Profile Editor&#x27;s <strong>Release &amp; Publish</strong> review. The editor runs this preparation immediately before the supported publisher. Use the command below only as a recovery or independent preparation interface.</p>
 <p>Run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
 <p>This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup &amp; Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.</p>
 </section>
 <section class="step"><h2>4. Choose the website version and publish</h2>
+<p>In the Main project Profile Editor, open <strong>Release &amp; Publish</strong>. Choose the next minor version or a new major series, confirm that its curated highlights are synchronized, select the spreadsheet action, review the exact release, and separately approve <strong>Publish live website</strong>. The page shows reconnectable progress and calls the same supported publisher described below. From a prototype editor, use <strong>Open Main project editor</strong> only after Integrate Branch is complete.</p>
 <p>Confirm that the current branch is <code>main</code>. The publisher stops before building or changing files on every other branch.</p>
 <p>To start a new major website version, replace <code>N</code> with an integer greater than the current major version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
@@ -184,6 +186,7 @@
 <p>Later plain <code>publish.sh</code> releases preserve these exact workbook downloads while their recorded source fingerprints remain current. If relevant workbook inputs changed, plain publication stops and requires a rebuild or explicit removal.</p>
 </section>
 <section class="step"><h2>5. Verify the final Git state</h2>
+<p>Profile Editor performs both checks below automatically and shows completion only when publication and final synchronization pass. The commands remain available for recovery or independent verification.</p>
 <p>First verify the publication itself:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
 <p>The required result begins with:</p>

@@ -71,6 +71,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
             "80 Build/project_context.py",
+            "80 Build/publication_workflow.py",
+            "80 Build/release_notes.py",
+            "80 Build/publish_metadata.yaml",
             "80 Build/scripts/profile-editor-runtime.sh",
             "80 Build/scripts/preflight-git.sh",
             "80 Build/scripts/git-status-report.sh",
@@ -658,7 +661,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         first = self.model.editor_info()
         second = self.model.editor_info()
         self.assertEqual(first, second)
-        self.assertEqual(first["version"], application_version_info(PROJECT_ROOT)["version"])
+        self.assertEqual(first["version"], application_version_info(self.root)["version"])
         self.assertEqual(first["context_name"], "Unknown")
         self.assertRegex(first["build"], r"^[0-9a-f]{8}$")
         self.assertEqual(first["project_context"]["kind"], "unknown")
@@ -803,7 +806,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/guarded-job-status"', javascript)
         self.assertIn('request("/api/cleanup-status"', javascript)
         self.assertIn('request("/api/cleanup-delete"', javascript)
+        self.assertIn('request("/api/publication-status"', javascript)
+        self.assertIn('request("/api/publication-notes-review"', javascript)
+        self.assertIn('request("/api/publication-notes-save"', javascript)
+        self.assertIn('request("/api/publication-review"', javascript)
+        self.assertIn('request("/api/publication-start"', javascript)
+        self.assertIn('request("/api/main-editor-launch"', javascript)
         self.assertIn("Watch command log", html)
+        self.assertIn("Publish live website", html)
+        self.assertIn("Rebuild and replace both families", html)
+        self.assertIn("Open Main project editor", html)
         self.assertIn("Permanently delete only the exact checked items", html)
         self.assertIn('<span>Push the reviewed integration commit to <code>origin/main</code>.', html)
         self.assertIn(".integration-steps", stylesheet)
@@ -924,6 +936,98 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("PUBLICATION BLOCKED", completed.stderr)
         self.assertIn("only from 'main'", completed.stderr)
         self.assertFalse((self.root / "80 Build" / ".publish_metadata.candidate.yaml").exists())
+
+    def test_publication_release_notes_are_exact_reviewed_backed_up_and_validated(self):
+        from publication_workflow import PublicationWorkflow
+
+        workflow = PublicationWorkflow(self.root)
+
+        def git_result(*arguments):
+            if arguments == ("branch", "--show-current"):
+                return "main"
+            if arguments == ("status", "--porcelain=v1", "--untracked-files=all"):
+                return ""
+            raise AssertionError(arguments)
+
+        workflow._git = git_result
+        workflow._run = lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="Source validation passed")
+        review = workflow.review_release_notes(
+            None,
+            ["Added Terminal-free guarded publication.", "Added exact live-release verification."],
+        )
+        self.assertEqual(review["nextVersion"], "2.04")
+        self.assertIn('"2.04"', review["diff"])
+        saved = workflow.save_release_notes(review["reviewToken"], True)
+        notes = load_yaml(self.root / "00 Master" / "release_notes.yaml")
+        self.assertEqual(
+            notes["releases"]["2.04"]["highlights"],
+            ["Added Terminal-free guarded publication.", "Added exact live-release verification."],
+        )
+        self.assertTrue(Path(saved["backup"]).is_dir())
+        self.assertTrue((Path(saved["backup"]) / "release_notes.yaml").is_file())
+
+    def test_publication_review_binds_options_and_simulated_publish_requires_receipts(self):
+        from publication_workflow import PublicationWorkflow
+
+        workflow = PublicationWorkflow(self.root)
+        ready = {
+            "phase": "ready",
+            "branch": "main",
+            "upstream": "origin/main",
+            "currentVersion": "2.03",
+            "nextVersion": "3.00",
+            "releaseKind": "major",
+            "majorVersion": 3,
+            "notesReady": True,
+            "highlights": ["Major release highlight."],
+            "spreadsheetState": {"status": "current", "output": "current"},
+            "blockers": [],
+            "output": "ready",
+        }
+        workflow.inspect = lambda *args, **kwargs: dict(ready)
+        workflow._git = lambda *args: "abc123" if args == ("rev-parse", "HEAD") else ""
+        commands = []
+
+        def run(command, **kwargs):
+            commands.append(command)
+            if Path(command[0]).name == "publish.sh":
+                return SimpleNamespace(returncode=0, stdout="PUBLICATION COMPLETE AND VERIFIED.\nWebsite published successfully.")
+            if Path(command[0]).name == "git-status-report.sh":
+                return SimpleNamespace(returncode=0, stdout="STATUS: CLEAN AND SYNCHRONIZED")
+            return SimpleNamespace(returncode=0, stdout="prepared")
+
+        workflow._run = run
+        review = workflow.review_publication(0, 3, "replace")
+        result = workflow.publish(review["reviewToken"], True)
+        self.assertEqual(result["phase"], "complete")
+        self.assertEqual(result["version"], "3.00")
+        self.assertTrue(any(Path(command[0]).name == "build-all-spreadsheet-downloads.sh" for command in commands))
+        publish_command = next(command for command in commands if Path(command[0]).name == "publish.sh")
+        self.assertIn("--major-version", publish_command)
+        self.assertIn("--spreadsheet-downloads", publish_command)
+        self.assertIn("STATUS: CLEAN AND SYNCHRONIZED", result["output"])
+
+    def test_publication_model_uses_guarded_background_job_without_publishing_in_test(self):
+        class FakePublication:
+            def inspect(self, pending, major):
+                return {"phase": "ready", "pending": pending, "major": major}
+
+            def publish(self, token, confirmed, progress=None):
+                progress("Simulated publication", command="$ publish.sh", completed=True)
+                return {"phase": "complete", "token": token, "confirmed": confirmed}
+
+        self.model.publication_workflow = FakePublication()
+        self.assertEqual(self.model.publication_status(0, None)["phase"], "ready")
+        started = self.model.start_website_publication("review-token", True)
+        result = None
+        for _attempt in range(100):
+            result = self.model.guarded_job_status(started["jobId"])
+            if result["status"] != "running":
+                break
+            threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["result"]["phase"], "complete")
+        self.assertTrue(any("Simulated publication" in entry for entry in result["log"]))
 
     def test_profile_editor_lifecycle_actions_require_token_and_shutdown_server(self):
         token = "profile-editor-test-token"

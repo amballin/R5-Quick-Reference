@@ -285,6 +285,8 @@ The installable HTML/PWA is the phone application path. No native Xcode wrapper 
 
 ## Publish To GitHub Pages
 
+The normal no-Terminal path is **Release & Publish** in the Main project Profile Editor. It checks clean synchronization, prepares and reviews the exact upcoming-version highlights, offers minor or major version selection, handles preserving, rebuilding/replacing, or deliberately removing spreadsheet downloads, requires a separate live-site confirmation, shows reconnectable progress, and verifies both publication and final Git state. From a prototype editor, finish and integrate first, then choose **Open Main project editor**. The command sequence below remains the equivalent recovery and diagnostic interface.
+
 1. Make sure the GitHub repo settings are:
 
 ```text

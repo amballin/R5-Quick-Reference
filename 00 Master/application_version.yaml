@@ -1,5 +1,5 @@
 schema_version: 1
 major: 0
-minor: 50
-base_commit: f68958aa29af284d0bd07d197d1ee9f4236a4338
+minor: 52
+base_commit: 3740b10852ea6a588d8595778df337fedb778a39
 incremental: 1

@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Guarded Terminal-Free Publication in Profile Editor
+
+**Status:** Accepted
+**Date:** 2026-08-28
+
+Make **Release & Publish** a complete guarded Profile Editor workflow while retaining `80 Build/scripts/publish.sh` as the only supported website publisher. Require the Main project editor, zero browser drafts, clean synchronized `main`, exact `origin/main` tracking, curated highlights for the selected next minor or new major version, and explicit spreadsheet handling. A prototype editor may only open the verified Main project editor after the existing Finish Day and Integrate Branch workflows synchronize approved work; it may never publish directly.
+
+Permit the workspace to add only the exact upcoming-version release-note entry through a content-sensitive review, recovery backup, concurrent-change check, and source-only validation. The resulting source change must pass through Finish Day commit and push before publication becomes available. Preserve current spreadsheet downloads only when their source fingerprints remain current; otherwise require the user to rebuild and replace both families or deliberately remove them.
+
+Bind the final review token to the selected version, spreadsheet action, and current main commit. Require a separate live-site confirmation, run publication as a serialized reconnectable background job, call the established main-only publisher without reproducing its release logic, and require both `PUBLICATION COMPLETE AND VERIFIED` and `STATUS: CLEAN AND SYNCHRONIZED` for the completion receipt. Do not expose credentials, environment values, or an unrestricted terminal.
+
 ## Visible Guarded Progress and Exact Optional Cleanup
 
 **Status:** Accepted
