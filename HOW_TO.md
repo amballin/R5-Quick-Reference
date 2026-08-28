@@ -252,6 +252,14 @@ Do not switch Macs until the Finish Day workspace reports a clean synchronized b
 
 Publishing is not required for a computer handoff. A prototype Finish Day push goes only to the matching prototype branch and does not update Pages. Run the publishing command only from `main` when intentionally updating the live Pages site, version, and timestamp.
 
+### Integrating a Finished Branch
+
+After Finish Day leaves a non-main branch clean and synchronized, open **Integrate Branch** in Profile Editor when that work is ready for `main`. This is optional and is not part of an ordinary computer handoff.
+
+The workspace validates the proposed merge in a disposable worktree first. It rejects conflicts and `docs/` changes, runs the full integration validation sequence, and shows the exact commits and files. Separate confirmations are then required to merge the reviewed tree into clean local `main`, push `origin/main`, and fast-forward plus push the working branch. It does not switch the active editor branch, rebase shared history, run `publish.sh`, change website version metadata, or publish Pages.
+
+For a fork, the target is that fork's configured `origin/main`. Getting later enhancements from a different upstream repository remains a separate operation.
+
 ## Why `docs/` Is Still Top Level
 
 GitHub Pages branch publishing is configured as `main / docs`. That setting looks for a folder named `docs` at the repository root. Moving it under another folder would break the Pages setting unless GitHub Pages is reconfigured to a custom workflow.

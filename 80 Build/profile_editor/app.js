@@ -59,6 +59,31 @@ const elements = {
   finishDayConfirmPush: document.querySelector("#finish-day-confirm-push"),
   pushFinishDay: document.querySelector("#push-finish-day"),
   finishDayCompletePanel: document.querySelector("#finish-day-complete-panel"),
+  openBranchIntegration: document.querySelector("#open-branch-integration"),
+  refreshBranchIntegration: document.querySelector("#refresh-branch-integration"),
+  branchIntegrationBranch: document.querySelector("#branch-integration-branch"),
+  branchIntegrationMessage: document.querySelector("#branch-integration-message"),
+  branchIntegrationSteps: [...document.querySelectorAll(".integration-steps li")],
+  branchIntegrationStatusBadge: document.querySelector("#branch-integration-status-badge"),
+  branchIntegrationSummary: document.querySelector("#branch-integration-summary"),
+  branchIntegrationDetails: document.querySelector("#branch-integration-details"),
+  branchIntegrationOutput: document.querySelector("#branch-integration-output"),
+  branchIntegrationReviewPanel: document.querySelector("#branch-integration-review-panel"),
+  branchIntegrationConfirmPrepare: document.querySelector("#branch-integration-confirm-prepare"),
+  prepareBranchIntegration: document.querySelector("#prepare-branch-integration"),
+  branchIntegrationMergePanel: document.querySelector("#branch-integration-merge-panel"),
+  branchIntegrationCommitList: document.querySelector("#branch-integration-commit-list"),
+  branchIntegrationFileCount: document.querySelector("#branch-integration-file-count"),
+  branchIntegrationFileList: document.querySelector("#branch-integration-file-list"),
+  branchIntegrationConfirmMerge: document.querySelector("#branch-integration-confirm-merge"),
+  mergeBranchToMain: document.querySelector("#merge-branch-to-main"),
+  branchIntegrationPushPanel: document.querySelector("#branch-integration-push-panel"),
+  branchIntegrationConfirmPush: document.querySelector("#branch-integration-confirm-push"),
+  pushIntegratedMain: document.querySelector("#push-integrated-main"),
+  branchIntegrationResyncPanel: document.querySelector("#branch-integration-resync-panel"),
+  branchIntegrationConfirmResync: document.querySelector("#branch-integration-confirm-resync"),
+  resyncIntegratedBranch: document.querySelector("#resync-integrated-branch"),
+  branchIntegrationCompletePanel: document.querySelector("#branch-integration-complete-panel"),
   dictionarySource: document.querySelector("#dictionary-source"),
   dictionarySearch: document.querySelector("#dictionary-search"),
   dictionaryClassification: document.querySelector("#dictionary-classification"),
@@ -216,6 +241,9 @@ const state = {
   finishDay: null,
   finishDayReviewToken: null,
   finishDayBusy: false,
+  branchIntegration: null,
+  branchIntegrationReviewToken: null,
+  branchIntegrationBusy: false,
   dayPhase: "start",
   activeView: "today",
   loadSequence: 0,
@@ -395,6 +423,7 @@ function renderFinishDay() {
   elements.finishDayCommitPanel.hidden = phase !== "commit";
   elements.finishDayPushPanel.hidden = phase !== "push";
   elements.finishDayCompletePanel.hidden = phase !== "complete";
+  elements.openBranchIntegration.hidden = phase !== "complete" || branch === "main";
   const files = result?.sourceFiles || [];
   elements.finishDayFileCount.textContent = `${files.length} ${files.length === 1 ? "file" : "files"}`;
   elements.finishDayFileList.textContent = files.join("\n") || "No source files are waiting for commit.";
@@ -498,6 +527,171 @@ async function pushFinishDay() {
   } finally {
     state.finishDayBusy = false;
     renderFinishDay();
+  }
+}
+
+function showBranchIntegrationMessage(text, error = false) {
+  elements.branchIntegrationMessage.textContent = text;
+  elements.branchIntegrationMessage.classList.toggle("error", error);
+  elements.branchIntegrationMessage.hidden = !text;
+}
+
+function renderBranchIntegration() {
+  const result = state.branchIntegration;
+  const phase = result?.phase || "checking";
+  const order = ["check", "review", "merge-main", "push-main", "resync"];
+  const activePhase = phase === "blocked" || phase === "checking" || phase === "complete" ? "check" : phase;
+  const activeIndex = order.indexOf(activePhase);
+  for (const [index, step] of elements.branchIntegrationSteps.entries()) {
+    step.classList.toggle("is-active", phase !== "complete" && index === activeIndex);
+    step.classList.toggle("is-complete", phase === "complete" || index < activeIndex);
+  }
+  const branch = result?.branch;
+  elements.branchIntegrationBranch.textContent = branch || "Checking branch…";
+  elements.branchIntegrationBranch.className = `project-context-badge ${branch === "main" ? "main" : branch ? "prototype" : "unknown"}`;
+  const status = phase === "complete" ? "ready" : phase === "blocked" ? "blocked" : phase === "checking" ? "checking" : "notice";
+  const labels = { ready: "Complete", blocked: "Blocked", checking: "Checking…", notice: "Approval needed" };
+  elements.branchIntegrationStatusBadge.className = `workflow-status ${status}`;
+  elements.branchIntegrationStatusBadge.textContent = labels[status];
+  const summaries = {
+    checking: "Checking the working branch and origin/main.",
+    blocked: (result?.blockers || []).join(" ") || "Branch integration cannot continue until the reported condition is resolved.",
+    review: "The working branch is clean and synchronized. Prepare an isolated, fully validated integration candidate.",
+    "merge-main": "The isolated candidate passed. Review every commit and file before changing local main.",
+    "push-main": "The exact reviewed tree is committed on local main. Nothing has been pushed or published.",
+    resync: "Main contains the working branch. Resynchronize the working branch without rewriting history.",
+    complete: "Main and the working branch are synchronized. No integration action is needed.",
+  };
+  elements.branchIntegrationSummary.textContent = summaries[phase] || summaries.checking;
+  elements.branchIntegrationOutput.textContent = result?.output || "";
+  elements.branchIntegrationDetails.hidden = !result?.output;
+  elements.branchIntegrationReviewPanel.hidden = phase !== "review";
+  elements.branchIntegrationMergePanel.hidden = phase !== "merge-main";
+  elements.branchIntegrationPushPanel.hidden = phase !== "push-main";
+  elements.branchIntegrationResyncPanel.hidden = phase !== "resync";
+  elements.branchIntegrationCompletePanel.hidden = phase !== "complete";
+  const commits = result?.commits || [];
+  const files = result?.files || [];
+  elements.branchIntegrationCommitList.textContent = commits.join("\n") || "No commits are waiting for integration.";
+  elements.branchIntegrationFileCount.textContent = `${files.length} ${files.length === 1 ? "file" : "files"}`;
+  elements.branchIntegrationFileList.textContent = files.join("\n") || "No files differ from current main.";
+  elements.refreshBranchIntegration.disabled = state.branchIntegrationBusy;
+  elements.prepareBranchIntegration.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmPrepare.checked;
+  elements.mergeBranchToMain.disabled = state.branchIntegrationBusy
+    || !elements.branchIntegrationConfirmMerge.checked
+    || !state.branchIntegrationReviewToken;
+  elements.pushIntegratedMain.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmPush.checked;
+  elements.resyncIntegratedBranch.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmResync.checked;
+}
+
+async function refreshBranchIntegration() {
+  captureCurrentProfileDraft();
+  state.branchIntegrationBusy = true;
+  state.branchIntegration = null;
+  state.branchIntegrationReviewToken = null;
+  showBranchIntegrationMessage("");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
+    });
+    state.branchIntegration = result;
+    state.branchIntegrationReviewToken = result.reviewToken || null;
+  } catch (error) {
+    state.branchIntegration = { phase: "blocked", blockers: [error.message], output: "" };
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
+  }
+}
+
+async function prepareBranchIntegration() {
+  state.branchIntegrationBusy = true;
+  showBranchIntegrationMessage("Building and validating the isolated integration candidate. No real branch is being changed.");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+    });
+    state.branchIntegration = result;
+    state.branchIntegrationReviewToken = result.reviewToken || null;
+    elements.branchIntegrationConfirmPrepare.checked = false;
+    showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
+  } catch (error) {
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
+  }
+}
+
+async function mergeBranchToMain() {
+  state.branchIntegrationBusy = true;
+  showBranchIntegrationMessage("Applying the exact reviewed tree to local main. Nothing will be pushed.");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-merge-main", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewToken: state.branchIntegrationReviewToken, confirmMergeMain: true }),
+    });
+    state.branchIntegration = result;
+    state.branchIntegrationReviewToken = null;
+    elements.branchIntegrationConfirmMerge.checked = false;
+    showBranchIntegrationMessage(result.message || "Local main updated. Push remains a separate approval.");
+  } catch (error) {
+    state.branchIntegrationReviewToken = null;
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
+  }
+}
+
+async function pushIntegratedMain() {
+  state.branchIntegrationBusy = true;
+  showBranchIntegrationMessage("Pushing the reviewed main integration. The website publisher is not being called.");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-push-main", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirmPushMain: true }),
+    });
+    state.branchIntegration = result;
+    elements.branchIntegrationConfirmPush.checked = false;
+    showBranchIntegrationMessage(result.message || "Main synchronized. Resynchronize the working branch next.");
+  } catch (error) {
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
+  }
+}
+
+async function resyncIntegratedBranch() {
+  state.branchIntegrationBusy = true;
+  showBranchIntegrationMessage("Fast-forwarding and pushing the working branch to its exact matching upstream.");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-resync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirmResync: true }),
+    });
+    state.branchIntegration = result;
+    elements.branchIntegrationConfirmResync.checked = false;
+    showBranchIntegrationMessage(result.message || "Integration complete.");
+  } catch (error) {
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
   }
 }
 
@@ -866,6 +1060,7 @@ function switchView(viewName) {
   if (viewName === "review-build") renderReviewBuild();
   if (viewName === "today") renderTodayWorkflow();
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
+  if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
   window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -3307,6 +3502,16 @@ elements.finishDayCommitMessage.addEventListener("input", renderFinishDay);
 elements.commitFinishDay.addEventListener("click", commitFinishDay);
 elements.finishDayConfirmPush.addEventListener("change", renderFinishDay);
 elements.pushFinishDay.addEventListener("click", pushFinishDay);
+elements.openBranchIntegration.addEventListener("click", () => switchView("branch-integration"));
+elements.refreshBranchIntegration.addEventListener("click", refreshBranchIntegration);
+elements.branchIntegrationConfirmPrepare.addEventListener("change", renderBranchIntegration);
+elements.prepareBranchIntegration.addEventListener("click", prepareBranchIntegration);
+elements.branchIntegrationConfirmMerge.addEventListener("change", renderBranchIntegration);
+elements.mergeBranchToMain.addEventListener("click", mergeBranchToMain);
+elements.branchIntegrationConfirmPush.addEventListener("change", renderBranchIntegration);
+elements.pushIntegratedMain.addEventListener("click", pushIntegratedMain);
+elements.branchIntegrationConfirmResync.addEventListener("change", renderBranchIntegration);
+elements.resyncIntegratedBranch.addEventListener("click", resyncIntegratedBranch);
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => {
   elements.profileActionMenu.open = false;

@@ -1,6 +1,6 @@
 # Profile Editor User Guide
 
-Profile Editor 1.0 is the main local interface for routine work: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages linked from the editor for detailed handoff reference, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.
+Profile Editor 1.0 is the main local interface for routine work: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, optionally integrating a finished branch into `main`, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages linked from the editor for detailed handoff reference, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.
 
 ## Start the editor
 
@@ -16,7 +16,7 @@ npm run ui
 
 Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press **Control-C** in Terminal when you are finished.
 
-The editor runs only on this Mac. It never publishes the website. Git commit and push are available only inside the guarded **Finish Day** workspace, with an exact source review and separate confirmations.
+The editor runs only on this Mac. It never publishes the website. Routine source commit and branch push are available only inside **Finish Day**. Merge to main, main push, and branch resynchronization are available only inside **Integrate Branch**, each with exact review and separate confirmation.
 
 Before editing, confirm the header badge. **Main project** means the app is running from the authoritative `main` worktree. **Prototype · branch-name** means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.
 
@@ -42,6 +42,7 @@ Use the workspace sidebar:
 - **Camera Lab** — Launch the independent Camera Lab application with the selected saved profile. This is an application action, not an embedded workspace.
 - **Review & Build** — Resolve all browser drafts, validate source, and run the guarded local build.
 - **Finish Day** — Check repository state, validate and prepare source, review and commit the exact source list, then separately approve a push to the matching upstream. It never publishes.
+- **Integrate Branch** — Validate a finished branch against current `main`, review the exact result, then separately approve the local-main merge, main push, and branch resynchronization. It never publishes.
 - **Cx Foundation** — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.
 - **Deleted Cards** — Review and restore unreleased cards removed from active source.
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
@@ -74,6 +75,18 @@ Open **Finish Day** only after every browser draft has been saved or discarded. 
 4. **Push** requires a new confirmation. It pushes only the current branch to its exact same-named upstream on `origin`, refuses any outgoing `docs/` change, and verifies the final clean synchronized state.
 
 The existing `finish-day.sh` command remains available and uses the same underlying engine and safeguards. Neither interface switches branches, merges, or publishes the website.
+
+## Integrate a finished branch
+
+After Finish Day reports a clean synchronized non-main branch, open **Integrate Branch**. This is optional; finishing the day does not require integration.
+
+1. **Check** refreshes `origin`, confirms the current branch tracks its exact same-named upstream, and requires no local or browser changes.
+2. **Review** creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.
+3. **Merge Main** requires confirmation and applies the exact validated tree to a clean local `main`. Nothing is pushed.
+4. **Push Main** requires a separate confirmation and updates `origin/main`. It does not call the publisher, change website version metadata, or create a release.
+5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It never rebases or rewrites shared history.
+
+If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When `main` is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, `origin/main` is the fork owner's main branch; updates from a separate upstream project remain a different workflow.
 
 **Setup & Sharing** documents a possible future private profile pack for an independent fork owner. The current implementation does not move profiles or change their source location; they remain part of this repository.
 

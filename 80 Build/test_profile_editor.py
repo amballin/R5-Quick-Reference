@@ -57,6 +57,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/cx_route_analysis.py",
             "80 Build/feature_interactions.py",
             "80 Build/finish_day.py",
+            "80 Build/integrate_branch.py",
             "80 Build/lens_guidance.py",
             "80 Build/html_renderer.py",
             "80 Build/my_menu.py",
@@ -774,6 +775,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="release-publish-view"', html)
         self.assertIn('id="setup-sharing-view"', html)
         self.assertIn('id="finish-day-view"', html)
+        self.assertIn('id="branch-integration-view"', html)
+        self.assertIn("Integrate Branch", html)
         self.assertIn("Edit Profiles", html)
         self.assertIn("Launch separate app", html)
         self.assertIn("Fork owner’s project", html)
@@ -789,6 +792,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/finish-day-prepare"', javascript)
         self.assertIn('request("/api/finish-day-commit"', javascript)
         self.assertIn('request("/api/finish-day-push"', javascript)
+        self.assertIn('request("/api/branch-integration-status"', javascript)
+        self.assertIn('request("/api/branch-integration-prepare"', javascript)
+        self.assertIn('request("/api/branch-integration-merge-main"', javascript)
+        self.assertIn('request("/api/branch-integration-push-main"', javascript)
+        self.assertIn('request("/api/branch-integration-resync"', javascript)
+        self.assertIn(".integration-steps", stylesheet)
 
     def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
         outcomes = (
@@ -895,6 +904,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "pendingChanges": pending,
             "branch": "codex/profile-editor-prototype",
         }
+        self.model.branch_integration_status = lambda pending: {
+            "phase": "review",
+            "pendingChanges": pending,
+            "branch": "codex/profile-editor-prototype",
+            "target": "origin/main",
+        }
         server = create_server(self.model, port=0, token=token)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
@@ -938,6 +953,22 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             connection.close()
             self.assertEqual(response.status, 200)
             self.assertEqual(payload["phase"], "complete")
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/branch-integration-status",
+                body=json.dumps({"pendingChanges": 0}),
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Profile-Editor-Token": token,
+                },
+            )
+            response = connection.getresponse()
+            payload = json.loads(response.read())
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(payload["phase"], "review")
 
             connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
             connection.request(

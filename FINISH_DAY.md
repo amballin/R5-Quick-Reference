@@ -3,7 +3,8 @@
 Choose one path:
 
 - **Finish for the day or switch Macs:** complete Step 0 when applicable, then Step 2, and stop.
-- **Publish the complete website:** complete Step 0 when applicable, then Steps 1–5 in order. Prepare the release notes before the single `finish-day.sh` run so all source work is synchronized together.
+- **Integrate a finished working branch:** complete Step 0 when applicable, Step 2, then Step 2A. Integration remains optional and does not publish.
+- **Publish the complete website:** complete Step 0 when applicable, then Steps 1–5 in order, including Step 2A when starting from a working branch. Prepare the release notes before the single `finish-day.sh` run so all source work is synchronized together.
 
 ## 0. Import testing status when the working tracker changed
 
@@ -59,6 +60,22 @@ This commit and push synchronize all editable project source, including the rele
 Finish Day uses the current checked-out branch and requires its exact same-named upstream on `origin`. On a prototype worktree, it may therefore commit and push only that prototype branch. It never redirects the push to `main`, and because GitHub Pages watches `main / docs`, the prototype handoff does not update the live site.
 
 > If you are only finishing for the day or switching Macs, stop here. If this is a prototype branch, also stop here and integrate the approved work into `main` separately before publication. If already on `main` and publishing, continue directly to Step 3; do not run `finish-day.sh` again.
+
+## 2A. Integrate a finished working branch when needed
+
+Skip this step when you are stopping for the day or are already working on `main`.
+
+In Profile Editor, open **Integrate Branch** only after Finish Day reports that the current non-main branch is clean and synchronized. The workspace uses five separately guarded stages:
+
+1. **Check** refreshes `origin`, verifies the clean current branch and its exact same-named upstream, and targets only `origin/main`.
+2. **Review** creates the proposed merge in a disposable worktree based on current `origin/main`. It stops without changing either real branch on conflicts, rejects proposed `docs/` changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.
+3. **Merge Main** requires confirmation and applies the exact reviewed tree to a clean local `main`. Nothing is pushed.
+4. **Push Main** requires a separate confirmation and updates only `origin/main`. It does not call `publish.sh`, change release metadata, or publish the website.
+5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.
+
+If `main` is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, `origin/main` means the fork owner's main branch; receiving enhancements from a separate upstream repository remains a distinct operation.
+
+Do not continue to publication until Integrate Branch reports that `main` and the working branch are synchronized.
 
 ## 3. Build and verify both spreadsheet families
 

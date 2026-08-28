@@ -120,7 +120,7 @@ h2 { margin-bottom: .25rem; }
 .safety-note, .toolbar, .profile-metadata, .profile-summary, .setting-section, .preview-panel, .reference-card,
 .view-tabs, .view-intro, .dictionary-tools, .my-menu-card, .baseline-summary, .baseline-decision-tools, .impact-change, .cx-impact, .my-menu-impact, .baseline-plan,
 .session-summary, .pending-review-panel, .local-build-panel, .cx-assignment-panel, .cx-fit-panel,
-.day-panel, .release-gate, .sharing-panel, .finish-day-panel {
+.day-panel, .release-gate, .sharing-panel, .finish-day-panel, .branch-integration-panel {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
@@ -217,6 +217,7 @@ h2 { margin-bottom: .25rem; }
 .finish-day-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: .55rem; flex-wrap: wrap; }
 .finish-day-panel { padding: 1rem 1.15rem; }
 .finish-day-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.integration-steps { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .finish-day-steps li { display: flex; align-items: center; gap: .6rem; min-width: 0; padding: .7rem; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); background: var(--soft); }
 .finish-day-steps li > strong { display: grid; flex: 0 0 auto; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--muted); background: #dfe6ec; }
 .finish-day-steps li > span { display: grid; min-width: 0; }
@@ -879,6 +880,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .sharing-flow { grid-template-columns: 1fr; }
   .sharing-flow b { justify-self: center; transform: rotate(90deg); }
   .finish-day-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .integration-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 560px) {
@@ -898,6 +900,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .view-intro { align-items: flex-start; flex-direction: column; }
   .finish-day-header-actions { width: 100%; justify-content: flex-start; }
   .finish-day-steps { grid-template-columns: 1fr; }
+  .integration-steps { grid-template-columns: 1fr; }
   .my-menu-actions { width: 100%; justify-content: stretch; }
   .my-menu-actions button { flex: 1 1 auto; }
   .my-menu-card-heading { align-items: stretch; flex-direction: column; }

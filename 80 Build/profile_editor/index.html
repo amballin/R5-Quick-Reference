@@ -55,6 +55,10 @@
           <span class="nav-label">Finish Day</span>
           <span class="nav-note">Review, commit, and synchronize</span>
         </button>
+        <button class="view-tab" type="button" data-view="branch-integration">
+          <span class="nav-label">Integrate Branch</span>
+          <span class="nav-note">Review and merge into main</span>
+        </button>
         <p class="nav-heading nav-heading-advanced">Profile setup</p>
         <button class="view-tab" type="button" data-view="cx-foundation">
           <span class="nav-label-line"><span class="nav-label">Cx Foundation</span><span id="cx-foundation-draft-badge" class="nav-badge" hidden></span></span>
@@ -92,7 +96,7 @@
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
       Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, merging, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit and push are available only through the separately confirmed Finish Day stages.
+      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, and branch integration are available only through their separately confirmed guarded workspaces.
     </section>
 
     <section id="today-view" class="app-view">
@@ -595,9 +599,91 @@
         <section id="finish-day-complete-panel" class="finish-day-complete" hidden>
           <strong>Finished for today</strong>
           <span>The current branch is clean and synchronized. It is safe to stop or switch Macs.</span>
+          <button id="open-branch-integration" class="secondary" type="button">Consider integration to main</button>
         </section>
       </section>
       <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete Finish Day reference</a></div>
+    </section>
+
+    <section id="branch-integration-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Occasional guarded Git workflow</p>
+          <h2>Integrate Branch</h2>
+          <p class="muted">Review a clean synchronized working branch, validate its exact result with current <code>main</code>, then separately approve the local merge, main push, and branch resynchronization. This never publishes the website.</p>
+        </div>
+        <div class="finish-day-header-actions">
+          <span id="branch-integration-branch" class="project-context-badge unknown">Checking branch…</span>
+          <button id="refresh-branch-integration" class="secondary" type="button">Refresh status</button>
+        </div>
+      </div>
+
+      <div id="branch-integration-message" class="message" role="status" hidden></div>
+      <section class="branch-integration-panel">
+        <ol class="finish-day-steps integration-steps" aria-label="Branch integration stages">
+          <li class="is-active"><strong>1</strong><span><b>Check</b><small>Clean branch and exact upstream</small></span></li>
+          <li><strong>2</strong><span><b>Review</b><small>Isolated merge and full validation</small></span></li>
+          <li><strong>3</strong><span><b>Merge Main</b><small>Apply the exact reviewed tree locally</small></span></li>
+          <li><strong>4</strong><span><b>Push Main</b><small>Synchronize origin/main without publishing</small></span></li>
+          <li><strong>5</strong><span><b>Resync</b><small>Fast-forward the working branch</small></span></li>
+        </ol>
+
+        <section class="finish-day-stage" aria-labelledby="branch-integration-status-title">
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Current state</p><h3 id="branch-integration-status-title">Integration readiness</h3></div>
+            <span id="branch-integration-status-badge" class="workflow-status checking">Checking…</span>
+          </div>
+          <p id="branch-integration-summary" class="muted">Checking the working branch and origin/main.</p>
+          <details id="branch-integration-details" class="workflow-details" hidden>
+            <summary>Show status details</summary>
+            <pre id="branch-integration-output"></pre>
+          </details>
+        </section>
+
+        <section id="branch-integration-review-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Isolated safety check</p><h3>Prepare the exact main result</h3></div>
+          </div>
+          <p class="muted">This creates a disposable worktree from current <code>origin/main</code>, merges the working branch there, runs source validation, the development build, and full validation, then restores generated <code>docs/</code>. No real branch is changed.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-prepare" type="checkbox"> Prepare and validate an isolated integration candidate. Stop without changing either branch if conflicts or generated website changes appear.</label>
+          <button id="prepare-branch-integration" class="primary" type="button" disabled>Prepare integration review</button>
+        </section>
+
+        <section id="branch-integration-merge-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Exact reviewed result</p><h3>Merge into local main</h3></div>
+            <span id="branch-integration-file-count" class="collection-count"></span>
+          </div>
+          <label class="finish-day-field">Commits proposed for main<pre id="branch-integration-commit-list" class="finish-day-file-list" tabindex="0"></pre></label>
+          <label class="finish-day-field">Files changed from current main<pre id="branch-integration-file-list" class="finish-day-file-list" tabindex="0"></pre></label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-merge" type="checkbox"> Apply exactly this validated tree to local <code>main</code>. Nothing will be pushed or published.</label>
+          <button id="merge-branch-to-main" class="save-action" type="button" disabled>Merge into local main</button>
+        </section>
+
+        <section id="branch-integration-push-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Separate remote approval</p><h3>Push main</h3></div>
+          </div>
+          <p class="muted">Push the reviewed local <code>main</code> commit to <code>origin/main</code>. The website publisher is not called, and no release is created.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-push" type="checkbox"> Push the reviewed integration commit to <code>origin/main</code>. I understand this changes the shared main branch but does not publish the website.</label>
+          <button id="push-integrated-main" class="save-action" type="button" disabled>Push main</button>
+        </section>
+
+        <section id="branch-integration-resync-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Return to branch work</p><h3>Resynchronize the working branch</h3></div>
+          </div>
+          <p class="muted">Fast-forward the current working branch to the integrated main commit, then push only its exact same-named upstream. No history is rewritten.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-resync" type="checkbox"> Fast-forward and push this working branch so it matches integrated <code>main</code>.</label>
+          <button id="resync-integrated-branch" class="save-action" type="button" disabled>Resync working branch</button>
+        </section>
+
+        <section id="branch-integration-complete-panel" class="finish-day-complete" hidden>
+          <strong>Integration complete</strong>
+          <span>Main and the working branch are synchronized. The website was not published.</span>
+        </section>
+      </section>
+      <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete integration and Finish Day reference</a></div>
     </section>
 
     <section id="release-publish-view" class="app-view" hidden>

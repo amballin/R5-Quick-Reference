@@ -63,6 +63,7 @@ from card_identity import (
 )
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from finish_day import FinishDayError, FinishDayWorkflow
+from integrate_branch import BranchIntegrationError, BranchIntegrationWorkflow
 from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
 from lens_guidance import load_sources as load_lens_sources
@@ -133,6 +134,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/cx_route_analysis.py",
     "80 Build/feature_interactions.py",
     "80 Build/finish_day.py",
+    "80 Build/integrate_branch.py",
     "80 Build/lens_guidance.py",
     "80 Build/control_reference.py",
     "80 Build/html_renderer.py",
@@ -268,6 +270,7 @@ class ProfileEditorModel:
         camera_lab_launcher=None,
         preflight_checker=None,
         finish_day_workflow=None,
+        branch_integration_workflow=None,
     ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
@@ -302,6 +305,7 @@ class ProfileEditorModel:
         self._build_lock = threading.Lock()
         self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths.root)
         self.finish_day_workflow = finish_day_workflow or FinishDayWorkflow(self.paths.root)
+        self.branch_integration_workflow = branch_integration_workflow or BranchIntegrationWorkflow(self.paths.root)
 
     def launch_camera_lab(self, profile_name):
         name = self._validate_profile_name(profile_name)
@@ -1579,6 +1583,56 @@ class ProfileEditorModel:
             try:
                 return self.finish_day_workflow.push(confirmed)
             except FinishDayError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def branch_integration_status(self, pending_changes):
+        try:
+            return self.branch_integration_workflow.inspect(pending_changes)
+        except BranchIntegrationError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def prepare_branch_integration(self, pending_changes, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self.branch_integration_workflow.prepare(pending_changes, confirmed)
+            except BranchIntegrationError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def merge_branch_to_main(self, review_token, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self.branch_integration_workflow.merge_main(review_token, confirmed)
+            except BranchIntegrationError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def push_integrated_main(self, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self.branch_integration_workflow.push_main(confirmed)
+            except BranchIntegrationError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def resync_integrated_branch(self, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self.branch_integration_workflow.resync_branch(confirmed)
+            except BranchIntegrationError as exc:
                 raise PrototypeError(str(exc)) from exc
         finally:
             self._build_lock.release()
@@ -3227,6 +3281,11 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/finish-day-prepare",
             "/api/finish-day-commit",
             "/api/finish-day-push",
+            "/api/branch-integration-status",
+            "/api/branch-integration-prepare",
+            "/api/branch-integration-merge-main",
+            "/api/branch-integration-push-main",
+            "/api/branch-integration-resync",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         protected_lifecycle_paths = {
@@ -3237,6 +3296,11 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/finish-day-prepare",
             "/api/finish-day-commit",
             "/api/finish-day-push",
+            "/api/branch-integration-status",
+            "/api/branch-integration-prepare",
+            "/api/branch-integration-merge-main",
+            "/api/branch-integration-push-main",
+            "/api/branch-integration-resync",
         }
         if parsed.path in protected_lifecycle_paths and not secrets.compare_digest(
             self.headers.get("X-Profile-Editor-Token", ""), self.request_token
@@ -3346,6 +3410,24 @@ class EditorHandler(BaseHTTPRequestHandler):
                 )
             if parsed.path == "/api/finish-day-push":
                 return self._json(self.model.push_finish_day(payload.get("confirmPush")))
+            if parsed.path == "/api/branch-integration-status":
+                return self._json(self.model.branch_integration_status(payload.get("pendingChanges")))
+            if parsed.path == "/api/branch-integration-prepare":
+                return self._json(
+                    self.model.prepare_branch_integration(
+                        payload.get("pendingChanges"), payload.get("confirmPrepare")
+                    )
+                )
+            if parsed.path == "/api/branch-integration-merge-main":
+                return self._json(
+                    self.model.merge_branch_to_main(
+                        payload.get("reviewToken"), payload.get("confirmMergeMain")
+                    )
+                )
+            if parsed.path == "/api/branch-integration-push-main":
+                return self._json(self.model.push_integrated_main(payload.get("confirmPushMain")))
+            if parsed.path == "/api/branch-integration-resync":
+                return self._json(self.model.resync_integrated_branch(payload.get("confirmResync")))
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
                 card_setting_paths = self.model.draft_card_setting_paths(payload)
