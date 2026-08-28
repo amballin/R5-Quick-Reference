@@ -2,7 +2,6 @@
 
 set -u
 
-EXPECTED_BRANCH="${PRS_EXPECTED_BRANCH:-main}"
 REMOTE_NAME="${PRS_REMOTE_NAME:-origin}"
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 PROJECT_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)"
@@ -28,6 +27,8 @@ fi
 
 CURRENT_BRANCH="$(git branch --show-current)"
 UPSTREAM="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+EXPECTED_BRANCH="${PRS_EXPECTED_BRANCH:-$CURRENT_BRANCH}"
+EXPECTED_UPSTREAM="$REMOTE_NAME/$EXPECTED_BRANCH"
 
 echo "Photography Reference System — Git Status"
 echo
@@ -37,7 +38,7 @@ echo "Expected: $EXPECTED_BRANCH"
 echo "Upstream: ${UPSTREAM:-none}"
 echo
 
-if [[ "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]]; then
+if [[ -z "$CURRENT_BRANCH" || "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]]; then
     echo "STATUS: WRONG BRANCH"
     echo "Expected '$EXPECTED_BRANCH' but found '${CURRENT_BRANCH:-detached HEAD}'."
     echo "Do not switch branches automatically. Obtain project-owner approval first."
@@ -51,9 +52,9 @@ if [[ -z "$UPSTREAM" ]]; then
     exit "$EXIT_NO_UPSTREAM"
 fi
 
-if [[ "$UPSTREAM" != "$REMOTE_NAME/"* ]]; then
+if [[ "$UPSTREAM" != "$EXPECTED_UPSTREAM" ]]; then
     echo "STATUS: UNEXPECTED UPSTREAM"
-    echo "Expected an upstream on '$REMOTE_NAME', but found '$UPSTREAM'."
+    echo "Expected '$EXPECTED_UPSTREAM' for branch '$EXPECTED_BRANCH', but found '$UPSTREAM'."
     echo "Review the branch and remote configuration before building or syncing."
     exit "$EXIT_NO_UPSTREAM"
 fi

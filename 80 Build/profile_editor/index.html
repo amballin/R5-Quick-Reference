@@ -34,11 +34,32 @@
   <main class="app-shell">
     <aside class="app-sidebar">
       <nav class="view-tabs" aria-label="Editor workspace">
-        <p class="nav-heading">Workspace</p>
-        <button class="view-tab is-active" type="button" data-view="profiles">
-          <span class="nav-label-line"><span class="nav-label">Profiles</span><span id="profile-draft-badge" class="nav-badge" hidden></span></span>
-          <span class="nav-note">Create and review cards</span>
+        <p class="nav-heading">Daily work</p>
+        <button class="view-tab is-active" type="button" data-view="today">
+          <span class="nav-label">Today</span>
+          <span class="nav-note">Start, work, and finish</span>
         </button>
+        <button class="view-tab" type="button" data-view="profiles">
+          <span class="nav-label-line"><span class="nav-label">Profiles</span><span id="profile-draft-badge" class="nav-badge" hidden></span></span>
+          <span class="nav-note">Embedded workspace</span>
+        </button>
+        <button id="sidebar-camera-lab" class="workspace-action-tab" type="button">
+          <span class="nav-label-line"><span class="nav-label">Camera Lab</span><span class="external-mark" aria-hidden="true">↗</span></span>
+          <span class="nav-note">Opens separate app</span>
+        </button>
+        <button class="view-tab review-build-tab" type="button" data-view="review-build">
+          <span class="nav-label-line"><span class="nav-label">Review &amp; Build</span><span id="pending-draft-badge" class="nav-badge" hidden></span></span>
+          <span class="nav-note">Resolve drafts and validate</span>
+        </button>
+        <button class="view-tab" type="button" data-view="finish-day">
+          <span class="nav-label">Finish Day</span>
+          <span class="nav-note">Review, commit, and synchronize</span>
+        </button>
+        <button class="view-tab" type="button" data-view="branch-integration">
+          <span class="nav-label">Integrate Branch</span>
+          <span class="nav-note">Review and merge into main</span>
+        </button>
+        <p class="nav-heading nav-heading-advanced">Profile setup</p>
         <button class="view-tab" type="button" data-view="cx-foundation">
           <span class="nav-label-line"><span class="nav-label">Cx Foundation</span><span id="cx-foundation-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Assign and choose C1–C3</span>
@@ -55,11 +76,15 @@
           <span class="nav-label-line"><span class="nav-label">Baseline Setup</span><span id="baseline-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Plan shared-setting changes</span>
         </button>
-        <button class="view-tab review-build-tab" type="button" data-view="review-build">
-          <span class="nav-label-line"><span class="nav-label">Review &amp; Build</span><span id="pending-draft-badge" class="nav-badge" hidden></span></span>
-          <span class="nav-note">Resolve drafts and validate</span>
+        <p class="nav-heading nav-heading-advanced">Occasional</p>
+        <button class="view-tab" type="button" data-view="release-publish">
+          <span class="nav-label">Release &amp; Publish</span>
+          <span class="nav-note">Deliberate website release</span>
         </button>
-        <p class="nav-heading nav-heading-advanced">Reference</p>
+        <button class="view-tab" type="button" data-view="setup-sharing">
+          <span class="nav-label">Setup &amp; Sharing</span>
+          <span class="nav-note">Macs, forks, and personal data</span>
+        </button>
         <button class="view-tab" type="button" data-view="dictionary">
           <span class="nav-label">Camera Reference</span>
           <span class="nav-note">Review settings and sources</span>
@@ -71,7 +96,108 @@
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
       Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, Git, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes.
+      Reference-card edits, released-card removal, permanent deletion, direct baseline edits, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, and branch integration are available only through their separately confirmed guarded workspaces.
+    </section>
+
+    <section id="today-view" class="app-view">
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Daily workflow</p>
+          <h2>Today</h2>
+          <p class="muted">A short guided path from opening the project through a clean stopping point. Routine checks stay quiet unless something needs attention.</p>
+        </div>
+        <button id="refresh-workflow-preflight" class="secondary" type="button">Refresh preflight</button>
+      </div>
+
+      <nav class="day-workflow" aria-label="Daily workflow">
+        <button class="day-step is-active" type="button" data-day-phase="start"><strong>1</strong><span>Start</span></button>
+        <button class="day-step" type="button" data-day-phase="work"><strong>2</strong><span>Work</span></button>
+        <button class="day-step" type="button" data-day-phase="finish"><strong>3</strong><span>Finish</span></button>
+      </nav>
+
+      <div id="today-message" class="message" role="status" hidden></div>
+
+      <section class="day-panel" data-day-panel="start">
+        <div class="day-panel-heading">
+          <div>
+            <p class="eyebrow">Automatic opening check</p>
+            <h2>Confirm this project is ready</h2>
+            <p class="muted">The existing preflight checks synchronization, unfinished local work, and supporting-data readiness. It is useful on one Mac as well as two.</p>
+          </div>
+          <span id="workflow-preflight-badge" class="workflow-status checking">Checking…</span>
+        </div>
+        <div id="workflow-preflight-summary" class="workflow-preflight-summary" aria-live="polite">
+          <strong>Running preflight…</strong>
+          <span>The editor is checking the current project.</span>
+        </div>
+        <details id="workflow-preflight-details" class="workflow-details" hidden>
+          <summary>Show preflight details</summary>
+          <pre id="workflow-preflight-output"></pre>
+        </details>
+        <div class="day-panel-actions">
+          <span>Preflight never pulls, merges, builds, or publishes.</span>
+          <button id="begin-work" class="primary" type="button" disabled>Begin work</button>
+        </div>
+      </section>
+
+      <section class="day-panel" data-day-panel="work" hidden>
+        <div class="day-panel-heading">
+          <div>
+            <p class="eyebrow">Choose a workspace</p>
+            <h2>Work</h2>
+            <p class="muted">Profiles remain inside this editor. Camera Lab opens as an independent application so camera connection and application work stay isolated.</p>
+          </div>
+          <span id="today-draft-count" class="workflow-status neutral">0 drafts</span>
+        </div>
+        <div class="workflow-action-list">
+          <article class="workflow-action-item">
+            <div><strong>Profiles</strong><span>Edit, preview, review, and save profiles inside Profile Editor.</span></div>
+            <button id="today-open-profiles" class="secondary" type="button">Edit Profiles</button>
+          </article>
+          <article class="workflow-action-item">
+            <div><strong>Camera Lab</strong><span id="today-camera-lab-note">Choose a saved profile before launching the separate Camera Lab app.</span></div>
+            <button id="today-open-camera-lab" class="secondary" type="button" disabled>Launch separate app</button>
+          </article>
+          <article class="workflow-action-item">
+            <div><strong>Review &amp; Build</strong><span>Resolve browser drafts, validate source, and run a guarded local build when needed.</span></div>
+            <button id="today-open-review-build" class="secondary" type="button">Open Review &amp; Build</button>
+          </article>
+        </div>
+        <div class="day-panel-actions">
+          <span>Move between workspaces without saving; pending drafts stay visible in this browser session.</span>
+          <button id="go-to-finish" class="primary" type="button">Go to Finish</button>
+        </div>
+      </section>
+
+      <section class="day-panel" data-day-panel="finish" hidden>
+        <div class="day-panel-heading">
+          <div>
+            <p class="eyebrow">Clean stopping point</p>
+            <h2>Finish</h2>
+            <p class="muted">Resolve drafts and complete the existing Finish Day procedure. Publishing remains a separate, deliberate choice.</p>
+          </div>
+          <span id="finish-readiness-badge" class="workflow-status neutral">Review needed</span>
+        </div>
+        <div class="workflow-action-list">
+          <article class="workflow-action-item">
+            <div><strong>Resolve and validate</strong><span id="finish-draft-note">Review pending browser changes before finishing.</span></div>
+            <button id="finish-open-review-build" class="secondary" type="button">Open Review &amp; Build</button>
+          </article>
+          <article class="workflow-action-item">
+            <div><strong>Finish Day</strong><span>Review the complete source list, then separately approve commit and push in the established procedure.</span></div>
+            <button id="open-finish-day" class="primary" type="button">Open Finish Day</button>
+          </article>
+        </div>
+        <label class="handoff-choice"><input id="switching-macs" type="checkbox"> I plan to continue on another Mac.</label>
+        <div id="handoff-guidance" class="handoff-guidance" hidden>
+          Finish Day must report that the source is clean and synchronized before the other Mac takes over.
+          <a href="/source/WORKFLOWS/other-mac.html" target="_blank" rel="noreferrer">Open the other-Mac guide</a>.
+        </div>
+        <div class="day-panel-actions">
+          <span>Use one Mac or two—the ordinary Finish Day stopping point is the same.</span>
+          <button id="continue-to-publish" class="secondary" type="button">Continue to Release &amp; Publish</button>
+        </div>
+      </section>
     </section>
 
     <section id="dictionary-view" class="app-view" hidden>
@@ -163,7 +289,7 @@
       </section>
     </section>
 
-    <section id="profiles-view" class="app-view">
+    <section id="profiles-view" class="app-view" hidden>
       <nav class="profile-workflow" aria-label="Profile workflow">
         <span class="workflow-step" data-step="1"><strong>1</strong> Choose profile</span>
         <span class="workflow-step" data-step="2"><strong>2</strong> Edit settings</span>
@@ -405,6 +531,209 @@
         </div>
       </section>
       <pre id="local-build-output" class="local-build-output" tabindex="0" hidden></pre>
+    </section>
+
+    <section id="finish-day-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Guarded Git handoff</p>
+          <h2>Finish Day</h2>
+          <p class="muted">Validate the project, exclude generated website files, review the exact source list, then separately approve commit and push. This workflow never publishes the website.</p>
+        </div>
+        <div class="finish-day-header-actions">
+          <span id="finish-day-branch" class="project-context-badge unknown">Checking branch…</span>
+          <button id="refresh-finish-day" class="secondary" type="button">Refresh status</button>
+        </div>
+      </div>
+
+      <div id="finish-day-message" class="message" role="status" hidden></div>
+      <section class="finish-day-panel">
+        <ol class="finish-day-steps" aria-label="Finish Day stages">
+          <li id="finish-day-step-check" class="is-active"><strong>1</strong><span><b>Check</b><small>Drafts, branch, upstream, and remote state</small></span></li>
+          <li id="finish-day-step-prepare"><strong>2</strong><span><b>Prepare</b><small>Validate, build, and exclude generated docs</small></span></li>
+          <li id="finish-day-step-commit"><strong>3</strong><span><b>Commit</b><small>Review and save source to Git</small></span></li>
+          <li id="finish-day-step-push"><strong>4</strong><span><b>Push</b><small>Synchronize the matching branch</small></span></li>
+        </ol>
+
+        <section class="finish-day-stage" aria-labelledby="finish-day-status-title">
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Current state</p><h3 id="finish-day-status-title">Repository readiness</h3></div>
+            <span id="finish-day-status-badge" class="workflow-status checking">Checking…</span>
+          </div>
+          <p id="finish-day-summary" class="muted">Checking browser drafts and the current Git branch.</p>
+          <details id="finish-day-details" class="workflow-details" hidden>
+            <summary>Show status details</summary>
+            <pre id="finish-day-output"></pre>
+          </details>
+        </section>
+
+        <section id="finish-day-prepare-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Required checkpoint</p><h3>Validate and prepare source</h3></div>
+          </div>
+          <p class="muted">This runs source validation, the normal development build, and full validation. If the build changes <code>docs/</code>, Finish Day creates a recovery archive and restores those generated files so the handoff cannot publish Pages.</p>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-prepare" type="checkbox"> I understand this may update local build output and will safely restore generated <code>docs/</code>.</label>
+          <button id="prepare-finish-day" class="primary" type="button" disabled>Validate and prepare</button>
+        </section>
+
+        <section id="finish-day-commit-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Exact reviewed source</p><h3>Commit these files</h3></div>
+            <span id="finish-day-file-count" class="collection-count"></span>
+          </div>
+          <pre id="finish-day-file-list" class="finish-day-file-list" tabindex="0"></pre>
+          <label class="finish-day-field">Commit message<input id="finish-day-commit-message" type="text" maxlength="200" placeholder="Describe this completed update"></label>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-commit" type="checkbox"> Commit exactly the source files listed above. Generated <code>docs/</code> must remain excluded.</label>
+          <button id="commit-finish-day" class="save-action" type="button" disabled>Commit reviewed source</button>
+        </section>
+
+        <section id="finish-day-push-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Separate synchronization approval</p><h3>Push the current branch</h3></div>
+          </div>
+          <p id="finish-day-push-target" class="muted"></p>
+          <label class="finish-day-confirm"><input id="finish-day-confirm-push" type="checkbox"> Push only this branch to its exact matching upstream. This does not publish the website.</label>
+          <button id="push-finish-day" class="save-action" type="button" disabled>Push current branch</button>
+        </section>
+
+        <section id="finish-day-complete-panel" class="finish-day-complete" hidden>
+          <strong>Finished for today</strong>
+          <span>The current branch is clean and synchronized. It is safe to stop or switch Macs.</span>
+          <button id="open-branch-integration" class="secondary" type="button">Consider integration to main</button>
+        </section>
+      </section>
+      <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete Finish Day reference</a></div>
+    </section>
+
+    <section id="branch-integration-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Occasional guarded Git workflow</p>
+          <h2>Integrate Branch</h2>
+          <p class="muted">Review a clean synchronized working branch, validate its exact result with current <code>main</code>, then separately approve the local merge, main push, and branch resynchronization. This never publishes the website.</p>
+        </div>
+        <div class="finish-day-header-actions">
+          <span id="branch-integration-branch" class="project-context-badge unknown">Checking branch…</span>
+          <button id="refresh-branch-integration" class="secondary" type="button">Refresh status</button>
+        </div>
+      </div>
+
+      <div id="branch-integration-message" class="message" role="status" hidden></div>
+      <section class="branch-integration-panel">
+        <ol class="finish-day-steps integration-steps" aria-label="Branch integration stages">
+          <li class="is-active"><strong>1</strong><span><b>Check</b><small>Clean branch and exact upstream</small></span></li>
+          <li><strong>2</strong><span><b>Review</b><small>Isolated merge and full validation</small></span></li>
+          <li><strong>3</strong><span><b>Merge Main</b><small>Apply the exact reviewed tree locally</small></span></li>
+          <li><strong>4</strong><span><b>Push Main</b><small>Synchronize origin/main without publishing</small></span></li>
+          <li><strong>5</strong><span><b>Resync</b><small>Fast-forward the working branch</small></span></li>
+        </ol>
+
+        <section class="finish-day-stage" aria-labelledby="branch-integration-status-title">
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Current state</p><h3 id="branch-integration-status-title">Integration readiness</h3></div>
+            <span id="branch-integration-status-badge" class="workflow-status checking">Checking…</span>
+          </div>
+          <p id="branch-integration-summary" class="muted">Checking the working branch and origin/main.</p>
+          <details id="branch-integration-details" class="workflow-details" hidden>
+            <summary>Show status details</summary>
+            <pre id="branch-integration-output"></pre>
+          </details>
+        </section>
+
+        <section id="branch-integration-review-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Isolated safety check</p><h3>Prepare the exact main result</h3></div>
+          </div>
+          <p class="muted">This creates a disposable worktree from current <code>origin/main</code>, merges the working branch there, runs source validation, the development build, and full validation, then restores generated <code>docs/</code>. No real branch is changed.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-prepare" type="checkbox"> Prepare and validate an isolated integration candidate. Stop without changing either branch if conflicts or generated website changes appear.</label>
+          <button id="prepare-branch-integration" class="primary" type="button" disabled>Prepare integration review</button>
+        </section>
+
+        <section id="branch-integration-merge-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Exact reviewed result</p><h3>Merge into local main</h3></div>
+            <span id="branch-integration-file-count" class="collection-count"></span>
+          </div>
+          <label class="finish-day-field">Commits proposed for main<pre id="branch-integration-commit-list" class="finish-day-file-list" tabindex="0"></pre></label>
+          <label class="finish-day-field">Files changed from current main<pre id="branch-integration-file-list" class="finish-day-file-list" tabindex="0"></pre></label>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-merge" type="checkbox"> Apply exactly this validated tree to local <code>main</code>. Nothing will be pushed or published.</label>
+          <button id="merge-branch-to-main" class="save-action" type="button" disabled>Merge into local main</button>
+        </section>
+
+        <section id="branch-integration-push-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Separate remote approval</p><h3>Push main</h3></div>
+          </div>
+          <p class="muted">Push the reviewed local <code>main</code> commit to <code>origin/main</code>. The website publisher is not called, and no release is created.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-push" type="checkbox"> Push the reviewed integration commit to <code>origin/main</code>. I understand this changes the shared main branch but does not publish the website.</label>
+          <button id="push-integrated-main" class="save-action" type="button" disabled>Push main</button>
+        </section>
+
+        <section id="branch-integration-resync-panel" class="finish-day-stage" hidden>
+          <div class="finish-day-stage-heading">
+            <div><p class="eyebrow">Return to branch work</p><h3>Resynchronize the working branch</h3></div>
+          </div>
+          <p class="muted">Fast-forward the current working branch to the integrated main commit, then push only its exact same-named upstream. No history is rewritten.</p>
+          <label class="finish-day-confirm"><input id="branch-integration-confirm-resync" type="checkbox"> Fast-forward and push this working branch so it matches integrated <code>main</code>.</label>
+          <button id="resync-integrated-branch" class="save-action" type="button" disabled>Resync working branch</button>
+        </section>
+
+        <section id="branch-integration-complete-panel" class="finish-day-complete" hidden>
+          <strong>Integration complete</strong>
+          <span>Main and the working branch are synchronized. The website was not published.</span>
+        </section>
+      </section>
+      <div class="finish-day-footer"><a href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Open the complete integration and Finish Day reference</a></div>
+    </section>
+
+    <section id="release-publish-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Occasional release workflow</p>
+          <h2>Release &amp; Publish</h2>
+          <p class="muted">Publishing is intentionally separate from routine daily work. A prototype branch may use Finish Day to synchronize its matching prototype branch, but only <code>main</code> can publish the live website.</p>
+        </div>
+        <a class="primary action-link" href="/source/WORKFLOWS/publish.html" target="_blank" rel="noreferrer">Open publish guide</a>
+      </div>
+      <section class="release-gate">
+        <ol class="release-steps">
+          <li><strong>Approve release notes</strong><span>Curated reader-facing highlights must match the exact upcoming version.</span></li>
+          <li><strong>Verify spreadsheet downloads</strong><span>Refresh only the workbook families whose inputs changed.</span></li>
+          <li><strong>Integrate into main</strong><span>Prototype work must be reviewed and integrated before live publication.</span></li>
+          <li><strong>Publish through the supported script</strong><span>The main-only publisher stops on every prototype branch. This workspace does not run Git or publication commands.</span></li>
+          <li><strong>Verify publication and Git state</strong><span>Require both the publication receipt and a clean, synchronized status.</span></li>
+        </ol>
+        <div class="release-actions">
+          <a class="secondary action-link" href="/source/FINISH_DAY.html" target="_blank" rel="noreferrer">Review Finish Day</a>
+          <a class="primary action-link" href="/source/WORKFLOWS/publish.html" target="_blank" rel="noreferrer">Review publication steps</a>
+        </div>
+      </section>
+    </section>
+
+    <section id="setup-sharing-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Computers and independent versions</p>
+          <h2>Setup &amp; Sharing</h2>
+          <p class="muted">Routine work does not require a multi-Mac mode. This area keeps computer handoff and future fork guidance out of the daily path.</p>
+        </div>
+        <a class="secondary action-link" href="/source/WORKFLOWS/other-mac.html" target="_blank" rel="noreferrer">Other-Mac guide</a>
+      </div>
+      <section class="sharing-panel">
+        <div class="sharing-grid">
+          <article><strong>Shared application</strong><span>Editor, Camera Lab, validators, templates, Canon knowledge, and build logic.</span></article>
+          <article><strong>Private profile pack</strong><span>Personal profiles, My Menu, testing status, and supporting configuration.</span></article>
+          <article><strong>Independent publication</strong><span>A fork owner can build and publish a separate version from the shared application plus a selected profile pack.</span></article>
+        </div>
+        <div class="sharing-flow" aria-label="Proposed shared update flow">
+          <span><strong>Upstream project</strong><small>Shared logic updates</small></span>
+          <b aria-hidden="true">→</b>
+          <span><strong>Fork owner’s project</strong><small>Accept selected updates</small></span>
+          <b aria-hidden="true">+</b>
+          <span><strong>Private profile pack</strong><small>Remains independently owned</small></span>
+        </div>
+        <p class="configuration-state"><strong>Future architecture only.</strong> Profiles currently remain inside this repository. No profile-pack separation is implemented by this workflow change.</p>
+      </section>
     </section>
     </div>
   </main>

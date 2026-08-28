@@ -115,10 +115,11 @@
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Publish the Website</h1>
 <p>Publishing intentionally updates the live GitHub Pages site, version, date, and publication commit. It is separate from Finish Day and ordinary Git pushes.</p>
+<p>The supported publisher runs only from <code>main</code>. A prototype branch may be committed and pushed to its matching prototype upstream through Finish Day, but that is a Git handoff—not publication. Integrate approved prototype work into <code>main</code> before starting this workflow.</p>
 <section class="step"><h2>Before publishing</h2>
 <ul>
 <li>Source changes are validated, committed, and pushed.</li>
-<li>The branch is clean and synchronized.</li>
+<li><code>main</code> is checked out, clean, and synchronized with <code>origin/main</code>.</li>
 <li>If spreadsheet inputs changed, rebuild their release workbooks first.</li>
 <li>Add concise reader-facing highlights for the upcoming version to <code>00 Master/release_notes.yaml</code>.</li>
 <li>Confirm that updating the live website is intentional.</li>

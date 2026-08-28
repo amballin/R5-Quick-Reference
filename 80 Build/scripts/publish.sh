@@ -3,6 +3,15 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
+current_branch="$(git symbolic-ref --quiet --short HEAD || true)"
+if [[ "$current_branch" != "main" ]]; then
+  echo "PUBLICATION BLOCKED: The live website may be published only from 'main'." >&2
+  echo "Current branch: ${current_branch:-detached HEAD}" >&2
+  echo "Use finish-day.sh to commit and push this branch to its matching upstream without publishing Pages." >&2
+  echo "Integrate the approved work into main before running the publication workflow." >&2
+  exit 1
+fi
+
 candidate="80 Build/.publish_metadata.candidate.yaml"
 metadata="80 Build/publish_metadata.yaml"
 temporary_index=""

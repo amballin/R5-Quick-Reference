@@ -117,7 +117,8 @@
 <p>Choose one path:</p>
 <ul>
 <li><strong>Finish for the day or switch Macs:</strong> complete Step 0 when applicable, then Step 2, and stop.</li>
-<li><strong>Publish the complete website:</strong> complete Step 0 when applicable, then Steps 1–5 in order. Prepare the release notes before the single <code>finish-day.sh</code> run so all source work is synchronized together.</li>
+<li><strong>Integrate a finished working branch:</strong> complete Step 0 when applicable, Step 2, then Step 2A. Integration remains optional and does not publish.</li>
+<li><strong>Publish the complete website:</strong> complete Step 0 when applicable, then Steps 1–5 in order, including Step 2A when starting from a working branch. Prepare the release notes before the single <code>finish-day.sh</code> run so all source work is synchronized together.</li>
 </ul>
 <section class="step"><h2>0. Import testing status when the working tracker changed</h2>
 <p>If you updated the local Excel or Numbers verification tracker, close it and run:</p>
@@ -133,19 +134,34 @@
 <p>Review and approve the highlights as reader-facing release notes. Do not continue until the exact upcoming version exists in <code>00 Master/release_notes.yaml</code>.</p>
 </section>
 <section class="step"><h2>2. Finish the source work and synchronize Git</h2>
-<p>From the repository root, run:</p>
+<p>In Profile Editor, open <strong>Finish Day</strong>. It guides the same workflow through four separately guarded stages: <strong>Check</strong>, <strong>Prepare</strong>, <strong>Commit</strong>, and <strong>Push</strong>. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.</p>
+<p>The terminal interface remains available from the repository root and uses the same shared implementation:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/finish-day.sh</code></pre></div>
-<p>The script first runs source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then, at the prompts:</p>
+<p>After preparation approval, both interfaces run source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then:</p>
 <ol>
 <li>Review the complete source-file list.</li>
 <li>Approve staging every listed source change.</li>
 <li>Approve the commit and enter a clear commit message.</li>
 <li>Approve the push.</li>
 </ol>
-<p>Do not continue until the script prints:</p>
+<p>Do not continue until the UI reports a clean synchronized branch or the terminal command prints:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>FINISHED FOR TODAY: Safe to switch Macs.</code></pre></div>
-<p>This commit and push synchronize all editable project source, including the release notes when publishing. The script excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
-<aside class="warning">If you are only finishing for the day or switching Macs, stop here. If publishing, continue directly to Step 3; do not run <code>finish-day.sh</code> again.</aside>
+<p>This commit and push synchronize all editable project source, including the release notes when publishing. The shared Finish Day engine backs up and excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
+<p>Finish Day uses the current checked-out branch and requires its exact same-named upstream on <code>origin</code>. On a prototype worktree, it may therefore commit and push only that prototype branch. It never redirects the push to <code>main</code>, and because GitHub Pages watches <code>main / docs</code>, the prototype handoff does not update the live site.</p>
+<aside class="warning">If you are only finishing for the day or switching Macs, stop here. If this is a prototype branch, also stop here and integrate the approved work into <code>main</code> separately before publication. If already on <code>main</code> and publishing, continue directly to Step 3; do not run <code>finish-day.sh</code> again.</aside>
+</section>
+<section class="step"><h2>2A. Integrate a finished working branch when needed</h2>
+<p>Skip this step when you are stopping for the day or are already working on <code>main</code>.</p>
+<p>In Profile Editor, open <strong>Integrate Branch</strong> only after Finish Day reports that the current non-main branch is clean and synchronized. The workspace uses five separately guarded stages:</p>
+<ol>
+<li><strong>Check</strong> refreshes <code>origin</code>, verifies the clean current branch and its exact same-named upstream, and targets only <code>origin/main</code>.</li>
+<li><strong>Review</strong> creates the proposed merge in a disposable worktree based on current <code>origin/main</code>. It stops without changing either real branch on conflicts, rejects proposed <code>docs/</code> changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.</li>
+<li><strong>Merge Main</strong> requires confirmation and applies the exact reviewed tree to a clean local <code>main</code>. Nothing is pushed.</li>
+<li><strong>Push Main</strong> requires a separate confirmation and updates only <code>origin/main</code>. It does not call <code>publish.sh</code>, change release metadata, or publish the website.</li>
+<li><strong>Resync</strong> requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.</li>
+</ol>
+<p>If <code>main</code> is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, <code>origin/main</code> means the fork owner&#x27;s main branch; receiving enhancements from a separate upstream repository remains a distinct operation.</p>
+<p>Do not continue to publication until Integrate Branch reports that <code>main</code> and the working branch are synchronized.</p>
 </section>
 <section class="step"><h2>3. Build and verify both spreadsheet families</h2>
 <p>Run:</p>
@@ -153,6 +169,7 @@
 <p>This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup &amp; Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.</p>
 </section>
 <section class="step"><h2>4. Choose the website version and publish</h2>
+<p>Confirm that the current branch is <code>main</code>. The publisher stops before building or changing files on every other branch.</p>
 <p>To start a new major website version, replace <code>N</code> with an integer greater than the current major version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
 <p>Otherwise, publish the next minor website version:</p>

@@ -3,7 +3,8 @@
 Choose one path:
 
 - **Finish for the day or switch Macs:** complete Step 0 when applicable, then Step 2, and stop.
-- **Publish the complete website:** complete Step 0 when applicable, then Steps 1–5 in order. Prepare the release notes before the single `finish-day.sh` run so all source work is synchronized together.
+- **Integrate a finished working branch:** complete Step 0 when applicable, Step 2, then Step 2A. Integration remains optional and does not publish.
+- **Publish the complete website:** complete Step 0 when applicable, then Steps 1–5 in order, including Step 2A when starting from a working branch. Prepare the release notes before the single `finish-day.sh` run so all source work is synchronized together.
 
 ## 0. Import testing status when the working tracker changed
 
@@ -33,28 +34,48 @@ Review and approve the highlights as reader-facing release notes. Do not continu
 
 ## 2. Finish the source work and synchronize Git
 
-From the repository root, run:
+In Profile Editor, open **Finish Day**. It guides the same workflow through four separately guarded stages: **Check**, **Prepare**, **Commit**, and **Push**. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.
+
+The terminal interface remains available from the repository root and uses the same shared implementation:
 
 ```bash
 ./80\ Build/scripts/finish-day.sh
 ```
 
-The script first runs source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then, at the prompts:
+After preparation approval, both interfaces run source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then:
 
 1. Review the complete source-file list.
 2. Approve staging every listed source change.
 3. Approve the commit and enter a clear commit message.
 4. Approve the push.
 
-Do not continue until the script prints:
+Do not continue until the UI reports a clean synchronized branch or the terminal command prints:
 
 ```text
 FINISHED FOR TODAY: Safe to switch Macs.
 ```
 
-This commit and push synchronize all editable project source, including the release notes when publishing. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
+This commit and push synchronize all editable project source, including the release notes when publishing. The shared Finish Day engine backs up and excludes regenerated `docs/`, so this Git handoff does not publish the website.
 
-> If you are only finishing for the day or switching Macs, stop here. If publishing, continue directly to Step 3; do not run `finish-day.sh` again.
+Finish Day uses the current checked-out branch and requires its exact same-named upstream on `origin`. On a prototype worktree, it may therefore commit and push only that prototype branch. It never redirects the push to `main`, and because GitHub Pages watches `main / docs`, the prototype handoff does not update the live site.
+
+> If you are only finishing for the day or switching Macs, stop here. If this is a prototype branch, also stop here and integrate the approved work into `main` separately before publication. If already on `main` and publishing, continue directly to Step 3; do not run `finish-day.sh` again.
+
+## 2A. Integrate a finished working branch when needed
+
+Skip this step when you are stopping for the day or are already working on `main`.
+
+In Profile Editor, open **Integrate Branch** only after Finish Day reports that the current non-main branch is clean and synchronized. The workspace uses five separately guarded stages:
+
+1. **Check** refreshes `origin`, verifies the clean current branch and its exact same-named upstream, and targets only `origin/main`.
+2. **Review** creates the proposed merge in a disposable worktree based on current `origin/main`. It stops without changing either real branch on conflicts, rejects proposed `docs/` changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.
+3. **Merge Main** requires confirmation and applies the exact reviewed tree to a clean local `main`. Nothing is pushed.
+4. **Push Main** requires a separate confirmation and updates only `origin/main`. It does not call `publish.sh`, change release metadata, or publish the website.
+5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.
+
+If `main` is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, `origin/main` means the fork owner's main branch; receiving enhancements from a separate upstream repository remains a distinct operation.
+
+Do not continue to publication until Integrate Branch reports that `main` and the working branch are synchronized.
 
 ## 3. Build and verify both spreadsheet families
 
@@ -67,6 +88,8 @@ Run:
 This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup & Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.
 
 ## 4. Choose the website version and publish
+
+Confirm that the current branch is `main`. The publisher stops before building or changing files on every other branch.
 
 To start a new major website version, replace `N` with an integer greater than the current major version:
 

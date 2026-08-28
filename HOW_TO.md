@@ -227,7 +227,9 @@ This report refreshes the remote comparison but does not pull, merge, commit, pu
 
 ### Before Switching Macs
 
-Run the interactive finish workflow:
+Open **Finish Day** in Profile Editor for the guided workflow. It checks readiness, prepares and validates source, shows the exact commit list, then requires separate approvals for commit and push.
+
+The equivalent terminal interface uses the same shared engine:
 
 ```bash
 ./80\ Build/scripts/finish-day.sh
@@ -235,20 +237,28 @@ Run the interactive finish workflow:
 
 If testing status was edited in the local workbook, run `import-verification-status.sh` first. Finish-day blocks rather than leave those changes outside Git.
 
-Depending on repository state, it offers to:
+Depending on repository state, either interface offers to:
 
 1. Run the documented validator, normal development build, and post-build validator.
 2. Back up regenerated `docs/` and restore them to `HEAD`, with confirmation, so Pages is not changed by the handoff.
 3. Stage every remaining source change shown by `git status`.
 4. Commit the staged source changes with a message you provide.
-5. Push `main` to its configured upstream, provided no outgoing commit changes `docs/`.
+5. Push the current branch to its exact same-named upstream, provided no outgoing commit changes `docs/`.
 6. Verify that the branch is clean and synchronized.
 
-Read every prompt and review the complete file list before answering yes. The normal development build refreshes tracked `docs/`, but a handoff is not publication. With confirmation, `finish-day.sh` archives the full current `docs/` tree plus Git status and binary patches under the machine-local `Backups/` folder, restores tracked `docs/` to the current commit, removes only archived untracked generated files under `docs/`, and verifies that no Pages changes remain before staging source files. It refuses to push an existing unpushed commit containing `docs/` changes because correcting that safely requires manual commit-history review.
+Review the complete file list before approving commit. The normal development build refreshes tracked `docs/`, but a handoff is not publication. With preparation confirmation, the shared Finish Day engine archives the full current `docs/` tree plus Git status and binary patches under the machine-local `Backups/` folder, restores tracked `docs/` to the current commit, removes only archived untracked generated files under `docs/`, and verifies that no Pages changes remain before staging source files. It refuses to push an existing unpushed commit containing `docs/` changes because correcting that safely requires manual commit-history review.
 
-Do not switch Macs until `finish-day.sh` prints `FINISHED FOR TODAY: Safe to switch Macs.` On the other Mac, run `preflight-git.sh`; if it reports that the clean clone is behind, run `git pull --ff-only` and rerun preflight before editing.
+Do not switch Macs until the Finish Day workspace reports a clean synchronized branch or `finish-day.sh` prints `FINISHED FOR TODAY: Safe to switch Macs.` On the other Mac, run `preflight-git.sh`; if it reports that the clean clone is behind, run `git pull --ff-only` and rerun preflight before editing.
 
-Publishing is not required for a computer handoff. Run the publishing command only when intentionally updating the live Pages site, version, and timestamp.
+Publishing is not required for a computer handoff. A prototype Finish Day push goes only to the matching prototype branch and does not update Pages. Run the publishing command only from `main` when intentionally updating the live Pages site, version, and timestamp.
+
+### Integrating a Finished Branch
+
+After Finish Day leaves a non-main branch clean and synchronized, open **Integrate Branch** in Profile Editor when that work is ready for `main`. This is optional and is not part of an ordinary computer handoff.
+
+The workspace validates the proposed merge in a disposable worktree first. It rejects conflicts and `docs/` changes, runs the full integration validation sequence, and shows the exact commits and files. Separate confirmations are then required to merge the reviewed tree into clean local `main`, push `origin/main`, and fast-forward plus push the working branch. It does not switch the active editor branch, rebase shared history, run `publish.sh`, change website version metadata, or publish Pages.
+
+For a fork, the target is that fork's configured `origin/main`. Getting later enhancements from a different upstream repository remains a separate operation.
 
 ## Why `docs/` Is Still Top Level
 
@@ -277,13 +287,15 @@ Branch: main
 Folder: /docs
 ```
 
-2. From the repository root, run the single official publishing command:
+2. Confirm that `main` is checked out and synchronized with `origin/main`. The publisher stops immediately on a prototype branch; use Finish Day instead when the goal is only to synchronize prototype Git work.
+
+3. From the repository root, run the single official publishing command:
 
 ```bash
 ./80\ Build/scripts/publish.sh
 ```
 
-This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to the current branch.
+This runs a fresh publish-mode build, increments the minor version, updates the timestamp, regenerates and validates `docs`, commits only `docs` and finalized publish metadata through a temporary Git index, and pushes the commit to `main`.
 
 Every run writes a timestamped log under the machine-local `Logs/` folder. Success requires the final message `PUBLICATION COMPLETE AND VERIFIED`; the script checks the version transition, published index, upstream commit, and any requested spreadsheet hashes. `git-status-report.sh` alone cannot prove that publication happened.
 
