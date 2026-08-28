@@ -135,6 +135,22 @@ class FinishDayWorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(FinishDayError, "unsaved browser drafts"):
             self.workflow.prepare(1, True)
 
+    def test_prepare_reports_each_long_running_stage(self):
+        (self.root / "source.txt").write_text("updated\n", encoding="utf-8")
+        events = []
+        result = self.workflow.prepare(
+            0,
+            True,
+            progress=lambda stage, **details: events.append((stage, details)),
+        )
+        self.assertEqual(result["phase"], "commit")
+        stages = [stage for stage, _details in events]
+        self.assertIn("Source validation", stages)
+        self.assertIn("Development build", stages)
+        self.assertIn("Full validation", stages)
+        self.assertIn("Protecting generated website files", stages)
+        self.assertTrue(any(details.get("command", "").startswith("$") for _stage, details in events))
+
 
 if __name__ == "__main__":
     unittest.main()

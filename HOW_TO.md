@@ -229,6 +229,8 @@ This report refreshes the remote comparison but does not pull, merge, commit, pu
 
 Open **Finish Day** in Profile Editor for the guided workflow. It checks readiness, prepares and validates source, shows the exact commit list, then requires separate approvals for commit and push.
 
+During preparation, an in-page panel shows the current command, elapsed time, completed steps, and an expandable command log. Refreshing the page reconnects to the running preparation instead of abandoning it. **Prepare integration review** uses the same visible progress behavior.
+
 The equivalent terminal interface uses the same shared engine:
 
 ```bash
@@ -259,6 +261,10 @@ After Finish Day leaves a non-main branch clean and synchronized, open **Integra
 The workspace validates the proposed merge in a disposable worktree first. It rejects conflicts and `docs/` changes, runs the full integration validation sequence, and shows the exact commits and files. Separate confirmations are then required to merge the reviewed tree into clean local `main`, push `origin/main`, and fast-forward plus push the working branch. It does not switch the active editor branch, rebase shared history, run `publish.sh`, change website version metadata, or publish Pages.
 
 For a fork, the target is that fork's configured `origin/main`. Getting later enhancements from a different upstream repository remains a separate operation.
+
+### Optional Cleanup Review
+
+After Finish Day or branch integration completes, open **Cleanup Review** to inspect exact recognized disposable items. It protects the newest successful backup of every workflow type and profile operation/target, lists only superseded timestamped workflow backups plus exact `.DS_Store` metadata, applies no age threshold, ignores manually named backups, and selects nothing automatically. Permanent deletion requires exact item selection and a separate confirmation; the inventory is checked again immediately before deletion.
 
 ## Why `docs/` Is Still Top Level
 

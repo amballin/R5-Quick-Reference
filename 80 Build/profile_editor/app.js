@@ -48,6 +48,11 @@ const elements = {
   finishDayPreparePanel: document.querySelector("#finish-day-prepare-panel"),
   finishDayConfirmPrepare: document.querySelector("#finish-day-confirm-prepare"),
   prepareFinishDay: document.querySelector("#prepare-finish-day"),
+  finishDayProgress: document.querySelector("#finish-day-progress"),
+  finishDayProgressStage: document.querySelector("#finish-day-progress-stage"),
+  finishDayProgressElapsed: document.querySelector("#finish-day-progress-elapsed"),
+  finishDayProgressCommand: document.querySelector("#finish-day-progress-command"),
+  finishDayProgressLog: document.querySelector("#finish-day-progress-log"),
   finishDayCommitPanel: document.querySelector("#finish-day-commit-panel"),
   finishDayFileCount: document.querySelector("#finish-day-file-count"),
   finishDayFileList: document.querySelector("#finish-day-file-list"),
@@ -71,6 +76,11 @@ const elements = {
   branchIntegrationReviewPanel: document.querySelector("#branch-integration-review-panel"),
   branchIntegrationConfirmPrepare: document.querySelector("#branch-integration-confirm-prepare"),
   prepareBranchIntegration: document.querySelector("#prepare-branch-integration"),
+  branchIntegrationProgress: document.querySelector("#branch-integration-progress"),
+  branchIntegrationProgressStage: document.querySelector("#branch-integration-progress-stage"),
+  branchIntegrationProgressElapsed: document.querySelector("#branch-integration-progress-elapsed"),
+  branchIntegrationProgressCommand: document.querySelector("#branch-integration-progress-command"),
+  branchIntegrationProgressLog: document.querySelector("#branch-integration-progress-log"),
   branchIntegrationMergePanel: document.querySelector("#branch-integration-merge-panel"),
   branchIntegrationCommitList: document.querySelector("#branch-integration-commit-list"),
   branchIntegrationFileCount: document.querySelector("#branch-integration-file-count"),
@@ -84,6 +94,19 @@ const elements = {
   branchIntegrationConfirmResync: document.querySelector("#branch-integration-confirm-resync"),
   resyncIntegratedBranch: document.querySelector("#resync-integrated-branch"),
   branchIntegrationCompletePanel: document.querySelector("#branch-integration-complete-panel"),
+  finishOpenCleanup: document.querySelector("#finish-open-cleanup"),
+  integrationOpenCleanup: document.querySelector("#integration-open-cleanup"),
+  refreshCleanupReview: document.querySelector("#refresh-cleanup-review"),
+  cleanupReviewMessage: document.querySelector("#cleanup-review-message"),
+  cleanupReviewCount: document.querySelector("#cleanup-review-count"),
+  cleanupReviewSummary: document.querySelector("#cleanup-review-summary"),
+  cleanupCandidateList: document.querySelector("#cleanup-candidate-list"),
+  cleanupProtectedDetails: document.querySelector("#cleanup-protected-details"),
+  cleanupProtectedSummary: document.querySelector("#cleanup-protected-summary"),
+  cleanupProtectedList: document.querySelector("#cleanup-protected-list"),
+  cleanupConfirmDelete: document.querySelector("#cleanup-confirm-delete"),
+  cleanupSelectedSummary: document.querySelector("#cleanup-selected-summary"),
+  deleteCleanupCandidates: document.querySelector("#delete-cleanup-candidates"),
   dictionarySource: document.querySelector("#dictionary-source"),
   dictionarySearch: document.querySelector("#dictionary-search"),
   dictionaryClassification: document.querySelector("#dictionary-classification"),
@@ -244,6 +267,9 @@ const state = {
   branchIntegration: null,
   branchIntegrationReviewToken: null,
   branchIntegrationBusy: false,
+  cleanupReview: null,
+  cleanupReviewToken: null,
+  cleanupBusy: false,
   dayPhase: "start",
   activeView: "today",
   loadSequence: 0,
@@ -385,6 +411,67 @@ function renderTodayWorkflow() {
     : "No pending browser drafts. Finish Day will run its required validation and build checks.";
 }
 
+const GUARDED_JOB_KEYS = {
+  finishDay: "profileEditor.finishDayPrepareJob",
+  branchIntegration: "profileEditor.branchIntegrationPrepareJob",
+};
+
+function waitMilliseconds(milliseconds) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function renderGuardedJobProgress(progressElements, job) {
+  progressElements.panel.hidden = false;
+  progressElements.panel.classList.toggle("is-stopped", job?.status === "failed");
+  progressElements.stage.textContent = job?.stage || "Starting…";
+  progressElements.elapsed.textContent = `${job?.elapsedSeconds || 0}s elapsed`;
+  progressElements.command.textContent = job?.command || "Preparing the next command…";
+  progressElements.log.textContent = (job?.log || []).join("\n\n");
+  progressElements.log.scrollTop = progressElements.log.scrollHeight;
+}
+
+async function waitForGuardedJob(jobId, storageKey, progressElements) {
+  while (true) {
+    let job;
+    try {
+      job = await request("/api/guarded-job-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId }),
+      });
+    } catch (error) {
+      if (/unavailable|expired/i.test(error.message)) sessionStorage.removeItem(storageKey);
+      throw error;
+    }
+    renderGuardedJobProgress(progressElements, job);
+    if (job.status === "complete") {
+      sessionStorage.removeItem(storageKey);
+      return job.result;
+    }
+    if (job.status === "failed") {
+      sessionStorage.removeItem(storageKey);
+      throw new Error(job.error || "The guarded workflow stopped.");
+    }
+    await waitMilliseconds(650);
+  }
+}
+
+const finishDayProgressElements = {
+  panel: elements.finishDayProgress,
+  stage: elements.finishDayProgressStage,
+  elapsed: elements.finishDayProgressElapsed,
+  command: elements.finishDayProgressCommand,
+  log: elements.finishDayProgressLog,
+};
+
+const branchIntegrationProgressElements = {
+  panel: elements.branchIntegrationProgress,
+  stage: elements.branchIntegrationProgressStage,
+  elapsed: elements.branchIntegrationProgressElapsed,
+  command: elements.branchIntegrationProgressCommand,
+  log: elements.branchIntegrationProgressLog,
+};
+
 function showFinishDayMessage(text, error = false) {
   elements.finishDayMessage.textContent = text;
   elements.finishDayMessage.classList.toggle("error", error);
@@ -441,9 +528,34 @@ function renderFinishDay() {
 
 async function refreshFinishDay() {
   captureCurrentProfileDraft();
+  const runningJobId = sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay);
+  if (runningJobId) {
+    state.finishDayBusy = true;
+    state.finishDay = { phase: "prepare" };
+    showFinishDayMessage("Reconnected to Finish Day preparation.");
+    renderFinishDay();
+    try {
+      const result = await waitForGuardedJob(
+        runningJobId,
+        GUARDED_JOB_KEYS.finishDay,
+        finishDayProgressElements,
+      );
+      state.finishDay = result;
+      state.finishDayReviewToken = result.reviewToken || null;
+      showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed.");
+    } catch (error) {
+      state.finishDay = { phase: "prepare" };
+      showFinishDayMessage(error.message, true);
+    } finally {
+      state.finishDayBusy = false;
+      renderFinishDay();
+    }
+    return;
+  }
   state.finishDayBusy = true;
   state.finishDay = null;
   state.finishDayReviewToken = null;
+  elements.finishDayProgress.hidden = true;
   showFinishDayMessage("");
   renderFinishDay();
   try {
@@ -463,14 +575,21 @@ async function refreshFinishDay() {
 
 async function prepareFinishDay() {
   state.finishDayBusy = true;
+  elements.finishDayProgress.hidden = false;
   showFinishDayMessage("Running required validation and preparing the exact source handoff. Keep this page open.");
   renderFinishDay();
   try {
-    const result = await request("/api/finish-day-prepare", {
+    const started = await request("/api/finish-day-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.finishDay, started.jobId);
+    const result = await waitForGuardedJob(
+      started.jobId,
+      GUARDED_JOB_KEYS.finishDay,
+      finishDayProgressElements,
+    );
     state.finishDay = result;
     state.finishDayReviewToken = result.reviewToken || null;
     elements.finishDayConfirmPrepare.checked = false;
@@ -586,9 +705,34 @@ function renderBranchIntegration() {
 
 async function refreshBranchIntegration() {
   captureCurrentProfileDraft();
+  const runningJobId = sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration);
+  if (runningJobId) {
+    state.branchIntegrationBusy = true;
+    state.branchIntegration = { phase: "review" };
+    showBranchIntegrationMessage("Reconnected to integration preparation.");
+    renderBranchIntegration();
+    try {
+      const result = await waitForGuardedJob(
+        runningJobId,
+        GUARDED_JOB_KEYS.branchIntegration,
+        branchIntegrationProgressElements,
+      );
+      state.branchIntegration = result;
+      state.branchIntegrationReviewToken = result.reviewToken || null;
+      showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
+    } catch (error) {
+      state.branchIntegration = { phase: "review" };
+      showBranchIntegrationMessage(error.message, true);
+    } finally {
+      state.branchIntegrationBusy = false;
+      renderBranchIntegration();
+    }
+    return;
+  }
   state.branchIntegrationBusy = true;
   state.branchIntegration = null;
   state.branchIntegrationReviewToken = null;
+  elements.branchIntegrationProgress.hidden = true;
   showBranchIntegrationMessage("");
   renderBranchIntegration();
   try {
@@ -610,14 +754,21 @@ async function refreshBranchIntegration() {
 
 async function prepareBranchIntegration() {
   state.branchIntegrationBusy = true;
+  elements.branchIntegrationProgress.hidden = false;
   showBranchIntegrationMessage("Building and validating the isolated integration candidate. No real branch is being changed.");
   renderBranchIntegration();
   try {
-    const result = await request("/api/branch-integration-prepare", {
+    const started = await request("/api/branch-integration-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.branchIntegration, started.jobId);
+    const result = await waitForGuardedJob(
+      started.jobId,
+      GUARDED_JOB_KEYS.branchIntegration,
+      branchIntegrationProgressElements,
+    );
     state.branchIntegration = result;
     state.branchIntegrationReviewToken = result.reviewToken || null;
     elements.branchIntegrationConfirmPrepare.checked = false;
@@ -692,6 +843,134 @@ async function resyncIntegratedBranch() {
   } finally {
     state.branchIntegrationBusy = false;
     renderBranchIntegration();
+  }
+}
+
+function formatFileSize(bytes) {
+  const value = Number(bytes || 0);
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  if (value < 1024 * 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(value / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+function showCleanupReviewMessage(text, error = false) {
+  elements.cleanupReviewMessage.textContent = text;
+  elements.cleanupReviewMessage.classList.toggle("error", error);
+  elements.cleanupReviewMessage.hidden = !text;
+}
+
+function cleanupCandidateCard(item, selectable) {
+  const card = document.createElement(selectable ? "label" : "div");
+  card.className = "cleanup-candidate";
+  if (selectable) {
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.dataset.cleanupId = item.id;
+    checkbox.addEventListener("change", renderCleanupSelection);
+    card.append(checkbox);
+  }
+  const main = document.createElement("span");
+  main.className = "cleanup-candidate-main";
+  const name = document.createElement("strong");
+  name.textContent = item.name;
+  const path = document.createElement("span");
+  path.className = "cleanup-candidate-path";
+  path.textContent = item.path;
+  const reason = document.createElement("span");
+  reason.className = "cleanup-candidate-reason";
+  reason.textContent = `${item.reason} Modified ${item.modified}.`;
+  main.append(name, path, reason);
+  const size = document.createElement("span");
+  size.className = "cleanup-candidate-size";
+  size.textContent = formatFileSize(item.sizeBytes);
+  card.append(main, size);
+  return card;
+}
+
+function selectedCleanupIds() {
+  return [...elements.cleanupCandidateList.querySelectorAll("input[data-cleanup-id]:checked")]
+    .map((input) => input.dataset.cleanupId);
+}
+
+function renderCleanupSelection() {
+  const selected = selectedCleanupIds();
+  elements.cleanupSelectedSummary.textContent = selected.length
+    ? `${selected.length} exact ${selected.length === 1 ? "item" : "items"} selected.`
+    : "No items selected.";
+  elements.deleteCleanupCandidates.disabled = state.cleanupBusy
+    || !elements.cleanupConfirmDelete.checked
+    || !selected.length
+    || !state.cleanupReviewToken;
+}
+
+function renderCleanupReview() {
+  const result = state.cleanupReview;
+  const candidates = result?.candidates || [];
+  const protectedItems = result?.protected || [];
+  elements.cleanupReviewCount.className = `workflow-status ${candidates.length ? "notice" : result ? "ready" : "checking"}`;
+  elements.cleanupReviewCount.textContent = result ? `${candidates.length} optional` : "Checking…";
+  elements.cleanupReviewSummary.textContent = result?.message || "Checking workflow-owned backups and disposable metadata.";
+  elements.cleanupCandidateList.replaceChildren();
+  if (result && !candidates.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "Nothing recognized as safe optional cleanup.";
+    elements.cleanupCandidateList.append(empty);
+  } else {
+    for (const item of candidates) elements.cleanupCandidateList.append(cleanupCandidateCard(item, true));
+  }
+  elements.cleanupProtectedList.replaceChildren();
+  for (const item of protectedItems) elements.cleanupProtectedList.append(cleanupCandidateCard(item, false));
+  elements.cleanupProtectedDetails.hidden = !protectedItems.length;
+  elements.cleanupProtectedSummary.textContent = `Show ${protectedItems.length} protected newest ${protectedItems.length === 1 ? "backup" : "backups"}`;
+  elements.refreshCleanupReview.disabled = state.cleanupBusy;
+  elements.cleanupConfirmDelete.checked = false;
+  renderCleanupSelection();
+}
+
+async function refreshCleanupReview() {
+  state.cleanupBusy = true;
+  state.cleanupReview = null;
+  state.cleanupReviewToken = null;
+  showCleanupReviewMessage("");
+  renderCleanupReview();
+  try {
+    const result = await request("/api/cleanup-status", { method: "POST", body: "{}" });
+    state.cleanupReview = result;
+    state.cleanupReviewToken = result.reviewToken || null;
+  } catch (error) {
+    showCleanupReviewMessage(error.message, true);
+  } finally {
+    state.cleanupBusy = false;
+    renderCleanupReview();
+  }
+}
+
+async function deleteCleanupCandidates() {
+  const candidateIds = selectedCleanupIds();
+  state.cleanupBusy = true;
+  elements.deleteCleanupCandidates.disabled = true;
+  showCleanupReviewMessage("Deleting only the exact reviewed selections.");
+  try {
+    const result = await request("/api/cleanup-delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewToken: state.cleanupReviewToken,
+        candidateIds,
+        confirmDelete: true,
+      }),
+    });
+    state.cleanupReview = result;
+    state.cleanupReviewToken = result.reviewToken || null;
+    showCleanupReviewMessage(`${result.message} Recovered ${formatFileSize(result.deletedBytes)}.`);
+  } catch (error) {
+    state.cleanupReviewToken = null;
+    showCleanupReviewMessage(error.message, true);
+  } finally {
+    state.cleanupBusy = false;
+    renderCleanupReview();
   }
 }
 
@@ -1061,6 +1340,7 @@ function switchView(viewName) {
   if (viewName === "today") renderTodayWorkflow();
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
+  if (viewName === "cleanup-review" && !state.cleanupBusy) refreshCleanupReview();
   window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -3512,6 +3792,11 @@ elements.branchIntegrationConfirmPush.addEventListener("change", renderBranchInt
 elements.pushIntegratedMain.addEventListener("click", pushIntegratedMain);
 elements.branchIntegrationConfirmResync.addEventListener("change", renderBranchIntegration);
 elements.resyncIntegratedBranch.addEventListener("click", resyncIntegratedBranch);
+elements.finishOpenCleanup.addEventListener("click", () => switchView("cleanup-review"));
+elements.integrationOpenCleanup.addEventListener("click", () => switchView("cleanup-review"));
+elements.refreshCleanupReview.addEventListener("click", refreshCleanupReview);
+elements.cleanupConfirmDelete.addEventListener("change", renderCleanupSelection);
+elements.deleteCleanupCandidates.addEventListener("click", deleteCleanupCandidates);
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => {
   elements.profileActionMenu.open = false;
@@ -3630,4 +3915,9 @@ Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(),
 setDayPhase("start");
 renderTodayWorkflow();
 runWorkflowPreflight();
+if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
+  switchView("finish-day");
+} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
+  switchView("branch-integration");
+}
 updateFloatingReturn();

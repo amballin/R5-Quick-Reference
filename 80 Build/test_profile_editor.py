@@ -24,6 +24,7 @@ if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
 from profile_editor import (
+    GuardedJobManager,
     MAIN_EDITOR_PORT,
     PROTOTYPE_EDITOR_PORT,
     ProfileConflictError,
@@ -58,6 +59,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/feature_interactions.py",
             "80 Build/finish_day.py",
             "80 Build/integrate_branch.py",
+            "80 Build/cleanup_review.py",
             "80 Build/lens_guidance.py",
             "80 Build/html_renderer.py",
             "80 Build/my_menu.py",
@@ -776,6 +778,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="setup-sharing-view"', html)
         self.assertIn('id="finish-day-view"', html)
         self.assertIn('id="branch-integration-view"', html)
+        self.assertIn('id="cleanup-review-view"', html)
         self.assertIn("Integrate Branch", html)
         self.assertIn("Edit Profiles", html)
         self.assertIn("Launch separate app", html)
@@ -797,7 +800,32 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/branch-integration-merge-main"', javascript)
         self.assertIn('request("/api/branch-integration-push-main"', javascript)
         self.assertIn('request("/api/branch-integration-resync"', javascript)
+        self.assertIn('request("/api/guarded-job-status"', javascript)
+        self.assertIn('request("/api/cleanup-status"', javascript)
+        self.assertIn('request("/api/cleanup-delete"', javascript)
+        self.assertIn("Watch command log", html)
+        self.assertIn("Permanently delete only the exact checked items", html)
+        self.assertIn('<span>Push the reviewed integration commit to <code>origin/main</code>.', html)
         self.assertIn(".integration-steps", stylesheet)
+
+    def test_guarded_job_manager_reports_progress_and_result(self):
+        manager = GuardedJobManager()
+
+        def action(progress):
+            progress("Running source validation", command="$ validator", output="started")
+            progress("Running source validation", output="passed", completed=True)
+            return {"phase": "commit"}
+
+        started = manager.start("test", action)
+        result = None
+        for _attempt in range(100):
+            result = manager.status(started["jobId"])
+            if result["status"] != "running":
+                break
+            threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["result"], {"phase": "commit"})
+        self.assertTrue(any("$ validator" in entry for entry in result["log"]))
 
     def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
         outcomes = (

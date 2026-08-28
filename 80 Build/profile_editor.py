@@ -61,6 +61,7 @@ from card_identity import (
     profile_by_title,
     valid_card_id,
 )
+from cleanup_review import CleanupReview, CleanupReviewError
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from finish_day import FinishDayError, FinishDayWorkflow
 from integrate_branch import BranchIntegrationError, BranchIntegrationWorkflow
@@ -135,6 +136,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/feature_interactions.py",
     "80 Build/finish_day.py",
     "80 Build/integrate_branch.py",
+    "80 Build/cleanup_review.py",
     "80 Build/lens_guidance.py",
     "80 Build/control_reference.py",
     "80 Build/html_renderer.py",
@@ -164,6 +166,84 @@ class PrototypeError(ValueError):
 
 class ProfileConflictError(PrototypeError):
     pass
+
+
+class GuardedJobManager:
+    """Run one long guarded workflow at a time and expose reconnectable progress."""
+
+    def __init__(self):
+        self._jobs = {}
+        self._lock = threading.RLock()
+
+    def start(self, kind, action):
+        with self._lock:
+            if any(job["status"] == "running" for job in self._jobs.values()):
+                raise PrototypeError("Another long-running guarded action is already in progress.")
+            job_id = secrets.token_urlsafe(24)
+            now = time.time()
+            job = {
+                "jobId": job_id,
+                "kind": kind,
+                "status": "running",
+                "stage": "Starting",
+                "command": "",
+                "log": [],
+                "startedAt": now,
+                "updatedAt": now,
+                "result": None,
+                "error": None,
+            }
+            self._jobs[job_id] = job
+
+        def progress(stage, command="", output="", completed=False):
+            with self._lock:
+                current = self._jobs.get(job_id)
+                if not current:
+                    return
+                current["stage"] = stage
+                current["command"] = command
+                current["updatedAt"] = time.time()
+                marker = "✓" if completed else "▶"
+                entry = f"{marker} {stage}"
+                if command:
+                    entry += f"\n{command}"
+                if output:
+                    entry += f"\n{str(output).strip()}"
+                current["log"].append(entry)
+                while sum(len(item) for item in current["log"]) > 80_000:
+                    current["log"].pop(0)
+
+        def worker():
+            try:
+                result = action(progress)
+            except Exception as exc:
+                with self._lock:
+                    job["status"] = "failed"
+                    job["stage"] = "Stopped"
+                    job["command"] = ""
+                    job["error"] = str(exc)
+                    job["updatedAt"] = time.time()
+            else:
+                with self._lock:
+                    job["status"] = "complete"
+                    job["stage"] = "Complete"
+                    job["command"] = ""
+                    job["result"] = result
+                    job["updatedAt"] = time.time()
+
+        threading.Thread(target=worker, daemon=True).start()
+        return {"jobId": job_id, "kind": kind, "status": "running"}
+
+    def status(self, job_id):
+        with self._lock:
+            job = self._jobs.get(str(job_id or ""))
+            if not job:
+                raise PrototypeError("That workflow progress record is unavailable or expired.")
+            return {
+                **job,
+                "log": list(job["log"]),
+                "elapsedSeconds": max(0, int(time.time() - job["startedAt"])),
+            }
 
 
 class IndentedYamlDumper(yaml.SafeDumper):
@@ -271,6 +351,7 @@ class ProfileEditorModel:
         preflight_checker=None,
         finish_day_workflow=None,
         branch_integration_workflow=None,
+        cleanup_review=None,
     ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
@@ -303,9 +384,11 @@ class ProfileEditorModel:
         self._pending_restore_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
+        self.guarded_jobs = GuardedJobManager()
         self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths.root)
         self.finish_day_workflow = finish_day_workflow or FinishDayWorkflow(self.paths.root)
         self.branch_integration_workflow = branch_integration_workflow or BranchIntegrationWorkflow(self.paths.root)
+        self.cleanup_review = cleanup_review or CleanupReview(self.paths.root)
 
     def launch_camera_lab(self, profile_name):
         name = self._validate_profile_name(profile_name)
@@ -1554,12 +1637,14 @@ class ProfileEditorModel:
         except FinishDayError as exc:
             raise PrototypeError(str(exc)) from exc
 
-    def prepare_finish_day(self, pending_changes, confirmed):
+    def prepare_finish_day(self, pending_changes, confirmed, progress_callback=None):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("A local build, tracker import, or Finish Day action is already running.")
         try:
             try:
-                return self.finish_day_workflow.prepare(pending_changes, confirmed)
+                return self.finish_day_workflow.prepare(
+                    pending_changes, confirmed, progress=progress_callback
+                )
             except FinishDayError as exc:
                 raise PrototypeError(str(exc)) from exc
         finally:
@@ -1593,12 +1678,14 @@ class ProfileEditorModel:
         except BranchIntegrationError as exc:
             raise PrototypeError(str(exc)) from exc
 
-    def prepare_branch_integration(self, pending_changes, confirmed):
+    def prepare_branch_integration(self, pending_changes, confirmed, progress_callback=None):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("Another build or guarded Git action is already running.")
         try:
             try:
-                return self.branch_integration_workflow.prepare(pending_changes, confirmed)
+                return self.branch_integration_workflow.prepare(
+                    pending_changes, confirmed, progress=progress_callback
+                )
             except BranchIntegrationError as exc:
                 raise PrototypeError(str(exc)) from exc
         finally:
@@ -1636,6 +1723,34 @@ class ProfileEditorModel:
                 raise PrototypeError(str(exc)) from exc
         finally:
             self._build_lock.release()
+
+    def start_finish_day_prepare(self, pending_changes, confirmed):
+        return self.guarded_jobs.start(
+            "finish-day-prepare",
+            lambda progress: self.prepare_finish_day(
+                pending_changes, confirmed, progress_callback=progress
+            ),
+        )
+
+    def start_branch_integration_prepare(self, pending_changes, confirmed):
+        return self.guarded_jobs.start(
+            "branch-integration-prepare",
+            lambda progress: self.prepare_branch_integration(
+                pending_changes, confirmed, progress_callback=progress
+            ),
+        )
+
+    def guarded_job_status(self, job_id):
+        return self.guarded_jobs.status(job_id)
+
+    def cleanup_status(self):
+        return self.cleanup_review.inspect()
+
+    def delete_cleanup_candidates(self, review_token, candidate_ids, confirmed):
+        try:
+            return self.cleanup_review.delete(review_token, candidate_ids, confirmed)
+        except CleanupReviewError as exc:
+            raise PrototypeError(str(exc)) from exc
 
     def import_verification_tracker(self, pending_changes, confirmed):
         try:
@@ -3286,6 +3401,9 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/branch-integration-merge-main",
             "/api/branch-integration-push-main",
             "/api/branch-integration-resync",
+            "/api/guarded-job-status",
+            "/api/cleanup-status",
+            "/api/cleanup-delete",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         protected_lifecycle_paths = {
@@ -3301,6 +3419,9 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/branch-integration-merge-main",
             "/api/branch-integration-push-main",
             "/api/branch-integration-resync",
+            "/api/guarded-job-status",
+            "/api/cleanup-status",
+            "/api/cleanup-delete",
         }
         if parsed.path in protected_lifecycle_paths and not secrets.compare_digest(
             self.headers.get("X-Profile-Editor-Token", ""), self.request_token
@@ -3396,7 +3517,7 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.finish_day_status(payload.get("pendingChanges")))
             if parsed.path == "/api/finish-day-prepare":
                 return self._json(
-                    self.model.prepare_finish_day(
+                    self.model.start_finish_day_prepare(
                         payload.get("pendingChanges"), payload.get("confirmPrepare")
                     )
                 )
@@ -3414,7 +3535,7 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.branch_integration_status(payload.get("pendingChanges")))
             if parsed.path == "/api/branch-integration-prepare":
                 return self._json(
-                    self.model.prepare_branch_integration(
+                    self.model.start_branch_integration_prepare(
                         payload.get("pendingChanges"), payload.get("confirmPrepare")
                     )
                 )
@@ -3428,6 +3549,18 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.push_integrated_main(payload.get("confirmPushMain")))
             if parsed.path == "/api/branch-integration-resync":
                 return self._json(self.model.resync_integrated_branch(payload.get("confirmResync")))
+            if parsed.path == "/api/guarded-job-status":
+                return self._json(self.model.guarded_job_status(payload.get("jobId")))
+            if parsed.path == "/api/cleanup-status":
+                return self._json(self.model.cleanup_status())
+            if parsed.path == "/api/cleanup-delete":
+                return self._json(
+                    self.model.delete_cleanup_candidates(
+                        payload.get("reviewToken"),
+                        payload.get("candidateIds"),
+                        payload.get("confirmDelete"),
+                    )
+                )
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
                 card_setting_paths = self.model.draft_card_setting_paths(payload)

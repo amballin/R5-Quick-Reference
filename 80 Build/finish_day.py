@@ -161,6 +161,11 @@ class FinishDayWorkflow:
             timeout=5 * 60,
         )
 
+    @staticmethod
+    def _notify(progress, stage, command="", output="", completed=False):
+        if progress:
+            progress(stage, command=command, output=output, completed=completed)
+
     def _backup_and_restore_docs(self):
         docs_status = self._git_text("status", "--porcelain=v1", "--untracked-files=all", "--", "docs")
         if not docs_status:
@@ -187,26 +192,48 @@ class FinishDayWorkflow:
             raise FinishDayError(f"Generated docs could not be restored completely. Recovery backup: {backup_dir}")
         return str(backup_dir)
 
-    def prepare(self, pending_changes, confirmed):
+    def prepare(self, pending_changes, confirmed, progress=None):
         pending = self._pending_count(pending_changes)
         if pending:
             raise FinishDayError(f"Resolve {pending} unsaved browser drafts before preparing Finish Day.")
         if confirmed is not True:
             raise FinishDayError("Finish Day preparation confirmation is required.")
+        self._notify(
+            progress,
+            "Checking Finish Day readiness",
+            "$ ./80 Build/scripts/git-status-report.sh",
+        )
         initial = self.inspect(0)
+        self._notify(progress, "Checking Finish Day readiness", completed=True)
         if initial["phase"] == "blocked":
             raise FinishDayError("Finish Day is blocked. " + " ".join(initial["blockers"]))
         if initial["phase"] in {"complete", "push"}:
             return initial
+        self._notify(progress, "Cleaning disposable build metadata", "Remove recognized .DS_Store files from generated output")
         self._clean_generated_metadata()
-        steps = [self._verification_check()]
+        self._notify(progress, "Cleaning disposable build metadata", completed=True)
+        self._notify(progress, "Checking verification status", "$ python3 '80 Build/verification_status.py' check")
+        verification = self._verification_check()
+        self._notify(progress, "Checking verification status", output=verification["output"], completed=True)
+        steps = [verification]
         for label, command, timeout in (
             ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"], 15 * 60),
             ("Development build", [sys.executable, "80 Build/build.py"], 15 * 60),
             ("Full validation", [sys.executable, "80 Build/validator.py"], 15 * 60),
         ):
-            steps.append(self._require_success(label, command, timeout=timeout))
+            display_command = "$ " + " ".join(f"'{part}'" if " " in str(part) else str(part) for part in command)
+            self._notify(progress, label, display_command)
+            step = self._require_success(label, command, timeout=timeout)
+            steps.append(step)
+            self._notify(progress, label, output=step["output"], completed=True)
+        self._notify(progress, "Protecting generated website files", "Back up and restore generated docs/")
         backup = self._backup_and_restore_docs()
+        self._notify(
+            progress,
+            "Protecting generated website files",
+            output=f"Recovery backup: {backup}" if backup else "Generated docs/ did not require restoration.",
+            completed=True,
+        )
         source_status = self._worktree_status(include_docs=False)
         source_files = [line for line in source_status.splitlines() if line.strip()]
         if not source_files:
