@@ -133,19 +133,21 @@
 <p>Review and approve the highlights as reader-facing release notes. Do not continue until the exact upcoming version exists in <code>00 Master/release_notes.yaml</code>.</p>
 </section>
 <section class="step"><h2>2. Finish the source work and synchronize Git</h2>
-<p>From the repository root, run:</p>
+<p>In Profile Editor, open <strong>Finish Day</strong>. It guides the same workflow through four separately guarded stages: <strong>Check</strong>, <strong>Prepare</strong>, <strong>Commit</strong>, and <strong>Push</strong>. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.</p>
+<p>The terminal interface remains available from the repository root and uses the same shared implementation:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/finish-day.sh</code></pre></div>
-<p>The script first runs source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then, at the prompts:</p>
+<p>After preparation approval, both interfaces run source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then:</p>
 <ol>
 <li>Review the complete source-file list.</li>
 <li>Approve staging every listed source change.</li>
 <li>Approve the commit and enter a clear commit message.</li>
 <li>Approve the push.</li>
 </ol>
-<p>Do not continue until the script prints:</p>
+<p>Do not continue until the UI reports a clean synchronized branch or the terminal command prints:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>FINISHED FOR TODAY: Safe to switch Macs.</code></pre></div>
-<p>This commit and push synchronize all editable project source, including the release notes when publishing. The script excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
-<aside class="warning">If you are only finishing for the day or switching Macs, stop here. If publishing, continue directly to Step 3; do not run <code>finish-day.sh</code> again.</aside>
+<p>This commit and push synchronize all editable project source, including the release notes when publishing. The shared Finish Day engine backs up and excludes regenerated <code>docs/</code>, so this Git handoff does not publish the website.</p>
+<p>Finish Day uses the current checked-out branch and requires its exact same-named upstream on <code>origin</code>. On a prototype worktree, it may therefore commit and push only that prototype branch. It never redirects the push to <code>main</code>, and because GitHub Pages watches <code>main / docs</code>, the prototype handoff does not update the live site.</p>
+<aside class="warning">If you are only finishing for the day or switching Macs, stop here. If this is a prototype branch, also stop here and integrate the approved work into <code>main</code> separately before publication. If already on <code>main</code> and publishing, continue directly to Step 3; do not run <code>finish-day.sh</code> again.</aside>
 </section>
 <section class="step"><h2>3. Build and verify both spreadsheet families</h2>
 <p>Run:</p>
@@ -153,6 +155,7 @@
 <p>This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup &amp; Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.</p>
 </section>
 <section class="step"><h2>4. Choose the website version and publish</h2>
+<p>Confirm that the current branch is <code>main</code>. The publisher stops before building or changing files on every other branch.</p>
 <p>To start a new major website version, replace <code>N</code> with an integer greater than the current major version:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --major-version N --spreadsheet-downloads</code></pre></div>
 <p>Otherwise, publish the next minor website version:</p>

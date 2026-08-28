@@ -5,6 +5,7 @@ const elements = {
   editorSourceHash: document.querySelector("#editor-source-hash"),
   projectContextBadge: document.querySelector("#project-context-badge"),
   openCameraLab: document.querySelector("#open-camera-lab"),
+  sidebarCameraLab: document.querySelector("#sidebar-camera-lab"),
   stopProfileEditor: document.querySelector("#stop-profile-editor"),
   profileActionMenu: document.querySelector(".profile-action-menu"),
   viewTabs: [...document.querySelectorAll(".view-tab")],
@@ -14,6 +15,50 @@ const elements = {
   myMenuDraftBadge: document.querySelector("#my-menu-draft-badge"),
   baselineDraftBadge: document.querySelector("#baseline-draft-badge"),
   pendingDraftBadge: document.querySelector("#pending-draft-badge"),
+  daySteps: [...document.querySelectorAll(".day-step")],
+  dayPanels: [...document.querySelectorAll("[data-day-panel]")],
+  refreshWorkflowPreflight: document.querySelector("#refresh-workflow-preflight"),
+  workflowPreflightBadge: document.querySelector("#workflow-preflight-badge"),
+  workflowPreflightSummary: document.querySelector("#workflow-preflight-summary"),
+  workflowPreflightDetails: document.querySelector("#workflow-preflight-details"),
+  workflowPreflightOutput: document.querySelector("#workflow-preflight-output"),
+  beginWork: document.querySelector("#begin-work"),
+  todayMessage: document.querySelector("#today-message"),
+  todayDraftCount: document.querySelector("#today-draft-count"),
+  todayOpenProfiles: document.querySelector("#today-open-profiles"),
+  todayOpenCameraLab: document.querySelector("#today-open-camera-lab"),
+  todayCameraLabNote: document.querySelector("#today-camera-lab-note"),
+  todayOpenReviewBuild: document.querySelector("#today-open-review-build"),
+  goToFinish: document.querySelector("#go-to-finish"),
+  finishReadinessBadge: document.querySelector("#finish-readiness-badge"),
+  finishDraftNote: document.querySelector("#finish-draft-note"),
+  finishOpenReviewBuild: document.querySelector("#finish-open-review-build"),
+  openFinishDay: document.querySelector("#open-finish-day"),
+  switchingMacs: document.querySelector("#switching-macs"),
+  handoffGuidance: document.querySelector("#handoff-guidance"),
+  continueToPublish: document.querySelector("#continue-to-publish"),
+  refreshFinishDay: document.querySelector("#refresh-finish-day"),
+  finishDayBranch: document.querySelector("#finish-day-branch"),
+  finishDayMessage: document.querySelector("#finish-day-message"),
+  finishDaySteps: [...document.querySelectorAll(".finish-day-steps li")],
+  finishDayStatusBadge: document.querySelector("#finish-day-status-badge"),
+  finishDaySummary: document.querySelector("#finish-day-summary"),
+  finishDayDetails: document.querySelector("#finish-day-details"),
+  finishDayOutput: document.querySelector("#finish-day-output"),
+  finishDayPreparePanel: document.querySelector("#finish-day-prepare-panel"),
+  finishDayConfirmPrepare: document.querySelector("#finish-day-confirm-prepare"),
+  prepareFinishDay: document.querySelector("#prepare-finish-day"),
+  finishDayCommitPanel: document.querySelector("#finish-day-commit-panel"),
+  finishDayFileCount: document.querySelector("#finish-day-file-count"),
+  finishDayFileList: document.querySelector("#finish-day-file-list"),
+  finishDayCommitMessage: document.querySelector("#finish-day-commit-message"),
+  finishDayConfirmCommit: document.querySelector("#finish-day-confirm-commit"),
+  commitFinishDay: document.querySelector("#commit-finish-day"),
+  finishDayPushPanel: document.querySelector("#finish-day-push-panel"),
+  finishDayPushTarget: document.querySelector("#finish-day-push-target"),
+  finishDayConfirmPush: document.querySelector("#finish-day-confirm-push"),
+  pushFinishDay: document.querySelector("#push-finish-day"),
+  finishDayCompletePanel: document.querySelector("#finish-day-complete-panel"),
   dictionarySource: document.querySelector("#dictionary-source"),
   dictionarySearch: document.querySelector("#dictionary-search"),
   dictionaryClassification: document.querySelector("#dictionary-classification"),
@@ -167,6 +212,12 @@ const state = {
   nextDraftId: 1,
   filenameFollowsTitle: false,
   buildReadiness: null,
+  workflowPreflight: null,
+  finishDay: null,
+  finishDayReviewToken: null,
+  finishDayBusy: false,
+  dayPhase: "start",
+  activeView: "today",
   loadSequence: 0,
   baselineDetail: null,
   baselineCurrent: {},
@@ -242,6 +293,226 @@ function showMessage(text, error = false) {
   elements.message.textContent = text;
   elements.message.classList.toggle("error", error);
   elements.message.hidden = !text;
+}
+
+function showTodayMessage(text, error = false) {
+  elements.todayMessage.textContent = text;
+  elements.todayMessage.classList.toggle("error", error);
+  elements.todayMessage.hidden = !text;
+}
+
+function setDayPhase(phase) {
+  state.dayPhase = phase;
+  const order = ["start", "work", "finish"];
+  const activeIndex = order.indexOf(phase);
+  for (const step of elements.daySteps) {
+    const stepIndex = order.indexOf(step.dataset.dayPhase);
+    step.classList.toggle("is-active", stepIndex === activeIndex);
+    step.classList.toggle("is-complete", stepIndex < activeIndex);
+    step.setAttribute("aria-current", stepIndex === activeIndex ? "step" : "false");
+  }
+  for (const panel of elements.dayPanels) panel.hidden = panel.dataset.dayPanel !== phase;
+  showTodayMessage("");
+}
+
+function renderWorkflowPreflight() {
+  const result = state.workflowPreflight;
+  const status = result?.status || "checking";
+  const labels = { checking: "Checking…", ready: "Ready", notice: "Review", blocked: "Blocked" };
+  elements.workflowPreflightBadge.className = `workflow-status ${status}`;
+  elements.workflowPreflightBadge.textContent = labels[status] || "Review";
+  elements.workflowPreflightSummary.className = `workflow-preflight-summary ${status === "ready" ? "" : status}`.trim();
+  elements.workflowPreflightSummary.replaceChildren();
+  const title = document.createElement("strong");
+  const detail = document.createElement("span");
+  if (!result) {
+    title.textContent = "Running preflight…";
+    detail.textContent = "The editor is checking the current project.";
+  } else {
+    title.textContent = result.summary;
+    detail.textContent = status === "blocked"
+      ? "Stop and resolve the reported condition before editing."
+      : status === "notice" ? "Work may continue on this Mac after reviewing the details." : "No action is required before beginning work.";
+  }
+  elements.workflowPreflightSummary.append(title, detail);
+  elements.workflowPreflightOutput.textContent = result?.output || "";
+  elements.workflowPreflightDetails.hidden = !result?.output;
+  elements.beginWork.disabled = !result || status === "blocked";
+}
+
+function renderTodayWorkflow() {
+  const pending = pendingSessionItems().length;
+  elements.todayDraftCount.textContent = `${pending} ${pending === 1 ? "draft" : "drafts"}`;
+  elements.todayDraftCount.className = `workflow-status ${pending ? "notice" : "ready"}`;
+  const savedProfile = state.detail?.cardType === "profile" && (state.detail.operation || "update") === "update";
+  const changed = savedProfile && profilePayloadChanged(profileDraftPayload());
+  elements.todayOpenCameraLab.disabled = !savedProfile || changed;
+  elements.todayCameraLabNote.textContent = changed
+    ? "Save or discard the selected profile draft before launching Camera Lab."
+    : savedProfile ? `Launch the separate Camera Lab app with ${state.detail.name} selected.` : "Choose a saved profile before launching the separate Camera Lab app.";
+  elements.finishReadinessBadge.textContent = pending ? "Review needed" : "Ready for Finish Day";
+  elements.finishReadinessBadge.className = `workflow-status ${pending ? "notice" : "ready"}`;
+  elements.finishDraftNote.textContent = pending
+    ? `Resolve ${pending} pending browser ${pending === 1 ? "draft" : "drafts"} before finishing.`
+    : "No pending browser drafts. Finish Day will run its required validation and build checks.";
+}
+
+function showFinishDayMessage(text, error = false) {
+  elements.finishDayMessage.textContent = text;
+  elements.finishDayMessage.classList.toggle("error", error);
+  elements.finishDayMessage.hidden = !text;
+}
+
+function renderFinishDay() {
+  const result = state.finishDay;
+  const phase = result?.phase || "checking";
+  const order = ["check", "prepare", "commit", "push"];
+  const activePhase = phase === "blocked" || phase === "checking" || phase === "complete" ? "check" : phase;
+  const activeIndex = order.indexOf(activePhase);
+  for (const [index, step] of elements.finishDaySteps.entries()) {
+    step.classList.toggle("is-active", phase !== "complete" && index === activeIndex);
+    step.classList.toggle("is-complete", phase === "complete" || index < activeIndex);
+  }
+  const branch = result?.branch;
+  elements.finishDayBranch.textContent = branch || "Checking branch…";
+  elements.finishDayBranch.className = `project-context-badge ${branch === "main" ? "main" : branch ? "prototype" : "unknown"}`;
+  const status = phase === "complete" ? "ready" : phase === "blocked" ? "blocked" : phase === "checking" ? "checking" : "notice";
+  const labels = { ready: "Complete", blocked: "Blocked", checking: "Checking…", notice: "Action needed" };
+  elements.finishDayStatusBadge.className = `workflow-status ${status}`;
+  elements.finishDayStatusBadge.textContent = labels[status];
+  const summaries = {
+    checking: "Checking browser drafts and the current Git branch.",
+    blocked: (result?.blockers || []).join(" ") || "Finish Day cannot continue until the reported condition is resolved.",
+    prepare: "The project has changes. Validate, build, and safely separate generated website files before commit review.",
+    commit: "Preparation passed. Review the exact source list and provide a commit message.",
+    push: `The local branch has a commit ready to synchronize with ${result?.upstream || "its matching upstream"}.`,
+    complete: "The current branch is clean and synchronized. No commit or push is needed.",
+  };
+  elements.finishDaySummary.textContent = summaries[phase] || summaries.checking;
+  elements.finishDayOutput.textContent = result?.output || "";
+  elements.finishDayDetails.hidden = !result?.output;
+  elements.finishDayPreparePanel.hidden = phase !== "prepare";
+  elements.finishDayCommitPanel.hidden = phase !== "commit";
+  elements.finishDayPushPanel.hidden = phase !== "push";
+  elements.finishDayCompletePanel.hidden = phase !== "complete";
+  const files = result?.sourceFiles || [];
+  elements.finishDayFileCount.textContent = `${files.length} ${files.length === 1 ? "file" : "files"}`;
+  elements.finishDayFileList.textContent = files.join("\n") || "No source files are waiting for commit.";
+  elements.finishDayPushTarget.textContent = branch && result?.upstream
+    ? `Push ${branch} only to ${result.upstream}. GitHub Pages is not published by Finish Day.`
+    : "The exact branch and matching upstream must be confirmed before push.";
+  elements.refreshFinishDay.disabled = state.finishDayBusy;
+  elements.prepareFinishDay.disabled = state.finishDayBusy || !elements.finishDayConfirmPrepare.checked;
+  elements.commitFinishDay.disabled = state.finishDayBusy
+    || !elements.finishDayConfirmCommit.checked
+    || !elements.finishDayCommitMessage.value.trim()
+    || !state.finishDayReviewToken;
+  elements.pushFinishDay.disabled = state.finishDayBusy || !elements.finishDayConfirmPush.checked;
+}
+
+async function refreshFinishDay() {
+  captureCurrentProfileDraft();
+  state.finishDayBusy = true;
+  state.finishDay = null;
+  state.finishDayReviewToken = null;
+  showFinishDayMessage("");
+  renderFinishDay();
+  try {
+    state.finishDay = await request("/api/finish-day-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
+    });
+  } catch (error) {
+    state.finishDay = { phase: "blocked", blockers: [error.message], output: "" };
+    showFinishDayMessage(error.message, true);
+  } finally {
+    state.finishDayBusy = false;
+    renderFinishDay();
+  }
+}
+
+async function prepareFinishDay() {
+  state.finishDayBusy = true;
+  showFinishDayMessage("Running required validation and preparing the exact source handoff. Keep this page open.");
+  renderFinishDay();
+  try {
+    const result = await request("/api/finish-day-prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+    });
+    state.finishDay = result;
+    state.finishDayReviewToken = result.reviewToken || null;
+    elements.finishDayConfirmPrepare.checked = false;
+    showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed. Review the current state.");
+  } catch (error) {
+    showFinishDayMessage(error.message, true);
+  } finally {
+    state.finishDayBusy = false;
+    renderFinishDay();
+  }
+}
+
+async function commitFinishDay() {
+  state.finishDayBusy = true;
+  showFinishDayMessage("Committing exactly the reviewed source files. Nothing will be pushed yet.");
+  renderFinishDay();
+  try {
+    const result = await request("/api/finish-day-commit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewToken: state.finishDayReviewToken,
+        message: elements.finishDayCommitMessage.value,
+        confirmCommit: true,
+      }),
+    });
+    state.finishDay = result;
+    state.finishDayReviewToken = null;
+    elements.finishDayConfirmCommit.checked = false;
+    showFinishDayMessage("Source committed. Push remains a separate approval.");
+  } catch (error) {
+    state.finishDayReviewToken = null;
+    showFinishDayMessage(error.message, true);
+  } finally {
+    state.finishDayBusy = false;
+    renderFinishDay();
+  }
+}
+
+async function pushFinishDay() {
+  state.finishDayBusy = true;
+  showFinishDayMessage("Pushing the current branch to its exact matching upstream and verifying synchronization.");
+  renderFinishDay();
+  try {
+    state.finishDay = await request("/api/finish-day-push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirmPush: true }),
+    });
+    elements.finishDayConfirmPush.checked = false;
+    showFinishDayMessage(state.finishDay.message || "Finished for today.");
+  } catch (error) {
+    showFinishDayMessage(error.message, true);
+  } finally {
+    state.finishDayBusy = false;
+    renderFinishDay();
+  }
+}
+
+async function runWorkflowPreflight() {
+  elements.refreshWorkflowPreflight.disabled = true;
+  state.workflowPreflight = null;
+  renderWorkflowPreflight();
+  try {
+    state.workflowPreflight = await request("/api/workflow-preflight", { method: "POST", body: "{}" });
+  } catch (error) {
+    state.workflowPreflight = { status: "blocked", summary: error.message, output: "" };
+  } finally {
+    elements.refreshWorkflowPreflight.disabled = false;
+    renderWorkflowPreflight();
+  }
 }
 
 function showBaselineMessage(text, error = false) {
@@ -578,6 +849,7 @@ async function saveCxFoundation() {
 }
 
 function switchView(viewName) {
+  state.activeView = viewName;
   const profilesView = document.querySelector("#profiles-view");
   if (viewName !== "profiles" && profilesView && !profilesView.hidden) captureCurrentProfileDraft();
   for (const tab of elements.viewTabs) tab.classList.toggle("is-active", tab.dataset.view === viewName);
@@ -592,6 +864,9 @@ function switchView(viewName) {
   }
   if (viewName === "deleted-cards") loadDeletedCards();
   if (viewName === "review-build") renderReviewBuild();
+  if (viewName === "today") renderTodayWorkflow();
+  if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
+  window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
 
@@ -662,9 +937,12 @@ function updateCameraLabAction() {
   const savedProfile = state.detail?.cardType === "profile" && (state.detail.operation || "update") === "update";
   const changed = savedProfile && profilePayloadChanged(profileDraftPayload());
   elements.openCameraLab.disabled = !savedProfile || changed;
+  elements.sidebarCameraLab.disabled = !savedProfile || changed;
   elements.openCameraLab.title = changed
     ? "Save or discard this profile draft before opening Camera Lab."
     : savedProfile ? `Open the saved ${state.detail.name} profile in Camera Lab.` : "Select a saved Subject/Profile Card first.";
+  elements.sidebarCameraLab.title = elements.openCameraLab.title;
+  renderTodayWorkflow();
 }
 
 async function openCurrentProfileInCameraLab() {
@@ -675,18 +953,19 @@ async function openCurrentProfileInCameraLab() {
     return;
   }
   elements.openCameraLab.disabled = true;
-  showMessage(`Opening the saved ${state.detail.name} profile in Camera Lab…`);
+  const statusMessage = state.activeView === "today" ? showTodayMessage : showMessage;
+  statusMessage(`Opening the saved ${state.detail.name} profile in Camera Lab…`);
   try {
     const result = await request("/api/camera-lab-launch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ profile: state.detail.name }),
     });
-    showMessage(result.reused
+    statusMessage(result.reused
       ? `Camera Lab was already running and opened ${state.detail.name}.`
       : `Camera Lab started independently with ${state.detail.name} selected.`);
   } catch (error) {
-    showMessage(error.message, true);
+    statusMessage(error.message, true);
   } finally {
     updateCameraLabAction();
   }
@@ -786,6 +1065,7 @@ function renderSessionStatus() {
   setBadge(elements.cxFoundationDraftBadge, cxCount);
   setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount);
   if (!document.querySelector("#review-build-view")?.hidden) renderReviewBuild();
+  renderTodayWorkflow();
 }
 
 function showReviewBuildMessage(text, error = false) {
@@ -3006,7 +3286,27 @@ async function preview() {
 
 elements.profileSelect.addEventListener("change", () => loadProfile(elements.profileSelect.value));
 elements.openCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
+elements.sidebarCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
 elements.stopProfileEditor.addEventListener("click", stopProfileEditor);
+for (const step of elements.daySteps) step.addEventListener("click", () => setDayPhase(step.dataset.dayPhase));
+elements.refreshWorkflowPreflight.addEventListener("click", runWorkflowPreflight);
+elements.beginWork.addEventListener("click", () => setDayPhase("work"));
+elements.todayOpenProfiles.addEventListener("click", () => switchView("profiles"));
+elements.todayOpenCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
+elements.todayOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.goToFinish.addEventListener("click", () => setDayPhase("finish"));
+elements.finishOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.openFinishDay.addEventListener("click", () => switchView("finish-day"));
+elements.switchingMacs.addEventListener("change", () => { elements.handoffGuidance.hidden = !elements.switchingMacs.checked; });
+elements.continueToPublish.addEventListener("click", () => switchView("release-publish"));
+elements.refreshFinishDay.addEventListener("click", refreshFinishDay);
+elements.finishDayConfirmPrepare.addEventListener("change", renderFinishDay);
+elements.prepareFinishDay.addEventListener("click", prepareFinishDay);
+elements.finishDayConfirmCommit.addEventListener("change", renderFinishDay);
+elements.finishDayCommitMessage.addEventListener("input", renderFinishDay);
+elements.commitFinishDay.addEventListener("click", commitFinishDay);
+elements.finishDayConfirmPush.addEventListener("change", renderFinishDay);
+elements.pushFinishDay.addEventListener("click", pushFinishDay);
 elements.newButton.addEventListener("click", () => loadProfileDraft("create"));
 elements.duplicateButton.addEventListener("click", () => {
   elements.profileActionMenu.open = false;
@@ -3122,4 +3422,7 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(), loadCxFoundations()]);
+setDayPhase("start");
+renderTodayWorkflow();
+runWorkflowPreflight();
 updateFloatingReturn();

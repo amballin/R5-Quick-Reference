@@ -2,10 +2,12 @@
 
 Publishing intentionally updates the live GitHub Pages site, version, date, and publication commit. It is separate from Finish Day and ordinary Git pushes.
 
+The supported publisher runs only from `main`. A prototype branch may be committed and pushed to its matching prototype upstream through Finish Day, but that is a Git handoff—not publication. Integrate approved prototype work into `main` before starting this workflow.
+
 ## Before publishing
 
 - Source changes are validated, committed, and pushed.
-- The branch is clean and synchronized.
+- `main` is checked out, clean, and synchronized with `origin/main`.
 - If spreadsheet inputs changed, rebuild their release workbooks first.
 - Add concise reader-facing highlights for the upcoming version to `00 Master/release_notes.yaml`.
 - Confirm that updating the live website is intentional.

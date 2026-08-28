@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Guarded Finish Day in Profile Editor
+
+**Status:** Accepted
+**Date:** 2026-08-28
+
+Move the established Finish Day handoff into a dedicated Profile Editor workspace while retaining the terminal command as an equivalent interface. Use one shared repository-owned engine for both surfaces so validation, generated-`docs/` recovery, reviewed source selection, commit, Pages-change rejection, matching-upstream enforcement, push, and final synchronization cannot drift.
+
+Keep authority staged and explicit. Status inspection is read-only apart from refreshing remote-tracking references. Preparation requires confirmation before running the mandatory source validation, development build, full validation, and backed-up restoration of generated `docs/`. Commit requires a content-sensitive review token, the exact eligible source list, a non-empty message, and a separate confirmation. Push requires another confirmation, permits only the current branch's exact same-named `origin` upstream, rejects any outgoing `docs/` change, and verifies the final synchronized state. Browser drafts, stale verification state, behind/diverged history, detached checkouts, missing or mismatched upstreams, and concurrent source changes remain blockers.
+
+Finish Day never merges, switches branches, edits publish metadata, or publishes the website. A prototype handoff stays on its prototype branch. Live website publication remains a separate, explicitly authorized, `main`-only workflow. This decision supersedes only the prior blanket prohibition on Profile Editor commit and push actions in **Profile Editor as the Main Local Interface**, **Guarded Session Review and Local Build**, and earlier editor-boundary decisions; all other Git and publication restrictions remain binding.
+
 ## Lens-Aware Camera Lab Context and Conditional Availability
 
 **Status:** Accepted

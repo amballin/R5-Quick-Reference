@@ -121,19 +121,20 @@
 <li><strong>Clean and synchronized:</strong> safe to begin.</li>
 <li><strong>Intentional local changes:</strong> review the listed files and continue only if they belong to the current work.</li>
 <li><strong>Ahead:</strong> you may continue on this Mac, but its commits must be pushed before switching Macs.</li>
+<li><strong>Prototype branch:</strong> routine work is allowed when the branch tracks the same-named branch on <code>origin</code>. A prototype branch is not the live GitHub Pages source.</li>
 </ul>
 </section>
 <section class="step"><h2>Stop when</h2>
 <ul>
 <li><strong>Behind:</strong> if the working tree is clean, run <code>git pull --ff-only</code>, then rerun preflight.</li>
 <li><strong>Diverged:</strong> stop for manual review. Do not pull, merge, or reset automatically.</li>
-<li><strong>Wrong branch, no upstream, or fetch failure:</strong> resolve that condition before editing.</li>
+<li><strong>Explicitly requested branch mismatch, no upstream, mismatched upstream, or fetch failure:</strong> resolve that condition before editing. The current branch must track its exact same-named branch on <code>origin</code>.</li>
 <li><strong>Stale derived artifacts:</strong> run <code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code>; if the verification tracker contains manual edits, import them first as directed.</li>
 <li><strong>Baseline source differs from the review base:</strong> run <code>python3 &quot;80 Build/baseline_impact_check.py&quot; --base-ref REF</code> with the applicable Git ref. A semantic change requires the guarded Profile Editor migration workflow.</li>
 </ul>
 </section>
 <section class="step"><h2>What preflight does</h2>
-<p>It refreshes the remote comparison, checks the branch and upstream, reports whether this Mac is ahead or behind, and diagnoses verification, Matrix/settings, and Setup derived-artifact freshness. It distinguishes unimported edits, safely rebuildable generated state, and current state.</p>
+<p>It treats the checked-out branch as the intended work branch unless an explicit expected branch is supplied, requires its exact same-named upstream on <code>origin</code>, refreshes the remote comparison, reports whether this Mac is ahead or behind, and diagnoses verification, Matrix/settings, and Setup derived-artifact freshness. This permits both <code>main</code> and deliberate prototype worktrees without weakening synchronization checks.</p>
 <p>Preflight does not refresh derived artifacts, modify source files, pull changes, merge branches, build the project, or publish the website.</p>
 </section>
 <section class="step"><h2>Next</h2>

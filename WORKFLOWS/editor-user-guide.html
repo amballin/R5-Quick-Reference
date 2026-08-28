@@ -114,14 +114,14 @@
   <main>
     <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
 <h1>Profile Editor User Guide</h1>
-<p>Profile Editor 1.0 is the main local interface for routine work: creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages for Git handoff, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.</p>
+<p>Profile Editor 1.0 is the main local interface for routine work: starting with a quiet preflight, creating and updating shooting profiles, previewing cards, organizing My Menu, planning shared baseline changes, reviewing session drafts, validating and building, completing the guarded Finish Day handoff, and looking up camera settings. Its confirmed local build refreshes safely stale spreadsheet-derived artifacts automatically. Use the specialized workflow pages linked from the editor for detailed handoff reference, manual spreadsheet preparation or recovery, physical-camera testing and status import, and publication.</p>
 <section class="step"><h2>Start the editor</h2>
 <p>For routine use, double-click <strong>R5 Profile Editor.app</strong> in the machine-local <code>Applications</code> folder. It starts in the background without opening Terminal and opens Google Chrome automatically. The main project uses port 8765 and a development prototype uses port 8766, so both can run at the same time. Their header badges and macOS application identities remain distinct.</p>
 <p>If an editor is running without a visible Chrome window, open that checkout&#x27;s <strong>R5 Profile Editor.app</strong> again to recover the window. Use <strong>Stop Profile Editor</strong> in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server. If the window cannot be recovered, double-click <strong>Stop Profile Editor.command</strong> in that repository. It clears stale process records, recognizes one verified pre-upgrade prototype left on port 8765, and stops only a server verified as belonging to that exact checkout.</p>
 <p>The self-contained app is the normal launch method; no npm command is required for routine use. For Profile Editor development or diagnostics only, from the project root run:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>npm run ui</code></pre></div>
 <p>Open the local address shown in Terminal. Keep that Terminal window open while using this diagnostic method. Press <strong>Control-C</strong> in Terminal when you are finished.</p>
-<p>The editor runs only on this Mac. It does not publish the website or make Git changes.</p>
+<p>The editor runs only on this Mac. It never publishes the website. Git commit and push are available only inside the guarded <strong>Finish Day</strong> workspace, with an exact source review and separate confirmations.</p>
 <p>Before editing, confirm the header badge. <strong>Main project</strong> means the app is running from the authoritative <code>main</code> worktree. <strong>Prototype · branch-name</strong> means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.</p>
 </section>
 <section class="step"><h2>Understand the working model</h2>
@@ -139,16 +139,41 @@
 <section class="step"><h2>Move around the editor</h2>
 <p>Use the workspace sidebar:</p>
 <ul>
-<li><strong>Profiles</strong> — Preview, create, duplicate, or update shooting profiles.</li>
+<li><strong>Today</strong> — Follow the short Start → Work → Finish path. It runs the existing preflight, points to the embedded workspaces, and opens the guarded Finish Day workspace.</li>
+<li><strong>Profiles</strong> — Preview, create, duplicate, or update shooting profiles inside Profile Editor.</li>
+<li><strong>Camera Lab</strong> — Launch the independent Camera Lab application with the selected saved profile. This is an application action, not an embedded workspace.</li>
+<li><strong>Review &amp; Build</strong> — Resolve all browser drafts, validate source, and run the guarded local build.</li>
+<li><strong>Finish Day</strong> — Check repository state, validate and prepare source, review and commit the exact source list, then separately approve a push to the matching upstream. It never publishes.</li>
 <li><strong>Cx Foundation</strong> — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.</li>
 <li><strong>Deleted Cards</strong> — Review and restore unreleased cards removed from active source.</li>
 <li><strong>My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
 <li><strong>Baseline Setup</strong> — Test a proposed shared change and review its effect across profiles.</li>
-<li><strong>Review &amp; Build</strong> — Resolve all browser drafts, validate source, and run the guarded local build.</li>
+<li><strong>Release &amp; Publish</strong> — Review the deliberate release sequence and open the authoritative Finish Day and publishing guides. Prototype branches may be synchronized to their matching prototype upstream through <strong>Finish Day</strong>, but live website publication is available only from <code>main</code>. This workspace does not run commit, push, or publication commands.</li>
+<li><strong>Setup &amp; Sharing</strong> — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.</li>
 <li><strong>Camera Reference</strong> — Find and review setup records and their source links.</li>
 </ul>
 <p>On narrower windows, the sidebar becomes a compact navigation row above the workspace.</p>
 <p>Moving to another tab does not save work, but the sidebar badges and Review &amp; Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into <strong>Profile to evaluate</strong> automatically.</p>
+</section>
+<section class="step"><h2>Follow the daily path</h2>
+<p>Open <strong>Today</strong> when beginning or ending routine work:</p>
+<ol>
+<li><strong>Start</strong> runs the existing preflight automatically. It accepts either <code>main</code> or the checked-out prototype branch when that branch tracks its exact same-named upstream. A clean result stays compact; notices and blockers expose the exact output. Preflight refreshes the remote comparison but never pulls, merges, builds, commits, or publishes.</li>
+<li><strong>Work</strong> opens the embedded Profiles or Review &amp; Build workspace, or launches Camera Lab as a separate application. The draft count follows the existing browser-session ledger.</li>
+<li><strong>Finish</strong> identifies unresolved browser drafts and opens the in-app Finish Day workspace. Select the additional other-Mac reminder only when another computer will take over.</li>
+</ol>
+<p>The ordinary stopping point is the same on one Mac or two: Finish Day must leave the current branch clean and synchronized with its matching upstream. On a prototype branch, that means the prototype Git branch only; it does not publish GitHub Pages. Live publication is optional, remains in the separate <strong>Release &amp; Publish</strong> workspace, and requires approved work to be integrated into <code>main</code> first.</p>
+</section>
+<section class="step"><h2>Finish the day in the editor</h2>
+<p>Open <strong>Finish Day</strong> only after every browser draft has been saved or discarded. The workspace uses four guarded stages:</p>
+<ol>
+<li><strong>Check</strong> refreshes remote-tracking state and verifies the current branch, exact matching upstream, browser drafts, verification status, and ahead/behind state. It never pulls or merges.</li>
+<li><strong>Prepare</strong> requires confirmation, then runs source validation, the normal development build, and full validation. If the build changes <code>docs/</code>, it creates a machine-local recovery archive and restores those generated files before source review.</li>
+<li><strong>Commit</strong> displays the exact eligible source list. Enter a concise message, check the exact-review confirmation, and commit. A content-sensitive one-use review expires if any tracked diff or untracked file changes after preparation. Nothing is pushed at this stage.</li>
+<li><strong>Push</strong> requires a new confirmation. It pushes only the current branch to its exact same-named upstream on <code>origin</code>, refuses any outgoing <code>docs/</code> change, and verifies the final clean synchronized state.</li>
+</ol>
+<p>The existing <code>finish-day.sh</code> command remains available and uses the same underlying engine and safeguards. Neither interface switches branches, merges, or publishes the website.</p>
+<p><strong>Setup &amp; Sharing</strong> documents a possible future private profile pack for an independent fork owner. The current implementation does not move profiles or change their source location; they remain part of this repository.</p>
 <p>When a saved Subject/Profile Card is selected with no unsaved ordinary profile edits, choose <strong>Open in Camera Lab</strong> in the header to start or reuse the independent Lab with that profile preselected. The editor passes only the saved profile name; Camera Lab reloads the current profile and C1–C3 assignments. It does not connect, scan, compare, or change a setting automatically. After connecting and completing the first comparison, selecting another profile automatically refreshes its comparison and card-specific lens menu. The ordinary Canon EDSDK Lab remains read-only; choose <strong>Enable camera changes</strong> and confirm the safe restart before <strong>Apply this profile to camera</strong> becomes available. Apply defaults Lens to the attached lens (or the card&#x27;s Primary), Flash to <strong>None</strong>, and Cards to <strong>CFexpress &amp; SD</strong>, with controlled menus for the other supported contexts. If Camera Setup Essentials is already set, its optional readiness confirmation clears only matching Set &amp; Forget targets that Camera Lab cannot verify directly. Camera Lab checks readiness and shows every proposed change, but removes already-correct and non-action rows from the work queue. Simulator-safe changes run and verify after the one final confirmation; remaining manual work is grouped by camera route with one rescan per group. The stationary <strong>Do this now</strong> card contains every exact target, and the complete list stays out of the active workspace. Completed manual groups immediately update Rapid setup and may follow an identical setting and target to another card only during the same unchanged connected-camera session. Camera Lab gives an explicit successful-or-not-fully-applied receipt. Each app&#x27;s Stop button closes only that app.</p>
 </section>
 <section class="step"><h2>Choose a Cx foundation</h2>
@@ -229,10 +254,10 @@
 <li>If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose <strong>Import verification tracker</strong> and confirm. The editor uses the existing importer and displays its result; it never imports automatically.</li>
 <li>When the pending list is empty, choose <strong>Validate readiness</strong>. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.</li>
 <li>After readiness passes, choose <strong>Run local build</strong>, read the final warning—including whether Apple Numbers may launch—and confirm.</li>
-<li>Review the generated result, then follow the established Finish Day or publishing workflow separately when appropriate.</li>
+<li>Review the generated result, then open <strong>Finish Day</strong> when you are ready to commit and synchronize the completed source work.</li>
 <li>Stop the editor with <strong>Control-C</strong> in its Terminal window.</li>
 </ol>
-<p>The guarded action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. The action may refresh local output and tracked documentation, but it does not rename profiles, edit permanent reference cards, permanently delete cards, commit, push, publish, or change website version metadata. Recoverable unreleased-card removal is available only through the separate reviewed Deleted Cards action described above.</p>
+<p>The guarded Review &amp; Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. It may refresh local output and tracked documentation, but it does not rename profiles, edit permanent reference cards, permanently delete cards, commit, push, publish, or change website version metadata. Commit and push remain confined to the separate Finish Day stages. Recoverable unreleased-card removal is available only through the separate reviewed Deleted Cards action described above.</p>
 </section>
 <section class="step"><h2>Get more help</h2>
 <p>For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the <a href="profile-editor.html">Profile Editor workflow reference</a>. For physical-camera comparison and guarded application, open the <a href="camera-lab-user-guide.html">Camera Lab User Guide</a>. For camera-field meaning and recommendations, use the linked Canon and project reference materials.</p>

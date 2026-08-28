@@ -33,28 +33,32 @@ Review and approve the highlights as reader-facing release notes. Do not continu
 
 ## 2. Finish the source work and synchronize Git
 
-From the repository root, run:
+In Profile Editor, open **Finish Day**. It guides the same workflow through four separately guarded stages: **Check**, **Prepare**, **Commit**, and **Push**. Review every displayed source file, enter the commit message, and approve commit and push separately. Do not continue until the workspace reports that the branch is clean and synchronized.
+
+The terminal interface remains available from the repository root and uses the same shared implementation:
 
 ```bash
 ./80\ Build/scripts/finish-day.sh
 ```
 
-The script first runs source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then, at the prompts:
+After preparation approval, both interfaces run source validation, the normal development build, and full validation; these checks are mandatory and cannot be postponed while continuing to a commit. Then:
 
 1. Review the complete source-file list.
 2. Approve staging every listed source change.
 3. Approve the commit and enter a clear commit message.
 4. Approve the push.
 
-Do not continue until the script prints:
+Do not continue until the UI reports a clean synchronized branch or the terminal command prints:
 
 ```text
 FINISHED FOR TODAY: Safe to switch Macs.
 ```
 
-This commit and push synchronize all editable project source, including the release notes when publishing. The script excludes regenerated `docs/`, so this Git handoff does not publish the website.
+This commit and push synchronize all editable project source, including the release notes when publishing. The shared Finish Day engine backs up and excludes regenerated `docs/`, so this Git handoff does not publish the website.
 
-> If you are only finishing for the day or switching Macs, stop here. If publishing, continue directly to Step 3; do not run `finish-day.sh` again.
+Finish Day uses the current checked-out branch and requires its exact same-named upstream on `origin`. On a prototype worktree, it may therefore commit and push only that prototype branch. It never redirects the push to `main`, and because GitHub Pages watches `main / docs`, the prototype handoff does not update the live site.
+
+> If you are only finishing for the day or switching Macs, stop here. If this is a prototype branch, also stop here and integrate the approved work into `main` separately before publication. If already on `main` and publishing, continue directly to Step 3; do not run `finish-day.sh` again.
 
 ## 3. Build and verify both spreadsheet families
 
@@ -67,6 +71,8 @@ Run:
 This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup & Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.
 
 ## 4. Choose the website version and publish
+
+Confirm that the current branch is `main`. The publisher stops before building or changing files on every other branch.
 
 To start a new major website version, replace `N` with an integer greater than the current major version:
 

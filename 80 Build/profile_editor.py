@@ -62,6 +62,7 @@ from card_identity import (
     valid_card_id,
 )
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
+from finish_day import FinishDayError, FinishDayWorkflow
 from html_renderer import LABEL, displayed_card_setting_paths, render_card
 from icon_manager import IconManager
 from lens_guidance import load_sources as load_lens_sources
@@ -131,6 +132,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/card_identity.py",
     "80 Build/cx_route_analysis.py",
     "80 Build/feature_interactions.py",
+    "80 Build/finish_day.py",
     "80 Build/lens_guidance.py",
     "80 Build/control_reference.py",
     "80 Build/html_renderer.py",
@@ -264,6 +266,8 @@ class ProfileEditorModel:
         source_validator=None,
         derived_artifact_checker=None,
         camera_lab_launcher=None,
+        preflight_checker=None,
+        finish_day_workflow=None,
     ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
@@ -287,6 +291,7 @@ class ProfileEditorModel:
         self.choices = self._choice_catalog()
         self._source_validator = source_validator or self._validate_project_sources
         self._derived_artifact_checker = derived_artifact_checker or self._inspect_derived_artifacts
+        self._preflight_checker = preflight_checker or self._run_workflow_preflight
         self._pending_reviews = {}
         self._pending_migration_reviews = {}
         self._pending_color_reviews = {}
@@ -296,6 +301,7 @@ class ProfileEditorModel:
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
         self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths.root)
+        self.finish_day_workflow = finish_day_workflow or FinishDayWorkflow(self.paths.root)
 
     def launch_camera_lab(self, profile_name):
         name = self._validate_profile_name(profile_name)
@@ -1365,6 +1371,57 @@ class ProfileEditorModel:
             "project_context": version_info["project_context"],
         }
 
+    def workflow_preflight(self):
+        return self._preflight_checker()
+
+    def _run_workflow_preflight(self):
+        script = self.paths.root / "80 Build" / "scripts" / "preflight-git.sh"
+        if not script.is_file() or not os.access(script, os.X_OK):
+            raise PrototypeError(f"Preflight launcher is missing or not executable: {script}")
+        try:
+            completed = subprocess.run(
+                [str(script)],
+                cwd=self.paths.root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                timeout=3 * 60,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise PrototypeError("Preflight timed out after 3 minutes.") from exc
+        except OSError as exc:
+            raise PrototypeError(f"Preflight could not start: {exc}") from exc
+        output = completed.stdout[-80_000:].strip()
+        lines = [line.strip() for line in output.splitlines() if line.strip()]
+        blocked_line = next(
+            (line for line in lines if line.startswith(("PREFLIGHT BLOCKED:", "PREFLIGHT BLOCK:"))),
+            None,
+        )
+        notice_line = next((line for line in lines if line.startswith("PREFLIGHT NOTICE:")), None)
+        passed_line = next((line for line in lines if line.startswith("PREFLIGHT PASSED:")), None)
+        if completed.returncode or blocked_line:
+            status = "blocked"
+            summary = blocked_line or "Preflight did not confirm that this project is safe to use."
+        elif notice_line:
+            status = "notice"
+            summary = notice_line
+        elif passed_line:
+            status = "ready"
+            summary = passed_line
+        else:
+            status = "notice"
+            summary = "Preflight completed. Review its details before editing."
+        return {
+            "status": status,
+            "summary": summary.removeprefix("PREFLIGHT PASSED: ")
+            .removeprefix("PREFLIGHT NOTICE: ")
+            .removeprefix("PREFLIGHT BLOCKED: ")
+            .removeprefix("PREFLIGHT BLOCK: "),
+            "output": output,
+            "returnCode": completed.returncode,
+        }
+
     def build_readiness(self, pending_changes):
         try:
             pending = int(pending_changes)
@@ -1484,6 +1541,45 @@ class ProfileEditorModel:
                 if completed.returncode:
                     raise PrototypeError(f"{label} failed.\n{output}")
             return {"status": "passed", "steps": results}
+        finally:
+            self._build_lock.release()
+
+    def finish_day_status(self, pending_changes):
+        try:
+            return self.finish_day_workflow.inspect(pending_changes)
+        except FinishDayError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def prepare_finish_day(self, pending_changes, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("A local build, tracker import, or Finish Day action is already running.")
+        try:
+            try:
+                return self.finish_day_workflow.prepare(pending_changes, confirmed)
+            except FinishDayError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def commit_finish_day(self, review_token, message, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("A local build, tracker import, or Finish Day action is already running.")
+        try:
+            try:
+                return self.finish_day_workflow.commit(review_token, message, confirmed)
+            except FinishDayError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def push_finish_day(self, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("A local build, tracker import, or Finish Day action is already running.")
+        try:
+            try:
+                return self.finish_day_workflow.push(confirmed)
+            except FinishDayError as exc:
+                raise PrototypeError(str(exc)) from exc
         finally:
             self._build_lock.release()
 
@@ -3103,6 +3199,7 @@ class EditorHandler(BaseHTTPRequestHandler):
         if parsed.path not in {
             "/api/editor-shutdown",
             "/api/camera-lab-launch",
+            "/api/workflow-preflight",
             "/api/preview",
             "/api/profile-drafts",
             "/api/profile-reviews",
@@ -3126,9 +3223,22 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/build-readiness",
             "/api/verification-tracker-import",
             "/api/local-build",
+            "/api/finish-day-status",
+            "/api/finish-day-prepare",
+            "/api/finish-day-commit",
+            "/api/finish-day-push",
         }:
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
-        if parsed.path in {"/api/editor-shutdown", "/api/camera-lab-launch"} and not secrets.compare_digest(
+        protected_lifecycle_paths = {
+            "/api/editor-shutdown",
+            "/api/camera-lab-launch",
+            "/api/workflow-preflight",
+            "/api/finish-day-status",
+            "/api/finish-day-prepare",
+            "/api/finish-day-commit",
+            "/api/finish-day-push",
+        }
+        if parsed.path in protected_lifecycle_paths and not secrets.compare_digest(
             self.headers.get("X-Profile-Editor-Token", ""), self.request_token
         ):
             return self._json({"error": "Profile Editor request token is missing or invalid."}, HTTPStatus.FORBIDDEN)
@@ -3141,6 +3251,8 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return
             if parsed.path == "/api/camera-lab-launch":
                 return self._json(self.model.launch_camera_lab(payload.get("profile")))
+            if parsed.path == "/api/workflow-preflight":
+                return self._json(self.model.workflow_preflight())
             if parsed.path == "/api/profile-drafts":
                 return self._json(self.model.profile_draft(payload.get("operation"), payload.get("sourceProfile")))
             if parsed.path == "/api/profile-reviews":
@@ -3216,6 +3328,24 @@ class EditorHandler(BaseHTTPRequestHandler):
                         payload.get("pendingChanges"), payload.get("confirmLocalBuild")
                     )
                 )
+            if parsed.path == "/api/finish-day-status":
+                return self._json(self.model.finish_day_status(payload.get("pendingChanges")))
+            if parsed.path == "/api/finish-day-prepare":
+                return self._json(
+                    self.model.prepare_finish_day(
+                        payload.get("pendingChanges"), payload.get("confirmPrepare")
+                    )
+                )
+            if parsed.path == "/api/finish-day-commit":
+                return self._json(
+                    self.model.commit_finish_day(
+                        payload.get("reviewToken"),
+                        payload.get("message"),
+                        payload.get("confirmCommit"),
+                    )
+                )
+            if parsed.path == "/api/finish-day-push":
+                return self._json(self.model.push_finish_day(payload.get("confirmPush")))
             if "operation" in payload:
                 output = self.model.preview_draft(payload)
                 card_setting_paths = self.model.draft_card_setting_paths(payload)

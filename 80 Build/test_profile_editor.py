@@ -4,8 +4,10 @@
 from copy import deepcopy
 from http.client import HTTPConnection
 import json
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import threading
 from types import SimpleNamespace
@@ -54,6 +56,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/card_identity.py",
             "80 Build/cx_route_analysis.py",
             "80 Build/feature_interactions.py",
+            "80 Build/finish_day.py",
             "80 Build/lens_guidance.py",
             "80 Build/html_renderer.py",
             "80 Build/my_menu.py",
@@ -66,6 +69,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/profile_editor/styles.css",
             "80 Build/project_context.py",
             "80 Build/scripts/profile-editor-runtime.sh",
+            "80 Build/scripts/preflight-git.sh",
+            "80 Build/scripts/git-status-report.sh",
+            "80 Build/scripts/publish.sh",
             "80 Build/scripts/start-profile-editor.sh",
             "80 Build/scripts/stop-profile-editor.sh",
         ):
@@ -758,8 +764,137 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("grid-template-rows: auto auto auto", stylesheet)
         self.assertIn("grid-row: 1 / span 3", stylesheet)
 
+    def test_profile_editor_ui_exposes_daily_release_and_sharing_workspaces(self):
+        editor = self.root / "80 Build" / "profile_editor"
+        html = (editor / "index.html").read_text(encoding="utf-8")
+        javascript = (editor / "app.js").read_text(encoding="utf-8")
+        stylesheet = (editor / "styles.css").read_text(encoding="utf-8")
+        self.assertLess(html.index('data-view="today"'), html.index('data-view="profiles"'))
+        self.assertIn('id="today-view"', html)
+        self.assertIn('id="release-publish-view"', html)
+        self.assertIn('id="setup-sharing-view"', html)
+        self.assertIn('id="finish-day-view"', html)
+        self.assertIn("Edit Profiles", html)
+        self.assertIn("Launch separate app", html)
+        self.assertIn("Fork owner’s project", html)
+        self.assertNotIn("His profiles", html)
+        self.assertIn('request("/api/workflow-preflight"', javascript)
+        self.assertIn('switchView("profiles")', javascript)
+        self.assertIn('switchView("release-publish")', javascript)
+        self.assertIn('window.scrollTo({ top: 0, behavior: "auto" })', javascript)
+        self.assertIn(".day-workflow", stylesheet)
+        self.assertIn(".sharing-flow", stylesheet)
+        self.assertIn("max-height: calc(100vh - 2rem)", stylesheet)
+        self.assertIn('request("/api/finish-day-status"', javascript)
+        self.assertIn('request("/api/finish-day-prepare"', javascript)
+        self.assertIn('request("/api/finish-day-commit"', javascript)
+        self.assertIn('request("/api/finish-day-push"', javascript)
+
+    def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
+        outcomes = (
+            (0, "PREFLIGHT PASSED: Repository is clean and synchronized.", "ready"),
+            (0, "PREFLIGHT NOTICE: Intentional local edits may be validated and tested.", "notice"),
+            (1, "PREFLIGHT BLOCKED: This clone is behind its upstream.", "blocked"),
+        )
+        for return_code, output, expected in outcomes:
+            with self.subTest(expected=expected), patch("profile_editor.subprocess.run") as run:
+                run.return_value = SimpleNamespace(returncode=return_code, stdout=output)
+                result = self.model.workflow_preflight()
+            self.assertEqual(result["status"], expected)
+            self.assertNotIn("PREFLIGHT", result["summary"])
+            self.assertEqual(
+                run.call_args.args[0][0],
+                str((self.root / "80 Build" / "scripts" / "preflight-git.sh").resolve()),
+            )
+
+    def test_git_status_uses_current_branch_and_requires_matching_upstream(self):
+        remote = Path(self.temporary.name) / "remote.git"
+        subprocess.run(["git", "init", "--bare", str(remote)], check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["git", "init", "-b", "codex/profile-editor-prototype"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        for key, value in (("user.name", "Profile Editor Test"), ("user.email", "profile-editor@example.invalid")):
+            subprocess.run(["git", "config", key, value], cwd=self.root, check=True)
+        subprocess.run(["git", "add", "-A"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-m", "Fixture"], cwd=self.root, check=True, capture_output=True, text=True)
+        subprocess.run(["git", "remote", "add", "origin", str(remote)], cwd=self.root, check=True)
+        subprocess.run(
+            ["git", "push", "-u", "origin", "codex/profile-editor-prototype"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        status_script = self.root / "80 Build" / "scripts" / "git-status-report.sh"
+
+        current = subprocess.run([str(status_script)], cwd=self.root, capture_output=True, text=True, check=False)
+        self.assertEqual(current.returncode, 0, current.stdout + current.stderr)
+        self.assertIn("Expected: codex/profile-editor-prototype", current.stdout)
+        self.assertIn("STATUS: CLEAN AND SYNCHRONIZED", current.stdout)
+
+        explicitly_wrong = subprocess.run(
+            [str(status_script)],
+            cwd=self.root,
+            env={**os.environ, "PRS_EXPECTED_BRANCH": "main"},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(explicitly_wrong.returncode, 50)
+        self.assertIn("STATUS: WRONG BRANCH", explicitly_wrong.stdout)
+
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:main"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        subprocess.run(
+            ["git", "branch", "--set-upstream-to=origin/main"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        mismatched = subprocess.run([str(status_script)], cwd=self.root, capture_output=True, text=True, check=False)
+        self.assertEqual(mismatched.returncode, 51)
+        self.assertIn("STATUS: UNEXPECTED UPSTREAM", mismatched.stdout)
+        self.assertIn("origin/codex/profile-editor-prototype", mismatched.stdout)
+
+    def test_publish_script_blocks_prototype_branch_before_building(self):
+        subprocess.run(
+            ["git", "init", "-b", "codex/profile-editor-prototype"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        publisher = self.root / "80 Build" / "scripts" / "publish.sh"
+        completed = subprocess.run(
+            [str(publisher)],
+            cwd=self.root,
+            env={**os.environ, "PRS_LOCAL_WORKSPACE": str(Path(self.temporary.name) / "local")},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 1)
+        self.assertIn("PUBLICATION BLOCKED", completed.stderr)
+        self.assertIn("only from 'main'", completed.stderr)
+        self.assertFalse((self.root / "80 Build" / ".publish_metadata.candidate.yaml").exists())
+
     def test_profile_editor_lifecycle_actions_require_token_and_shutdown_server(self):
         token = "profile-editor-test-token"
+        self.model.finish_day_status = lambda pending: {
+            "phase": "complete",
+            "pendingChanges": pending,
+            "branch": "codex/profile-editor-prototype",
+        }
         server = create_server(self.model, port=0, token=token)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
@@ -775,6 +910,34 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             self.assertEqual(response.status, 403)
             response.read()
             connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/finish-day-status",
+                body=json.dumps({"pendingChanges": 0}),
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/finish-day-status",
+                body=json.dumps({"pendingChanges": 0}),
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Profile-Editor-Token": token,
+                },
+            )
+            response = connection.getresponse()
+            payload = json.loads(response.read())
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertEqual(payload["phase"], "complete")
 
             connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
             connection.request(
@@ -844,10 +1007,11 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         editor = self.root / "80 Build" / "profile_editor"
         html = (editor / "index.html").read_text(encoding="utf-8")
         javascript = (editor / "app.js").read_text(encoding="utf-8")
-        self.assertLess(html.index('data-view="profiles"'), html.index('data-view="my-menu"'))
-        self.assertLess(html.index('data-view="my-menu"'), html.index('data-view="baseline"'))
-        self.assertLess(html.index('data-view="baseline"'), html.index('data-view="review-build"'))
-        self.assertLess(html.index('data-view="review-build"'), html.index('data-view="dictionary"'))
+        self.assertLess(html.index('data-view="today"'), html.index('data-view="profiles"'))
+        self.assertLess(html.index('data-view="profiles"'), html.index('data-view="review-build"'))
+        self.assertLess(html.index('data-view="review-build"'), html.index('data-view="my-menu"'))
+        self.assertLess(html.index('data-view="my-menu"'), html.index('data-view="release-publish"'))
+        self.assertLess(html.index('data-view="release-publish"'), html.index('data-view="dictionary"'))
         self.assertIn('id="pending-change-list"', html)
         self.assertIn('id="build-confirm-dialog"', html)
         self.assertIn('id="display-category-input"', html)
