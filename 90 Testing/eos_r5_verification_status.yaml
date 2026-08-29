@@ -1,5 +1,5 @@
 version: 1
-updated: '2026-08-23T14:20:50-04:00'
+updated: '2026-08-29T09:55:04.540856-04:00'
 tests:
   SETUP-01:
     status: Verified
@@ -100,7 +100,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: C1 Wildlife camera-body targets were configured and checked; the attached lens exposed only IS On/Off, so exact Mode 1 could not be verified.
+    observation: C1 Wildlife camera-body targets were configured and checked; the attached lens exposed only IS On/Off, so
+      exact Mode 1 could not be verified.
     next_action: Verify C1 Mode 1 with a compatible lens; retain the confirmed camera-body settings.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -128,7 +129,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: C2 Birds in Flight camera-body targets were configured and checked; the attached lens exposed only IS On/Off, so exact Mode 3 could not be verified.
+    observation: C2 Birds in Flight camera-body targets were configured and checked; the attached lens exposed only IS On/Off,
+      so exact Mode 3 could not be verified.
     next_action: Verify C2 Mode 3 with a compatible lens; retain the confirmed camera-body settings.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -147,7 +149,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: Recalled C2 camera-body targets passed Camera Lab and manual checks; exact lens Mode 3 remained unavailable. C1 remained unchanged.
+    observation: Recalled C2 camera-body targets passed Camera Lab and manual checks; exact lens Mode 3 remained unavailable.
+      C1 remained unchanged.
     next_action: Complete the C2 read-back with a lens that exposes Mode 3.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -156,7 +159,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: C3 Landscape camera-body targets were configured in Av and checked; the attached lens exposed only IS On/Off, so exact Mode 1 could not be verified.
+    observation: C3 Landscape camera-body targets were configured in Av and checked; the attached lens exposed only IS On/Off,
+      so exact Mode 1 could not be verified.
     next_action: Verify C3 Mode 1 with a compatible lens; retain the confirmed camera-body settings.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -175,7 +179,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: Recalled C3 camera-body targets passed Camera Lab and manual checks, including Av; exact lens Mode 1 remained unavailable. C1 and C2 remained unchanged.
+    observation: Recalled C3 camera-body targets passed Camera Lab and manual checks, including Av; exact lens Mode 1 remained
+      unavailable. C1 and C2 remained unchanged.
     next_action: Complete the C3 read-back with a lens that exposes Mode 1.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -193,7 +198,8 @@ tests:
     test_date: 46257
     session_id: 3
     evidence_files: []
-    observation: C1-C3 camera-body read-backs and Auto update checks passed; exact lens Mode 1/3 values were not exposed by the attached lens.
+    observation: C1-C3 camera-body read-backs and Auto update checks passed; exact lens Mode 1/3 values were not exposed by
+      the attached lens.
     next_action: Repeat only the equipment-dependent lens stabilization checks with a compatible lens.
     evidence_class: Unresolved
     updated_in_project: 'No'
@@ -416,7 +422,6 @@ registration:
     c3_configured: Needs retest
     c3_read_back: Needs retest
     c3_notes: Target Mode 1; attached lens exposed only IS On/Off.
-    verified_against: sha256:cc5907ea77c17b747bda000cb9d24e886022b15d9be9b15be2fd7d3a6aa18fba
   IBIS:
     c1_configured: Pass
     c1_read_back: Pass
@@ -460,7 +465,8 @@ sessions:
   flash_trigger: Not used
   starting_backup: BASE_CFG.CSD
   image_range: No images captured; read-only EDSDK scans and manual camera confirmation
-  outcome: C1-C3 camera-body targets registered and cross-checked; lens Mode 1/3 remains equipment-dependent; final backup C123_CFG.CSD.
+  outcome: C1-C3 camera-body targets registered and cross-checked; lens Mode 1/3 remains equipment-dependent; final backup
+    C123_CFG.CSD.
   next_session: Verify Mode 1/3 with a compatible lens and complete operational shooting tests.
   notes: Direct USB; EDSDK 13.20.20.0; Auto update disabled; C3 recalled as Av; Camera Lab performed no setting writes.
 retired_tests: {}
@@ -1704,3 +1710,27 @@ history:
     evidence_class: Approved target pending verification
     updated_in_project: 'No'
     verified_against: sha256:bf207e6d54b48768207e423d534c48709f88f234d55bdcb9613e260a68c411f2
+- timestamp: '2026-08-29T09:55:04.540856-04:00'
+  event: registration_import
+  id: Image Stabilizer Mode
+  previous:
+    c1_configured: Needs retest
+    c1_read_back: Needs retest
+    c1_notes: Target Mode 1; attached lens exposed only IS On/Off.
+    c2_configured: Needs retest
+    c2_read_back: Needs retest
+    c2_notes: Target Mode 3; attached lens exposed only IS On/Off.
+    c3_configured: Needs retest
+    c3_read_back: Needs retest
+    c3_notes: Target Mode 1; attached lens exposed only IS On/Off.
+    verified_against: sha256:cc5907ea77c17b747bda000cb9d24e886022b15d9be9b15be2fd7d3a6aa18fba
+  current:
+    c1_configured: Needs retest
+    c1_read_back: Needs retest
+    c1_notes: Target Mode 1; attached lens exposed only IS On/Off.
+    c2_configured: Needs retest
+    c2_read_back: Needs retest
+    c2_notes: Target Mode 3; attached lens exposed only IS On/Off.
+    c3_configured: Needs retest
+    c3_read_back: Needs retest
+    c3_notes: Target Mode 1; attached lens exposed only IS On/Off.
