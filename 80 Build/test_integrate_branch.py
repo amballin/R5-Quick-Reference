@@ -16,7 +16,7 @@ import sys
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
-from integrate_branch import BranchIntegrationError, BranchIntegrationWorkflow
+from integrate_branch import BranchIntegrationError, BranchIntegrationWorkflow, app_restart_required
 
 
 class BranchIntegrationWorkflowTests(unittest.TestCase):
@@ -62,9 +62,26 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
             capture_output=True,
         )
         self.branch_commit = self.git("rev-parse", "HEAD")
+        self.main_worktree = base / "main-worktree"
+        subprocess.run(
+            ["git", "worktree", "add", str(self.main_worktree), "main"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
         self.environment = patch.dict(os.environ, {"PRS_LOCAL_WORKSPACE": str(self.local)})
         self.environment.start()
-        self.workflow = BranchIntegrationWorkflow(self.root)
+        self.app_refreshes = []
+
+        def refresh_apps(project_root):
+            self.app_refreshes.append(Path(project_root))
+            return {
+                "status": "current",
+                "rebuilt": False,
+                "message": "R5 Profile Editor and R5 Camera Lab app wrappers are current.",
+            }
+
+        self.workflow = BranchIntegrationWorkflow(self.root, app_refresher=refresh_apps)
 
     def tearDown(self):
         self.workflow.close()
@@ -107,6 +124,9 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
 
         completed = self.workflow.resync_branch(True)
         self.assertEqual(completed["phase"], "complete")
+        self.assertEqual(completed["appRefresh"]["status"], "current")
+        self.assertFalse(completed["appRefresh"]["restartRequired"])
+        self.assertEqual(len(self.app_refreshes), 1)
         self.assertEqual(self.remote_ref("codex/integration-test"), integrated_main)
         self.assertEqual(self.git("rev-parse", "HEAD"), integrated_main)
         self.assertEqual((self.root / "docs" / "site.txt").read_text(encoding="utf-8"), "published main\n")
@@ -150,6 +170,32 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
         self.assertIn("Testing the branch merge", stages)
         self.assertIn("Development build", stages)
         self.assertIn("Creating reviewed integration candidate", stages)
+
+    def test_runtime_source_changes_require_restart_after_app_refresh(self):
+        runtime_source = self.root / "80 Build" / "profile_editor" / "app.js"
+        runtime_source.parent.mkdir(parents=True)
+        runtime_source.write_text("console.log('integrated');\n", encoding="utf-8")
+        subprocess.run(["git", "add", str(runtime_source.relative_to(self.root))], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-m", "Update app runtime"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+
+        prepared = self.workflow.prepare(0, True)
+        self.workflow.merge_main(prepared["reviewToken"], True)
+        self.workflow.push_main(True)
+        completed = self.workflow.resync_branch(True)
+
+        self.assertTrue(completed["appRefresh"]["restartRequired"])
+        self.assertIn("Restart any running Profile Editor and Camera Lab", completed["appRefresh"]["message"])
+
+    def test_restart_detection_ignores_documentation_only_changes(self):
+        self.assertTrue(app_restart_required(["M\t80 Build/profile_editor/app.js"]))
+        self.assertTrue(app_restart_required(["A\t10 Profiles/New.yaml"]))
+        self.assertFalse(app_restart_required(["M\tREADME.md", "M\tWORKFLOWS/index.md"]))
 
 
 if __name__ == "__main__":

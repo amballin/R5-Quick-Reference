@@ -819,6 +819,11 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Permanently delete only the exact checked items", html)
         self.assertIn('<span>Push the reviewed integration commit to <code>origin/main</code>.', html)
         self.assertIn(".integration-steps", stylesheet)
+        self.assertIn('id="branch-integration-app-status"', html)
+        self.assertIn("appRefresh?.message", javascript)
+        self.assertIn("Publication stopped — not completed or verified", javascript)
+        self.assertIn("Publication complete and verified", javascript)
+        self.assertIn("#publication-progress.is-stopped", stylesheet)
 
     def test_guarded_job_manager_reports_progress_and_result(self):
         manager = GuardedJobManager()
@@ -838,6 +843,26 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(result["status"], "complete")
         self.assertEqual(result["result"], {"phase": "commit"})
         self.assertTrue(any("$ validator" in entry for entry in result["log"]))
+
+    def test_guarded_job_manager_preserves_failure_reason_in_progress_log(self):
+        manager = GuardedJobManager()
+
+        def action(progress):
+            progress("Publishing and verifying the live website", command="$ publish.sh")
+            raise RuntimeError("Publication did not complete. Upload verification failed.")
+
+        started = manager.start("publication", action)
+        result = None
+        for _attempt in range(100):
+            result = manager.status(started["jobId"])
+            if result["status"] != "running":
+                break
+            threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["stage"], "Stopped")
+        self.assertIn("Upload verification failed", result["error"])
+        self.assertTrue(any("Publishing and verifying the live website stopped" in entry for entry in result["log"]))
+        self.assertTrue(any("Upload verification failed" in entry for entry in result["log"]))
 
     def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
         outcomes = (

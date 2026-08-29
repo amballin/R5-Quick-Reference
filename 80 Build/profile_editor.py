@@ -224,10 +224,14 @@ class GuardedJobManager:
                 result = action(progress)
             except Exception as exc:
                 with self._lock:
+                    failed_stage = job["stage"] or "Guarded workflow"
                     job["status"] = "failed"
                     job["stage"] = "Stopped"
                     job["command"] = ""
                     job["error"] = str(exc)
+                    job["log"].append(f"✕ {failed_stage} stopped\n{exc}")
+                    while sum(len(item) for item in job["log"]) > 80_000:
+                        job["log"].pop(0)
                     job["updatedAt"] = time.time()
             else:
                 with self._lock:

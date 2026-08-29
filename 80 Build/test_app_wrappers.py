@@ -23,6 +23,7 @@ from app_wrappers import (
     effective_bundle_id,
     icon_source_path,
     icon_variant,
+    refresh_app_wrappers,
 )
 
 
@@ -97,10 +98,33 @@ class AppWrapperTests(unittest.TestCase):
             self.assertFalse(profile_editor.launch_in_terminal)
             self.assertTrue(profile_editor.detach_after_launch)
             self.assertEqual(profile_editor.command_file, "80 Build/scripts/start-profile-editor.sh")
-            self.assertNotEqual(effective_bundle_id(profile_editor, PROJECT_ROOT), profile_editor.bundle_id)
             variant = icon_variant(PROJECT_ROOT)
+            if variant == "prototype":
+                self.assertNotEqual(effective_bundle_id(profile_editor, PROJECT_ROOT), profile_editor.bundle_id)
+            else:
+                self.assertEqual(effective_bundle_id(profile_editor, PROJECT_ROOT), profile_editor.bundle_id)
             self.assertEqual(icon_source_path(camera_lab, PROJECT_ROOT).name, f"{variant}-camera-lab.png")
             self.assertEqual(icon_source_path(profile_editor, PROJECT_ROOT).name, f"{variant}-camera-pencil.png")
+
+    def test_refresh_rebuilds_only_missing_or_stale_apps(self):
+        with tempfile.TemporaryDirectory(prefix="r5-app-wrapper-refresh-tests-") as temporary:
+            output_dir = Path(temporary) / "Applications"
+            first = refresh_app_wrappers(PROJECT_ROOT, output_dir)
+            self.assertEqual(first["status"], "rebuilt")
+            self.assertTrue(all(item["priorState"] == "missing" for item in first["apps"]))
+
+            current = refresh_app_wrappers(PROJECT_ROOT, output_dir)
+            self.assertEqual(current["status"], "current")
+            self.assertFalse(any(item["rebuilt"] for item in current["apps"]))
+
+            profile_app = output_dir / "R5 Profile Editor.app"
+            executable = profile_app / "Contents/MacOS/r5-profile-editor"
+            executable.write_text(executable.read_text(encoding="utf-8") + "\n# stale\n", encoding="utf-8")
+            refreshed = refresh_app_wrappers(PROJECT_ROOT, output_dir)
+            by_name = {item["name"]: item for item in refreshed["apps"]}
+            self.assertTrue(by_name["R5 Profile Editor"]["rebuilt"])
+            self.assertEqual(by_name["R5 Profile Editor"]["priorState"], "stale")
+            self.assertFalse(by_name["R5 Camera Lab"]["rebuilt"])
 
     def test_selects_icon_variant_from_project_context(self):
         camera_lab = next(wrapper for wrapper in APP_WRAPPERS if wrapper.name == "R5 Camera Lab")

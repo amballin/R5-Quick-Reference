@@ -277,7 +277,48 @@ def _install_app(staged_app: Path, destination: Path) -> None:
         shutil.rmtree(previous)
 
 
-def build_app_wrappers(project_root: Path, output_dir: Optional[Path] = None):
+def _app_digest(app_path: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(item for item in app_path.rglob("*") if item.is_file()):
+        digest.update(str(path.relative_to(app_path)).encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+        digest.update(oct(path.stat().st_mode & 0o777).encode("ascii"))
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _build_staged_app(
+    staging_root: Path,
+    wrapper: AppWrapper,
+    project_root: Path,
+) -> Path:
+    staged_app = staging_root / f"{wrapper.name}.app"
+    macos_dir = staged_app / "Contents/MacOS"
+    resources_dir = staged_app / "Contents/Resources"
+    macos_dir.mkdir(parents=True)
+    resources_dir.mkdir(parents=True)
+    (staged_app / "Contents/Info.plist").write_bytes(_info_plist(wrapper, project_root))
+    _write_icns(
+        icon_source_path(wrapper, project_root),
+        resources_dir / "AppIcon.icns",
+        staging_root,
+    )
+    executable_path = macos_dir / wrapper.executable
+    executable_path.write_text(_runner_source(wrapper, project_root), encoding="utf-8")
+    executable_path.chmod(0o755)
+    _validate_app(staged_app, wrapper, project_root)
+    return staged_app
+
+
+def refresh_app_wrappers(
+    project_root: Path,
+    output_dir: Optional[Path] = None,
+    *,
+    force: bool = False,
+):
+    """Build only missing or byte-stale wrappers and report the exact outcome."""
     project_root = project_root.resolve()
     _validate_project_root(project_root)
     if output_dir is None:
@@ -285,31 +326,53 @@ def build_app_wrappers(project_root: Path, output_dir: Optional[Path] = None):
     output_dir = output_dir.expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    installed = []
+    apps = []
     with tempfile.TemporaryDirectory(prefix="r5-app-wrappers-", dir=output_dir) as temporary:
         staging_root = Path(temporary)
         for wrapper in APP_WRAPPERS:
-            staged_app = staging_root / f"{wrapper.name}.app"
-            macos_dir = staged_app / "Contents/MacOS"
-            resources_dir = staged_app / "Contents/Resources"
-            macos_dir.mkdir(parents=True)
-            resources_dir.mkdir(parents=True)
-            (staged_app / "Contents/Info.plist").write_bytes(_info_plist(wrapper, project_root))
-            _write_icns(
-                icon_source_path(wrapper, project_root),
-                resources_dir / "AppIcon.icns",
-                staging_root,
-            )
-            executable_path = macos_dir / wrapper.executable
-            executable_path.write_text(_runner_source(wrapper, project_root), encoding="utf-8")
-            executable_path.chmod(0o755)
-            _validate_app(staged_app, wrapper, project_root)
-
+            staged_app = _build_staged_app(staging_root, wrapper, project_root)
             destination = output_dir / staged_app.name
-            _install_app(staged_app, destination)
+            prior_state = "missing"
+            if destination.exists():
+                try:
+                    _validate_app(destination, wrapper, project_root)
+                    prior_state = (
+                        "current"
+                        if _app_digest(destination) == _app_digest(staged_app)
+                        else "stale"
+                    )
+                except (OSError, RuntimeError, ValueError, plistlib.InvalidFileException):
+                    prior_state = "stale"
+            rebuilt = force or prior_state != "current"
+            if rebuilt:
+                _install_app(staged_app, destination)
             _validate_app(destination, wrapper, project_root)
-            installed.append(destination)
-    return installed
+            apps.append(
+                {
+                    "name": wrapper.name,
+                    "path": str(destination),
+                    "priorState": prior_state,
+                    "rebuilt": rebuilt,
+                }
+            )
+    rebuilt_names = [item["name"] for item in apps if item["rebuilt"]]
+    if rebuilt_names:
+        message = "Rebuilt " + " and ".join(rebuilt_names) + "."
+        status = "rebuilt"
+    else:
+        message = "R5 Profile Editor and R5 Camera Lab app wrappers are current."
+        status = "current"
+    return {
+        "status": status,
+        "rebuilt": bool(rebuilt_names),
+        "apps": apps,
+        "message": message,
+    }
+
+
+def build_app_wrappers(project_root: Path, output_dir: Optional[Path] = None):
+    result = refresh_app_wrappers(project_root, output_dir, force=True)
+    return [Path(item["path"]) for item in result["apps"]]
 
 
 def parse_args() -> argparse.Namespace:

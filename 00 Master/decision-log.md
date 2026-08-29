@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Automatic Main-App Freshness After Branch Integration
+
+**Status:** Accepted
+**Date:** 2026-08-29
+
+Extend the guarded **Integrate Branch** completion so a continuous successful integration checks the machine-local Main-project application wrappers against deterministic candidates generated from the exact integrated Main worktree. Rebuild only wrappers that are missing, invalid, or byte-stale; do not use timestamps or merely assume that every source merge requires a wrapper rebuild. Report the exact current, rebuilt, unavailable, or failed outcome without relabeling a Git-complete integration as an app-refresh success.
+
+Treat wrapper freshness and running-process freshness as separate states. The `.app` bundles remain thin launchers linked to repository source, so ordinary Profile Editor or Camera Lab source changes require no wrapper rebuild. When integrated runtime inputs changed, report that any running Profile Editor and Camera Lab must be restarted to load the integrated code. Never automatically stop an editor that may contain browser drafts or a Camera Lab that may own a camera session. If Main exists only as a disposable integration worktree, do not create an application pointing into that soon-to-be-removed path; report that a persistent Main checkout is required instead.
+
+Terminal-state progress panels must also distinguish running, completed, and failed jobs. A completed job shows an explicit completion receipt, while a failed job says it was not completed, preserves the actual error in the bounded visible log, and never falls back to a running-state message such as **Preparing the next command**.
+
 ## Guarded Terminal-Free Publication in Profile Editor
 
 **Status:** Accepted

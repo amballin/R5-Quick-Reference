@@ -94,6 +94,8 @@ const elements = {
   branchIntegrationConfirmResync: document.querySelector("#branch-integration-confirm-resync"),
   resyncIntegratedBranch: document.querySelector("#resync-integrated-branch"),
   branchIntegrationCompletePanel: document.querySelector("#branch-integration-complete-panel"),
+  branchIntegrationCompleteMessage: document.querySelector("#branch-integration-complete-message"),
+  branchIntegrationAppStatus: document.querySelector("#branch-integration-app-status"),
   finishOpenCleanup: document.querySelector("#finish-open-cleanup"),
   integrationOpenCleanup: document.querySelector("#integration-open-cleanup"),
   refreshCleanupReview: document.querySelector("#refresh-cleanup-review"),
@@ -467,11 +469,22 @@ function waitMilliseconds(milliseconds) {
 }
 
 function renderGuardedJobProgress(progressElements, job) {
+  const status = job?.status || "running";
   progressElements.panel.hidden = false;
-  progressElements.panel.classList.toggle("is-stopped", job?.status === "failed");
-  progressElements.stage.textContent = job?.stage || "Starting…";
+  progressElements.panel.classList.toggle("is-stopped", status === "failed");
+  progressElements.panel.classList.toggle("is-complete", status === "complete");
+  progressElements.stage.textContent = status === "failed"
+    ? (progressElements.failedStage || "Workflow stopped — not completed")
+    : status === "complete"
+      ? (progressElements.completedStage || "Workflow complete")
+      : (job?.stage || "Starting…");
   progressElements.elapsed.textContent = `${job?.elapsedSeconds || 0}s elapsed`;
-  progressElements.command.textContent = job?.command || "Preparing the next command…";
+  progressElements.command.textContent = job?.command
+    || (status === "failed"
+      ? (job?.error || "The workflow stopped before completion. Review the command log.")
+      : status === "complete"
+        ? (progressElements.completedMessage || "All required steps completed.")
+        : "Preparing the next command…");
   progressElements.log.textContent = (job?.log || []).join("\n\n");
   progressElements.log.scrollTop = progressElements.log.scrollHeight;
 }
@@ -508,6 +521,9 @@ const finishDayProgressElements = {
   elapsed: elements.finishDayProgressElapsed,
   command: elements.finishDayProgressCommand,
   log: elements.finishDayProgressLog,
+  failedStage: "Finish Day stopped — not completed",
+  completedStage: "Finish Day preparation complete",
+  completedMessage: "All required preparation checks completed.",
 };
 
 const branchIntegrationProgressElements = {
@@ -516,6 +532,9 @@ const branchIntegrationProgressElements = {
   elapsed: elements.branchIntegrationProgressElapsed,
   command: elements.branchIntegrationProgressCommand,
   log: elements.branchIntegrationProgressLog,
+  failedStage: "Integration preparation stopped — not completed",
+  completedStage: "Integration candidate complete",
+  completedMessage: "The isolated integration candidate passed every required check.",
 };
 
 const publicationProgressElements = {
@@ -524,6 +543,9 @@ const publicationProgressElements = {
   elapsed: elements.publicationProgressElapsed,
   command: elements.publicationProgressCommand,
   log: elements.publicationProgressLog,
+  failedStage: "Publication stopped — not completed or verified",
+  completedStage: "Publication complete and verified",
+  completedMessage: "The live website is verified and Main is synchronized.",
 };
 
 function showFinishDayMessage(text, error = false) {
@@ -743,6 +765,12 @@ function renderBranchIntegration() {
   elements.branchIntegrationPushPanel.hidden = phase !== "push-main";
   elements.branchIntegrationResyncPanel.hidden = phase !== "resync";
   elements.branchIntegrationCompletePanel.hidden = phase !== "complete";
+  elements.branchIntegrationCompleteMessage.textContent = result?.message
+    || "Main and the working branch are synchronized. The website was not published.";
+  const appRefresh = result?.appRefresh;
+  elements.branchIntegrationAppStatus.hidden = !appRefresh;
+  elements.branchIntegrationAppStatus.textContent = appRefresh?.message || "";
+  elements.branchIntegrationAppStatus.classList.toggle("error", appRefresh?.status === "failed");
   const commits = result?.commits || [];
   const files = result?.files || [];
   elements.branchIntegrationCommitList.textContent = commits.join("\n") || "No commits are waiting for integration.";
@@ -881,7 +909,7 @@ async function pushIntegratedMain() {
 
 async function resyncIntegratedBranch() {
   state.branchIntegrationBusy = true;
-  showBranchIntegrationMessage("Fast-forwarding and pushing the working branch to its exact matching upstream.");
+  showBranchIntegrationMessage("Fast-forwarding the working branch, then checking and refreshing the Main app wrappers when needed.");
   renderBranchIntegration();
   try {
     const result = await request("/api/branch-integration-resync", {

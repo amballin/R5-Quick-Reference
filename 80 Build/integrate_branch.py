@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 
+from app_wrappers import refresh_app_wrappers
 from asset_manager import ProjectPaths
 
 
@@ -18,11 +19,44 @@ class BranchIntegrationError(RuntimeError):
     pass
 
 
+APP_RUNTIME_PREFIXES = (
+    "00 Master/",
+    "10 Profiles/",
+    "20 Templates/",
+    "50 Field Guide/",
+    "60 Assets/",
+    "70 Canon Guides/",
+    "80 Build/",
+    "90 Testing/",
+    "data/",
+)
+APP_RUNTIME_FILES = {
+    "controls.md",
+    "controls.yaml",
+    "package.json",
+    "requirements.txt",
+}
+
+
+def _changed_path(status_line):
+    return str(status_line or "").split("\t")[-1].strip()
+
+
+def app_restart_required(files):
+    """Return whether a running local app may retain pre-integration runtime state."""
+    for item in files or ():
+        path = _changed_path(item)
+        if path in APP_RUNTIME_FILES or path.startswith(APP_RUNTIME_PREFIXES):
+            return True
+    return False
+
+
 class BranchIntegrationWorkflow:
     """Prepare, review, merge, push, and resynchronize without publishing."""
 
-    def __init__(self, root):
+    def __init__(self, root, app_refresher=None):
         self.paths = ProjectPaths(root)
+        self._app_refresher = app_refresher or refresh_app_wrappers
         self._prepared = None
         self._applied = None
         self._temporary_worktrees = set()
@@ -384,6 +418,7 @@ class BranchIntegrationWorkflow:
                 "mainCommit": merged_commit,
                 "mainWorktree": main_worktree,
                 "temporaryMain": temporary,
+                "files": list(prepared["files"]),
             }
             return {
                 "phase": "push-main",
@@ -450,13 +485,50 @@ class BranchIntegrationWorkflow:
         final = self.inspect(0, refresh=False)
         if final["phase"] != "complete":
             raise BranchIntegrationError("Branch resynchronization completed but the final state could not be verified.")
-        if self._applied and self._applied.get("temporaryMain"):
-            self._remove_worktree(self._applied["mainWorktree"])
+        applied = self._applied
+        restart_required = app_restart_required(applied.get("files", [])) if applied else False
+        if applied and applied.get("temporaryMain"):
+            app_refresh = {
+                "status": "unavailable",
+                "rebuilt": False,
+                "restartRequired": restart_required,
+                "message": (
+                    "Main app wrappers were not refreshed because Main used a disposable integration worktree. "
+                    "Open a persistent Main project checkout and rebuild the wrappers there."
+                ),
+            }
+            self._remove_worktree(applied["mainWorktree"])
+        elif applied:
+            try:
+                app_refresh = self._app_refresher(Path(applied["mainWorktree"]))
+            except Exception as exc:
+                app_refresh = {
+                    "status": "failed",
+                    "rebuilt": False,
+                    "message": f"Main app refresh failed: {exc}",
+                }
+            app_refresh["restartRequired"] = restart_required
+            if restart_required:
+                app_refresh["message"] = (
+                    f"{app_refresh['message']} Restart any running Profile Editor and Camera Lab "
+                    "to load the integrated code."
+                )
+        else:
+            app_refresh = {
+                "status": "unknown",
+                "rebuilt": False,
+                "restartRequired": False,
+                "message": "App freshness was not recorded for this previously completed integration.",
+            }
         self._applied = None
         final.update(
             {
-                "message": "Integration complete. Main and the working branch are synchronized; the website was not published.",
+                "message": (
+                    "Integration complete. Main and the working branch are synchronized; "
+                    "the website was not published."
+                ),
                 "output": pushed["output"],
+                "appRefresh": app_refresh,
             }
         )
         return final

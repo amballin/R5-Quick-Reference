@@ -85,9 +85,11 @@ After Finish Day reports a clean synchronized non-main branch, open **Integrate 
 2. **Review** starts the same reconnectable in-page command progress, creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.
 3. **Merge Main** requires confirmation and applies the exact validated tree to a clean local `main`. Nothing is pushed.
 4. **Push Main** requires a separate confirmation and updates `origin/main`. It does not call the publisher, change website version metadata, or create a release.
-5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It never rebases or rewrites shared history.
+5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It then checks the persistent Main project's installed Profile Editor and Camera Lab wrappers and rebuilds only a missing or stale wrapper. It never rebases or rewrites shared history.
 
 If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When `main` is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, `origin/main` is the fork owner's main branch; updates from a separate upstream project remain a different workflow.
+
+The completion panel reports whether the Main apps were already current, rebuilt automatically, unavailable because Main was temporary, or could not be refreshed. The apps are thin launchers, so most source merges need a restart rather than a wrapper rebuild. When runtime inputs changed, stop and reopen any running Profile Editor or Camera Lab after saving drafts and ending the camera session; integration never stops either app automatically.
 
 ## Publish without Terminal
 
@@ -102,7 +104,7 @@ Open **Release & Publish** only when you intend to update the live website.
 7. Choose **Publish live website**. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.
 8. Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.
 
-The editor calls the existing supported publisher and does not create another deployment path. A failed run preserves its diagnostic log and never displays the successful receipt.
+The editor calls the existing supported publisher and does not create another deployment path. A failed run says **Publication stopped — not completed or verified**, preserves the actual error in its diagnostic log, stops the running indicator, and never displays the successful receipt or a next-command placeholder.
 
 ## Review optional cleanup
 

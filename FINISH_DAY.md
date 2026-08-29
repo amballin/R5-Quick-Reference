@@ -71,9 +71,11 @@ In Profile Editor, open **Integrate Branch** only after Finish Day reports that 
 2. **Review** shows the same reconnectable live command progress while it creates the proposed merge in a disposable worktree based on current `origin/main`. It stops without changing either real branch on conflicts, rejects proposed `docs/` changes, runs source validation, the normal development build, and full validation, restores generated website files, and displays the exact commits and files.
 3. **Merge Main** requires confirmation and applies the exact reviewed tree to a clean local `main`. Nothing is pushed.
 4. **Push Main** requires a separate confirmation and updates only `origin/main`. It does not call `publish.sh`, change release metadata, or publish the website.
-5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It never rebases or rewrites shared history.
+5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named upstream. It then checks the persistent Main project's Profile Editor and Camera Lab wrappers against deterministic integrated candidates and automatically rebuilds only missing or stale wrappers. It never rebases or rewrites shared history.
 
 If `main` is already checked out elsewhere on this Mac, that worktree must be clean and synchronized. If it is not checked out, the workflow uses a temporary worktree rather than switching the active branch. For a fork, `origin/main` means the fork owner's main branch; receiving enhancements from a separate upstream repository remains a distinct operation.
+
+The completion receipt distinguishes wrappers that were already current, wrappers rebuilt automatically, a refresh that failed, and the temporary-Main case where no durable app may point to the disposable worktree. Ordinary source changes do not require rebuilding these thin launcher bundles, but merged runtime changes do require restarting any running Profile Editor and Camera Lab. The workflow reports that restart requirement and never stops an editor with possible drafts or a Lab with a possible camera session.
 
 Do not continue to publication until Integrate Branch reports that `main` and the working branch are synchronized.
 

@@ -183,9 +183,10 @@
 <li><strong>Review</strong> starts the same reconnectable in-page command progress, creates a disposable worktree from current <code>origin/main</code>, attempts the merge there, rejects conflicts and <code>docs/</code> changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.</li>
 <li><strong>Merge Main</strong> requires confirmation and applies the exact validated tree to a clean local <code>main</code>. Nothing is pushed.</li>
 <li><strong>Push Main</strong> requires a separate confirmation and updates <code>origin/main</code>. It does not call the publisher, change website version metadata, or create a release.</li>
-<li><strong>Resync</strong> requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named <code>origin</code> branch. It never rebases or rewrites shared history.</li>
+<li><strong>Resync</strong> requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named <code>origin</code> branch. It then checks the persistent Main project&#x27;s installed Profile Editor and Camera Lab wrappers and rebuilds only a missing or stale wrapper. It never rebases or rewrites shared history.</li>
 </ol>
 <p>If a conflict, dirty main worktree, changed remote ref, or different candidate tree appears, the editor stops and reports it. When <code>main</code> is not already checked out, the workflow uses a temporary worktree rather than switching the active editor branch. For a fork, <code>origin/main</code> is the fork owner&#x27;s main branch; updates from a separate upstream project remain a different workflow.</p>
+<p>The completion panel reports whether the Main apps were already current, rebuilt automatically, unavailable because Main was temporary, or could not be refreshed. The apps are thin launchers, so most source merges need a restart rather than a wrapper rebuild. When runtime inputs changed, stop and reopen any running Profile Editor or Camera Lab after saving drafts and ending the camera session; integration never stops either app automatically.</p>
 </section>
 <section class="step"><h2>Publish without Terminal</h2>
 <p>Open <strong>Release &amp; Publish</strong> only when you intend to update the live website.</p>
@@ -199,7 +200,7 @@
 <li>Choose <strong>Publish live website</strong>. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.</li>
 <li>Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.</li>
 </ol>
-<p>The editor calls the existing supported publisher and does not create another deployment path. A failed run preserves its diagnostic log and never displays the successful receipt.</p>
+<p>The editor calls the existing supported publisher and does not create another deployment path. A failed run says <strong>Publication stopped — not completed or verified</strong>, preserves the actual error in its diagnostic log, stops the running indicator, and never displays the successful receipt or a next-command placeholder.</p>
 </section>
 <section class="step"><h2>Review optional cleanup</h2>
 <p>After Finish Day or Integrate Branch completes, choose <strong>Review optional cleanup</strong>, or open <strong>Cleanup Review</strong> directly. The editor lists only exact <code>.DS_Store</code> metadata and recognized timestamped workflow backups that have been superseded by a newer successful backup of the same type and profile operation/target. The newest successful recovery backup is always protected. There is no age requirement, and manually named or unrecognized backups are ignored.</p>

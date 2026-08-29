@@ -257,6 +257,8 @@ h2 { margin-bottom: .25rem; }
 .finish-day-complete { display: grid; gap: .25rem; margin-top: .8rem; padding: 1rem; border: 1px solid #9ccbbf; border-radius: 10px; color: #245d51; background: var(--teal-soft); }
 .finish-day-complete strong { font-size: 1rem; }
 .finish-day-complete span { font-size: .8rem; }
+.integration-app-status { margin-top: .25rem; font-weight: 700; }
+.integration-app-status.error { color: #8d1f2d; }
 .finish-day-footer { margin-top: .75rem; text-align: right; }
 .finish-day-footer a { color: var(--teal); font-size: .78rem; font-weight: 750; }
 .workflow-progress { display: grid; gap: .65rem; padding: .85rem; border: 1px solid #9db7cf; border-radius: 10px; background: #f3f7fb; }
@@ -265,6 +267,10 @@ h2 { margin-bottom: .25rem; }
 .workflow-progress-heading strong { min-width: 0; overflow-wrap: anywhere; }
 .workflow-progress-heading .muted { margin-left: auto; white-space: nowrap; }
 .progress-spinner { width: 18px; height: 18px; flex: 0 0 auto; border: 3px solid #c8d6e3; border-top-color: var(--navy); border-radius: 50%; animation: progress-spin .85s linear infinite; }
+.workflow-progress.is-stopped .progress-spinner, #publication-progress.is-stopped .progress-spinner { animation: none; border-color: #d7a4a4; border-top-color: #9f2f2f; }
+.workflow-progress.is-complete .progress-spinner, #publication-progress.is-complete .progress-spinner { animation: none; border-color: #a9d4c4; border-top-color: #1c7458; }
+.workflow-progress.is-stopped .workflow-progress-command, #publication-progress.is-stopped .workflow-progress-command { color: #ffe8e8; background: #4b2028; }
+.workflow-progress.is-complete .workflow-progress-command, #publication-progress.is-complete .workflow-progress-command { color: #e5fff4; background: #194b3b; }
 .workflow-progress-command { display: block; min-height: 1.35rem; padding: .55rem .65rem; overflow-wrap: anywhere; border-radius: 7px; color: #e7edf4; background: #172333; font-size: .72rem; }
 .workflow-progress details summary { cursor: pointer; color: var(--teal); font-size: .78rem; font-weight: 750; }
 .workflow-progress pre { max-height: 320px; margin: .55rem 0 0; padding: .7rem; overflow: auto; border-radius: 7px; color: #dbe6ef; background: #101923; font-size: .7rem; line-height: 1.45; white-space: pre-wrap; }
