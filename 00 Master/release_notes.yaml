@@ -94,3 +94,6 @@ releases:
       - Added the read-only EOS R5 Camera Lab for comparing a USB-connected camera with subject-profile targets in an efficient setup-route order.
       - Added a dedicated My Menu reference card and Touch & Drag AF guidance.
       - Reorganized cards and spreadsheet rows into a faster practical camera-setup sequence.
+  "2.04":
+    highlights:
+      - "New frontend build tools"
