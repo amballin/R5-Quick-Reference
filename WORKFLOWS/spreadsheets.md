@@ -16,6 +16,14 @@ It first reports the verification working copy, Matrix/settings, and Setup state
 
 Numbers is launched automatically before conversion and finalization; you do not need to open it manually.
 
+To deliberately regenerate both release workbook families even when they are current:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks
+```
+
+The same diagnosis and unimported-edit safeguards run first. Each regenerated workbook shows its deterministic spreadsheet build ID in the banner; the Setup Metadata sheet records the same ID.
+
 ## Build one release workbook family
 
 - Matrix only:
@@ -77,7 +85,9 @@ Changed requirements preserve history but mark affected prior passes for retesti
 
 ## Publish replacement spreadsheets
 
-First build both release families, then follow [Publish the Website](publish.html) with:
+Profile Editor's **Automatic (recommended)** publication option rebuilds only diagnosed stale families and preserves current families. To force new files for both families, use its **Force rebuild and republish both** option.
+
+For the equivalent Terminal recovery path, first run the force command above, then follow [Publish the Website](publish.html) with:
 
 ```bash
 ./80\ Build/scripts/publish.sh --spreadsheet-downloads
@@ -92,3 +102,4 @@ python3 "80 Build/verify_publication.py" --require-target matrix --require-targe
 ```
 
 Success requires `PUBLICATION VERIFIED` and matching Matrix and Setup hashes.
+The website Downloads section, published manifest, workbook banner, and publication receipt must also agree on each family’s spreadsheet build ID.

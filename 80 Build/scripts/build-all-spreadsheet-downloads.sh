@@ -3,6 +3,16 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
+force_release_workbooks=false
+if [[ "${1:-}" == "--force-release-workbooks" ]]; then
+    force_release_workbooks=true
+    shift
+fi
+if (( $# )); then
+    echo "Usage: $0 [--force-release-workbooks]" >&2
+    exit 2
+fi
+
 check_command() {
     local output result
     set +e
@@ -53,17 +63,21 @@ if [[ "$verification_result" -eq 2 ]]; then
     python3 "80 Build/verification_status.py" build
     rebuilt=true
 fi
-if [[ "$matrix_result" -ne 0 ]]; then
+if [[ "$matrix_result" -ne 0 ]] || "$force_release_workbooks"; then
     python3 "80 Build/spreadsheet_downloads.py" matrix build
     rebuilt=true
 fi
-if [[ "$setup_result" -ne 0 ]]; then
+if [[ "$setup_result" -ne 0 ]] || "$force_release_workbooks"; then
     python3 "80 Build/spreadsheet_downloads.py" setup build
     rebuilt=true
 fi
 
 if "$rebuilt"; then
-    echo "All stale spreadsheet/verification derived artifacts were refreshed and verified."
+    if "$force_release_workbooks"; then
+        echo "Both release workbook families were force-rebuilt; all spreadsheet-derived artifacts are verified."
+    else
+        echo "All stale spreadsheet/verification derived artifacts were refreshed and verified."
+    fi
 else
     echo "All spreadsheet/verification derived artifacts are current; nothing was rebuilt."
 fi

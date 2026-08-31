@@ -9,7 +9,7 @@ from spreadsheet_downloads import (
     validate_download_manifest,
     validate_published_release,
 )
-from spreadsheet_revisions import source_fingerprint
+from spreadsheet_revisions import source_fingerprint, spreadsheet_build_id
 from .common import error, warning
 
 
@@ -68,6 +68,14 @@ def _validate_release(paths, root, manifest_path):
                     "spreadsheet_downloads",
                     manifest_path,
                     f"Published {target} release has a stale source fingerprint.",
+                )
+            )
+        elif target in SUPPORTED_TARGETS and entry.get("build_id") != spreadsheet_build_id(paths, target):
+            fingerprint_issues.append(
+                error(
+                    "spreadsheet_downloads",
+                    manifest_path,
+                    f"Published {target} release has a stale spreadsheet build ID.",
                 )
             )
     if fingerprint_issues:

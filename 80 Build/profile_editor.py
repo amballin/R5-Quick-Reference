@@ -34,6 +34,7 @@ BUILD_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BUILD_DIR.parent
 STATIC_DIR = BUILD_DIR / "profile_editor"
 CATALOG_FILE = STATIC_DIR / "canon_options.yaml"
+CONTROL_CATALOG_FILE = STATIC_DIR / "control_options.yaml"
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
@@ -62,6 +63,11 @@ from card_identity import (
     valid_card_id,
 )
 from cleanup_review import CleanupReview, CleanupReviewError
+from camera_lab_tracker_import import (
+    CameraLabTrackerImportError,
+    build_candidate_status as build_camera_lab_candidate_status,
+    inspect_evidence as inspect_camera_lab_evidence,
+)
 from cx_route_analysis import CxRouteAnalysisError, analyze_foundation_fit
 from finish_day import FinishDayError, FinishDayWorkflow
 from integrate_branch import BranchIntegrationError, BranchIntegrationWorkflow
@@ -71,7 +77,11 @@ from lens_guidance import load_sources as load_lens_sources
 from my_menu import MyMenuError, load_my_menu, validate_my_menu, used_tabs
 from my_menu_colors import MyMenuColorError, load_my_menu_colors, validate_my_menu_colors
 from my_menu_reference import reference_settings as my_menu_reference_settings
-from control_reference import card_reference_settings as control_reference_settings
+from control_reference import (
+    CARD_CONTROL_LABELS,
+    card_reference_settings as control_reference_settings,
+    reference_setting_key as control_reference_setting_key,
+)
 from profile_loader import load_baseline, load_yaml
 from project_context import project_context_info
 from publication_workflow import (
@@ -118,6 +128,13 @@ REFERENCE_CLASSIFICATIONS = {"Set Once", "Situational", "Ignore", "Avoid", "Unre
 PROFILE_STATUSES = {"Draft", "Review", "Final"}
 DISPLAY_CATEGORIES = {"subject", "reference"}
 LENS_ROLES = {"primary", "alternative", "specialist"}
+CONTROL_EVIDENCE_STATUSES = {
+    "verified_canon_capability",
+    "owner_confirmed",
+    "approved_target_pending_camera_verification",
+    "recommendation",
+    "unresolved",
+}
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
@@ -144,12 +161,14 @@ EDITOR_BUILD_FILES = (
     "80 Build/cleanup_review.py",
     "80 Build/lens_guidance.py",
     "80 Build/control_reference.py",
+    "80 Build/camera_lab_tracker_import.py",
     "80 Build/html_renderer.py",
     "80 Build/my_menu_colors.py",
     "80 Build/my_menu.py",
     "80 Build/my_menu_reference.py",
     "80 Build/profile_editor.py",
     "80 Build/profile_editor/app.js",
+    "80 Build/profile_editor/control_options.yaml",
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/project_context.py",
@@ -364,9 +383,13 @@ class ProfileEditorModel:
         cleanup_review=None,
         publication_workflow=None,
         main_editor_launcher=None,
+        camera_lab_journal_root=None,
     ):
         self.paths = ProjectPaths(root)
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
+        self.control_catalog_file = (
+            self.paths.root / "80 Build" / "profile_editor" / "control_options.yaml"
+        )
         self.baseline = load_baseline(self.paths)
         self.defaults = self.baseline.get("defaults") or {}
         self.default_fields = flatten(self.defaults)
@@ -394,6 +417,7 @@ class ProfileEditorModel:
         self._pending_cx_reviews = {}
         self._pending_discard_reviews = {}
         self._pending_restore_reviews = {}
+        self._pending_special_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
         self.guarded_jobs = GuardedJobManager()
@@ -403,6 +427,197 @@ class ProfileEditorModel:
         self.cleanup_review = cleanup_review or CleanupReview(self.paths.root)
         self.publication_workflow = publication_workflow or PublicationWorkflow(self.paths.root)
         self.main_editor_launcher = main_editor_launcher or MainEditorLauncher(self.paths.root)
+        self.camera_lab_journal_root = camera_lab_journal_root
+
+    def camera_lab_evidence_detail(self):
+        try:
+            return inspect_camera_lab_evidence(self.paths, journal_root=self.camera_lab_journal_root)
+        except CameraLabTrackerImportError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def review_camera_lab_evidence(self, candidate_ids, pending_changes):
+        try:
+            pending = int(pending_changes)
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("Pending-change count must be an integer.") from exc
+        if pending:
+            raise PrototypeError("Resolve every browser draft before reviewing Camera Lab evidence.")
+        try:
+            _before, candidate, applied = build_camera_lab_candidate_status(
+                self.paths, candidate_ids, journal_root=self.camera_lab_journal_root
+            )
+        except CameraLabTrackerImportError as exc:
+            raise PrototypeError(str(exc)) from exc
+        relative = "90 Testing/eos_r5_verification_status.yaml"
+        return self._create_special_review(
+            "camera-lab-evidence",
+            {relative: self._dump_yaml(candidate)},
+            f"Promote {len(applied)} exact Camera Lab evidence item{'s' if len(applied) != 1 else ''} into C1-C3 configured status.",
+            {
+                "applied": applied,
+                "candidateIds": [item["candidateId"] for item in applied],
+                "journalFingerprints": {
+                    item["candidateId"]: item["journalSha256"] for item in applied
+                },
+            },
+        )
+
+    def save_camera_lab_evidence(self, review_token, confirmed):
+        if confirmed is not True:
+            raise PrototypeError("Camera Lab evidence import confirmation is required.")
+        return self._save_special_review(review_token, "camera-lab-evidence")
+
+    def control_editor_detail(self):
+        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        catalog = load_yaml(self.control_catalog_file) or {}
+        if not isinstance(catalog, dict):
+            raise PrototypeError("Camera Buttons option catalog must be a mapping.")
+        option_groups = {}
+        for group in ("controls", "dials"):
+            configured = catalog.get(group) or {}
+            if not isinstance(configured, dict):
+                raise PrototypeError(f"Camera Buttons option catalog {group} must be a mapping.")
+            option_groups[group] = {}
+            for row in controls.get(group) or []:
+                control = row.get("control")
+                options = copy.deepcopy(configured.get(control) or {})
+                if not options.get("default") or not isinstance(options.get("assignment_options"), list):
+                    raise PrototypeError(f"Camera Buttons option catalog is incomplete for {control}.")
+                label = CARD_CONTROL_LABELS.get(control, control)
+                options["displayLabel"] = label
+                options["iconUrl"] = self._icon_url(control_reference_setting_key(label), None)
+                option_groups[group][control] = options
+        evidence = catalog.get("evidence_statuses") or {}
+        return {
+            "controls": copy.deepcopy(controls.get("controls") or []),
+            "dials": copy.deepcopy(controls.get("dials") or []),
+            "evidenceStatuses": sorted(CONTROL_EVIDENCE_STATUSES),
+            "evidenceStatusOptions": [
+                {
+                    "value": value,
+                    "label": (evidence.get(value) or {}).get("label", value),
+                    "help": (evidence.get(value) or {}).get("help", ""),
+                }
+                for value in evidence
+                if value in CONTROL_EVIDENCE_STATUSES
+            ],
+            "options": option_groups,
+            "source": copy.deepcopy(catalog.get("source") or {}),
+            "boundary": (
+                "Edit only the existing control and dial assignments. C1-C3 assignments remain in "
+                "Cx Foundation. Optional default buttons appear on the card automatically when customized. "
+                "A changed confirmed behavior returns to pending camera verification."
+            ),
+        }
+
+    def _candidate_control_sources(self, payload):
+        if not isinstance(payload, dict):
+            raise PrototypeError("Camera Buttons input must be an object.")
+        controls_path = self.paths.root / "controls.yaml"
+        current_path = self.paths.root / "data" / "canon_r5_custom_controls_current.yaml"
+        controls = load_yaml(controls_path) or {}
+        current = load_yaml(current_path) or {}
+        for group, current_group in (("controls", "buttons"), ("dials", "dials")):
+            existing = controls.get(group) or []
+            existing_current = current.get(current_group) or []
+            current_by_control = {item.get("control"): item for item in existing_current}
+            submitted = payload.get(group)
+            if not isinstance(submitted, list) or len(submitted) != len(existing):
+                raise PrototypeError(f"Camera Buttons {group} must keep every existing row in order.")
+            rows = []
+            for index, (saved, draft) in enumerate(zip(existing, submitted), start=1):
+                if not isinstance(draft, dict) or draft.get("control") != saved.get("control"):
+                    raise PrototypeError(f"Camera Buttons {group} row {index} changed its physical control identity.")
+                row = copy.deepcopy(saved)
+                for field in ("assignment", "operation"):
+                    value = str(draft.get(field) or "").strip()
+                    if field == "assignment" and not value:
+                        raise PrototypeError(f"{saved['control']} requires an assignment.")
+                    if value:
+                        row[field] = value
+                    else:
+                        row.pop(field, None)
+                info = draft.get("info_details") or draft.get("infoDetails") or {}
+                if not isinstance(info, dict):
+                    raise PrototypeError(f"{saved['control']} INFO details must be named values.")
+                clean_info = {
+                    str(key).strip(): str(value).strip()
+                    for key, value in info.items()
+                    if str(key).strip() and str(value).strip()
+                }
+                if clean_info:
+                    row["info_details"] = clean_info
+                else:
+                    row.pop("info_details", None)
+                note = str(draft.get("notes") or "").strip()
+                if note:
+                    row["notes"] = note
+                else:
+                    row.pop("notes", None)
+                requested_status = str(draft.get("status") or "").strip()
+                if requested_status not in CONTROL_EVIDENCE_STATUSES:
+                    raise PrototypeError(f"{saved['control']} has an invalid evidence status.")
+                behavior_changed = any(
+                    row.get(field) != saved.get(field)
+                    for field in ("assignment", "operation", "info_details")
+                )
+                row["status"] = (
+                    "approved_target_pending_camera_verification"
+                    if behavior_changed and saved.get("status") == "owner_confirmed"
+                    else requested_status
+                )
+                rows.append(row)
+            controls[group] = copy.deepcopy(rows)
+            current_rows = []
+            for saved, row in zip(existing, rows):
+                current_row = copy.deepcopy(current_by_control.get(saved.get("control")) or saved)
+                for field in ("assignment", "operation", "status"):
+                    if field in row:
+                        current_row[field] = row[field]
+                    else:
+                        current_row.pop(field, None)
+                if row.get("info_details") != saved.get("info_details"):
+                    current_row["info_details"] = {
+                        str(key).casefold().replace(" ", "_"): value
+                        for key, value in (row.get("info_details") or {}).items()
+                    }
+                    if not current_row["info_details"]:
+                        current_row.pop("info_details", None)
+                if row.get("notes") != saved.get("notes"):
+                    if row.get("notes"):
+                        current_row["notes"] = row["notes"]
+                    else:
+                        current_row.pop("notes", None)
+                current_rows.append(current_row)
+            current[current_group] = current_rows
+        return controls, current
+
+    def preview_control_editor(self, payload):
+        controls, _current = self._candidate_control_sources(payload)
+        profile = copy.deepcopy(self._profile("Camera Buttons"))
+        return self._render_preview("Camera Buttons", profile, control_source=controls)
+
+    def review_control_editor(self, payload):
+        controls_path = self.paths.root / "controls.yaml"
+        current_path = self.paths.root / "data" / "canon_r5_custom_controls_current.yaml"
+        controls, current = self._candidate_control_sources(payload)
+        candidates = {
+            "controls.yaml": self._replace_control_sections(
+                controls_path.read_text(encoding="utf-8"), controls["controls"], controls["dials"], "controls"
+            ).encode("utf-8"),
+            "data/canon_r5_custom_controls_current.yaml": self._replace_control_sections(
+                current_path.read_text(encoding="utf-8"), current["buttons"], current["dials"], "buttons"
+            ).encode("utf-8"),
+        }
+        return self._create_special_review(
+            "camera-buttons",
+            candidates,
+            "Update the synchronized Camera Buttons assignments and evidence states.",
+            {},
+        )
+
+    def save_control_editor(self, review_token):
+        return self._save_special_review(review_token, "camera-buttons")
 
     def launch_camera_lab(self, profile_name):
         name = self._validate_profile_name(profile_name)
@@ -1081,6 +1296,216 @@ class ProfileEditorModel:
         (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         return backup
 
+    def _create_special_review(self, kind, candidates, summary, metadata):
+        before = {relative: (self.paths.root / relative).read_bytes() for relative in candidates}
+        changed = {relative: data for relative, data in candidates.items() if data != before[relative]}
+        if not changed:
+            raise PrototypeError("The reviewed changes already match the saved source.")
+        self._validate_special_candidates(kind, changed)
+        diff = "".join(
+            "".join(
+                difflib.unified_diff(
+                    before[relative].decode("utf-8").splitlines(keepends=True),
+                    candidate.decode("utf-8").splitlines(keepends=True),
+                    fromfile=f"a/{relative}",
+                    tofile=f"b/{relative}",
+                )
+            )
+            for relative, candidate in changed.items()
+        )
+        review = {
+            "created": time.monotonic(),
+            "kind": kind,
+            "candidates": changed,
+            "source_sha256": {relative: self._sha256(before[relative]) for relative in changed},
+            "candidate_sha256": {relative: self._sha256(data) for relative, data in changed.items()},
+            "summary": summary,
+            "diff": diff,
+            "metadata": copy.deepcopy(metadata),
+        }
+        with self._write_lock:
+            self._expire_special_reviews()
+            while len(self._pending_special_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(
+                    self._pending_special_reviews,
+                    key=lambda key: self._pending_special_reviews[key]["created"],
+                )
+                del self._pending_special_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_special_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "reviewKind": kind,
+            "summary": summary,
+            "sourceFiles": sorted(changed),
+            "diff": diff,
+            **copy.deepcopy(metadata),
+        }
+
+    def _save_special_review(self, review_token, expected_kind):
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed change token is required.")
+        with self._write_lock:
+            self._expire_special_reviews()
+            review = self._pending_special_reviews.pop(review_token, None)
+            if review is None or review.get("kind") != expected_kind:
+                raise ProfileConflictError(
+                    "This review expired, was already used, or belongs to another editor action. Review again."
+                )
+            before = {}
+            for relative, expected_sha in review["source_sha256"].items():
+                current = (self.paths.root / relative).read_bytes()
+                if self._sha256(current) != expected_sha:
+                    raise ProfileConflictError(f"{relative} changed after review. Reload and review again.")
+                before[relative] = current
+            if expected_kind == "camera-lab-evidence":
+                try:
+                    inventory = inspect_camera_lab_evidence(
+                        self.paths, journal_root=self.camera_lab_journal_root
+                    )
+                except CameraLabTrackerImportError as exc:
+                    raise ProfileConflictError(str(exc)) from exc
+                if inventory.get("workbookBlocked"):
+                    raise ProfileConflictError(inventory.get("workbookMessage") or "The tracker is blocked.")
+                current = {
+                    item["candidateId"]: item["journalSha256"]
+                    for item in inventory.get("candidates") or []
+                    if not item.get("alreadyImported")
+                }
+                expected = review["metadata"].get("journalFingerprints") or {}
+                if any(current.get(candidate_id) != digest for candidate_id, digest in expected.items()):
+                    raise ProfileConflictError("Camera Lab evidence changed after review. Review the current evidence again.")
+            self._validate_special_candidates(expected_kind, review["candidates"])
+            backup = self._create_special_backup(review, before)
+            written = []
+            try:
+                for relative, candidate in review["candidates"].items():
+                    if self._sha256(candidate) != review["candidate_sha256"][relative]:
+                        raise ProfileConflictError("The reviewed candidate bytes are no longer valid.")
+                    target = self.paths.root / relative
+                    self._atomic_write(target, candidate, before[relative])
+                    written.append(relative)
+                if expected_kind == "camera-lab-evidence":
+                    from verification_status import build_working_copy
+
+                    build_working_copy(self.paths)
+                errors = list(self._source_validator(self.paths.root))
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_errors = []
+                for relative in reversed(written):
+                    target = self.paths.root / relative
+                    try:
+                        self._atomic_write(target, before[relative], target.read_bytes())
+                    except Exception as rollback_exc:  # pragma: no cover
+                        rollback_errors.append(f"{relative}: {rollback_exc}")
+                if expected_kind == "camera-lab-evidence" and not rollback_errors:
+                    try:
+                        from verification_status import build_working_copy
+
+                        build_working_copy(self.paths)
+                    except Exception as rollback_exc:  # pragma: no cover
+                        rollback_errors.append(f"verification working copy: {rollback_exc}")
+                if rollback_errors:
+                    raise PrototypeError(
+                        f"Save failed and rollback was incomplete. Recovery backup: {backup}. "
+                        + "; ".join(rollback_errors)
+                    ) from exc
+                raise PrototypeError(
+                    f"Save failed; prior source was restored. Recovery backup: {backup}. {exc}"
+                ) from exc
+            self.verification_tracker = load_yaml(self.paths.verification_tracker_source_file) or {}
+            self.registration = self.verification_tracker.get("registration") or {}
+            return {
+                "sourceFiles": written,
+                "backup": str(backup),
+                "validation": "passed",
+                "reviewKind": expected_kind,
+                **copy.deepcopy(review["metadata"]),
+            }
+
+    def _validate_special_candidates(self, kind, candidates):
+        for relative, data in candidates.items():
+            try:
+                loaded = yaml.safe_load(data.decode("utf-8"))
+            except Exception as exc:
+                raise PrototypeError(f"Candidate YAML is invalid for {relative}: {exc}") from exc
+            if not isinstance(loaded, dict):
+                raise PrototypeError(f"Candidate YAML must be a mapping: {relative}")
+        with tempfile.TemporaryDirectory(prefix=f"profile-editor-{kind}-candidate-") as temporary:
+            shadow = Path(temporary)
+            if kind == "camera-buttons":
+                for directory in ("10 Profiles", "50 Field Guide", "WORKFLOWS", "90 Testing"):
+                    source = self.paths.root / directory
+                    destination = shadow / directory
+                    if source.is_dir():
+                        shutil.copytree(source, destination)
+                for relative in (
+                    "00 Master/baseline.yaml",
+                    "controls.yaml",
+                    "data/canon_r5_custom_controls_current.yaml",
+                ):
+                    destination = shadow / relative
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(self.paths.root / relative, destination)
+                for relative, data in candidates.items():
+                    target = shadow / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(data)
+                from validators import control_validator
+
+                errors = [issue.message for issue in control_validator.validate(shadow) if issue.level == "error"]
+            else:
+                for relative in (
+                    "00 Master/baseline.yaml",
+                    "90 Testing/eos_r5_verification_tracker.yaml",
+                    "90 Testing/eos_r5_verification_status.yaml",
+                ):
+                    destination = shadow / relative
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(self.paths.root / relative, destination)
+                for relative, data in candidates.items():
+                    target = shadow / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(data)
+                from validators import verification_status_validator
+
+                errors = [
+                    issue.message
+                    for issue in verification_status_validator.validate(shadow)
+                    if issue.level == "error"
+                ]
+            if errors:
+                raise PrototypeError("Candidate validation failed: " + "; ".join(errors))
+
+    def _create_special_backup(self, review, before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-{review['kind']}"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        for relative, data in before.items():
+            target = backup / "before" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        for relative, data in review["candidates"].items():
+            target = backup / "candidate" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        manifest = {
+            "version": 1,
+            "created": datetime.now().astimezone().isoformat(),
+            "operation": review["kind"],
+            "source_sha256": review["source_sha256"],
+            "candidate_sha256": review["candidate_sha256"],
+            "metadata": review["metadata"],
+        }
+        (backup / "transaction.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return backup
+
     def dictionary_detail(self):
         sections = copy.deepcopy(self.reference_sections)
         eligible = []
@@ -1268,6 +1693,38 @@ class ProfileEditorModel:
             width=1000,
             default_flow_style=False,
         ).encode("utf-8")
+
+    @staticmethod
+    def _replace_control_sections(source, first_rows, dial_rows, first_key):
+        def rendered(key, rows):
+            return yaml.dump(
+                {key: rows},
+                Dumper=IndentedYamlDumper,
+                sort_keys=False,
+                allow_unicode=True,
+                width=1000,
+                default_flow_style=False,
+            )
+
+        first_pattern = rf"^{re.escape(first_key)}:\n.*?(?=^dials:\n)"
+        dial_pattern = r"^dials:\n.*?(?=^custom_shooting_modes:\n)"
+        updated, first_count = re.subn(
+            first_pattern,
+            rendered(first_key, first_rows) + "\n",
+            source,
+            count=1,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        updated, dial_count = re.subn(
+            dial_pattern,
+            rendered("dials", dial_rows) + "\n",
+            updated,
+            count=1,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        if first_count != 1 or dial_count != 1:
+            raise PrototypeError("Cannot locate the canonical Camera Buttons source sections.")
+        return updated
 
     def _create_my_menu_configuration_backup(self, review, before):
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -3303,6 +3760,16 @@ class ProfileEditorModel:
         for token in expired:
             del self._pending_cx_reviews[token]
 
+    def _expire_special_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_special_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_special_reviews[token]
+
     @staticmethod
     def _validate_project_sources(root):
         from validator import run
@@ -3320,7 +3787,7 @@ class ProfileEditorModel:
         profile["overrides"] = nested
         return self._render_preview(name, profile)
 
-    def _render_preview(self, name, profile, lens_guidance_data=None):
+    def _render_preview(self, name, profile, lens_guidance_data=None, control_source=None):
         merged = merge(self.defaults, profile.get("overrides") or {})
         template = self.paths.card_template.read_text(encoding="utf-8")
         html = render_card(
@@ -3333,6 +3800,7 @@ class ProfileEditorModel:
             self.paths,
             lens_guidance_data=lens_guidance_data,
             lens_equipment_data=self.lens_equipment,
+            control_source=control_source,
         )
         html = self._rewrite_preview_links(html)
         output = self.paths.html_output_dir / PREVIEW_NAME
@@ -3415,6 +3883,10 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.baseline_detail())
             if path == "/api/cx-foundations":
                 return self._json(self.model.cx_foundation_detail())
+            if path == "/api/camera-buttons":
+                return self._json(self.model.control_editor_detail())
+            if path == "/api/camera-lab-evidence":
+                return self._json(self.model.camera_lab_evidence_detail())
             if path == "/api/deleted-cards":
                 return self._json({"cards": self.model.deleted_cards()})
             if path == "/api/editor-info":
@@ -3461,6 +3933,11 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/cx-assignment-reviews",
             "/api/cx-selection-reviews",
             "/api/cx-foundation-saves",
+            "/api/camera-buttons-preview",
+            "/api/camera-buttons-reviews",
+            "/api/camera-buttons-saves",
+            "/api/camera-lab-evidence-reviews",
+            "/api/camera-lab-evidence-saves",
             "/api/build-readiness",
             "/api/verification-tracker-import",
             "/api/local-build",
@@ -3583,6 +4060,28 @@ class EditorHandler(BaseHTTPRequestHandler):
                 )
             if parsed.path == "/api/cx-foundation-saves":
                 return self._json(self.model.save_cx_review(payload.get("reviewToken")))
+            if parsed.path == "/api/camera-buttons-preview":
+                output = self.model.preview_control_editor(payload)
+                return self._json({
+                    "previewUrl": "/preview/card.html",
+                    "outputFile": str(output),
+                })
+            if parsed.path == "/api/camera-buttons-reviews":
+                return self._json(self.model.review_control_editor(payload))
+            if parsed.path == "/api/camera-buttons-saves":
+                return self._json(self.model.save_control_editor(payload.get("reviewToken")))
+            if parsed.path == "/api/camera-lab-evidence-reviews":
+                return self._json(
+                    self.model.review_camera_lab_evidence(
+                        payload.get("candidateIds"), payload.get("pendingChanges")
+                    )
+                )
+            if parsed.path == "/api/camera-lab-evidence-saves":
+                return self._json(
+                    self.model.save_camera_lab_evidence(
+                        payload.get("reviewToken"), payload.get("confirmImport")
+                    )
+                )
             if parsed.path == "/api/build-readiness":
                 return self._json(self.model.build_readiness(payload.get("pendingChanges")))
             if parsed.path == "/api/verification-tracker-import":

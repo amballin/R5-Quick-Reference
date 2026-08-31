@@ -138,24 +138,32 @@
 </section>
 <section class="step"><h2>Move around the editor</h2>
 <p>Use the workspace sidebar:</p>
+<p><strong>Daily work</strong></p>
 <ul>
 <li><strong>Today</strong> — Follow the short Start → Work → Finish path. It runs the existing preflight, points to the embedded workspaces, and opens the guarded Finish Day workspace.</li>
 <li><strong>Profiles</strong> — Preview, create, duplicate, or update shooting profiles inside Profile Editor.</li>
 <li><strong>Camera Lab</strong> — Launch the independent Camera Lab application with the selected saved profile. This is an application action, not an embedded workspace.</li>
-<li><strong>Review &amp; Build</strong> — Resolve all browser drafts, validate source, and run the guarded local build.</li>
+<li><strong>Review &amp; Build</strong> — Resolve all browser drafts, review exact Camera Lab evidence, validate source, and run the guarded local build.</li>
 <li><strong>Finish Day</strong> — Check repository state, validate and prepare source, review and commit the exact source list, then separately approve a push to the matching upstream. It never publishes.</li>
-<li><strong>Integrate Branch</strong> — Validate a finished branch against current <code>main</code>, review the exact result, then separately approve the local-main merge, main push, and branch resynchronization. It never publishes.</li>
+</ul>
+<p><strong>Profile setup</strong></p>
+<ul>
 <li><strong>Cx Foundation</strong> — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.</li>
-<li><strong>Deleted Cards</strong> — Review and restore unreleased cards removed from active source.</li>
 <li><strong>My Menu</strong> — Arrange saved tabs, shortcuts, and card colors.</li>
+<li><strong>Camera Buttons</strong> — Review Canon defaults, choose assignments and advanced options from explained dropdowns, see the exact live card-detail text, let customized optional buttons appear automatically, refresh the preview from its fixed header, and save through a synchronized review.</li>
 <li><strong>Baseline Setup</strong> — Test a proposed shared change and review its effect across profiles.</li>
-<li><strong>Cleanup Review</strong> — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.</li>
+<li><strong>Deleted Cards</strong> — Review and restore unreleased cards removed from active source.</li>
+</ul>
+<p><strong>Occasional</strong></p>
+<ul>
+<li><strong>Integrate Branch</strong> — Validate a finished branch against current <code>main</code>, review the exact result, then separately approve the local-main merge, main push, and branch resynchronization. It never publishes.</li>
 <li><strong>Release &amp; Publish</strong> — Prepare reader-facing highlights, select a minor or major version, choose how spreadsheet downloads are handled, review the exact live release, publish through the established main-only publisher, and require a verified clean result. A prototype workspace can open the Main project editor after integration.</li>
+<li><strong>Cleanup Review</strong> — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.</li>
 <li><strong>Setup &amp; Sharing</strong> — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.</li>
 <li><strong>Camera Reference</strong> — Find and review setup records and their source links.</li>
 </ul>
 <p>On narrower windows, the sidebar becomes a compact navigation row above the workspace.</p>
-<p>Moving to another tab does not save work, but the sidebar badges and Review &amp; Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into <strong>Profile to evaluate</strong> automatically.</p>
+<p>Moving to another tab does not save work, but the sidebar badges and Review &amp; Build list preserve and identify pending profile, Cx Foundation, My Menu, Camera Buttons, and baseline work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into <strong>Profile to evaluate</strong> automatically.</p>
 </section>
 <section class="step"><h2>Follow the daily path</h2>
 <p>Open <strong>Today</strong> when beginning or ending routine work:</p>
@@ -195,7 +203,7 @@
 <li>In Main, refresh readiness. The workspace requires no browser drafts, clean synchronized <code>main</code>, and exact <code>origin/main</code> tracking.</li>
 <li>If the upcoming version has no curated notes, choose the next minor release or a new major series, enter one reader-facing highlight per line, review the exact YAML addition, and save it. The editor creates a recovery backup and runs source validation.</li>
 <li>Open <strong>Finish Day</strong> to review, commit, and push that release-note source change. Return to <strong>Release &amp; Publish</strong> after Main is clean and synchronized.</li>
-<li>Choose how spreadsheet downloads are handled: preserve the exact current verified files, rebuild and replace both workbook families, or deliberately remove all workbook downloads. Preserve is blocked when the published workbook inputs are stale.</li>
+<li>Choose how spreadsheet downloads are handled. <strong>Automatic (recommended)</strong> preserves exact verified files when current and rebuilds only stale families. <strong>Force rebuild and republish both</strong> regenerates both families even when current. Deliberate removal remains separate. Review the Matrix and Setup build IDs shown in the status and exact publication review.</li>
 <li>Review the exact version, highlights, spreadsheet action, and current main commit. Check the separate live-site confirmation only when those details are correct.</li>
 <li>Choose <strong>Publish live website</strong>. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.</li>
 <li>Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.</li>
@@ -281,15 +289,16 @@
 <section class="step"><h2>Review the session and build locally</h2>
 <p>Open <strong>Review &amp; Build</strong> before finishing:</p>
 <ol>
-<li>Review every pending profile, Cx Foundation, My Menu, and baseline draft.</li>
+<li>Review every pending profile, Cx Foundation, My Menu, Camera Buttons, and baseline draft.</li>
 <li>Open each draft and save it through its exact-diff review, or choose <strong>Discard</strong> and confirm that decision.</li>
-<li>If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose <strong>Import verification tracker</strong> and confirm. The editor uses the existing importer and displays its result; it never imports automatically.</li>
+<li>For completed physical Camera Lab sessions, refresh <strong>Camera Lab evidence</strong>, check only exact items to retain, review the YAML, and separately confirm the import. It can mark only the mapped C1–C3 setting as configured; it never claims read-back, registration, operational testing, backups, or Canon verification.</li>
+<li>If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose <strong>Import verification tracker</strong> and confirm. Neither import path runs automatically.</li>
 <li>When the pending list is empty, choose <strong>Validate readiness</strong>. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.</li>
 <li>After readiness passes, choose <strong>Run local build</strong>, read the final warning—including whether Apple Numbers may launch—and confirm.</li>
 <li>Review the generated result, then open <strong>Finish Day</strong> when you are ready to commit and synchronize the completed source work.</li>
-<li>Stop the editor with <strong>Control-C</strong> in its Terminal window.</li>
+<li>Use <strong>Stop Profile Editor</strong> in the header when finished.</li>
 </ol>
-<p>The guarded Review &amp; Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. It may refresh local output and tracked documentation, but it does not rename profiles, edit permanent reference cards, permanently delete cards, commit, push, publish, or change website version metadata. Commit and push remain confined to the separate Finish Day stages. Recoverable unreleased-card removal is available only through the separate reviewed Deleted Cards action described above.</p>
+<p>The guarded Review &amp; Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, both evidence promotion and readiness stop. Permanent reference-card profile YAML remains read-only; My Menu and Camera Buttons change only through their dedicated structured editors. Review &amp; Build does not rename profiles, permanently delete cards, commit, push, publish, or change website version metadata.</p>
 </section>
 <section class="step"><h2>Get more help</h2>
 <p>For detailed safeguards, recovery behavior, and advanced baseline or My Menu behavior, open the <a href="profile-editor.html">Profile Editor workflow reference</a>. For physical-camera comparison and guarded application, open the <a href="camera-lab-user-guide.html">Camera Lab User Guide</a>. For camera-field meaning and recommendations, use the linked Canon and project reference materials.</p>

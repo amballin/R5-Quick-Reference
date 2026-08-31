@@ -128,7 +128,7 @@ CAMERA_SETUP_SETTINGS = {
 }
 
 
-def settings_rows(profile, merged, paths=None):
+def settings_rows(profile, merged, paths=None, control_source=None):
     """Return the settings rows in the same order used by the HTML table."""
     if profile.get("card_type") == "reference":
         if profile.get("reference_source") == "my_menu":
@@ -138,7 +138,7 @@ def settings_rows(profile, merged, paths=None):
         if profile.get("reference_source") == "controls":
             if paths is None:
                 return []
-            return card_reference_rows(paths)
+            return card_reference_rows(paths, source=control_source)
         return [
             {
                 "key": reference_setting_key(item["control"]),
@@ -332,9 +332,9 @@ def iso_display_value(merged_fields):
     return mode
 
 
-def table(profile, merged, icon_manager=None, paths=None, baseline=None):
+def table(profile, merged, icon_manager=None, paths=None, baseline=None, control_source=None):
     """Render the settings table with optional field-based icons."""
-    rows = settings_rows(profile, merged, paths)
+    rows = settings_rows(profile, merged, paths, control_source=control_source)
     change_summary = field_setup_change_summary(profile, merged, baseline, paths)
     table_class = ' class="has-change-column"' if change_summary else ""
     html = f"<table{table_class}>"
@@ -605,6 +605,7 @@ def render_card(
     paths=None,
     lens_guidance_data=None,
     lens_equipment_data=None,
+    control_source=None,
 ):
     """Replace the existing card template placeholders."""
     colors = card_colors(profile, baseline)
@@ -625,7 +626,17 @@ def render_card(
         )
         .replace("{{HEADER_ICON_LEFT}}", header_icon_html(paths, profile, baseline, "left"))
         .replace("{{HEADER_ICON_RIGHT}}", header_icon_html(paths, profile, baseline, "right"))
-        .replace("{{SETTINGS_SECTION}}", settings_section(profile, merged, icon_manager, paths, baseline))
+        .replace(
+            "{{SETTINGS_SECTION}}",
+            settings_section(
+                profile,
+                merged,
+                icon_manager,
+                paths,
+                baseline,
+                control_source=control_source,
+            ),
+        )
         .replace(
             "{{LENS_SECTION}}",
             lens_choices_section(profile, paths, lens_guidance_data, lens_equipment_data),
@@ -717,7 +728,14 @@ def compatibility_section(profile, merged, paths=None, guidance=None, equipment=
     return "<h2>Compatibility</h2>" + bullets([escape(message) for message in messages])
 
 
-def settings_section(profile, merged, icon_manager=None, paths=None, baseline=None):
+def settings_section(
+    profile,
+    merged,
+    icon_manager=None,
+    paths=None,
+    baseline=None,
+    control_source=None,
+):
     change_summary = field_setup_change_summary(profile, merged, baseline, paths)
     if is_camera_setup(profile) or is_camera_defaults(profile):
         rendered = (
@@ -758,7 +776,10 @@ def settings_section(profile, merged, icon_manager=None, paths=None, baseline=No
             rendered += (
                 '<p class="rapid-setup-empty">No camera changes are needed from this foundation.</p>'
             )
-    rendered += f"<h2>Settings</h2>{table(profile, merged, icon_manager, paths, baseline)}"
+    rendered += (
+        f"<h2>Settings</h2>"
+        f"{table(profile, merged, icon_manager, paths, baseline, control_source=control_source)}"
+    )
     if change_summary:
         label = escape(change_summary["legend_label"])
         rendered += (

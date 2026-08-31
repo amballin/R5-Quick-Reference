@@ -83,6 +83,8 @@ Save and close Numbers or Excel before importing:
 
 The same existing importer is available as **Import verification tracker** in the Profile Editor's **Review & Build** workspace. It requires explicit confirmation, is blocked by unsaved browser drafts, and shows the import result before readiness is checked. Import is never automatic.
 
+Completed physical-camera Camera Lab sessions have a separate **Camera Lab evidence** review in the same workspace. It lists exact unmigrated C1–C3 setting evidence, selects nothing automatically, and can update only the mapped slot's configured result after exact YAML review and separate confirmation. It records journal provenance and excludes simulator, incomplete, ambiguous, read-back, registration, operational-test, backup, and broader verification claims. It blocks when the working workbook has unimported edits and rebuilds the safely synchronized tracker after a successful import.
+
 The importer chooses the most recently modified local Numbers or Excel tracker, matches stable Test IDs and registration settings, records history, and updates `90 Testing/eos_r5_verification_status.yaml`. Finish Day stops if a local tracker changed after its last successful import.
 
 ## Continue on the other Mac

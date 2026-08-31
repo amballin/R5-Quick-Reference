@@ -32,13 +32,13 @@ For an ordinary day, stop here after Finish Day reports that the repository is c
 
 ## 5. Build spreadsheet release files
 
-When the next publication must replace the Matrix, Setup workbook, or both, open [Spreadsheet Workflows](spreadsheets.html) and build the required release families now. These verified Excel and Numbers files are machine-local release artifacts; they are not part of the source commit.
+When you deliberately want replacement files despite unchanged inputs, open [Spreadsheet Workflows](spreadsheets.html) and force-build both release families now. Ordinary stale-family refresh can be left to Profile Editor publication. These verified Excel and Numbers files are machine-local release artifacts; they are not part of the source commit.
 
 If spreadsheet downloads are unchanged and their source fingerprints are still current, continue to Step 6 without rebuilding them.
 
 ## 6. Publish the website
 
-Open [Publish the Website](publish.html) only when you intentionally want to update GitHub Pages. Use ordinary publication when spreadsheet downloads remain current, or spreadsheet replacement publication after Step 5.
+Open [Publish the Website](publish.html) only when you intentionally want to update GitHub Pages. Use **Automatic (recommended)** to preserve current downloads or refresh only stale families. Use Force only after deciding that both families should be regenerated despite already-current inputs.
 
 ## 7. Verify the publication and final Git state
 

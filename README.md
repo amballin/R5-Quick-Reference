@@ -76,7 +76,7 @@ The workbook is written to the machine-local `Build Output/reports/` folder. Sor
 
 ## Publish the website
 
-For normal use, open **Release & Publish** in the Main project Profile Editor. It guides release notes, version selection, spreadsheet handling, exact live-site confirmation, publication progress, and final verification without requiring Terminal. The command below remains the supported recovery and diagnostic interface; the editor calls this same publisher rather than replacing it.
+For normal use, open **Release & Publish** in the Main project Profile Editor. It guides release notes, version selection, automatic stale-family spreadsheet handling, an optional true force rebuild, exact spreadsheet build IDs, live-site confirmation, publication progress, and final verification without requiring Terminal. The command below remains the supported recovery and diagnostic interface; the editor calls this same publisher rather than replacing it.
 
 ```bash
 ./80\ Build/scripts/publish.sh
@@ -94,7 +94,7 @@ For an intentional major release, supply the new major number:
 
 This publishes `2.00`; later ordinary publications continue as `2.01`, `2.02`, and so on. The requested major number must be greater than the current one.
 
-The normal publish preserves exact previously published spreadsheet downloads when their source fingerprints remain current. After preparation and verification, `--matrix-downloads`, `--setup-downloads`, or `--spreadsheet-downloads` replaces the requested workbook family. Use `--remove-spreadsheet-downloads` only when the downloads should deliberately be removed. Publication still requires separate explicit authorization.
+The normal publish preserves exact previously published spreadsheet downloads when their source fingerprints remain current. Profile Editor automatically rebuilds and replaces only stale families. Its Force choice runs `build-all-spreadsheet-downloads.sh --force-release-workbooks` before replacing both families. Every workbook and public download shows the same deterministic family-specific spreadsheet build ID. Use `--remove-spreadsheet-downloads` only when the downloads should deliberately be removed. Publication still requires separate explicit authorization.
 
 The version/publish footer appears only on the main Camera Settings index in the form `Format v1.xx • yyyy/mm/dd hh:mm AM/PM`; individual HTML cards do not include it.
 

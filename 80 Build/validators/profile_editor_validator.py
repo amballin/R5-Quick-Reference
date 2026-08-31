@@ -14,10 +14,12 @@ REQUIRED_FILES = (
     "80 Build/baseline_impact.py",
     "80 Build/baseline_impact_check.py",
     "80 Build/baseline_migration.py",
+    "80 Build/camera_lab_tracker_import.py",
     "80 Build/profile_editor.py",
     "80 Build/publication_workflow.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/canon_options.yaml",
+    "80 Build/profile_editor/control_options.yaml",
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/test_profile_editor.py",
@@ -89,6 +91,22 @@ def validate(root):
             < html.find('data-view="my-menu"')
         ):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Cx Foundation must follow Profiles and precede My Menu."))
+        sidebar_order = (
+            "today", "profiles", "review-build", "finish-day", "cx-foundation", "my-menu",
+            "camera-buttons", "baseline", "deleted-cards", "branch-integration",
+            "release-publish", "cleanup-review", "setup-sharing", "dictionary",
+        )
+        positions = [html.find(f'data-view="{view}"') for view in sidebar_order]
+        if -1 in positions or positions != sorted(positions):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Sidebar workflow groups are not in the required working, setup, and occasional order."))
+        button_detail = model.control_editor_detail()
+        for group in ("controls", "dials"):
+            for item in button_detail.get(group) or []:
+                options = (button_detail.get("options") or {}).get(group, {}).get(item.get("control"), {})
+                if not options.get("default") or not options.get("assignment_options"):
+                    issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "control_options.yaml", f"Camera Buttons defaults/options are missing for {item.get('control')}."))
+                if not options.get("iconUrl"):
+                    issues.append(error("profile_editor", root / "60 Assets" / "icon-map.yaml", f"Camera Buttons editor/card icon is missing for {item.get('control')}."))
         for endpoint in ("/api/cx-foundation-fit", "/api/cx-assignment-reviews", "/api/cx-selection-reviews", "/api/cx-foundation-saves"):
             if endpoint not in script:
                 issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Cx Foundation browser endpoint is missing: {endpoint}"))
@@ -102,6 +120,15 @@ def validate(root):
         ):
             if endpoint not in script:
                 issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Publication browser endpoint is missing: {endpoint}"))
+        for endpoint in (
+            "/api/camera-buttons-preview",
+            "/api/camera-buttons-reviews",
+            "/api/camera-buttons-saves",
+            "/api/camera-lab-evidence-reviews",
+            "/api/camera-lab-evidence-saves",
+        ):
+            if endpoint not in script:
+                issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Guarded editor endpoint is missing: {endpoint}"))
     except Exception as exc:
         issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", f"Profile editor readiness failed: {exc}"))
     return issues

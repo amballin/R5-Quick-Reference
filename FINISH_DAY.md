@@ -87,7 +87,7 @@ Review the full path, date, size, and reason for each candidate. Permanent delet
 
 ## 3. Build and verify both spreadsheet families
 
-For the normal no-Terminal path, choose **Rebuild and replace both families** in Profile Editor's **Release & Publish** review. The editor runs this preparation immediately before the supported publisher. Use the command below only as a recovery or independent preparation interface.
+For the normal no-Terminal path, leave **Automatic (recommended)** selected in Profile Editor's **Release & Publish** review. It preserves current workbook bytes and rebuilds only diagnosed stale families immediately before the supported publisher. Choose **Force rebuild and republish both** only when you deliberately want new Matrix and Setup files despite unchanged inputs.
 
 Run:
 
@@ -97,9 +97,17 @@ Run:
 
 This diagnoses the local verification working copy plus both release families, safely refreshes only stale artifacts in dependency order, and verifies the Subject Settings Matrix and EOS R5 Setup & Verification Tracker in Excel and Apple Numbers. Numbers launches automatically. The workbook files are machine-local and are not committed to Git.
 
+The equivalent deliberate force command is:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks
+```
+
+Each workbook banner and the website Downloads section show the same family-specific spreadsheet build ID.
+
 ## 4. Choose the website version and publish
 
-In the Main project Profile Editor, open **Release & Publish**. Choose the next minor version or a new major series, confirm that its curated highlights are synchronized, select the spreadsheet action, review the exact release, and separately approve **Publish live website**. The page shows reconnectable progress and calls the same supported publisher described below. From a prototype editor, use **Open Main project editor** only after Integrate Branch is complete.
+In the Main project Profile Editor, open **Release & Publish**. Choose the next minor version or a new major series, confirm that its curated highlights are synchronized, review the automatic or force spreadsheet action and both build IDs, then separately approve **Publish live website**. The page shows reconnectable progress and calls the same supported publisher described below. From a prototype editor, use **Open Main project editor** only after Integrate Branch is complete.
 
 Confirm that the current branch is `main`. The publisher stops before building or changing files on every other branch.
 

@@ -46,7 +46,7 @@ shared:
 
 workbooks:
   matrix:
-    revision: 4
+    revision: 5
     title: Subject Settings Matrix
     web_title: Subject Settings Matrix
     xlsx_name: Subject Settings Matrix.xlsx
@@ -126,7 +126,7 @@ workbooks:
         alignment: center
 
   setup:
-    revision: 2
+    revision: 3
     title: EOS R5 Setup & Verification Tracker
     web_title: EOS R5 Setup & Verification Tracker
     xlsx_name: EOS R5 Setup & Verification Tracker.xlsx

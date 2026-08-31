@@ -285,7 +285,7 @@ The installable HTML/PWA is the phone application path. No native Xcode wrapper 
 
 ## Publish To GitHub Pages
 
-The normal no-Terminal path is **Release & Publish** in the Main project Profile Editor. It checks clean synchronization, prepares and reviews the exact upcoming-version highlights, offers minor or major version selection, handles preserving, rebuilding/replacing, or deliberately removing spreadsheet downloads, requires a separate live-site confirmation, shows reconnectable progress, and verifies both publication and final Git state. From a prototype editor, finish and integrate first, then choose **Open Main project editor**. The command sequence below remains the equivalent recovery and diagnostic interface.
+The normal no-Terminal path is **Release & Publish** in the Main project Profile Editor. It checks clean synchronization, prepares and reviews the exact upcoming-version highlights, offers minor or major version selection, automatically preserves current spreadsheet downloads or rebuilds only stale families, offers a true force rebuild for both families, shows the exact spreadsheet build IDs, requires a separate live-site confirmation, and verifies both publication and final Git state. From a prototype editor, finish and integrate first, then choose **Open Main project editor**. The command sequence below remains the equivalent recovery and diagnostic interface.
 
 1. Make sure the GitHub repo settings are:
 
@@ -316,6 +316,15 @@ To publish an intentional major release such as Version 2.00:
 The requested number must be greater than the current major version. Later ordinary publications continue with `2.01`, `2.02`, and so on. Major website versions do not change spreadsheet revisions.
 
 This default publish preserves compatible previously published spreadsheet downloads. It blocks if a workbook’s relevant sources changed, so stale workbook content cannot be carried forward.
+
+To deliberately regenerate both families even when current, run:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks
+./80\ Build/scripts/publish.sh --spreadsheet-downloads
+```
+
+The Matrix and Setup build IDs shown inside the workbooks must match the IDs beside their website downloads and in the publication receipt.
 
 To prepare the spreadsheets and then publish the complete website with them included, run these commands in order:
 

@@ -121,7 +121,7 @@
 <ul>
 <li>Source changes are validated, committed, and pushed.</li>
 <li><code>main</code> is checked out, clean, and synchronized with <code>origin/main</code>.</li>
-<li>If spreadsheet inputs changed, rebuild their release workbooks first.</li>
+<li>Review the spreadsheet diagnosis. Profile Editor automatically rebuilds only stale families; use Force only when you intentionally want new files despite unchanged inputs.</li>
 <li>Add concise reader-facing highlights for the upcoming version to <code>00 Master/release_notes.yaml</code>.</li>
 <li>Confirm that updating the live website is intentional.</li>
 </ul>
@@ -136,6 +136,10 @@
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh</code></pre></div>
 <p>Or publish the next minor version while replacing both spreadsheet families:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
+<p>In Profile Editor, <strong>Automatic (recommended)</strong> chooses between those paths: it preserves exact verified downloads when current and rebuilds/replaces only diagnosed stale families. <strong>Force rebuild and republish both</strong> first runs:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks</code></pre></div>
+<p>and then publishes with <code>--spreadsheet-downloads</code>. This is the deliberate way to regenerate both families when their inputs are already current.</p>
+<p>Each workbook and website download displays the same deterministic spreadsheet build ID. Matrix IDs begin with <code>M</code>; Setup IDs begin with <code>S</code>. These identify workbook content independently from the website version.</p>
 <p>Publication automatically stops before building or pushing if the selected version has no curated entry in <code>00 Master/release_notes.yaml</code>.</p>
 </section>
 <section class="step"><h2>Required success result</h2>

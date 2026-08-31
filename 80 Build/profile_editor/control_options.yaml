@@ -1,0 +1,191 @@
+schema_version: 1
+camera: Canon EOS R5
+source:
+  label: Canon EOS R5 Product Manual — Custom Function Setting Items
+  url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  scope: Still-photo Customize buttons and Customize dials defaults and supported choices
+
+evidence_statuses:
+  owner_confirmed:
+    label: Owner-confirmed current setup
+    help: Physically checked on this camera.
+  approved_target_pending_camera_verification:
+    label: Approved target — verify on camera
+    help: Intended setup, but not yet physically confirmed.
+  verified_canon_capability:
+    label: Canon-supported capability
+    help: Canon documents the capability; this does not claim it is configured.
+  recommendation:
+    label: Project recommendation
+    help: Suggested setup, not a statement of current camera state.
+  unresolved:
+    label: Unresolved
+    help: The intended or current setting is not yet known.
+
+common_button_assignments: &common_button_assignments
+  - Metering and AF start
+  - AF stop
+  - AF point selection
+  - Direct AF method selection
+  - One-Shot AF / Servo AF
+  - Eye Detection AF
+  - Eye detection
+  - Drive mode
+  - AE lock
+  - AE lock / FE lock
+  - AE lock (hold)
+  - Menu display
+  - Quick Control screen
+  - Magnify / Reduce
+  - No function (disabled)
+
+common_button_operations: &common_button_operations
+  - ""
+  - Press once
+  - Hold while operating
+  - Press repeatedly
+
+controls:
+  Shutter half-press:
+    default: Metering and AF start
+    help: Half-press behavior for still-photo shooting.
+    assignment_options:
+      - Metering and AF start
+      - Metering start
+      - AE lock (while button pressed)
+    operation_options: *common_button_operations
+  AF-ON:
+    default: Metering and AF start
+    help: Rear autofocus-start button; INFO can refine AF behavior.
+    assignment_options: *common_button_assignments
+    operation_options: *common_button_operations
+    info_fields:
+      AF Operation:
+        help: Whether this button keeps or temporarily changes One-Shot/Servo AF.
+        options: [Maintain current setting, One-Shot AF, Servo AF]
+      AF Method:
+        help: AF area/method used while this button operates.
+        options: [Maintain current setting, Face + Tracking, 1-Point AF, Spot AF, Expand AF Area, Expand AF Area Around, Zone AF, Large Zone AF (Horizontal), Large Zone AF (Vertical)]
+      Servo AF characteristics:
+        help: Whether this button keeps or changes the active Servo AF characteristics.
+        options: [Maintain current setting, Case A (Auto), Case 1, Case 2, Case 3, Case 4]
+  AE Lock:
+    default: AE lock / FE lock
+    help: Rear star button; Canon's still-photo default locks exposure or flash exposure.
+    assignment_options: *common_button_assignments
+    operation_options: *common_button_operations
+    info_fields:
+      AF Operation:
+        help: Whether this button keeps or temporarily changes One-Shot/Servo AF.
+        options: [Maintain current setting, One-Shot AF, Servo AF]
+      AF Method:
+        help: AF area/method used while this button operates.
+        options: [Maintain current setting, Face + Tracking, 1-Point AF, Spot AF, Expand AF Area, Expand AF Area Around, Zone AF, Large Zone AF (Horizontal), Large Zone AF (Vertical)]
+      Servo AF characteristics:
+        help: Whether this button keeps or changes the active Servo AF characteristics.
+        options: [Maintain current setting, Case A (Auto), Case 1, Case 2, Case 3, Case 4]
+  AF Point Selection:
+    default: AF point selection
+    help: Opens AF point/method selection; INFO behavior can depend on the active AF method.
+    assignment_options: *common_button_assignments
+    operation_options:
+      - ""
+      - Use Main Dial to change selection; when Face + Tracking is active, INFO toggles Eye detection
+      - Open AF point selection
+  Lens AF button:
+    default: AF stop
+    help: The AF-stop button found on compatible lenses.
+    assignment_options: *common_button_assignments
+    operation_options: *common_button_operations
+  Depth-of-field preview:
+    default: Depth-of-field preview
+    help: Front button labeled by Canon as exposure simulation during depth-of-field preview.
+    assignment_options: *common_button_assignments
+    operation_options:
+      - ""
+      - Changes AF Operation
+      - Hold to preview depth of field
+  SET:
+    default: No function (disabled)
+    help: Center SET button behavior while shooting.
+    assignment_options: *common_button_assignments
+    operation_options: *common_button_operations
+  Joystick:
+    default: Set AF point to center
+    help: Canon calls this the Multi-controller; movement and straight-in press may have distinct effects.
+    assignment_options:
+      - Set AF point to center
+      - Direct AF point selection
+      - Image replay
+      - No function (disabled)
+    operation_options:
+      - ""
+      - Move the AF point directly; press straight in to recenter it
+      - Press straight in to center the AF point
+  Movie Record:
+    default: Movie recording
+    help: Movie button behavior; this project currently leaves it at the Canon default.
+    assignment_options: [Leave default, Movie recording, No function (disabled)]
+    operation_options: *common_button_operations
+  MODE:
+    default: Shooting mode settings
+    help: MODE button behavior; this project currently leaves it at the Canon default.
+    assignment_options: [Leave default, Shooting mode settings, No function (disabled)]
+    operation_options: *common_button_operations
+  LCD panel illumination:
+    default: "Short press: LCD info switching; long press: LCD illumination"
+    help: Top-panel light/info button behavior; this project currently leaves it at the Canon default.
+    assignment_options:
+      - Leave default
+      - "Short press: LCD info switching; long press: LCD illumination"
+      - "Short press: LCD illumination; long press: LCD info switching"
+      - LCD panel illumination
+      - LCD panel info switching
+      - No function (disabled)
+    operation_options: *common_button_operations
+  M-Fn:
+    default: Dial function settings
+    help: Multifunction button beside the shutter button.
+    assignment_options:
+      - Dial function settings
+      - Switch to Custom shooting mode
+      - Still photo / movie switching
+      - AF stop
+      - AF point selection
+      - Direct AF method selection
+      - One-Shot AF / Servo AF
+      - Eye detection
+      - Drive mode
+      - Menu display
+      - Quick Control screen
+      - No function (disabled)
+    operation_options:
+      - ""
+      - Press repeatedly to switch among C1, C2, and C3
+      - Press once
+
+dials:
+  Main Dial:
+    default: Shutter Speed
+    canon_default_detail: Shutter speed setting in M mode
+    help: Dial behind the shutter button.
+    assignment_options: [Shutter Speed, Aperture, No function (disabled)]
+    operation_options: [""]
+  Rear Wheel:
+    default: Aperture
+    canon_default_detail: Aperture setting in M mode
+    help: Canon Quick Control Dial 1 on the camera back.
+    assignment_options: [Aperture, Shutter Speed, ISO Speed, Exposure Compensation, Select AF method, Direct AF point selection, No function (disabled)]
+    operation_options: [""]
+  Top Rear Dial:
+    default: ISO Speed
+    canon_default_detail: Set ISO speed
+    help: Canon Quick Control Dial 2 on the camera top.
+    assignment_options: [ISO Speed, Aperture, Shutter Speed, Exposure Compensation, Select AF method, Direct AF point selection, No function (disabled)]
+    operation_options: [""]
+  Control Ring:
+    default: Exposure Compensation
+    canon_default_detail: Exposure compensation while metering is active
+    help: RF lens or mount-adapter control ring.
+    assignment_options: [Exposure Compensation, ISO Speed, Select AF method, AF method while metering, Shutter Speed, Aperture, White balance, Color temperature, Picture Style, No function (disabled)]
+    operation_options: [""]

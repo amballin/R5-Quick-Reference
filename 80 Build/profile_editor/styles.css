@@ -249,6 +249,7 @@ h2 { margin-bottom: .25rem; }
 .finish-day-stage-heading .eyebrow { margin: 0; color: var(--muted); }
 .finish-day-stage > p { margin: 0; line-height: 1.5; }
 .finish-day-confirm { display: flex; align-items: flex-start; gap: .55rem; padding: .8rem; border-radius: 9px; background: var(--gold-soft); font-size: .8rem; font-weight: 700; line-height: 1.45; }
+.finish-day-confirm[hidden] { display: none; }
 .finish-day-confirm input { flex: 0 0 auto; width: auto; min-height: 0; margin-top: .15rem; }
 .finish-day-confirm > span { min-width: 0; overflow-wrap: anywhere; }
 .finish-day-field { display: grid; gap: .35rem; color: var(--muted); font-size: .78rem; font-weight: 750; }
@@ -807,6 +808,35 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .pending-change-item h3 { margin: 0 0 .2rem; font-size: .95rem; }
 .pending-change-item p { margin: 0; color: var(--muted); font-size: .8rem; }
 .pending-change-actions, .local-build-actions { display: flex; gap: .55rem; flex-wrap: wrap; justify-content: flex-end; }
+.camera-buttons-list, .camera-lab-evidence-list { display: grid; gap: 1rem; }
+.camera-buttons-workspace { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); align-items: start; gap: 1rem; }
+.camera-buttons-preview-panel { position: sticky; top: 1rem; min-height: 620px; }
+.camera-buttons-preview-panel .preview-heading { gap: .75rem; }
+.camera-buttons-preview-panel .preview-heading button { flex: 0 0 auto; }
+.camera-buttons-preview-panel iframe { display: block; width: 100%; min-height: 560px; border: 0; background: white; }
+.camera-buttons-preview-panel iframe[hidden] { display: none; }
+.camera-control-group { display: grid; gap: .8rem; padding: 1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.camera-control-group h3, .camera-control-row h4 { margin: 0; }
+.camera-control-row { display: grid; gap: .65rem; padding: .9rem; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); }
+.camera-control-heading { display: flex; align-items: center; gap: .8rem; }
+.camera-control-heading > div { display: grid; gap: .18rem; }
+.camera-control-heading small { color: var(--muted); line-height: 1.35; }
+.camera-control-icon { width: 42px; height: 42px; flex: 0 0 42px; object-fit: contain; filter: brightness(0) saturate(100%) invert(27%) sepia(20%) saturate(1196%) hue-rotate(172deg) brightness(92%) contrast(91%); }
+.camera-control-default { margin: 0; color: var(--ink); font-size: .8rem; font-weight: 750; }
+.camera-control-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.camera-control-grid label { display: grid; gap: .3rem; color: var(--muted); font-size: .82rem; font-weight: 700; }
+.camera-control-grid input, .camera-control-grid textarea, .camera-control-grid select { width: 100%; }
+.camera-control-grid input[hidden] { display: none; }
+.camera-control-grid small { color: var(--muted); font-weight: 500; line-height: 1.35; }
+.camera-control-grid textarea { min-height: 4.5rem; resize: vertical; }
+.camera-control-card-detail { display: grid; gap: .25rem; padding: .75rem .85rem; border-left: 4px solid var(--accent); border-radius: 8px; background: var(--surface); }
+.camera-control-card-detail strong { color: var(--ink); font-size: .82rem; }
+.camera-control-card-detail p { margin: 0; color: var(--ink); line-height: 1.45; }
+.camera-control-card-detail small { color: var(--muted); line-height: 1.35; }
+.lab-evidence-panel { margin-top: 1rem; }
+.camera-evidence-row { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: .75rem; padding: .8rem; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+.camera-evidence-row span { display: grid; gap: .2rem; }
+.camera-evidence-row small { color: var(--muted); }
 .danger-action { color: var(--danger); border-color: #dfb5b5; }
 .danger-save-action { background: var(--danger); }
 .danger-save-action:hover { background: #7f2020; }
@@ -876,6 +906,8 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .setting-copy, .setting-control { grid-column: 1 / -1; }
   .setting-state { grid-column: 1; }
   .reset-setting { grid-column: 2; }
+  .camera-buttons-workspace { grid-template-columns: 1fr; }
+  .camera-buttons-preview-panel { position: static; }
 }
 
 @media (max-width: 1050px) {
@@ -978,6 +1010,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .pending-change-item, .local-build-panel { align-items: stretch; flex-direction: column; }
   .pending-change-actions, .local-build-actions { justify-content: stretch; }
   .pending-change-actions button, .local-build-actions button { flex: 1 1 auto; }
+  .camera-control-grid { grid-template-columns: 1fr; }
   .metadata-heading { flex-direction: column; }
   .metadata-grid { grid-template-columns: 1fr; }
   .profile-save-bar { align-items: stretch; flex-direction: column; }

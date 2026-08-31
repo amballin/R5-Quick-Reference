@@ -62,6 +62,30 @@
   source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
   asset_path: 60 Assets/icons/canon_r5_official/icon_multi-controller.svg
   notes: Physical Multi-controller identified as Joystick in the project.
+- id: control_movie_button
+  canon_name: Movie button
+  display_label: Movie Record
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-mov.svg
+  notes: Physical movie-record button shown in Canon's Customize buttons table.
+- id: control_mode_button
+  canon_name: MODE button
+  display_label: MODE
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-mode.svg
+  notes: Physical MODE button shown in Canon's Customize buttons table.
+- id: control_lcd_panel_illumination
+  canon_name: LCD panel illumination button
+  display_label: LCD panel illumination
+  category: controls
+  source_page: Custom Function Setting Items
+  source_url: https://cam.start.canon/en/C003/manual/html/UG-08_Custom_0030.html
+  asset_path: 60 Assets/icons/canon_r5_official/icon_btn-panel-illum.svg
+  notes: Physical LCD panel illumination button shown in Canon's Customize buttons table.
 - id: control_main_dial
   canon_name: Main dial
   display_label: Main Dial

@@ -1,7 +1,11 @@
 from collections import Counter
 import re
 
-from control_reference import CONTROL_TABLE_PATTERN, card_reference_rows, inject_control_tables
+from control_reference import (
+    CONTROL_TABLE_PATTERN,
+    card_reference_rows,
+    inject_control_tables,
+)
 
 from .common import error, load_yaml_checked
 
@@ -51,7 +55,6 @@ def validate(root):
     issues.extend(_status_issues(project_path, project.get("dials"), "dials"))
     issues.extend(_status_issues(current_path, current.get("buttons"), "buttons"))
     issues.extend(_status_issues(current_path, current.get("dials"), "dials"))
-
     project_controls = _normalize_entries(project.get("controls"))
     current_controls = _normalize_entries(current.get("buttons"))
     if project_controls != current_controls:

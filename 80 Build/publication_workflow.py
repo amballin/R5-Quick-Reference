@@ -18,6 +18,7 @@ import yaml
 
 from asset_manager import ProjectPaths
 from release_notes import load_release_notes
+from spreadsheet_revisions import spreadsheet_build_id
 
 
 class PublicationWorkflowError(RuntimeError):
@@ -25,7 +26,7 @@ class PublicationWorkflowError(RuntimeError):
 
 
 class PublicationWorkflow:
-    SPREADSHEET_MODES = {"preserve", "replace", "remove"}
+    SPREADSHEET_MODES = {"automatic", "force", "remove", "preserve", "replace"}
 
     def __init__(self, root):
         self.paths = ProjectPaths(root)
@@ -121,13 +122,29 @@ class PublicationWorkflow:
         if not script.is_file():
             return {"status": "unavailable", "output": "Spreadsheet readiness tool is missing."}
         result = self._run([sys.executable, str(script), "all", "diagnose"], timeout=5 * 60)
+        output = result.stdout[-80_000:].strip()
         if result.returncode == 0:
             status = "current"
+            refresh_targets = []
         elif result.returncode == 2:
             status = "refresh-needed"
+            refresh_targets = []
+            if "- Matrix/settings:" in output:
+                refresh_targets.append("matrix")
+            if "- Setup:" in output:
+                refresh_targets.append("setup")
         else:
             status = "blocked"
-        return {"status": status, "output": result.stdout[-80_000:].strip()}
+            refresh_targets = []
+        return {
+            "status": status,
+            "refreshTargets": refresh_targets,
+            "buildIds": {
+                target: spreadsheet_build_id(self.paths, target)
+                for target in ("matrix", "setup")
+            },
+            "output": output,
+        }
 
     def inspect(self, pending_changes=0, major_version=None, *, refresh=True):
         pending = self._pending_count(pending_changes)
@@ -305,15 +322,27 @@ class PublicationWorkflow:
     def review_publication(self, pending_changes, major_version, spreadsheet_mode):
         if spreadsheet_mode not in self.SPREADSHEET_MODES:
             raise PublicationWorkflowError("Choose a valid spreadsheet publication option.")
+        spreadsheet_mode = {
+            "preserve": "automatic",
+            "replace": "force",
+        }.get(spreadsheet_mode, spreadsheet_mode)
         state = self.inspect(pending_changes, major_version)
         if state["phase"] != "ready":
             detail = " ".join(state["blockers"]) or f"Release notes for Version {state['nextVersion']} are required."
             raise PublicationWorkflowError("Publication review is blocked. " + detail)
-        if spreadsheet_mode == "preserve" and state["spreadsheetState"]["status"] == "refresh-needed":
-            raise PublicationWorkflowError(
-                "Published spreadsheet inputs changed. Rebuild and replace the workbook downloads, or deliberately remove them."
-            )
+        if spreadsheet_mode == "automatic":
+            spreadsheet_targets = list(state["spreadsheetState"].get("refreshTargets") or [])
+            if state["spreadsheetState"]["status"] == "refresh-needed" and not spreadsheet_targets:
+                spreadsheet_targets = ["matrix", "setup"]
+        elif spreadsheet_mode == "force":
+            spreadsheet_targets = ["matrix", "setup"]
+        else:
+            spreadsheet_targets = []
         head = self._git("rev-parse", "HEAD")
+        build_ids = state["spreadsheetState"].get("buildIds") or {
+            target: spreadsheet_build_id(self.paths, target)
+            for target in ("matrix", "setup")
+        }
         token = secrets.token_urlsafe(24)
         review = {
             "token": token,
@@ -321,19 +350,33 @@ class PublicationWorkflow:
             "version": state["nextVersion"],
             "majorVersion": state["majorVersion"],
             "spreadsheetMode": spreadsheet_mode,
+            "spreadsheetTargets": spreadsheet_targets,
+            "spreadsheetBuildIds": build_ids,
         }
         self._publish_reviews = {token: review}
         labels = {
-            "preserve": "Preserve the current verified workbook downloads",
-            "replace": "Rebuild and replace both workbook download families",
+            "automatic": (
+                "Automatically rebuild stale workbook families"
+                if spreadsheet_targets
+                else "Preserve the current verified workbook downloads"
+            ),
+            "force": "Force-rebuild and replace both workbook download families",
             "remove": "Remove all published workbook downloads",
         }
         return {
             **state,
             "reviewToken": token,
             "spreadsheetMode": spreadsheet_mode,
+            "spreadsheetTargets": spreadsheet_targets,
+            "spreadsheetBuildIds": build_ids,
             "spreadsheetLabel": labels[spreadsheet_mode],
-            "summary": f"Publish Version {state['nextVersion']} to the live website. {labels[spreadsheet_mode]}.",
+            "summary": (
+                f"Publish Version {state['nextVersion']} to the live website. "
+                f"{labels[spreadsheet_mode]}. "
+                f"Spreadsheet builds: Matrix {build_ids['matrix']}; Setup {build_ids['setup']}."
+                if spreadsheet_mode != "remove"
+                else f"Publish Version {state['nextVersion']} to the live website. {labels[spreadsheet_mode]}."
+            ),
         }
 
     @staticmethod
@@ -351,9 +394,14 @@ class PublicationWorkflow:
         if state["phase"] != "ready" or self._git("rev-parse", "HEAD") != review["head"]:
             raise PublicationWorkflowError("Main changed after publication review. Review the release again.")
         steps = []
-        if review["spreadsheetMode"] == "replace":
+        spreadsheet_targets = tuple(review.get("spreadsheetTargets") or ())
+        if spreadsheet_targets:
             command = [str(self.spreadsheet_builder)]
-            self._notify(progress, "Preparing spreadsheet downloads", "$ build-all-spreadsheet-downloads")
+            display_builder = "$ build-all-spreadsheet-downloads"
+            if review["spreadsheetMode"] == "force":
+                command.append("--force-release-workbooks")
+                display_builder += " --force-release-workbooks"
+            self._notify(progress, "Preparing spreadsheet downloads", display_builder)
             built = self._run(command, timeout=45 * 60)
             output = built.stdout[-80_000:].strip()
             if built.returncode:
@@ -363,15 +411,23 @@ class PublicationWorkflow:
         command = [str(self.publisher)]
         if review["majorVersion"] is not None:
             command.extend(["--major-version", str(review["majorVersion"])])
-        if review["spreadsheetMode"] == "replace":
+        if set(spreadsheet_targets) == {"matrix", "setup"}:
             command.append("--spreadsheet-downloads")
+        elif spreadsheet_targets == ("matrix",):
+            command.append("--matrix-downloads")
+        elif spreadsheet_targets == ("setup",):
+            command.append("--setup-downloads")
         elif review["spreadsheetMode"] == "remove":
             command.append("--remove-spreadsheet-downloads")
         display = "$ publish.sh"
         if review["majorVersion"] is not None:
             display += f" --major-version {review['majorVersion']}"
-        if review["spreadsheetMode"] == "replace":
+        if set(spreadsheet_targets) == {"matrix", "setup"}:
             display += " --spreadsheet-downloads"
+        elif spreadsheet_targets == ("matrix",):
+            display += " --matrix-downloads"
+        elif spreadsheet_targets == ("setup",):
+            display += " --setup-downloads"
         elif review["spreadsheetMode"] == "remove":
             display += " --remove-spreadsheet-downloads"
         self._notify(progress, "Publishing and verifying the live website", display)
@@ -391,12 +447,20 @@ class PublicationWorkflow:
             )
         steps.append({"label": "Final synchronization", "status": "passed", "output": status_output})
         self._notify(progress, "Confirming final synchronization", output=status_output, completed=True)
+        build_ids = review.get("spreadsheetBuildIds", {}) if review["spreadsheetMode"] != "remove" else {}
+        build_receipt = ""
+        if build_ids:
+            build_receipt = (
+                f" Spreadsheet builds: Matrix {build_ids['matrix']}; Setup {build_ids['setup']}."
+            )
         return {
             "phase": "complete",
             "version": review["version"],
             "spreadsheetMode": review["spreadsheetMode"],
+            "spreadsheetTargets": list(spreadsheet_targets),
+            "spreadsheetBuildIds": build_ids,
             "steps": steps,
-            "message": f"Version {review['version']} is published and verified. Main is clean and synchronized.",
+            "message": f"Version {review['version']} is published and verified. Main is clean and synchronized.{build_receipt}",
             "output": "\n\n".join(step["output"] for step in steps if step["output"]),
         }
 

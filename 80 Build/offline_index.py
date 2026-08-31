@@ -227,9 +227,10 @@ def _write_index(
             xlsx_href = quote(f"downloads/{entry['xlsx_name']}", safe="/")
             numbers_href = quote(f"downloads/{entry['numbers_name']}", safe="/")
             title = escape(entry["title"])
+            build_id = escape(entry["build_id"])
             rows.append(f"""
 <div class="download-row">
-<div class="download-title">{title}</div>
+<div><div class="download-title">{title}</div><div class="download-build">Spreadsheet build {build_id}</div></div>
 <div class="download-actions">
 <a class="download-format" href="{xlsx_href}" download="{entry['xlsx_name']}" aria-label="Download {title} as Excel">.xlsx</a>
 <a class="download-format" href="{numbers_href}" download="{entry['numbers_name']}" aria-label="Download {title} for Apple Numbers">.numbers</a>
@@ -272,6 +273,7 @@ h2{{font-size:18px;color:var(--accent);margin:18px 4px 10px}}
 .downloads{{display:grid;gap:9px}}
 .download-row{{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--text);background:var(--panel);border:1px solid rgba(155,210,255,.18);border-radius:10px;padding:10px 12px 10px 14px;min-height:58px}}
 .download-title{{font-weight:700}}
+.download-build{{margin-top:3px;color:var(--muted);font-size:12px}}
 .download-actions{{display:flex;align-items:center;gap:8px;flex-shrink:0}}
 .download-format{{display:grid;place-items:center;min-height:38px;color:var(--accent);border:1px solid rgba(155,210,255,.35);border-radius:8px;padding:7px 10px;text-decoration:none;font-size:13px;font-weight:700}}
 .download-format:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}

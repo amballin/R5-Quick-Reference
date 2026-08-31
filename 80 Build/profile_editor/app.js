@@ -270,11 +270,25 @@ const elements = {
   baselineResults: document.querySelector("#baseline-results"),
   baselinePlan: document.querySelector("#baseline-plan"),
   baselineSettings: document.querySelector("#baseline-settings"),
+  reloadCameraButtons: document.querySelector("#reload-camera-buttons"),
+  previewCameraButtons: document.querySelector("#preview-camera-buttons"),
+  reviewCameraButtons: document.querySelector("#review-camera-buttons"),
+  cameraButtonsMessage: document.querySelector("#camera-buttons-message"),
+  cameraButtonsList: document.querySelector("#camera-buttons-list"),
+  cameraButtonsPreviewPanel: document.querySelector("#camera-buttons-preview-panel"),
+  cameraButtonsPreviewStatus: document.querySelector("#camera-buttons-preview-status"),
+  cameraButtonsPreviewPath: document.querySelector("#camera-buttons-preview-path"),
+  cameraButtonsPreviewEmpty: document.querySelector("#camera-buttons-preview-empty"),
+  cameraButtonsPreviewFrame: document.querySelector("#camera-buttons-preview-frame"),
   refreshReviewBuild: document.querySelector("#refresh-review-build"),
   sessionSummary: document.querySelector("#session-summary"),
   reviewBuildMessage: document.querySelector("#review-build-message"),
   pendingChangeCount: document.querySelector("#pending-change-count"),
   pendingChangeList: document.querySelector("#pending-change-list"),
+  refreshCameraLabEvidence: document.querySelector("#refresh-camera-lab-evidence"),
+  reviewCameraLabEvidence: document.querySelector("#review-camera-lab-evidence"),
+  cameraLabEvidenceMessage: document.querySelector("#camera-lab-evidence-message"),
+  cameraLabEvidenceList: document.querySelector("#camera-lab-evidence-list"),
   importVerificationTracker: document.querySelector("#import-verification-tracker"),
   validateReadiness: document.querySelector("#validate-readiness"),
   runLocalBuild: document.querySelector("#run-local-build"),
@@ -283,6 +297,17 @@ const elements = {
   buildConfirmClose: document.querySelector("#build-confirm-close"),
   buildConfirmCancel: document.querySelector("#build-confirm-cancel"),
   buildConfirmRun: document.querySelector("#build-confirm-run"),
+  specialReviewDialog: document.querySelector("#special-review-dialog"),
+  specialReviewEyebrow: document.querySelector("#special-review-eyebrow"),
+  specialReviewTitle: document.querySelector("#special-review-title"),
+  specialReviewSummary: document.querySelector("#special-review-summary"),
+  specialReviewWarning: document.querySelector("#special-review-warning"),
+  specialReviewDiff: document.querySelector("#special-review-diff"),
+  specialReviewConfirmRow: document.querySelector("#special-review-confirm-row"),
+  specialReviewConfirm: document.querySelector("#special-review-confirm"),
+  specialReviewClose: document.querySelector("#special-review-close"),
+  specialReviewCancel: document.querySelector("#special-review-cancel"),
+  saveSpecialReview: document.querySelector("#save-special-review"),
 };
 
 const state = {
@@ -336,6 +361,10 @@ const state = {
   cxReviewToken: null,
   cxReviewKind: null,
   activeProfileName: null,
+  cameraButtons: null,
+  cameraLabEvidence: null,
+  specialReviewToken: null,
+  specialReviewKind: null,
 };
 
 function clone(value) {
@@ -935,7 +964,7 @@ function selectedPublicationMajor() {
 }
 
 function selectedSpreadsheetMode() {
-  return elements.publicationSpreadsheetChoices.find((choice) => choice.checked)?.value || "preserve";
+  return elements.publicationSpreadsheetChoices.find((choice) => choice.checked)?.value || "automatic";
 }
 
 function releaseHighlights() {
@@ -976,10 +1005,13 @@ function renderPublication() {
   elements.publicationVersionLabel.textContent = result?.nextVersion ? `Version ${result.nextVersion}` : "the next version";
   if (result?.highlights?.length && !elements.publicationHighlights.value.trim()) elements.publicationHighlights.value = result.highlights.join("\n");
   const sheetStatus = result?.spreadsheetState?.status;
+  const buildIds = result?.spreadsheetState?.buildIds || result?.spreadsheetBuildIds || {};
+  const buildLabel = [buildIds.matrix ? `Matrix ${buildIds.matrix}` : "", buildIds.setup ? `Setup ${buildIds.setup}` : ""].filter(Boolean).join(" · ");
+  const refreshLabels = (result?.spreadsheetState?.refreshTargets || []).map((target) => target === "matrix" ? "Matrix" : "Setup").join(" and ");
   elements.publicationSpreadsheetStatus.textContent = sheetStatus === "current"
-    ? "Spreadsheet downloads are current."
+    ? `Spreadsheet downloads are current; Automatic will preserve them.${buildLabel ? ` ${buildLabel}.` : ""}`
     : sheetStatus === "refresh-needed"
-      ? "Spreadsheet inputs changed. Choose rebuild and replace, or deliberately remove the downloads."
+      ? `Automatic will rebuild and replace ${refreshLabels || "the stale workbook families"}.${buildLabel ? ` Expected builds: ${buildLabel}.` : ""}`
       : sheetStatus === "blocked" ? "Spreadsheet readiness is blocked; review the details above." : "";
   elements.reviewPublicationNotes.disabled = state.publicationBusy || !releaseHighlights().length;
   elements.reviewPublication.disabled = state.publicationBusy || phase !== "ready";
@@ -1639,7 +1671,11 @@ function switchView(viewName) {
     refreshCxFoundationFit();
   }
   if (viewName === "deleted-cards") loadDeletedCards();
-  if (viewName === "review-build") renderReviewBuild();
+  if (viewName === "camera-buttons" && !state.cameraButtons) loadCameraButtons(false);
+  if (viewName === "review-build") {
+    renderReviewBuild();
+    if (!state.cameraLabEvidence) refreshCameraLabEvidence();
+  }
   if (viewName === "today") renderTodayWorkflow();
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
@@ -1792,6 +1828,11 @@ function hasMyMenuDraftChanges() {
   return Boolean(state.dictionary) && !equal(normalizedMyMenuDraft(), savedMyMenuDraft());
 }
 
+function hasCameraButtonChanges() {
+  return Boolean(state.cameraButtons?.draft)
+    && !equal(state.cameraButtons.draft, state.cameraButtons.saved);
+}
+
 function pendingSessionItems() {
   const items = [...state.profileDrafts.values()].map((draft) => ({
     type: "profile",
@@ -1800,6 +1841,7 @@ function pendingSessionItems() {
     detail: "Unsaved profile draft",
   }));
   if (hasMyMenuDraftChanges()) items.push({ type: "my-menu", key: "my-menu", label: "My Menu", detail: "Unsaved tab, shortcut, or color changes" });
+  if (hasCameraButtonChanges()) items.push({ type: "camera-buttons", key: "camera-buttons", label: "Camera Buttons", detail: "Unsaved control assignment or evidence changes" });
   if (hasCxAssignmentChanges()) items.push({ type: "cx-foundation", key: "cx-assignments", label: "Cx assignments", detail: "Unsaved C1-C3 profile assignments" });
   for (const [profile, start] of state.cxSelectionDrafts) {
     const item = state.cxFoundation?.profiles?.find((candidate) => candidate.name === profile);
@@ -1842,7 +1884,7 @@ function renderSessionStatus() {
   setBadge(elements.myMenuDraftBadge, menuCount);
   setBadge(elements.baselineDraftBadge, baselineCount);
   setBadge(elements.cxFoundationDraftBadge, cxCount);
-  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount);
+  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount + Number(hasCameraButtonChanges()));
   if (!document.querySelector("#review-build-view")?.hidden) renderReviewBuild();
   renderTodayWorkflow();
 }
@@ -1863,6 +1905,504 @@ function sessionSummaryCard(value, label) {
   return card;
 }
 
+function showCameraButtonsMessage(text, error = false) {
+  elements.cameraButtonsMessage.textContent = text;
+  elements.cameraButtonsMessage.classList.toggle("error", error);
+  elements.cameraButtonsMessage.hidden = !text;
+}
+
+function controlStatusLabel(value) {
+  return {
+    owner_confirmed: "Owner-confirmed current setup",
+    approved_target_pending_camera_verification: "Approved target—pending camera verification",
+    verified_canon_capability: "Verified Canon capability",
+    recommendation: "Project recommendation",
+    unresolved: "Unresolved",
+  }[value] || value;
+}
+
+async function loadCameraButtons(confirmDiscard = false) {
+  if (confirmDiscard && hasCameraButtonChanges()
+      && !window.confirm("Discard the unsaved Camera Buttons draft and reload saved controls?")) return;
+  elements.reloadCameraButtons.disabled = true;
+  try {
+    const detail = await request("/api/camera-buttons");
+    state.cameraButtons = {
+      saved: { controls: clone(detail.controls), dials: clone(detail.dials) },
+      draft: { controls: clone(detail.controls), dials: clone(detail.dials) },
+      evidenceStatuses: detail.evidenceStatuses,
+      evidenceStatusOptions: detail.evidenceStatusOptions || [],
+      options: detail.options || { controls: {}, dials: {} },
+      source: detail.source || {},
+      previewLoaded: false,
+    };
+    elements.cameraButtonsPreviewFrame.hidden = true;
+    elements.cameraButtonsPreviewFrame.removeAttribute("src");
+    elements.cameraButtonsPreviewEmpty.hidden = false;
+    elements.cameraButtonsPreviewPath.textContent = "";
+    elements.cameraButtonsPreviewStatus.textContent = "Preview not rendered";
+    elements.cameraButtonsPreviewPanel.classList.remove("is-stale");
+    elements.previewCameraButtons.textContent = "Preview Camera Buttons card";
+    renderCameraButtons();
+    invalidateBuildReadiness();
+    renderSessionStatus();
+    showCameraButtonsMessage("Saved Camera Buttons assignments loaded.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.reloadCameraButtons.disabled = false;
+  }
+}
+
+function markCameraButtonsPreviewStale() {
+  if (!state.cameraButtons?.previewLoaded) return;
+  elements.cameraButtonsPreviewStatus.textContent = "Draft changed · refresh preview";
+  elements.cameraButtonsPreviewPanel.classList.add("is-stale");
+}
+
+function choiceValue(row, field) {
+  const select = row.querySelector(`[data-field='${field}']`);
+  if (!select) return "";
+  if (select.value !== "__other__") return select.value.trim();
+  return row.querySelector(`[data-custom-for='${field}']`)?.value.trim() || "";
+}
+
+function infoChoiceValue(row, key) {
+  const select = [...row.querySelectorAll("[data-info-key]")].find((item) => item.dataset.infoKey === key);
+  if (!select) return "";
+  if (select.value !== "__other__") return select.value.trim();
+  return [...row.querySelectorAll("[data-custom-info-key]")]
+    .find((item) => item.dataset.customInfoKey === key)?.value.trim() || "";
+}
+
+function cameraButtonCardDetail(item) {
+  const labels = {
+    af_operation: "AF Operation",
+    af_method: "AF Method",
+    servo_af_characteristics: "Servo AF characteristics",
+  };
+  const parts = Object.entries(item.info_details || {}).map(([key, value]) => {
+    const normalized = String(key).trim().toLowerCase().replaceAll(" ", "_");
+    const label = labels[normalized]
+      || String(key).replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+    return `${label}: ${value}`;
+  });
+  for (const field of ["operation", "notes"]) {
+    const value = String(item[field] || "").trim().replace(/\.+$/, "");
+    if (value) parts.push(value);
+  }
+  return parts.join("; ") || "—";
+}
+
+function refreshCameraButtonCardDetails() {
+  for (const row of elements.cameraButtonsList.querySelectorAll(".camera-control-row")) {
+    const detail = row.querySelector("[data-card-detail]");
+    if (!detail) continue;
+    const item = state.cameraButtons.draft[row.dataset.group][Number(row.dataset.index)];
+    detail.textContent = cameraButtonCardDetail(item);
+  }
+}
+
+function syncCameraButtonDraft() {
+  if (!state.cameraButtons) return;
+  try {
+    for (const row of elements.cameraButtonsList.querySelectorAll(".camera-control-row")) {
+      const group = row.dataset.group;
+      const index = Number(row.dataset.index);
+      const item = state.cameraButtons.draft[group][index];
+      item.assignment = choiceValue(row, "assignment");
+      const operation = choiceValue(row, "operation");
+      if (operation) item.operation = operation;
+      else delete item.operation;
+      const notes = row.querySelector("[data-field='notes']").value.trim();
+      if (notes) item.notes = notes;
+      else delete item.notes;
+      item.status = row.querySelector("[data-field='status']").value;
+      const infoDetails = {};
+      for (const select of row.querySelectorAll("[data-info-key]")) {
+        const value = infoChoiceValue(row, select.dataset.infoKey);
+        if (value) infoDetails[select.dataset.infoKey] = value;
+      }
+      if (Object.keys(infoDetails).length) item.info_details = infoDetails;
+      else delete item.info_details;
+    }
+    refreshCameraButtonCardDetails();
+    showCameraButtonsMessage("");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  }
+  markCameraButtonsPreviewStale();
+  invalidateBuildReadiness();
+  renderSessionStatus();
+}
+
+function appendChoiceField(label, field, value, choices, onChange = syncCameraButtonDraft) {
+  const wrapper = document.createElement("label");
+  wrapper.textContent = label;
+  const select = document.createElement("select");
+  select.dataset.field = field;
+  const values = [...new Set([...(choices || []), value].filter((item) => item !== undefined && item !== null))];
+  for (const choice of values) {
+    const option = document.createElement("option");
+    option.value = String(choice);
+    option.textContent = choice === "" ? "None" : String(choice);
+    option.selected = String(choice) === String(value || "");
+    select.append(option);
+  }
+  const other = document.createElement("option");
+  other.value = "__other__";
+  other.textContent = "Other / exact camera label…";
+  select.append(other);
+  const custom = document.createElement("input");
+  custom.dataset.customFor = field;
+  custom.placeholder = "Enter the exact label shown on the camera";
+  custom.hidden = true;
+  select.addEventListener("change", () => {
+    custom.hidden = select.value !== "__other__";
+    if (!custom.hidden) custom.focus();
+    onChange();
+  });
+  custom.addEventListener("input", onChange);
+  wrapper.append(select, custom);
+  return wrapper;
+}
+
+function appendInfoChoice(labelText, key, value, definition) {
+  const label = document.createElement("label");
+  label.textContent = `INFO · ${labelText}`;
+  const select = document.createElement("select");
+  select.dataset.infoKey = key;
+  const values = [...new Set([...(definition.options || []), value].filter(Boolean))];
+  const none = document.createElement("option");
+  none.value = "";
+  none.textContent = "Not configured for this assignment";
+  select.append(none);
+  for (const choice of values) {
+    const option = document.createElement("option");
+    option.value = choice;
+    option.textContent = choice;
+    option.selected = choice === value;
+    select.append(option);
+  }
+  const other = document.createElement("option");
+  other.value = "__other__";
+  other.textContent = "Other / exact camera label…";
+  select.append(other);
+  const custom = document.createElement("input");
+  custom.dataset.customInfoKey = key;
+  custom.placeholder = "Enter the exact INFO-screen value";
+  custom.hidden = true;
+  const help = document.createElement("small");
+  help.textContent = definition.help || "Advanced option shown after pressing INFO for this assignment.";
+  select.addEventListener("change", () => {
+    custom.hidden = select.value !== "__other__";
+    if (!custom.hidden) custom.focus();
+    syncCameraButtonDraft();
+  });
+  custom.addEventListener("input", syncCameraButtonDraft);
+  label.append(select, custom, help);
+  return label;
+}
+
+function renderCameraButtons() {
+  elements.cameraButtonsList.replaceChildren();
+  if (!state.cameraButtons) return;
+  for (const [group, heading] of [["controls", "Buttons and physical controls"], ["dials", "Dials and control ring"]]) {
+    const section = document.createElement("section");
+    section.className = "camera-control-group";
+    const title = document.createElement("h3");
+    title.textContent = heading;
+    section.append(title);
+    state.cameraButtons.draft[group].forEach((item, index) => {
+      const definition = state.cameraButtons.options[group]?.[item.control] || {};
+      const row = document.createElement("article");
+      row.className = "camera-control-row";
+      row.dataset.group = group;
+      row.dataset.index = String(index);
+      const heading = document.createElement("div");
+      heading.className = "camera-control-heading";
+      if (definition.iconUrl) {
+        const icon = document.createElement("img");
+        icon.className = "camera-control-icon";
+        icon.src = definition.iconUrl;
+        icon.alt = "";
+        icon.setAttribute("aria-hidden", "true");
+        heading.append(icon);
+      }
+      const headingText = document.createElement("div");
+      const rowTitle = document.createElement("h4");
+      rowTitle.textContent = definition.displayLabel || item.control;
+      const defaultNote = document.createElement("p");
+      defaultNote.className = "camera-control-default";
+      defaultNote.textContent = `Canon default: ${definition.default || "Not documented"}${definition.canon_default_detail ? ` · ${definition.canon_default_detail}` : ""}`;
+      const description = document.createElement("small");
+      description.textContent = definition.help || "Physical camera control assignment.";
+      headingText.append(rowTitle, defaultNote, description);
+      heading.append(headingText);
+      const grid = document.createElement("div");
+      grid.className = "camera-control-grid";
+      grid.append(
+        appendChoiceField("Assignment · camera function", "assignment", item.assignment || "", definition.assignment_options),
+        appendChoiceField("Operation · what happens when used", "operation", item.operation || "", definition.operation_options || [""]),
+      );
+      const infoDefinitions = { ...(definition.info_fields || {}) };
+      for (const key of Object.keys(item.info_details || {})) {
+        if (!infoDefinitions[key]) infoDefinitions[key] = { options: [], help: "Saved INFO-screen option." };
+      }
+      for (const [key, infoDefinition] of Object.entries(infoDefinitions)) {
+        grid.append(appendInfoChoice(key, key, item.info_details?.[key] || "", infoDefinition));
+      }
+      const notesLabel = document.createElement("label");
+      notesLabel.textContent = "Notes · project explanation (free text)";
+      const notes = document.createElement("textarea");
+      notes.dataset.field = "notes";
+      notes.value = item.notes || "";
+      notes.addEventListener("input", syncCameraButtonDraft);
+      notesLabel.append(notes);
+      grid.append(notesLabel);
+      const statusLabel = document.createElement("label");
+      statusLabel.textContent = "Evidence · what is known about this row";
+      const status = document.createElement("select");
+      status.dataset.field = "status";
+      const configuredStatuses = state.cameraButtons.evidenceStatusOptions.length
+        ? state.cameraButtons.evidenceStatusOptions
+        : state.cameraButtons.evidenceStatuses.map((value) => ({ value, label: controlStatusLabel(value), help: "" }));
+      for (const configured of configuredStatuses) {
+        const option = document.createElement("option");
+        option.value = configured.value;
+        option.textContent = configured.label;
+        option.selected = configured.value === item.status;
+        status.append(option);
+      }
+      const statusHelp = document.createElement("small");
+      const updateStatusHelp = () => {
+        statusHelp.textContent = configuredStatuses.find((option) => option.value === status.value)?.help || "";
+      };
+      status.addEventListener("change", syncCameraButtonDraft);
+      status.addEventListener("change", updateStatusHelp);
+      updateStatusHelp();
+      statusLabel.append(status, statusHelp);
+      grid.append(statusLabel);
+      row.append(heading, grid);
+      if (group === "controls") {
+        const detail = document.createElement("aside");
+        detail.className = "camera-control-card-detail";
+        const detailLabel = document.createElement("strong");
+        detailLabel.textContent = "Card detail";
+        const detailText = document.createElement("p");
+        detailText.dataset.cardDetail = "";
+        detailText.textContent = cameraButtonCardDetail(item);
+        const detailHelp = document.createElement("small");
+        detailHelp.textContent = "Live text shown beneath this assignment on the Camera Buttons card.";
+        detail.append(detailLabel, detailText, detailHelp);
+        row.append(detail);
+      }
+      section.append(row);
+    });
+    elements.cameraButtonsList.append(section);
+  }
+}
+
+async function previewCameraButtons() {
+  syncCameraButtonDraft();
+  elements.previewCameraButtons.disabled = true;
+  elements.previewCameraButtons.textContent = "Rendering…";
+  showCameraButtonsMessage("Rendering a temporary Camera Buttons preview…");
+  try {
+    const payload = await request("/api/camera-buttons-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state.cameraButtons.draft),
+    });
+    elements.cameraButtonsPreviewPath.textContent = payload.outputFile;
+    elements.cameraButtonsPreviewFrame.src = `${payload.previewUrl}?t=${Date.now()}`;
+    elements.cameraButtonsPreviewFrame.hidden = false;
+    elements.cameraButtonsPreviewEmpty.hidden = true;
+    state.cameraButtons.previewLoaded = true;
+    elements.cameraButtonsPreviewPanel.classList.remove("is-stale");
+    elements.cameraButtonsPreviewStatus.textContent = "Current draft preview";
+    showCameraButtonsMessage("Preview rendered from the unsaved Camera Buttons draft.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.previewCameraButtons.disabled = false;
+    elements.previewCameraButtons.textContent = state.cameraButtons?.previewLoaded
+      ? "Refresh Camera Buttons preview"
+      : "Preview Camera Buttons card";
+  }
+}
+
+async function reviewCameraButtons() {
+  syncCameraButtonDraft();
+  if (!hasCameraButtonChanges()) {
+    showCameraButtonsMessage("The Camera Buttons draft matches the saved controls.", true);
+    return;
+  }
+  elements.reviewCameraButtons.disabled = true;
+  try {
+    const review = await request("/api/camera-buttons-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state.cameraButtons.draft),
+    });
+    showSpecialReview("camera-buttons", review);
+    showCameraButtonsMessage("Candidate validation passed. Review the exact synchronized YAML.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.reviewCameraButtons.disabled = false;
+  }
+}
+
+function showCameraLabEvidenceMessage(text, error = false) {
+  elements.cameraLabEvidenceMessage.textContent = text;
+  elements.cameraLabEvidenceMessage.classList.toggle("error", error);
+  elements.cameraLabEvidenceMessage.hidden = !text;
+}
+
+async function refreshCameraLabEvidence() {
+  elements.refreshCameraLabEvidence.disabled = true;
+  try {
+    state.cameraLabEvidence = await request("/api/camera-lab-evidence");
+    renderCameraLabEvidence();
+    showCameraLabEvidenceMessage(
+      state.cameraLabEvidence.workbookBlocked
+        ? state.cameraLabEvidence.workbookMessage
+        : state.cameraLabEvidence.boundary,
+      state.cameraLabEvidence.workbookBlocked,
+    );
+  } catch (error) {
+    showCameraLabEvidenceMessage(error.message, true);
+  } finally {
+    elements.refreshCameraLabEvidence.disabled = false;
+  }
+}
+
+function renderCameraLabEvidence() {
+  elements.cameraLabEvidenceList.replaceChildren();
+  const detail = state.cameraLabEvidence;
+  if (!detail) return;
+  const available = detail.candidates.filter((item) => !item.alreadyImported);
+  if (!available.length) {
+    const empty = document.createElement("p");
+    empty.className = "pending-empty";
+    empty.textContent = detail.sessions.length
+      ? "No new exact C1–C3 setting evidence is available to import."
+      : "No completed physical-camera Camera Lab sessions were found.";
+    elements.cameraLabEvidenceList.append(empty);
+  }
+  for (const item of available) {
+    const label = document.createElement("label");
+    label.className = "camera-evidence-row";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = item.candidateId;
+    checkbox.disabled = detail.workbookBlocked;
+    checkbox.addEventListener("change", updateCameraLabEvidenceSelection);
+    const copy = document.createElement("span");
+    const title = document.createElement("strong");
+    title.textContent = `${item.slot} · ${item.setting} → ${item.target}`;
+    const note = document.createElement("small");
+    note.textContent = `${item.profile} · ${item.evidenceMethod} · ${item.completedAt || "time unavailable"}`;
+    copy.append(title, note);
+    label.append(checkbox, copy);
+    elements.cameraLabEvidenceList.append(label);
+  }
+  updateCameraLabEvidenceSelection();
+}
+
+function selectedCameraLabEvidence() {
+  return [...elements.cameraLabEvidenceList.querySelectorAll("input:checked")].map((input) => input.value);
+}
+
+function updateCameraLabEvidenceSelection() {
+  const selected = selectedCameraLabEvidence();
+  elements.reviewCameraLabEvidence.disabled = !selected.length || Boolean(state.cameraLabEvidence?.workbookBlocked);
+  elements.reviewCameraLabEvidence.textContent = selected.length
+    ? `Review ${selected.length} selected ${selected.length === 1 ? "item" : "items"}`
+    : "Review selected evidence";
+}
+
+async function reviewCameraLabEvidence() {
+  captureCurrentProfileDraft();
+  const pending = pendingSessionItems().length;
+  if (pending) {
+    showCameraLabEvidenceMessage(`Resolve ${pending} browser ${pending === 1 ? "draft" : "drafts"} before importing evidence.`, true);
+    return;
+  }
+  elements.reviewCameraLabEvidence.disabled = true;
+  try {
+    const review = await request("/api/camera-lab-evidence-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateIds: selectedCameraLabEvidence(), pendingChanges: 0 }),
+    });
+    showSpecialReview("camera-lab-evidence", review);
+    showCameraLabEvidenceMessage("Candidate status validation passed. Review the exact tracker change.");
+  } catch (error) {
+    showCameraLabEvidenceMessage(error.message, true);
+  } finally {
+    updateCameraLabEvidenceSelection();
+  }
+}
+
+function showSpecialReview(kind, review) {
+  state.specialReviewToken = review.reviewToken;
+  state.specialReviewKind = kind;
+  const evidence = kind === "camera-lab-evidence";
+  elements.specialReviewEyebrow.textContent = evidence ? "Required evidence review" : "Required Camera Buttons review";
+  elements.specialReviewTitle.textContent = evidence ? "Promote physical-camera evidence?" : "Save Camera Buttons changes?";
+  elements.specialReviewSummary.textContent = review.summary;
+  elements.specialReviewWarning.textContent = evidence
+    ? "Only configured status for the exact settings shown will change. Read-back, registration, operational tests, and Canon verification remain untouched."
+    : "Both authoritative control records are one protected transaction. Changed confirmed behavior is returned to pending camera verification.";
+  elements.specialReviewDiff.textContent = review.diff;
+  elements.specialReviewConfirm.checked = false;
+  elements.specialReviewConfirmRow.hidden = !evidence;
+  elements.saveSpecialReview.disabled = evidence;
+  elements.saveSpecialReview.textContent = evidence ? "Import reviewed evidence" : "Save reviewed Camera Buttons";
+  elements.specialReviewDialog.showModal();
+}
+
+function closeSpecialReview() {
+  state.specialReviewToken = null;
+  state.specialReviewKind = null;
+  elements.specialReviewDialog.close();
+}
+
+async function saveSpecialReview() {
+  if (!state.specialReviewToken || !state.specialReviewKind) return;
+  const kind = state.specialReviewKind;
+  elements.saveSpecialReview.disabled = true;
+  try {
+    const endpoint = kind === "camera-lab-evidence"
+      ? "/api/camera-lab-evidence-saves"
+      : "/api/camera-buttons-saves";
+    const result = await request(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewToken: state.specialReviewToken,
+        confirmImport: kind === "camera-lab-evidence" ? elements.specialReviewConfirm.checked : undefined,
+      }),
+    });
+    closeSpecialReview();
+    invalidateBuildReadiness();
+    if (kind === "camera-lab-evidence") {
+      await refreshCameraLabEvidence();
+      showCameraLabEvidenceMessage(`Evidence imported, tracker refreshed, and validation passed. Recovery backup: ${result.backup}`);
+    } else {
+      await loadCameraButtons(false);
+      await loadProfiles(state.detail?.name, false);
+      showCameraButtonsMessage(`Camera Buttons saved and validated. Recovery backup: ${result.backup}`);
+    }
+  } catch (error) {
+    closeSpecialReview();
+    if (kind === "camera-lab-evidence") showCameraLabEvidenceMessage(error.message, true);
+    else showCameraButtonsMessage(error.message, true);
+  }
+}
+
 function renderReviewBuild() {
   const items = pendingSessionItems();
   const profileCount = items.filter((item) => item.type === "profile").length;
@@ -1871,6 +2411,7 @@ function renderReviewBuild() {
     sessionSummaryCard(items.filter((item) => item.type === "cx-foundation").length, "Cx Foundation drafts"),
     sessionSummaryCard(items.some((item) => item.type === "my-menu") ? 1 : 0, "My Menu draft"),
     sessionSummaryCard(items.some((item) => item.type === "baseline") ? 1 : 0, "baseline draft"),
+    sessionSummaryCard(items.some((item) => item.type === "camera-buttons") ? 1 : 0, "Camera Buttons draft"),
     sessionSummaryCard(state.buildReadiness?.ready ? "Ready" : "Locked", "local build"),
   );
   elements.pendingChangeCount.textContent = `${items.length} ${items.length === 1 ? "change" : "changes"}`;
@@ -1923,6 +2464,10 @@ async function openPendingItem(item) {
     switchView("my-menu");
     return;
   }
+  if (item.type === "camera-buttons") {
+    switchView("camera-buttons");
+    return;
+  }
   if (item.type === "baseline") {
     switchView("baseline");
     return;
@@ -1942,6 +2487,8 @@ async function discardPendingItem(item) {
   if (!window.confirm(`Discard ${item.label}? These unsaved browser changes cannot be recovered.`)) return;
   if (item.type === "my-menu") {
     loadSavedMenus(true);
+  } else if (item.type === "camera-buttons") {
+    await loadCameraButtons(true);
   } else if (item.type === "cx-foundation") {
     if (item.key === "cx-assignments") state.cxAssignments = clone(state.cxFoundation.assignments);
     if (item.profile) state.cxSelectionDrafts.delete(item.profile);
@@ -2416,7 +2963,10 @@ function render() {
     renderReference();
     elements.customCount.textContent = "0";
     elements.inheritedCount.textContent = "0";
-    showMessage("This reference card remains read-only. Preview it here; edit My Menu through Configure My Menu.");
+    const referenceSource = state.detail?.name === "Camera Buttons"
+      ? "Edit its assignments through the dedicated Camera Buttons workspace."
+      : "Edit My Menu through Configure My Menu.";
+    showMessage(`This generated reference card remains read-only in Profiles. ${referenceSource}`);
     return;
   }
   renderMetadataState();
@@ -4161,6 +4711,9 @@ elements.discardProfileClose.addEventListener("click", closeProfileDiscardReview
 elements.discardProfileCancel.addEventListener("click", closeProfileDiscardReview);
 elements.discardProfileConfirm.addEventListener("click", saveProfileDiscard);
 elements.refreshDeletedCards.addEventListener("click", loadDeletedCards);
+elements.reloadCameraButtons.addEventListener("click", () => loadCameraButtons(true));
+elements.previewCameraButtons.addEventListener("click", previewCameraButtons);
+elements.reviewCameraButtons.addEventListener("click", reviewCameraButtons);
 elements.restoreProfileClose.addEventListener("click", closeProfileRestoreReview);
 elements.restoreProfileCancel.addEventListener("click", closeProfileRestoreReview);
 elements.restoreProfileConfirm.addEventListener("click", saveProfileRestore);
@@ -4229,6 +4782,16 @@ elements.refreshReviewBuild.addEventListener("click", () => {
 });
 elements.validateReadiness.addEventListener("click", validateBuildReadiness);
 elements.importVerificationTracker.addEventListener("click", importVerificationTracker);
+elements.refreshCameraLabEvidence.addEventListener("click", refreshCameraLabEvidence);
+elements.reviewCameraLabEvidence.addEventListener("click", reviewCameraLabEvidence);
+elements.specialReviewClose.addEventListener("click", closeSpecialReview);
+elements.specialReviewCancel.addEventListener("click", closeSpecialReview);
+elements.specialReviewConfirm.addEventListener("change", () => {
+  if (state.specialReviewKind === "camera-lab-evidence") {
+    elements.saveSpecialReview.disabled = !elements.specialReviewConfirm.checked;
+  }
+});
+elements.saveSpecialReview.addEventListener("click", saveSpecialReview);
 elements.runLocalBuild.addEventListener("click", () => {
   if (state.buildReadiness?.ready && pendingSessionItems().length === 0) elements.buildConfirmDialog.showModal();
 });

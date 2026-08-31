@@ -23,9 +23,9 @@ CARD_CONTROL_LABELS = {
     "M-Fn": "M-Fn button",
 }
 
-# Default/unassigned controls remain useful in the complete reference tables but
-# do not belong on the concise Camera Buttons card.
-CARD_OMITTED_CONTROLS = {"Movie Record", "MODE", "LCD panel illumination"}
+# These unchanged/default controls remain off the concise Camera Buttons card
+# until their assignment, operation, or INFO behavior is customized.
+CARD_OPTIONAL_CONTROLS = {"Movie Record", "MODE", "LCD panel illumination"}
 
 INFO_LABELS = {
     "af_operation": "AF Operation",
@@ -72,9 +72,32 @@ def entry_detail(entry):
     return "; ".join(parts) or "—"
 
 
-def card_reference_rows(paths_or_root):
+def card_control_is_required(control):
+    """Return whether a fixed control must remain on the concise card."""
+    return control not in CARD_OPTIONAL_CONTROLS
+
+
+def control_has_custom_card_behavior(entry):
+    """Return whether an otherwise optional control now needs a card row."""
+    assignment = str(entry.get("assignment") or "").strip()
+    operation = str(entry.get("operation") or "").strip()
+    info = entry.get("info_details") or {}
+    return assignment != "Leave default" or bool(operation) or bool(info)
+
+
+def control_is_card_visible(entry):
+    """Return whether a canonical control row belongs on the concise card."""
+    return (
+        card_control_is_required(entry.get("control"))
+        or control_has_custom_card_behavior(entry)
+    )
+
+
+def card_reference_rows(paths_or_root, source=None):
     """Return renderer-ready rows for the derived Camera Buttons card."""
-    source = load_control_source(paths_or_root)
+    source = source if source is not None else load_control_source(paths_or_root)
+    if not isinstance(source, dict):
+        raise ValueError("Camera Buttons source must be a mapping.")
     rows = []
     for group in ("controls", "dials"):
         for entry in _entries(source, group):
@@ -82,7 +105,7 @@ def card_reference_rows(paths_or_root):
             assignment = entry.get("assignment")
             if not isinstance(control, str) or not isinstance(assignment, str):
                 raise ValueError(f"controls.yaml {group} entries require control and assignment strings.")
-            if group == "controls" and control in CARD_OMITTED_CONTROLS:
+            if group == "controls" and not control_is_card_visible(entry):
                 continue
             rows.append(
                 {
@@ -95,7 +118,7 @@ def card_reference_rows(paths_or_root):
     return rows
 
 
-def card_reference_settings(paths_or_root):
+def card_reference_settings(paths_or_root, source=None):
     """Return editor-friendly forms of the same derived card rows."""
     return [
         {
@@ -103,7 +126,7 @@ def card_reference_settings(paths_or_root):
             "assignment": row["value"],
             "detail": row.get("detail", ""),
         }
-        for row in card_reference_rows(paths_or_root)
+        for row in card_reference_rows(paths_or_root, source=source)
     ]
 
 
