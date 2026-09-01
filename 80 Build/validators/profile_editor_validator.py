@@ -129,6 +129,18 @@ def validate(root):
         ):
             if endpoint not in script:
                 issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", f"Guarded editor endpoint is missing: {endpoint}"))
+        for element_id in (
+            "local-build-progress",
+            "local-build-progress-stage",
+            "local-build-progress-elapsed",
+            "local-build-progress-command",
+            "local-build-progress-log",
+            "local-build-details",
+        ):
+            if f'id="{element_id}"' not in html:
+                issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", f"Review & Build progress element is missing: {element_id}"))
+        if 'localBuild: "profileEditor.localBuildJob"' not in script or "reconnectLocalBuild" not in script:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Review & Build must retain and reconnect to its guarded local-build job."))
     except Exception as exc:
         issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", f"Profile editor readiness failed: {exc}"))
     return issues

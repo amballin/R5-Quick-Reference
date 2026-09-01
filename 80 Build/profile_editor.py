@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import shlex
 import shutil
 import subprocess
 import sys
@@ -2054,7 +2055,7 @@ class ProfileEditorModel:
             "blockers": blockers,
         }
 
-    def run_local_build(self, pending_changes, confirmed):
+    def run_local_build(self, pending_changes, confirmed, progress_callback=None):
         readiness = self.build_readiness(pending_changes)
         if not readiness["ready"]:
             raise PrototypeError("Local build is blocked: " + " ".join(readiness["blockers"]))
@@ -2081,7 +2082,11 @@ class ProfileEditorModel:
         )
         results = []
         try:
-            for label, command, timeout in commands:
+            for index, (label, command, timeout) in enumerate(commands, start=1):
+                stage = f"{label} ({index} of {len(commands)})"
+                command_text = "$ " + shlex.join(str(part) for part in command)
+                if progress_callback:
+                    progress_callback(stage, command=command_text)
                 try:
                     completed = subprocess.run(
                         command,
@@ -2093,11 +2098,17 @@ class ProfileEditorModel:
                         check=False,
                     )
                 except subprocess.TimeoutExpired as exc:
+                    if progress_callback:
+                        progress_callback(stage, command=command_text, output=f"Timed out after {timeout // 60} minutes.")
                     raise PrototypeError(f"{label} timed out after {timeout // 60} minutes.") from exc
                 output = completed.stdout[-80_000:]
                 results.append({"step": label, "label": label, "status": "passed" if completed.returncode == 0 else "failed", "output": output})
                 if completed.returncode:
+                    if progress_callback:
+                        progress_callback(stage, command=command_text, output=output or "Command failed without output.")
                     raise PrototypeError(f"{label} failed.\n{output}")
+                if progress_callback:
+                    progress_callback(stage, command=command_text, output=output or "(no output)", completed=True)
             return {"status": "passed", "steps": results}
         finally:
             self._build_lock.release()
@@ -2199,6 +2210,14 @@ class ProfileEditorModel:
         return self.guarded_jobs.start(
             "finish-day-prepare",
             lambda progress: self.prepare_finish_day(
+                pending_changes, confirmed, progress_callback=progress
+            ),
+        )
+
+    def start_local_build(self, pending_changes, confirmed):
+        return self.guarded_jobs.start(
+            "local-build",
+            lambda progress: self.run_local_build(
                 pending_changes, confirmed, progress_callback=progress
             ),
         )
@@ -4092,7 +4111,7 @@ class EditorHandler(BaseHTTPRequestHandler):
                 )
             if parsed.path == "/api/local-build":
                 return self._json(
-                    self.model.run_local_build(
+                    self.model.start_local_build(
                         payload.get("pendingChanges"), payload.get("confirmLocalBuild")
                     )
                 )

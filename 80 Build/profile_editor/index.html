@@ -589,7 +589,15 @@
           <button id="run-local-build" class="save-action" type="button" disabled>Run local build</button>
         </div>
       </section>
-      <pre id="local-build-output" class="local-build-output" tabindex="0" hidden></pre>
+      <div id="local-build-progress" class="workflow-progress local-build-progress" hidden>
+        <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="local-build-progress-stage">Starting…</strong><span id="local-build-progress-elapsed" class="muted"></span></div>
+        <code id="local-build-progress-command" class="workflow-progress-command"></code>
+        <details><summary>Watch command log</summary><pre id="local-build-progress-log" tabindex="0"></pre></details>
+      </div>
+      <details id="local-build-details" class="workflow-details local-build-details" hidden>
+        <summary>Show status details</summary>
+        <pre id="local-build-output" class="local-build-output" tabindex="0"></pre>
+      </details>
     </section>
 
     <section id="finish-day-view" class="app-view" hidden>

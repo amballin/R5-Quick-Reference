@@ -292,6 +292,12 @@ const elements = {
   importVerificationTracker: document.querySelector("#import-verification-tracker"),
   validateReadiness: document.querySelector("#validate-readiness"),
   runLocalBuild: document.querySelector("#run-local-build"),
+  localBuildProgress: document.querySelector("#local-build-progress"),
+  localBuildProgressStage: document.querySelector("#local-build-progress-stage"),
+  localBuildProgressElapsed: document.querySelector("#local-build-progress-elapsed"),
+  localBuildProgressCommand: document.querySelector("#local-build-progress-command"),
+  localBuildProgressLog: document.querySelector("#local-build-progress-log"),
+  localBuildDetails: document.querySelector("#local-build-details"),
   localBuildOutput: document.querySelector("#local-build-output"),
   buildConfirmDialog: document.querySelector("#build-confirm-dialog"),
   buildConfirmClose: document.querySelector("#build-confirm-close"),
@@ -328,6 +334,7 @@ const state = {
   nextDraftId: 1,
   filenameFollowsTitle: false,
   buildReadiness: null,
+  localBuildBusy: false,
   workflowPreflight: null,
   finishDay: null,
   finishDayReviewToken: null,
@@ -488,6 +495,7 @@ function renderTodayWorkflow() {
 }
 
 const GUARDED_JOB_KEYS = {
+  localBuild: "profileEditor.localBuildJob",
   finishDay: "profileEditor.finishDayPrepareJob",
   branchIntegration: "profileEditor.branchIntegrationPrepareJob",
   publication: "profileEditor.publicationJob",
@@ -553,6 +561,17 @@ const finishDayProgressElements = {
   failedStage: "Finish Day stopped — not completed",
   completedStage: "Finish Day preparation complete",
   completedMessage: "All required preparation checks completed.",
+};
+
+const localBuildProgressElements = {
+  panel: elements.localBuildProgress,
+  stage: elements.localBuildProgressStage,
+  elapsed: elements.localBuildProgressElapsed,
+  command: elements.localBuildProgressCommand,
+  log: elements.localBuildProgressLog,
+  failedStage: "Local build stopped — not completed",
+  completedStage: "Local build complete",
+  completedMessage: "Source validation, required spreadsheet refresh, build, and full validation completed.",
 };
 
 const branchIntegrationProgressElements = {
@@ -1675,6 +1694,7 @@ function switchView(viewName) {
   if (viewName === "review-build") {
     renderReviewBuild();
     if (!state.cameraLabEvidence) refreshCameraLabEvidence();
+    if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild) && !state.localBuildBusy) reconnectLocalBuild();
   }
   if (viewName === "today") renderTodayWorkflow();
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
@@ -2447,7 +2467,9 @@ function renderReviewBuild() {
     row.append(copy, actions);
     elements.pendingChangeList.append(row);
   }
-  elements.runLocalBuild.disabled = !(state.buildReadiness?.ready && items.length === 0);
+  elements.validateReadiness.disabled = state.localBuildBusy;
+  elements.importVerificationTracker.disabled = state.localBuildBusy;
+  elements.runLocalBuild.disabled = state.localBuildBusy || !(state.buildReadiness?.ready && items.length === 0);
 }
 
 async function openPendingItem(item) {
@@ -2522,7 +2544,7 @@ async function validateBuildReadiness() {
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
     });
     state.buildReadiness = readiness;
-    elements.localBuildOutput.hidden = false;
+    elements.localBuildDetails.hidden = false;
     const refreshDetails = readiness.derivedArtifacts?.refreshNeeded
       ? `\n\nSpreadsheet refresh will run automatically:\n${readiness.derivedArtifacts.details.join("\n")}`
       : "\n\nSpreadsheet-derived artifacts are current; no workbook refresh is needed.";
@@ -2551,7 +2573,7 @@ async function importVerificationTracker() {
   }
   if (!window.confirm("Import the most recently modified local verification tracker into canonical project status? Save and close Numbers or Excel first.")) return;
   elements.importVerificationTracker.disabled = true;
-  elements.localBuildOutput.hidden = false;
+  elements.localBuildDetails.hidden = false;
   elements.localBuildOutput.textContent = "Importing verification tracker…";
   showReviewBuildMessage("Importing the most recently modified local verification tracker. Keep this page open.");
   try {
@@ -2574,18 +2596,33 @@ async function importVerificationTracker() {
 }
 
 async function runLocalBuild() {
+  state.localBuildBusy = true;
   elements.buildConfirmRun.disabled = true;
   elements.runLocalBuild.disabled = true;
   elements.buildConfirmDialog.close();
-  elements.localBuildOutput.hidden = false;
-  elements.localBuildOutput.textContent = "Running source validation, any required spreadsheet refresh, local build, and full validation…";
+  elements.localBuildDetails.hidden = false;
+  elements.localBuildOutput.textContent = "Build started. Live details are available in Watch command log.";
+  renderGuardedJobProgress(localBuildProgressElements, {
+    status: "running",
+    stage: "Starting local build…",
+    elapsedSeconds: 0,
+    command: "Preparing the first command…",
+    log: [],
+  });
   showReviewBuildMessage("Local build is running. Keep this page open.");
+  let started = null;
   try {
-    const result = await request("/api/local-build", {
+    started = await request("/api/local-build", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmLocalBuild: true }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.localBuild, started.jobId);
+    const result = await waitForGuardedJob(
+      started.jobId,
+      GUARDED_JOB_KEYS.localBuild,
+      localBuildProgressElements,
+    );
     elements.localBuildOutput.textContent = result.steps
       .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
       .join("\n\n");
@@ -2594,8 +2631,54 @@ async function runLocalBuild() {
   } catch (error) {
     state.buildReadiness = null;
     elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    if (!started) {
+      renderGuardedJobProgress(localBuildProgressElements, {
+        status: "failed",
+        error: error.message,
+        elapsedSeconds: 0,
+        log: [`✕ Local build stopped\n${error.message}`],
+      });
+    }
     showReviewBuildMessage(error.message, true);
   } finally {
+    state.localBuildBusy = false;
+    elements.buildConfirmRun.disabled = false;
+    renderReviewBuild();
+  }
+}
+
+async function reconnectLocalBuild() {
+  const jobId = sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild);
+  if (!jobId || state.localBuildBusy) return;
+  state.localBuildBusy = true;
+  elements.localBuildDetails.hidden = false;
+  showReviewBuildMessage("Reconnected to the running local build.");
+  renderReviewBuild();
+  try {
+    const result = await waitForGuardedJob(
+      jobId,
+      GUARDED_JOB_KEYS.localBuild,
+      localBuildProgressElements,
+    );
+    elements.localBuildOutput.textContent = result.steps
+      .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
+      .join("\n\n");
+    state.buildReadiness = null;
+    showReviewBuildMessage("Spreadsheet readiness, local build, and full validation passed. Git and publishing were not run.");
+  } catch (error) {
+    state.buildReadiness = null;
+    elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    if (elements.localBuildProgress.hidden) {
+      renderGuardedJobProgress(localBuildProgressElements, {
+        status: "failed",
+        error: error.message,
+        elapsedSeconds: 0,
+        log: [`✕ Local build progress unavailable\n${error.message}`],
+      });
+    }
+    showReviewBuildMessage(error.message, true);
+  } finally {
+    state.localBuildBusy = false;
     elements.buildConfirmRun.disabled = false;
     renderReviewBuild();
   }
@@ -4809,7 +4892,9 @@ Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(),
 setDayPhase("start");
 renderTodayWorkflow();
 runWorkflowPreflight();
-if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
+if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild)) {
+  switchView("review-build");
+} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
   switchView("finish-day");
 } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
   switchView("branch-integration");

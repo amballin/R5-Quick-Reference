@@ -980,6 +980,15 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Publication stopped — not completed or verified", javascript)
         self.assertIn("Publication complete and verified", javascript)
         self.assertIn("#publication-progress.is-stopped", stylesheet)
+        self.assertIn('id="local-build-progress"', html)
+        self.assertIn('id="local-build-progress-stage"', html)
+        self.assertIn('id="local-build-progress-elapsed"', html)
+        self.assertIn('id="local-build-progress-command"', html)
+        self.assertIn('id="local-build-progress-log"', html)
+        self.assertIn('id="local-build-details"', html)
+        self.assertIn("Show status details", html)
+        self.assertIn('localBuild: "profileEditor.localBuildJob"', javascript)
+        self.assertIn("reconnectLocalBuild", javascript)
 
     def test_guarded_job_manager_reports_progress_and_result(self):
         manager = GuardedJobManager()
@@ -1544,6 +1553,24 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             ["80 Build/validator.py"],
         ])
         self.assertFalse(any("git" in command or "publish" in command for command in commands))
+
+    def test_local_build_background_job_reports_reconnectable_step_progress(self):
+        with patch(
+            "profile_editor.subprocess.run",
+            return_value=SimpleNamespace(returncode=0, stdout="passed"),
+        ):
+            started = self.model.start_local_build(0, True)
+            result = None
+            for _attempt in range(100):
+                result = self.model.guarded_job_status(started["jobId"])
+                if result["status"] != "running":
+                    break
+                threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["result"]["status"], "passed")
+        self.assertTrue(any("Source validation (1 of 3)" in entry for entry in result["log"]))
+        self.assertTrue(any("80 Build/validator.py" in entry and "--source-only" in entry for entry in result["log"]))
+        self.assertTrue(any(entry.startswith("✓ Full validation (3 of 3)") for entry in result["log"]))
 
     def test_verification_tracker_import_is_confirmed_and_serialized(self):
         with self.assertRaisesRegex(PrototypeError, "confirmation"):

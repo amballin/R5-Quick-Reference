@@ -867,6 +867,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .local-build-panel { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; }
 .local-build-panel h2 { margin: .1rem 0 .3rem; }
 .local-build-panel p { margin-bottom: 0; }
+.local-build-progress, .local-build-details { margin-top: 1rem; }
 .local-build-output { max-height: 420px; margin: 1rem 0 0; padding: 1rem; overflow: auto; border-radius: 12px; color: #e7edf4; background: #172333; font-size: .76rem; line-height: 1.45; white-space: pre-wrap; }
 .local-build-output[hidden] { display: none; }
 
