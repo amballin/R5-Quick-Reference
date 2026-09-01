@@ -989,6 +989,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Show status details", html)
         self.assertIn('localBuild: "profileEditor.localBuildJob"', javascript)
         self.assertIn("reconnectLocalBuild", javascript)
+        self.assertIn('id="workflow-preflight-recovery"', html)
+        self.assertIn('id="finish-day-confirm-spreadsheet"', html)
+        self.assertIn('id="branch-integration-recovery"', html)
+        self.assertIn('id="publication-recovery"', html)
+        self.assertIn('request("/api/preflight-pull"', javascript)
+        self.assertIn("retry-with-spreadsheet-refresh", javascript)
 
     def test_guarded_job_manager_reports_progress_and_result(self):
         manager = GuardedJobManager()
@@ -1029,6 +1035,25 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertTrue(any("Publishing and verifying the live website stopped" in entry for entry in result["log"]))
         self.assertTrue(any("Upload verification failed" in entry for entry in result["log"]))
 
+    def test_guarded_job_manager_preserves_structured_recovery(self):
+        manager = GuardedJobManager()
+
+        def action(_progress):
+            raise PrototypeError(
+                "Spreadsheet refresh permission required.",
+                recovery={"kind": "integration-spreadsheet-refresh", "actions": ["retry"]},
+            )
+
+        started = manager.start("branch-integration-prepare", action)
+        result = None
+        for _attempt in range(100):
+            result = manager.status(started["jobId"])
+            if result["status"] != "running":
+                break
+            threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["recovery"]["kind"], "integration-spreadsheet-refresh")
+
     def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
         outcomes = (
             (0, "PREFLIGHT PASSED: Repository is clean and synchronized.", "ready"),
@@ -1045,6 +1070,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 run.call_args.args[0][0],
                 str((self.root / "80 Build" / "scripts" / "preflight-git.sh").resolve()),
             )
+        with patch("profile_editor.subprocess.run") as run:
+            run.return_value = SimpleNamespace(
+                returncode=1,
+                stdout="PREFLIGHT BLOCKED: This clone is behind its upstream.\nWhen clean, use: git pull --ff-only",
+            )
+            behind = self.model.workflow_preflight()
+        self.assertIn("pull-latest", behind["recoveryActions"])
 
     def test_git_status_uses_current_branch_and_requires_matching_upstream(self):
         remote = Path(self.temporary.name) / "remote.git"
@@ -1458,6 +1490,26 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("profile.name === state.activeProfileName", javascript)
         self.assertIn("elements.profileActionMenu.open = false", javascript)
         self.assertIn("Permanent reference cards cannot be moved", javascript)
+
+    def test_confirmed_preflight_pull_is_fast_forward_only(self):
+        model = self.model
+        model._preflight_checker = lambda: {
+            "status": "ready",
+            "summary": "Repository is clean and synchronized.",
+            "output": "",
+        }
+        results = [
+            SimpleNamespace(returncode=0, stdout=""),
+            SimpleNamespace(returncode=0, stdout="codex/profile-editor-prototype\n"),
+            SimpleNamespace(returncode=0, stdout="origin/codex/profile-editor-prototype\n"),
+            SimpleNamespace(returncode=0, stdout="fetched\n"),
+            SimpleNamespace(returncode=0, stdout="0\t2\n"),
+            SimpleNamespace(returncode=0, stdout="updated\n"),
+        ]
+        with patch("profile_editor.subprocess.run", side_effect=results) as run:
+            result = model.pull_latest(0, True)
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual(run.call_args_list[-1].args[0], ["git", "pull", "--ff-only"])
 
     def test_build_readiness_blocks_pending_drafts_and_source_errors(self):
         pending = self.model.build_readiness(2)

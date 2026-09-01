@@ -2,6 +2,17 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## In-Editor Recovery for Guarded Workflow Stops
+
+**Status:** Accepted
+**Date:** 2026-09-01
+
+Every Profile Editor workflow blocker must present the safest applicable in-editor next action rather than making a terminal command the only recovery method. Keep exact commands in expandable expert details. Require explicit confirmation and fresh safety checks before any mutating recovery. Permit Today to offer a fast-forward-only pull only when the working tree is clean, the current branch tracks its exact same-named `origin` branch, the local branch has no unique commits, and the remote is strictly ahead. Never automate divergence, conflicts, branch switching, unexpected upstream repair, changed camera identity, or incomplete rollback.
+
+Finish Day must diagnose verification, Matrix/settings, and Setup spreadsheet state before its normal build. Safely stale state requires a separate visible permission that warns Apple Numbers may open, then runs the consolidated refresh before continuing the existing build and validation sequence. Possible unimported tracker edits must route to the existing confirmed Review & Build importer.
+
+Integrate Branch must diagnose spreadsheet state inside the exact disposable merged candidate. If safely stale, stop with a separately confirmed retry that creates a fresh candidate, rebuilds only its stale spreadsheet-derived artifacts there, and resumes validation. A refresh performed only in the original checkout does not satisfy candidate validation. Preserve conflicts and unsafe tracker state as non-automatic stops. When another serialized guarded action is already running, return its job identity so the browser can reconnect to that progress rather than ending at a generic busy error.
+
 ## Workflow-Ordered Sidebar and Guided Camera Buttons Editor
 
 **Status:** Accepted

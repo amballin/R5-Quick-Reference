@@ -22,6 +22,12 @@ const elements = {
   workflowPreflightSummary: document.querySelector("#workflow-preflight-summary"),
   workflowPreflightDetails: document.querySelector("#workflow-preflight-details"),
   workflowPreflightOutput: document.querySelector("#workflow-preflight-output"),
+  workflowPreflightRecovery: document.querySelector("#workflow-preflight-recovery"),
+  workflowPreflightRecoverySummary: document.querySelector("#workflow-preflight-recovery-summary"),
+  preflightOpenReviewBuild: document.querySelector("#preflight-open-review-build"),
+  preflightImportTracker: document.querySelector("#preflight-import-tracker"),
+  preflightPullLatest: document.querySelector("#preflight-pull-latest"),
+  preflightRetry: document.querySelector("#preflight-retry"),
   beginWork: document.querySelector("#begin-work"),
   todayMessage: document.querySelector("#today-message"),
   todayDraftCount: document.querySelector("#today-draft-count"),
@@ -45,7 +51,14 @@ const elements = {
   finishDaySummary: document.querySelector("#finish-day-summary"),
   finishDayDetails: document.querySelector("#finish-day-details"),
   finishDayOutput: document.querySelector("#finish-day-output"),
+  finishDayRecovery: document.querySelector("#finish-day-recovery"),
+  finishDayRecoverySummary: document.querySelector("#finish-day-recovery-summary"),
+  finishDayOpenReviewBuild: document.querySelector("#finish-day-open-review-build"),
+  finishDayImportTracker: document.querySelector("#finish-day-import-tracker"),
+  finishDayShowDetails: document.querySelector("#finish-day-show-details"),
   finishDayPreparePanel: document.querySelector("#finish-day-prepare-panel"),
+  finishDayConfirmSpreadsheetWrap: document.querySelector("#finish-day-confirm-spreadsheet-wrap"),
+  finishDayConfirmSpreadsheet: document.querySelector("#finish-day-confirm-spreadsheet"),
   finishDayConfirmPrepare: document.querySelector("#finish-day-confirm-prepare"),
   prepareFinishDay: document.querySelector("#prepare-finish-day"),
   finishDayProgress: document.querySelector("#finish-day-progress"),
@@ -73,6 +86,13 @@ const elements = {
   branchIntegrationSummary: document.querySelector("#branch-integration-summary"),
   branchIntegrationDetails: document.querySelector("#branch-integration-details"),
   branchIntegrationOutput: document.querySelector("#branch-integration-output"),
+  branchIntegrationRecovery: document.querySelector("#branch-integration-recovery"),
+  branchIntegrationRecoverySummary: document.querySelector("#branch-integration-recovery-summary"),
+  integrationOpenReviewBuild: document.querySelector("#integration-open-review-build"),
+  integrationOpenFinishDay: document.querySelector("#integration-open-finish-day"),
+  integrationConfirmSpreadsheetWrap: document.querySelector("#integration-confirm-spreadsheet-wrap"),
+  integrationConfirmSpreadsheet: document.querySelector("#integration-confirm-spreadsheet"),
+  retryIntegrationSpreadsheet: document.querySelector("#retry-integration-spreadsheet"),
   branchIntegrationReviewPanel: document.querySelector("#branch-integration-review-panel"),
   branchIntegrationConfirmPrepare: document.querySelector("#branch-integration-confirm-prepare"),
   prepareBranchIntegration: document.querySelector("#prepare-branch-integration"),
@@ -116,6 +136,11 @@ const elements = {
   publicationSummary: document.querySelector("#publication-summary"),
   publicationDetails: document.querySelector("#publication-details"),
   publicationOutput: document.querySelector("#publication-output"),
+  publicationRecovery: document.querySelector("#publication-recovery"),
+  publicationRecoverySummary: document.querySelector("#publication-recovery-summary"),
+  publicationOpenReviewBuild: document.querySelector("#publication-open-review-build"),
+  publicationOpenFinishDay: document.querySelector("#publication-open-finish-day"),
+  publicationRetryStatus: document.querySelector("#publication-retry-status"),
   publicationMainHandoff: document.querySelector("#publication-main-handoff"),
   openMainEditor: document.querySelector("#open-main-editor"),
   publicationNotesPanel: document.querySelector("#publication-notes-panel"),
@@ -339,9 +364,11 @@ const state = {
   finishDay: null,
   finishDayReviewToken: null,
   finishDayBusy: false,
+  finishDayRecovery: null,
   branchIntegration: null,
   branchIntegrationReviewToken: null,
   branchIntegrationBusy: false,
+  branchIntegrationRecovery: null,
   cleanupReview: null,
   cleanupReviewToken: null,
   cleanupBusy: false,
@@ -405,7 +432,11 @@ async function request(url, options) {
   }
   const response = await fetch(url, requestOptions);
   const payload = await response.json();
-  if (!response.ok) throw new Error(payload.error || "The prototype could not complete the request.");
+  if (!response.ok) {
+    const error = new Error(payload.error || "The prototype could not complete the request.");
+    error.recovery = payload.recovery || null;
+    throw error;
+  }
   return payload;
 }
 
@@ -474,7 +505,43 @@ function renderWorkflowPreflight() {
   elements.workflowPreflightSummary.append(title, detail);
   elements.workflowPreflightOutput.textContent = result?.output || "";
   elements.workflowPreflightDetails.hidden = !result?.output;
+  const recoveryActions = new Set(result?.recoveryActions || []);
+  elements.workflowPreflightRecovery.hidden = status !== "blocked";
+  elements.workflowPreflightRecoverySummary.textContent = recoveryActions.has("pull-latest")
+    ? "The working tree is clean and the branch is behind its matching remote. A confirmed fast-forward pull can update it without merging or rewriting history."
+    : recoveryActions.has("import-verification-tracker")
+      ? "Open Review & Build to import the saved verification tracker before continuing."
+      : recoveryActions.has("open-review-build")
+        ? "Open Review & Build to diagnose and refresh the stale derived files after confirmation."
+        : "Review the status details. Profile Editor will not attempt an unsafe merge, branch change, or history repair.";
+  elements.preflightOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.preflightImportTracker.hidden = !recoveryActions.has("import-verification-tracker");
+  elements.preflightPullLatest.hidden = !recoveryActions.has("pull-latest");
   elements.beginWork.disabled = !result || status === "blocked";
+}
+
+async function pullLatestFromPreflight() {
+  const pending = pendingSessionItems().length;
+  if (pending) {
+    showTodayMessage(`Resolve ${pending} pending browser ${pending === 1 ? "draft" : "drafts"} before pulling.`, true);
+    return;
+  }
+  if (!window.confirm("Pull the latest commits for this exact branch using fast-forward-only? Profile Editor will stop if a merge or history decision would be required.")) return;
+  elements.preflightPullLatest.disabled = true;
+  showTodayMessage("Refreshing the matching remote branch and applying a safe fast-forward only.");
+  try {
+    state.workflowPreflight = await request("/api/preflight-pull", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: 0, confirmPull: true }),
+    });
+    showTodayMessage("Latest remote changes were applied. Preflight passed.");
+  } catch (error) {
+    showTodayMessage(error.message, true);
+  } finally {
+    elements.preflightPullLatest.disabled = false;
+    renderWorkflowPreflight();
+  }
 }
 
 function renderTodayWorkflow() {
@@ -500,6 +567,26 @@ const GUARDED_JOB_KEYS = {
   branchIntegration: "profileEditor.branchIntegrationPrepareJob",
   publication: "profileEditor.publicationJob",
 };
+
+function reconnectRunningAction(recovery) {
+  const destinations = {
+    "local-build": ["review-build", GUARDED_JOB_KEYS.localBuild],
+    "finish-day-prepare": ["finish-day", GUARDED_JOB_KEYS.finishDay],
+    "branch-integration-prepare": ["branch-integration", GUARDED_JOB_KEYS.branchIntegration],
+    "website-publication": ["release-publish", GUARDED_JOB_KEYS.publication],
+  };
+  const destination = destinations[recovery?.jobKind];
+  if (!destination || !recovery?.jobId) return false;
+  sessionStorage.setItem(destination[1], recovery.jobId);
+  switchView(destination[0]);
+  window.setTimeout(() => {
+    if (recovery.jobKind === "local-build") reconnectLocalBuild();
+    else if (recovery.jobKind === "finish-day-prepare") refreshFinishDay();
+    else if (recovery.jobKind === "branch-integration-prepare") refreshBranchIntegration();
+    else if (recovery.jobKind === "website-publication") refreshPublication();
+  }, 75);
+  return true;
+}
 
 function waitMilliseconds(milliseconds) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
@@ -546,7 +633,9 @@ async function waitForGuardedJob(jobId, storageKey, progressElements) {
     }
     if (job.status === "failed") {
       sessionStorage.removeItem(storageKey);
-      throw new Error(job.error || "The guarded workflow stopped.");
+      const error = new Error(job.error || "The guarded workflow stopped.");
+      error.recovery = job.recovery || null;
+      throw error;
     }
     await waitMilliseconds(650);
   }
@@ -630,7 +719,25 @@ function renderFinishDay() {
   elements.finishDaySummary.textContent = summaries[phase] || summaries.checking;
   elements.finishDayOutput.textContent = result?.output || "";
   elements.finishDayDetails.hidden = !result?.output;
+  const recovery = state.finishDayRecovery;
+  const recoveryActions = new Set(recovery?.actions || result?.recoveryActions || []);
+  elements.finishDayRecovery.hidden = !recovery && !recoveryActions.size;
+  elements.finishDayRecoverySummary.textContent = recovery?.summary
+    || (recoveryActions.has("import-verification-tracker")
+      ? "Import the closed verification tracker in Review & Build, then refresh Finish Day."
+      : recoveryActions.has("open-review-build")
+        ? "Resolve the pending browser work in Review & Build, then refresh Finish Day."
+        : "Review the detailed repository status before choosing the next action.");
+  elements.finishDayOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.finishDayImportTracker.hidden = !recoveryActions.has("import-verification-tracker");
+  elements.finishDayShowDetails.hidden = !recoveryActions.has("show-status-details");
   elements.finishDayPreparePanel.hidden = phase !== "prepare";
+  const spreadsheetRefreshNeeded = Boolean(result?.spreadsheetState?.refreshNeeded);
+  if (spreadsheetRefreshNeeded) {
+    const labels = result.spreadsheetState.labels?.join(", ") || "spreadsheet-derived artifacts";
+    elements.finishDaySummary.textContent = `${summaries[phase]} Refresh required: ${labels}.`;
+  }
+  elements.finishDayConfirmSpreadsheetWrap.hidden = !spreadsheetRefreshNeeded;
   elements.finishDayCommitPanel.hidden = phase !== "commit";
   elements.finishDayPushPanel.hidden = phase !== "push";
   elements.finishDayCompletePanel.hidden = phase !== "complete";
@@ -642,7 +749,9 @@ function renderFinishDay() {
     ? `Push ${branch} only to ${result.upstream}. GitHub Pages is not published by Finish Day.`
     : "The exact branch and matching upstream must be confirmed before push.";
   elements.refreshFinishDay.disabled = state.finishDayBusy;
-  elements.prepareFinishDay.disabled = state.finishDayBusy || !elements.finishDayConfirmPrepare.checked;
+  elements.prepareFinishDay.disabled = state.finishDayBusy
+    || !elements.finishDayConfirmPrepare.checked
+    || (spreadsheetRefreshNeeded && !elements.finishDayConfirmSpreadsheet.checked);
   elements.commitFinishDay.disabled = state.finishDayBusy
     || !elements.finishDayConfirmCommit.checked
     || !elements.finishDayCommitMessage.value.trim()
@@ -669,6 +778,7 @@ async function refreshFinishDay() {
       showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed.");
     } catch (error) {
       state.finishDay = { phase: "prepare" };
+      state.finishDayRecovery = error.recovery || null;
       showFinishDayMessage(error.message, true);
     } finally {
       state.finishDayBusy = false;
@@ -679,6 +789,7 @@ async function refreshFinishDay() {
   state.finishDayBusy = true;
   state.finishDay = null;
   state.finishDayReviewToken = null;
+  state.finishDayRecovery = null;
   elements.finishDayProgress.hidden = true;
   showFinishDayMessage("");
   renderFinishDay();
@@ -690,6 +801,7 @@ async function refreshFinishDay() {
     });
   } catch (error) {
     state.finishDay = { phase: "blocked", blockers: [error.message], output: "" };
+    state.finishDayRecovery = error.recovery || null;
     showFinishDayMessage(error.message, true);
   } finally {
     state.finishDayBusy = false;
@@ -706,7 +818,11 @@ async function prepareFinishDay() {
     const started = await request("/api/finish-day-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+      body: JSON.stringify({
+        pendingChanges: pendingSessionItems().length,
+        confirmPrepare: true,
+        confirmSpreadsheetRefresh: elements.finishDayConfirmSpreadsheet.checked,
+      }),
     });
     sessionStorage.setItem(GUARDED_JOB_KEYS.finishDay, started.jobId);
     const result = await waitForGuardedJob(
@@ -715,10 +831,14 @@ async function prepareFinishDay() {
       finishDayProgressElements,
     );
     state.finishDay = result;
+    state.finishDayRecovery = null;
     state.finishDayReviewToken = result.reviewToken || null;
     elements.finishDayConfirmPrepare.checked = false;
+    elements.finishDayConfirmSpreadsheet.checked = false;
     showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed. Review the current state.");
   } catch (error) {
+    state.finishDayRecovery = error.recovery || null;
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showFinishDayMessage(error.message, true);
   } finally {
     state.finishDayBusy = false;
@@ -808,6 +928,21 @@ function renderBranchIntegration() {
   elements.branchIntegrationSummary.textContent = summaries[phase] || summaries.checking;
   elements.branchIntegrationOutput.textContent = result?.output || "";
   elements.branchIntegrationDetails.hidden = !result?.output;
+  const recovery = state.branchIntegrationRecovery;
+  const recoveryActions = new Set(recovery?.actions || result?.recoveryActions || []);
+  elements.branchIntegrationRecovery.hidden = !recovery && !recoveryActions.size;
+  const recoveryLabels = recovery?.labels?.length ? ` Affected: ${recovery.labels.join(", ")}.` : "";
+  elements.branchIntegrationRecoverySummary.textContent = (recovery?.summary
+    || (recoveryActions.has("open-finish-day")
+      ? "Finish Day must leave this branch clean and synchronized before integration can continue."
+      : "Review the status details before retrying integration.")) + recoveryLabels;
+  elements.integrationOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.integrationOpenFinishDay.hidden = !recoveryActions.has("open-finish-day");
+  const canRefreshCandidate = recoveryActions.has("retry-with-spreadsheet-refresh");
+  elements.integrationConfirmSpreadsheetWrap.hidden = !canRefreshCandidate;
+  elements.retryIntegrationSpreadsheet.hidden = !canRefreshCandidate;
+  elements.retryIntegrationSpreadsheet.disabled = state.branchIntegrationBusy
+    || !elements.integrationConfirmSpreadsheet.checked;
   elements.branchIntegrationReviewPanel.hidden = phase !== "review";
   elements.branchIntegrationMergePanel.hidden = phase !== "merge-main";
   elements.branchIntegrationPushPanel.hidden = phase !== "push-main";
@@ -852,6 +987,7 @@ async function refreshBranchIntegration() {
       showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
     } catch (error) {
       state.branchIntegration = { phase: "review" };
+      state.branchIntegrationRecovery = error.recovery || null;
       showBranchIntegrationMessage(error.message, true);
     } finally {
       state.branchIntegrationBusy = false;
@@ -862,6 +998,7 @@ async function refreshBranchIntegration() {
   state.branchIntegrationBusy = true;
   state.branchIntegration = null;
   state.branchIntegrationReviewToken = null;
+  state.branchIntegrationRecovery = null;
   elements.branchIntegrationProgress.hidden = true;
   showBranchIntegrationMessage("");
   renderBranchIntegration();
@@ -875,6 +1012,7 @@ async function refreshBranchIntegration() {
     state.branchIntegrationReviewToken = result.reviewToken || null;
   } catch (error) {
     state.branchIntegration = { phase: "blocked", blockers: [error.message], output: "" };
+    state.branchIntegrationRecovery = error.recovery || null;
     showBranchIntegrationMessage(error.message, true);
   } finally {
     state.branchIntegrationBusy = false;
@@ -882,7 +1020,7 @@ async function refreshBranchIntegration() {
   }
 }
 
-async function prepareBranchIntegration() {
+async function prepareBranchIntegration(allowSpreadsheetRefresh = false) {
   state.branchIntegrationBusy = true;
   elements.branchIntegrationProgress.hidden = false;
   showBranchIntegrationMessage("Building and validating the isolated integration candidate. No real branch is being changed.");
@@ -891,7 +1029,11 @@ async function prepareBranchIntegration() {
     const started = await request("/api/branch-integration-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+      body: JSON.stringify({
+        pendingChanges: pendingSessionItems().length,
+        confirmPrepare: true,
+        confirmSpreadsheetRefresh: allowSpreadsheetRefresh,
+      }),
     });
     sessionStorage.setItem(GUARDED_JOB_KEYS.branchIntegration, started.jobId);
     const result = await waitForGuardedJob(
@@ -900,10 +1042,14 @@ async function prepareBranchIntegration() {
       branchIntegrationProgressElements,
     );
     state.branchIntegration = result;
+    state.branchIntegrationRecovery = null;
     state.branchIntegrationReviewToken = result.reviewToken || null;
     elements.branchIntegrationConfirmPrepare.checked = false;
+    elements.integrationConfirmSpreadsheet.checked = false;
     showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
   } catch (error) {
+    state.branchIntegrationRecovery = error.recovery || null;
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showBranchIntegrationMessage(error.message, true);
   } finally {
     state.branchIntegrationBusy = false;
@@ -1016,6 +1162,15 @@ function renderPublication() {
   elements.publicationSummary.textContent = summaries[phase] || summaries.checking;
   elements.publicationOutput.textContent = [result?.output, result?.spreadsheetState?.output].filter(Boolean).join("\n\n");
   elements.publicationDetails.hidden = !elements.publicationOutput.textContent;
+  const recoveryActions = new Set(result?.recoveryActions || []);
+  elements.publicationRecovery.hidden = !recoveryActions.size;
+  elements.publicationRecoverySummary.textContent = recoveryActions.has("open-finish-day")
+    ? "Finish Day must leave Main clean and synchronized before publication can continue."
+    : recoveryActions.has("open-review-build")
+      ? "Resolve pending work or spreadsheet readiness in Review & Build, then check publication again."
+      : "Refresh publication readiness after resolving the detailed condition.";
+  elements.publicationOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.publicationOpenFinishDay.hidden = !recoveryActions.has("open-finish-day");
   elements.publicationMainHandoff.hidden = phase !== "main-handoff";
   elements.publicationNotesPanel.hidden = phase !== "release-notes";
   elements.publicationOptionsPanel.hidden = phase !== "ready";
@@ -1085,6 +1240,7 @@ async function openMainEditor() {
     await request("/api/main-editor-launch", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
     showPublicationMessage("The Main project editor is opening in Chrome.");
   } catch (error) {
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showPublicationMessage(error.message, true);
   } finally {
     elements.openMainEditor.disabled = false;
@@ -1193,6 +1349,7 @@ async function startPublication() {
     state.publication = result;
     showPublicationMessage(result.message || "Publication complete and verified.");
   } catch (error) {
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showPublicationMessage(error.message, true);
   } finally {
     state.publicationBusy = false;
@@ -1335,7 +1492,12 @@ async function runWorkflowPreflight() {
   try {
     state.workflowPreflight = await request("/api/workflow-preflight", { method: "POST", body: "{}" });
   } catch (error) {
-    state.workflowPreflight = { status: "blocked", summary: error.message, output: "" };
+    state.workflowPreflight = {
+      status: "blocked",
+      summary: error.message,
+      output: "",
+      recoveryActions: error.recovery?.actions || ["retry-preflight"],
+    };
   } finally {
     elements.refreshWorkflowPreflight.disabled = false;
     renderWorkflowPreflight();
@@ -2639,6 +2801,7 @@ async function runLocalBuild() {
         log: [`✕ Local build stopped\n${error.message}`],
       });
     }
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showReviewBuildMessage(error.message, true);
   } finally {
     state.localBuildBusy = false;
@@ -4702,6 +4865,13 @@ elements.sidebarCameraLab.addEventListener("click", openCurrentProfileInCameraLa
 elements.stopProfileEditor.addEventListener("click", stopProfileEditor);
 for (const step of elements.daySteps) step.addEventListener("click", () => setDayPhase(step.dataset.dayPhase));
 elements.refreshWorkflowPreflight.addEventListener("click", runWorkflowPreflight);
+elements.preflightOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.preflightImportTracker.addEventListener("click", () => {
+  switchView("review-build");
+  importVerificationTracker();
+});
+elements.preflightPullLatest.addEventListener("click", pullLatestFromPreflight);
+elements.preflightRetry.addEventListener("click", runWorkflowPreflight);
 elements.beginWork.addEventListener("click", () => setDayPhase("work"));
 elements.todayOpenProfiles.addEventListener("click", () => switchView("profiles"));
 elements.todayOpenCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
@@ -4713,7 +4883,17 @@ elements.switchingMacs.addEventListener("change", () => { elements.handoffGuidan
 elements.continueToPublish.addEventListener("click", () => switchView("release-publish"));
 elements.refreshFinishDay.addEventListener("click", refreshFinishDay);
 elements.finishDayConfirmPrepare.addEventListener("change", renderFinishDay);
+elements.finishDayConfirmSpreadsheet.addEventListener("change", renderFinishDay);
 elements.prepareFinishDay.addEventListener("click", prepareFinishDay);
+elements.finishDayOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.finishDayImportTracker.addEventListener("click", () => {
+  switchView("review-build");
+  importVerificationTracker();
+});
+elements.finishDayShowDetails.addEventListener("click", () => {
+  elements.finishDayDetails.hidden = false;
+  elements.finishDayDetails.open = true;
+});
 elements.finishDayConfirmCommit.addEventListener("change", renderFinishDay);
 elements.finishDayCommitMessage.addEventListener("input", renderFinishDay);
 elements.commitFinishDay.addEventListener("click", commitFinishDay);
@@ -4722,7 +4902,11 @@ elements.pushFinishDay.addEventListener("click", pushFinishDay);
 elements.openBranchIntegration.addEventListener("click", () => switchView("branch-integration"));
 elements.refreshBranchIntegration.addEventListener("click", refreshBranchIntegration);
 elements.branchIntegrationConfirmPrepare.addEventListener("change", renderBranchIntegration);
-elements.prepareBranchIntegration.addEventListener("click", prepareBranchIntegration);
+elements.prepareBranchIntegration.addEventListener("click", () => prepareBranchIntegration(false));
+elements.integrationOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.integrationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
+elements.integrationConfirmSpreadsheet.addEventListener("change", renderBranchIntegration);
+elements.retryIntegrationSpreadsheet.addEventListener("click", () => prepareBranchIntegration(true));
 elements.branchIntegrationConfirmMerge.addEventListener("change", renderBranchIntegration);
 elements.mergeBranchToMain.addEventListener("click", mergeBranchToMain);
 elements.branchIntegrationConfirmPush.addEventListener("change", renderBranchIntegration);
@@ -4735,6 +4919,9 @@ elements.refreshCleanupReview.addEventListener("click", refreshCleanupReview);
 elements.cleanupConfirmDelete.addEventListener("change", renderCleanupSelection);
 elements.deleteCleanupCandidates.addEventListener("click", deleteCleanupCandidates);
 elements.refreshPublication.addEventListener("click", refreshPublication);
+elements.publicationOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.publicationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
+elements.publicationRetryStatus.addEventListener("click", refreshPublication);
 elements.openMainEditor.addEventListener("click", openMainEditor);
 elements.publicationVersionKind.addEventListener("change", () => {
   elements.publicationMajorField.hidden = elements.publicationVersionKind.value !== "major";

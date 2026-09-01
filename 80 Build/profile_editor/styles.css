@@ -152,6 +152,18 @@ h2 { margin-bottom: .25rem; }
   padding: 1rem 1.15rem;
 }
 .view-intro .eyebrow { color: var(--muted); }
+.workflow-recovery {
+  display: grid;
+  gap: .7rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #e4c477;
+  border-radius: 12px;
+  background: var(--gold-soft);
+}
+.workflow-recovery[hidden] { display: none; }
+.workflow-recovery p { margin: 0; }
+.workflow-recovery-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
 .source-link, .section-source, .item-source { color: var(--teal); font-size: .82rem; font-weight: 750; }
 
 .day-workflow {

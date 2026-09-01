@@ -187,7 +187,9 @@ def default_editor_port(project_root=PROJECT_ROOT):
 
 
 class PrototypeError(ValueError):
-    pass
+    def __init__(self, message, *, recovery=None):
+        super().__init__(message)
+        self.recovery = recovery
 
 
 class ProfileConflictError(PrototypeError):
@@ -203,8 +205,18 @@ class GuardedJobManager:
 
     def start(self, kind, action):
         with self._lock:
-            if any(job["status"] == "running" for job in self._jobs.values()):
-                raise PrototypeError("Another long-running guarded action is already in progress.")
+            running = next((job for job in self._jobs.values() if job["status"] == "running"), None)
+            if running:
+                raise PrototypeError(
+                    "Another long-running guarded action is already in progress.",
+                    recovery={
+                        "kind": "guarded-action-running",
+                        "summary": "Return to the running workflow to watch its progress or wait for it to finish.",
+                        "jobId": running["jobId"],
+                        "jobKind": running["kind"],
+                        "actions": ["reconnect-running-action"],
+                    },
+                )
             job_id = secrets.token_urlsafe(24)
             now = time.time()
             job = {
@@ -218,6 +230,7 @@ class GuardedJobManager:
                 "updatedAt": now,
                 "result": None,
                 "error": None,
+                "recovery": None,
             }
             self._jobs[job_id] = job
 
@@ -249,6 +262,7 @@ class GuardedJobManager:
                     job["stage"] = "Stopped"
                     job["command"] = ""
                     job["error"] = str(exc)
+                    job["recovery"] = getattr(exc, "recovery", None)
                     job["log"].append(f"✕ {failed_stage} stopped\n{exc}")
                     while sum(len(item) for item in job["log"]) > 80_000:
                         job["log"].pop(0)
@@ -268,7 +282,10 @@ class GuardedJobManager:
         with self._lock:
             job = self._jobs.get(str(job_id or ""))
             if not job:
-                raise PrototypeError("That workflow progress record is unavailable or expired.")
+                raise PrototypeError(
+                    "That workflow progress record is unavailable or expired. Refresh this workflow's status to continue.",
+                    recovery={"kind": "expired-progress", "actions": ["retry-status"]},
+                )
             return {
                 **job,
                 "log": list(job["log"]),
@@ -1931,7 +1948,85 @@ class ProfileEditorModel:
         }
 
     def workflow_preflight(self):
-        return self._preflight_checker()
+        result = self._preflight_checker()
+        if "recoveryActions" not in result:
+            result["recoveryActions"] = self._preflight_recovery_actions(
+                result.get("status"), result.get("output", "")
+            )
+        return result
+
+    @staticmethod
+    def _preflight_recovery_actions(status, output):
+        if status != "blocked":
+            return []
+        text = str(output or "").casefold()
+        actions = []
+        if "git pull --ff-only" in text or "status: behind" in text:
+            actions.append("pull-latest")
+        if "import-verification-status" in text or "unimported" in text:
+            actions.append("import-verification-tracker")
+        if "build-all-spreadsheet-downloads" in text or "safely rebuildable" in text:
+            actions.append("open-review-build")
+        actions.append("retry-preflight")
+        return list(dict.fromkeys(actions))
+
+    def pull_latest(self, pending_changes, confirmed):
+        try:
+            pending = int(pending_changes)
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("Pending-change count must be an integer.") from exc
+        if pending:
+            raise PrototypeError("Resolve every browser draft before pulling remote changes.")
+        if confirmed is not True:
+            raise PrototypeError("Pulling the latest remote changes requires confirmation.")
+        status = subprocess.run(
+            ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+            cwd=self.paths.root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+        if status.returncode:
+            raise PrototypeError(status.stdout.strip() or "The working tree status could not be checked.")
+        if status.stdout.strip():
+            raise PrototypeError("The working tree is not clean. Review local changes before pulling.")
+        branch = subprocess.run(
+            ["git", "branch", "--show-current"], cwd=self.paths.root,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
+        ).stdout.strip()
+        upstream = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"],
+            cwd=self.paths.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
+        )
+        if not branch or upstream.returncode or upstream.stdout.strip() != f"origin/{branch}":
+            raise PrototypeError("The current branch must track its exact same-named origin branch before pulling.")
+        fetched = subprocess.run(
+            ["git", "fetch", "--prune", "origin"], cwd=self.paths.root,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=10 * 60, check=False,
+        )
+        if fetched.returncode:
+            raise PrototypeError("Origin could not be refreshed. Check the network and remote access, then retry.")
+        counts = subprocess.run(
+            ["git", "rev-list", "--left-right", "--count", f"HEAD...origin/{branch}"],
+            cwd=self.paths.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, check=False,
+        )
+        if counts.returncode:
+            raise PrototypeError(counts.stdout.strip() or "The local and remote branches could not be compared.")
+        try:
+            ahead, behind = (int(value) for value in counts.stdout.split())
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("The local and remote branch comparison was not understood.") from exc
+        if ahead:
+            raise PrototypeError("Local and remote histories are not a safe fast-forward. No pull was attempted.")
+        if behind:
+            pulled = subprocess.run(
+                ["git", "pull", "--ff-only"], cwd=self.paths.root,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=10 * 60, check=False,
+            )
+            if pulled.returncode:
+                raise PrototypeError("Fast-forward pull did not complete.\n" + pulled.stdout[-80_000:].strip())
+        return self.workflow_preflight()
 
     def _run_workflow_preflight(self):
         script = self.paths.root / "80 Build" / "scripts" / "preflight-git.sh"
@@ -2117,18 +2212,23 @@ class ProfileEditorModel:
         try:
             return self.finish_day_workflow.inspect(pending_changes)
         except FinishDayError as exc:
-            raise PrototypeError(str(exc)) from exc
+            raise PrototypeError(str(exc), recovery=getattr(exc, "recovery", None)) from exc
 
-    def prepare_finish_day(self, pending_changes, confirmed, progress_callback=None):
+    def prepare_finish_day(
+        self, pending_changes, confirmed, progress_callback=None, allow_spreadsheet_refresh=False
+    ):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("A local build, tracker import, or Finish Day action is already running.")
         try:
             try:
                 return self.finish_day_workflow.prepare(
-                    pending_changes, confirmed, progress=progress_callback
+                    pending_changes,
+                    confirmed,
+                    progress=progress_callback,
+                    allow_spreadsheet_refresh=allow_spreadsheet_refresh,
                 )
             except FinishDayError as exc:
-                raise PrototypeError(str(exc)) from exc
+                raise PrototypeError(str(exc), recovery=getattr(exc, "recovery", None)) from exc
         finally:
             self._build_lock.release()
 
@@ -2158,18 +2258,23 @@ class ProfileEditorModel:
         try:
             return self.branch_integration_workflow.inspect(pending_changes)
         except BranchIntegrationError as exc:
-            raise PrototypeError(str(exc)) from exc
+            raise PrototypeError(str(exc), recovery=getattr(exc, "recovery", None)) from exc
 
-    def prepare_branch_integration(self, pending_changes, confirmed, progress_callback=None):
+    def prepare_branch_integration(
+        self, pending_changes, confirmed, progress_callback=None, allow_spreadsheet_refresh=False
+    ):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("Another build or guarded Git action is already running.")
         try:
             try:
                 return self.branch_integration_workflow.prepare(
-                    pending_changes, confirmed, progress=progress_callback
+                    pending_changes,
+                    confirmed,
+                    progress=progress_callback,
+                    allow_spreadsheet_refresh=allow_spreadsheet_refresh,
                 )
             except BranchIntegrationError as exc:
-                raise PrototypeError(str(exc)) from exc
+                raise PrototypeError(str(exc), recovery=getattr(exc, "recovery", None)) from exc
         finally:
             self._build_lock.release()
 
@@ -2206,11 +2311,14 @@ class ProfileEditorModel:
         finally:
             self._build_lock.release()
 
-    def start_finish_day_prepare(self, pending_changes, confirmed):
+    def start_finish_day_prepare(self, pending_changes, confirmed, allow_spreadsheet_refresh=False):
         return self.guarded_jobs.start(
             "finish-day-prepare",
             lambda progress: self.prepare_finish_day(
-                pending_changes, confirmed, progress_callback=progress
+                pending_changes,
+                confirmed,
+                progress_callback=progress,
+                allow_spreadsheet_refresh=allow_spreadsheet_refresh,
             ),
         )
 
@@ -2222,11 +2330,16 @@ class ProfileEditorModel:
             ),
         )
 
-    def start_branch_integration_prepare(self, pending_changes, confirmed):
+    def start_branch_integration_prepare(
+        self, pending_changes, confirmed, allow_spreadsheet_refresh=False
+    ):
         return self.guarded_jobs.start(
             "branch-integration-prepare",
             lambda progress: self.prepare_branch_integration(
-                pending_changes, confirmed, progress_callback=progress
+                pending_changes,
+                confirmed,
+                progress_callback=progress,
+                allow_spreadsheet_refresh=allow_spreadsheet_refresh,
             ),
         )
 
@@ -3932,6 +4045,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/editor-shutdown",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
+            "/api/preflight-pull",
             "/api/preview",
             "/api/profile-drafts",
             "/api/profile-reviews",
@@ -3984,6 +4098,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/editor-shutdown",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
+            "/api/preflight-pull",
             "/api/finish-day-status",
             "/api/finish-day-prepare",
             "/api/finish-day-commit",
@@ -4018,6 +4133,12 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json(self.model.launch_camera_lab(payload.get("profile")))
             if parsed.path == "/api/workflow-preflight":
                 return self._json(self.model.workflow_preflight())
+            if parsed.path == "/api/preflight-pull":
+                return self._json(
+                    self.model.pull_latest(
+                        payload.get("pendingChanges"), payload.get("confirmPull")
+                    )
+                )
             if parsed.path == "/api/profile-drafts":
                 return self._json(self.model.profile_draft(payload.get("operation"), payload.get("sourceProfile")))
             if parsed.path == "/api/profile-reviews":
@@ -4120,7 +4241,9 @@ class EditorHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/finish-day-prepare":
                 return self._json(
                     self.model.start_finish_day_prepare(
-                        payload.get("pendingChanges"), payload.get("confirmPrepare")
+                        payload.get("pendingChanges"),
+                        payload.get("confirmPrepare"),
+                        payload.get("confirmSpreadsheetRefresh"),
                     )
                 )
             if parsed.path == "/api/finish-day-commit":
@@ -4138,7 +4261,9 @@ class EditorHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/branch-integration-prepare":
                 return self._json(
                     self.model.start_branch_integration_prepare(
-                        payload.get("pendingChanges"), payload.get("confirmPrepare")
+                        payload.get("pendingChanges"),
+                        payload.get("confirmPrepare"),
+                        payload.get("confirmSpreadsheetRefresh"),
                     )
                 )
             if parsed.path == "/api/branch-integration-merge-main":
@@ -4211,9 +4336,15 @@ class EditorHandler(BaseHTTPRequestHandler):
                 "cardSettingPaths": card_setting_paths,
             })
         except ProfileConflictError as exc:
-            return self._json({"error": str(exc)}, HTTPStatus.CONFLICT)
+            payload = {"error": str(exc)}
+            if getattr(exc, "recovery", None):
+                payload["recovery"] = exc.recovery
+            return self._json(payload, HTTPStatus.CONFLICT)
         except PrototypeError as exc:
-            return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            payload = {"error": str(exc)}
+            if getattr(exc, "recovery", None):
+                payload["recovery"] = exc.recovery
+            return self._json(payload, HTTPStatus.BAD_REQUEST)
         except Exception as exc:
             return self._json({"error": f"Profile editor operation failed: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 

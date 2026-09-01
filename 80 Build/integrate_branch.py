@@ -16,7 +16,9 @@ from asset_manager import ProjectPaths
 
 
 class BranchIntegrationError(RuntimeError):
-    pass
+    def __init__(self, message, *, recovery=None):
+        super().__init__(message)
+        self.recovery = recovery
 
 
 APP_RUNTIME_PREFIXES = (
@@ -213,6 +215,9 @@ class BranchIntegrationWorkflow:
             "commits": commits,
             "files": files,
             "blockers": blockers,
+            "recoveryActions": (
+                ["open-review-build", "open-finish-day"] if blockers else []
+            ),
             "output": "\n\n".join(output_parts),
         }
         if phase == "merge-main" and self._prepared:
@@ -262,7 +267,41 @@ class BranchIntegrationWorkflow:
         if progress:
             progress(stage, command=command, output=output, completed=completed)
 
-    def prepare(self, pending_changes, confirmed, progress=None):
+    def _candidate_spreadsheet_state(self, worktree):
+        verification = worktree / "80 Build" / "verification_status.py"
+        spreadsheets = worktree / "80 Build" / "spreadsheet_downloads.py"
+        if not verification.is_file() or not spreadsheets.is_file():
+            return {"refreshNeeded": False, "labels": [], "details": []}
+        checks = (
+            ("Verification tracker", [sys.executable, str(verification), "check"]),
+            ("Matrix/settings and Setup", [sys.executable, str(spreadsheets), "all", "diagnose"]),
+        )
+        labels = []
+        details = []
+        for label, command in checks:
+            completed = self._run(command, cwd=worktree, timeout=5 * 60)
+            output = completed.stdout[-80_000:].strip()
+            if completed.returncode == 2:
+                labels.append(label)
+                details.append(output or f"{label} requires refresh.")
+            elif completed.returncode:
+                raise BranchIntegrationError(
+                    f"{label} cannot be refreshed safely.\n{output}",
+                    recovery={
+                        "kind": "verification-import-required",
+                        "summary": "Import or resolve the verification tracker in Review & Build, complete Finish Day, then retry integration.",
+                        "actions": ["open-review-build", "open-finish-day"],
+                    },
+                )
+        return {"refreshNeeded": bool(labels), "labels": labels, "details": details}
+
+    def prepare(
+        self,
+        pending_changes,
+        confirmed,
+        progress=None,
+        allow_spreadsheet_refresh=False,
+    ):
         if self._pending_count(pending_changes):
             raise BranchIntegrationError("Resolve every unsaved browser draft before preparing integration.")
         if confirmed is not True:
@@ -302,8 +341,48 @@ class BranchIntegrationWorkflow:
                     "The branch would change docs/ during integration. Regenerated website files must be handled only by publication."
                 )
             steps = []
+            source_command = [sys.executable, "80 Build/validator.py", "--source-only"]
+            self._notify(progress, "Source validation", "$ python3 '80 Build/validator.py' --source-only")
+            source_step = self._require("Source validation", source_command, cwd=worktree, timeout=15 * 60)
+            steps.append(source_step)
+            self._notify(progress, "Source validation", output=source_step["output"], completed=True)
+            self._notify(progress, "Checking spreadsheet readiness", "$ spreadsheet readiness check")
+            spreadsheet_state = self._candidate_spreadsheet_state(worktree)
+            self._notify(
+                progress,
+                "Checking spreadsheet readiness",
+                output="\n\n".join(spreadsheet_state["details"]) or "Spreadsheet-derived artifacts are current.",
+                completed=True,
+            )
+            if spreadsheet_state["refreshNeeded"] and allow_spreadsheet_refresh is not True:
+                labels = ", ".join(spreadsheet_state["labels"])
+                raise BranchIntegrationError(
+                    f"The isolated integration candidate requires a spreadsheet refresh: {labels}.",
+                    recovery={
+                        "kind": "integration-spreadsheet-refresh",
+                        "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts inside the disposable integration candidate, then continue validation. Apple Numbers may open in the background.",
+                        "labels": spreadsheet_state["labels"],
+                        "details": spreadsheet_state["details"],
+                        "actions": ["retry-with-spreadsheet-refresh"],
+                    },
+                )
+            if spreadsheet_state["refreshNeeded"]:
+                refresh_command = worktree / "80 Build" / "scripts" / "build-all-spreadsheet-downloads.sh"
+                self._notify(progress, "Refreshing candidate spreadsheets", "$ rebuild stale spreadsheet-derived artifacts")
+                refresh = self._require(
+                    "Spreadsheet refresh",
+                    [str(refresh_command)],
+                    cwd=worktree,
+                    timeout=45 * 60,
+                )
+                steps.append(refresh)
+                self._notify(
+                    progress,
+                    "Refreshing candidate spreadsheets",
+                    output=refresh["output"],
+                    completed=True,
+                )
             for label, command, timeout in (
-                ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"], 15 * 60),
                 ("Development build", [sys.executable, "80 Build/build.py"], 15 * 60),
                 ("Full validation", [sys.executable, "80 Build/validator.py"], 15 * 60),
             ):

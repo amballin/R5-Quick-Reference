@@ -197,6 +197,15 @@ class PublicationWorkflow:
             phase = "release-notes"
         else:
             phase = "ready"
+        recovery_actions = []
+        if pending:
+            recovery_actions.append("open-review-build")
+        if any("Finish Day" in blocker or "synchronized" in blocker for blocker in blockers):
+            recovery_actions.append("open-finish-day")
+        if spreadsheet_state["status"] == "blocked":
+            recovery_actions.append("open-review-build")
+        if blockers:
+            recovery_actions.append("retry-publication-status")
         return {
             **version,
             "phase": phase,
@@ -205,6 +214,7 @@ class PublicationWorkflow:
             "notesReady": bool(highlights),
             "highlights": highlights,
             "spreadsheetState": spreadsheet_state,
+            "recoveryActions": list(dict.fromkeys(recovery_actions)),
             "blockers": blockers,
             "output": "\n".join(part for part in (f"Branch: {branch}", f"Upstream: {upstream or 'unavailable'}", status) if part),
         }
