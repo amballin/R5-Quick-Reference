@@ -22,6 +22,12 @@ const elements = {
   workflowPreflightSummary: document.querySelector("#workflow-preflight-summary"),
   workflowPreflightDetails: document.querySelector("#workflow-preflight-details"),
   workflowPreflightOutput: document.querySelector("#workflow-preflight-output"),
+  workflowPreflightRecovery: document.querySelector("#workflow-preflight-recovery"),
+  workflowPreflightRecoverySummary: document.querySelector("#workflow-preflight-recovery-summary"),
+  preflightOpenReviewBuild: document.querySelector("#preflight-open-review-build"),
+  preflightImportTracker: document.querySelector("#preflight-import-tracker"),
+  preflightPullLatest: document.querySelector("#preflight-pull-latest"),
+  preflightRetry: document.querySelector("#preflight-retry"),
   beginWork: document.querySelector("#begin-work"),
   todayMessage: document.querySelector("#today-message"),
   todayDraftCount: document.querySelector("#today-draft-count"),
@@ -45,7 +51,14 @@ const elements = {
   finishDaySummary: document.querySelector("#finish-day-summary"),
   finishDayDetails: document.querySelector("#finish-day-details"),
   finishDayOutput: document.querySelector("#finish-day-output"),
+  finishDayRecovery: document.querySelector("#finish-day-recovery"),
+  finishDayRecoverySummary: document.querySelector("#finish-day-recovery-summary"),
+  finishDayOpenReviewBuild: document.querySelector("#finish-day-open-review-build"),
+  finishDayImportTracker: document.querySelector("#finish-day-import-tracker"),
+  finishDayShowDetails: document.querySelector("#finish-day-show-details"),
   finishDayPreparePanel: document.querySelector("#finish-day-prepare-panel"),
+  finishDayConfirmSpreadsheetWrap: document.querySelector("#finish-day-confirm-spreadsheet-wrap"),
+  finishDayConfirmSpreadsheet: document.querySelector("#finish-day-confirm-spreadsheet"),
   finishDayConfirmPrepare: document.querySelector("#finish-day-confirm-prepare"),
   prepareFinishDay: document.querySelector("#prepare-finish-day"),
   finishDayProgress: document.querySelector("#finish-day-progress"),
@@ -73,6 +86,13 @@ const elements = {
   branchIntegrationSummary: document.querySelector("#branch-integration-summary"),
   branchIntegrationDetails: document.querySelector("#branch-integration-details"),
   branchIntegrationOutput: document.querySelector("#branch-integration-output"),
+  branchIntegrationRecovery: document.querySelector("#branch-integration-recovery"),
+  branchIntegrationRecoverySummary: document.querySelector("#branch-integration-recovery-summary"),
+  integrationOpenReviewBuild: document.querySelector("#integration-open-review-build"),
+  integrationOpenFinishDay: document.querySelector("#integration-open-finish-day"),
+  integrationConfirmSpreadsheetWrap: document.querySelector("#integration-confirm-spreadsheet-wrap"),
+  integrationConfirmSpreadsheet: document.querySelector("#integration-confirm-spreadsheet"),
+  retryIntegrationSpreadsheet: document.querySelector("#retry-integration-spreadsheet"),
   branchIntegrationReviewPanel: document.querySelector("#branch-integration-review-panel"),
   branchIntegrationConfirmPrepare: document.querySelector("#branch-integration-confirm-prepare"),
   prepareBranchIntegration: document.querySelector("#prepare-branch-integration"),
@@ -116,6 +136,11 @@ const elements = {
   publicationSummary: document.querySelector("#publication-summary"),
   publicationDetails: document.querySelector("#publication-details"),
   publicationOutput: document.querySelector("#publication-output"),
+  publicationRecovery: document.querySelector("#publication-recovery"),
+  publicationRecoverySummary: document.querySelector("#publication-recovery-summary"),
+  publicationOpenReviewBuild: document.querySelector("#publication-open-review-build"),
+  publicationOpenFinishDay: document.querySelector("#publication-open-finish-day"),
+  publicationRetryStatus: document.querySelector("#publication-retry-status"),
   publicationMainHandoff: document.querySelector("#publication-main-handoff"),
   openMainEditor: document.querySelector("#open-main-editor"),
   publicationNotesPanel: document.querySelector("#publication-notes-panel"),
@@ -270,19 +295,50 @@ const elements = {
   baselineResults: document.querySelector("#baseline-results"),
   baselinePlan: document.querySelector("#baseline-plan"),
   baselineSettings: document.querySelector("#baseline-settings"),
+  reloadCameraButtons: document.querySelector("#reload-camera-buttons"),
+  previewCameraButtons: document.querySelector("#preview-camera-buttons"),
+  reviewCameraButtons: document.querySelector("#review-camera-buttons"),
+  cameraButtonsMessage: document.querySelector("#camera-buttons-message"),
+  cameraButtonsList: document.querySelector("#camera-buttons-list"),
+  cameraButtonsPreviewPanel: document.querySelector("#camera-buttons-preview-panel"),
+  cameraButtonsPreviewStatus: document.querySelector("#camera-buttons-preview-status"),
+  cameraButtonsPreviewPath: document.querySelector("#camera-buttons-preview-path"),
+  cameraButtonsPreviewEmpty: document.querySelector("#camera-buttons-preview-empty"),
+  cameraButtonsPreviewFrame: document.querySelector("#camera-buttons-preview-frame"),
   refreshReviewBuild: document.querySelector("#refresh-review-build"),
   sessionSummary: document.querySelector("#session-summary"),
   reviewBuildMessage: document.querySelector("#review-build-message"),
   pendingChangeCount: document.querySelector("#pending-change-count"),
   pendingChangeList: document.querySelector("#pending-change-list"),
+  refreshCameraLabEvidence: document.querySelector("#refresh-camera-lab-evidence"),
+  reviewCameraLabEvidence: document.querySelector("#review-camera-lab-evidence"),
+  cameraLabEvidenceMessage: document.querySelector("#camera-lab-evidence-message"),
+  cameraLabEvidenceList: document.querySelector("#camera-lab-evidence-list"),
   importVerificationTracker: document.querySelector("#import-verification-tracker"),
   validateReadiness: document.querySelector("#validate-readiness"),
   runLocalBuild: document.querySelector("#run-local-build"),
+  localBuildProgress: document.querySelector("#local-build-progress"),
+  localBuildProgressStage: document.querySelector("#local-build-progress-stage"),
+  localBuildProgressElapsed: document.querySelector("#local-build-progress-elapsed"),
+  localBuildProgressCommand: document.querySelector("#local-build-progress-command"),
+  localBuildProgressLog: document.querySelector("#local-build-progress-log"),
+  localBuildDetails: document.querySelector("#local-build-details"),
   localBuildOutput: document.querySelector("#local-build-output"),
   buildConfirmDialog: document.querySelector("#build-confirm-dialog"),
   buildConfirmClose: document.querySelector("#build-confirm-close"),
   buildConfirmCancel: document.querySelector("#build-confirm-cancel"),
   buildConfirmRun: document.querySelector("#build-confirm-run"),
+  specialReviewDialog: document.querySelector("#special-review-dialog"),
+  specialReviewEyebrow: document.querySelector("#special-review-eyebrow"),
+  specialReviewTitle: document.querySelector("#special-review-title"),
+  specialReviewSummary: document.querySelector("#special-review-summary"),
+  specialReviewWarning: document.querySelector("#special-review-warning"),
+  specialReviewDiff: document.querySelector("#special-review-diff"),
+  specialReviewConfirmRow: document.querySelector("#special-review-confirm-row"),
+  specialReviewConfirm: document.querySelector("#special-review-confirm"),
+  specialReviewClose: document.querySelector("#special-review-close"),
+  specialReviewCancel: document.querySelector("#special-review-cancel"),
+  saveSpecialReview: document.querySelector("#save-special-review"),
 };
 
 const state = {
@@ -303,13 +359,16 @@ const state = {
   nextDraftId: 1,
   filenameFollowsTitle: false,
   buildReadiness: null,
+  localBuildBusy: false,
   workflowPreflight: null,
   finishDay: null,
   finishDayReviewToken: null,
   finishDayBusy: false,
+  finishDayRecovery: null,
   branchIntegration: null,
   branchIntegrationReviewToken: null,
   branchIntegrationBusy: false,
+  branchIntegrationRecovery: null,
   cleanupReview: null,
   cleanupReviewToken: null,
   cleanupBusy: false,
@@ -336,6 +395,10 @@ const state = {
   cxReviewToken: null,
   cxReviewKind: null,
   activeProfileName: null,
+  cameraButtons: null,
+  cameraLabEvidence: null,
+  specialReviewToken: null,
+  specialReviewKind: null,
 };
 
 function clone(value) {
@@ -369,7 +432,11 @@ async function request(url, options) {
   }
   const response = await fetch(url, requestOptions);
   const payload = await response.json();
-  if (!response.ok) throw new Error(payload.error || "The prototype could not complete the request.");
+  if (!response.ok) {
+    const error = new Error(payload.error || "The prototype could not complete the request.");
+    error.recovery = payload.recovery || null;
+    throw error;
+  }
   return payload;
 }
 
@@ -438,7 +505,43 @@ function renderWorkflowPreflight() {
   elements.workflowPreflightSummary.append(title, detail);
   elements.workflowPreflightOutput.textContent = result?.output || "";
   elements.workflowPreflightDetails.hidden = !result?.output;
+  const recoveryActions = new Set(result?.recoveryActions || []);
+  elements.workflowPreflightRecovery.hidden = status !== "blocked";
+  elements.workflowPreflightRecoverySummary.textContent = recoveryActions.has("pull-latest")
+    ? "The working tree is clean and the branch is behind its matching remote. A confirmed fast-forward pull can update it without merging or rewriting history."
+    : recoveryActions.has("import-verification-tracker")
+      ? "Open Review & Build to import the saved verification tracker before continuing."
+      : recoveryActions.has("open-review-build")
+        ? "Open Review & Build to diagnose and refresh the stale derived files after confirmation."
+        : "Review the status details. Profile Editor will not attempt an unsafe merge, branch change, or history repair.";
+  elements.preflightOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.preflightImportTracker.hidden = !recoveryActions.has("import-verification-tracker");
+  elements.preflightPullLatest.hidden = !recoveryActions.has("pull-latest");
   elements.beginWork.disabled = !result || status === "blocked";
+}
+
+async function pullLatestFromPreflight() {
+  const pending = pendingSessionItems().length;
+  if (pending) {
+    showTodayMessage(`Resolve ${pending} pending browser ${pending === 1 ? "draft" : "drafts"} before pulling.`, true);
+    return;
+  }
+  if (!window.confirm("Pull the latest commits for this exact branch using fast-forward-only? Profile Editor will stop if a merge or history decision would be required.")) return;
+  elements.preflightPullLatest.disabled = true;
+  showTodayMessage("Refreshing the matching remote branch and applying a safe fast-forward only.");
+  try {
+    state.workflowPreflight = await request("/api/preflight-pull", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pendingChanges: 0, confirmPull: true }),
+    });
+    showTodayMessage("Latest remote changes were applied. Preflight passed.");
+  } catch (error) {
+    showTodayMessage(error.message, true);
+  } finally {
+    elements.preflightPullLatest.disabled = false;
+    renderWorkflowPreflight();
+  }
 }
 
 function renderTodayWorkflow() {
@@ -459,10 +562,31 @@ function renderTodayWorkflow() {
 }
 
 const GUARDED_JOB_KEYS = {
+  localBuild: "profileEditor.localBuildJob",
   finishDay: "profileEditor.finishDayPrepareJob",
   branchIntegration: "profileEditor.branchIntegrationPrepareJob",
   publication: "profileEditor.publicationJob",
 };
+
+function reconnectRunningAction(recovery) {
+  const destinations = {
+    "local-build": ["review-build", GUARDED_JOB_KEYS.localBuild],
+    "finish-day-prepare": ["finish-day", GUARDED_JOB_KEYS.finishDay],
+    "branch-integration-prepare": ["branch-integration", GUARDED_JOB_KEYS.branchIntegration],
+    "website-publication": ["release-publish", GUARDED_JOB_KEYS.publication],
+  };
+  const destination = destinations[recovery?.jobKind];
+  if (!destination || !recovery?.jobId) return false;
+  sessionStorage.setItem(destination[1], recovery.jobId);
+  switchView(destination[0]);
+  window.setTimeout(() => {
+    if (recovery.jobKind === "local-build") reconnectLocalBuild();
+    else if (recovery.jobKind === "finish-day-prepare") refreshFinishDay();
+    else if (recovery.jobKind === "branch-integration-prepare") refreshBranchIntegration();
+    else if (recovery.jobKind === "website-publication") refreshPublication();
+  }, 75);
+  return true;
+}
 
 function waitMilliseconds(milliseconds) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
@@ -509,7 +633,9 @@ async function waitForGuardedJob(jobId, storageKey, progressElements) {
     }
     if (job.status === "failed") {
       sessionStorage.removeItem(storageKey);
-      throw new Error(job.error || "The guarded workflow stopped.");
+      const error = new Error(job.error || "The guarded workflow stopped.");
+      error.recovery = job.recovery || null;
+      throw error;
     }
     await waitMilliseconds(650);
   }
@@ -524,6 +650,17 @@ const finishDayProgressElements = {
   failedStage: "Finish Day stopped — not completed",
   completedStage: "Finish Day preparation complete",
   completedMessage: "All required preparation checks completed.",
+};
+
+const localBuildProgressElements = {
+  panel: elements.localBuildProgress,
+  stage: elements.localBuildProgressStage,
+  elapsed: elements.localBuildProgressElapsed,
+  command: elements.localBuildProgressCommand,
+  log: elements.localBuildProgressLog,
+  failedStage: "Local build stopped — not completed",
+  completedStage: "Local build complete",
+  completedMessage: "Source validation, required spreadsheet refresh, build, and full validation completed.",
 };
 
 const branchIntegrationProgressElements = {
@@ -582,7 +719,25 @@ function renderFinishDay() {
   elements.finishDaySummary.textContent = summaries[phase] || summaries.checking;
   elements.finishDayOutput.textContent = result?.output || "";
   elements.finishDayDetails.hidden = !result?.output;
+  const recovery = state.finishDayRecovery;
+  const recoveryActions = new Set(recovery?.actions || result?.recoveryActions || []);
+  elements.finishDayRecovery.hidden = !recovery && !recoveryActions.size;
+  elements.finishDayRecoverySummary.textContent = recovery?.summary
+    || (recoveryActions.has("import-verification-tracker")
+      ? "Import the closed verification tracker in Review & Build, then refresh Finish Day."
+      : recoveryActions.has("open-review-build")
+        ? "Resolve the pending browser work in Review & Build, then refresh Finish Day."
+        : "Review the detailed repository status before choosing the next action.");
+  elements.finishDayOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.finishDayImportTracker.hidden = !recoveryActions.has("import-verification-tracker");
+  elements.finishDayShowDetails.hidden = !recoveryActions.has("show-status-details");
   elements.finishDayPreparePanel.hidden = phase !== "prepare";
+  const spreadsheetRefreshNeeded = Boolean(result?.spreadsheetState?.refreshNeeded);
+  if (spreadsheetRefreshNeeded) {
+    const labels = result.spreadsheetState.labels?.join(", ") || "spreadsheet-derived artifacts";
+    elements.finishDaySummary.textContent = `${summaries[phase]} Refresh required: ${labels}.`;
+  }
+  elements.finishDayConfirmSpreadsheetWrap.hidden = !spreadsheetRefreshNeeded;
   elements.finishDayCommitPanel.hidden = phase !== "commit";
   elements.finishDayPushPanel.hidden = phase !== "push";
   elements.finishDayCompletePanel.hidden = phase !== "complete";
@@ -594,7 +749,9 @@ function renderFinishDay() {
     ? `Push ${branch} only to ${result.upstream}. GitHub Pages is not published by Finish Day.`
     : "The exact branch and matching upstream must be confirmed before push.";
   elements.refreshFinishDay.disabled = state.finishDayBusy;
-  elements.prepareFinishDay.disabled = state.finishDayBusy || !elements.finishDayConfirmPrepare.checked;
+  elements.prepareFinishDay.disabled = state.finishDayBusy
+    || !elements.finishDayConfirmPrepare.checked
+    || (spreadsheetRefreshNeeded && !elements.finishDayConfirmSpreadsheet.checked);
   elements.commitFinishDay.disabled = state.finishDayBusy
     || !elements.finishDayConfirmCommit.checked
     || !elements.finishDayCommitMessage.value.trim()
@@ -621,6 +778,7 @@ async function refreshFinishDay() {
       showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed.");
     } catch (error) {
       state.finishDay = { phase: "prepare" };
+      state.finishDayRecovery = error.recovery || null;
       showFinishDayMessage(error.message, true);
     } finally {
       state.finishDayBusy = false;
@@ -631,6 +789,7 @@ async function refreshFinishDay() {
   state.finishDayBusy = true;
   state.finishDay = null;
   state.finishDayReviewToken = null;
+  state.finishDayRecovery = null;
   elements.finishDayProgress.hidden = true;
   showFinishDayMessage("");
   renderFinishDay();
@@ -642,6 +801,7 @@ async function refreshFinishDay() {
     });
   } catch (error) {
     state.finishDay = { phase: "blocked", blockers: [error.message], output: "" };
+    state.finishDayRecovery = error.recovery || null;
     showFinishDayMessage(error.message, true);
   } finally {
     state.finishDayBusy = false;
@@ -658,7 +818,11 @@ async function prepareFinishDay() {
     const started = await request("/api/finish-day-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+      body: JSON.stringify({
+        pendingChanges: pendingSessionItems().length,
+        confirmPrepare: true,
+        confirmSpreadsheetRefresh: elements.finishDayConfirmSpreadsheet.checked,
+      }),
     });
     sessionStorage.setItem(GUARDED_JOB_KEYS.finishDay, started.jobId);
     const result = await waitForGuardedJob(
@@ -667,10 +831,14 @@ async function prepareFinishDay() {
       finishDayProgressElements,
     );
     state.finishDay = result;
+    state.finishDayRecovery = null;
     state.finishDayReviewToken = result.reviewToken || null;
     elements.finishDayConfirmPrepare.checked = false;
+    elements.finishDayConfirmSpreadsheet.checked = false;
     showFinishDayMessage(result.phase === "commit" ? "Preparation passed. Review every source file before committing." : "Preparation completed. Review the current state.");
   } catch (error) {
+    state.finishDayRecovery = error.recovery || null;
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showFinishDayMessage(error.message, true);
   } finally {
     state.finishDayBusy = false;
@@ -760,6 +928,21 @@ function renderBranchIntegration() {
   elements.branchIntegrationSummary.textContent = summaries[phase] || summaries.checking;
   elements.branchIntegrationOutput.textContent = result?.output || "";
   elements.branchIntegrationDetails.hidden = !result?.output;
+  const recovery = state.branchIntegrationRecovery;
+  const recoveryActions = new Set(recovery?.actions || result?.recoveryActions || []);
+  elements.branchIntegrationRecovery.hidden = !recovery && !recoveryActions.size;
+  const recoveryLabels = recovery?.labels?.length ? ` Affected: ${recovery.labels.join(", ")}.` : "";
+  elements.branchIntegrationRecoverySummary.textContent = (recovery?.summary
+    || (recoveryActions.has("open-finish-day")
+      ? "Finish Day must leave this branch clean and synchronized before integration can continue."
+      : "Review the status details before retrying integration.")) + recoveryLabels;
+  elements.integrationOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.integrationOpenFinishDay.hidden = !recoveryActions.has("open-finish-day");
+  const canRefreshCandidate = recoveryActions.has("retry-with-spreadsheet-refresh");
+  elements.integrationConfirmSpreadsheetWrap.hidden = !canRefreshCandidate;
+  elements.retryIntegrationSpreadsheet.hidden = !canRefreshCandidate;
+  elements.retryIntegrationSpreadsheet.disabled = state.branchIntegrationBusy
+    || !elements.integrationConfirmSpreadsheet.checked;
   elements.branchIntegrationReviewPanel.hidden = phase !== "review";
   elements.branchIntegrationMergePanel.hidden = phase !== "merge-main";
   elements.branchIntegrationPushPanel.hidden = phase !== "push-main";
@@ -804,6 +987,7 @@ async function refreshBranchIntegration() {
       showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
     } catch (error) {
       state.branchIntegration = { phase: "review" };
+      state.branchIntegrationRecovery = error.recovery || null;
       showBranchIntegrationMessage(error.message, true);
     } finally {
       state.branchIntegrationBusy = false;
@@ -814,6 +998,7 @@ async function refreshBranchIntegration() {
   state.branchIntegrationBusy = true;
   state.branchIntegration = null;
   state.branchIntegrationReviewToken = null;
+  state.branchIntegrationRecovery = null;
   elements.branchIntegrationProgress.hidden = true;
   showBranchIntegrationMessage("");
   renderBranchIntegration();
@@ -827,6 +1012,7 @@ async function refreshBranchIntegration() {
     state.branchIntegrationReviewToken = result.reviewToken || null;
   } catch (error) {
     state.branchIntegration = { phase: "blocked", blockers: [error.message], output: "" };
+    state.branchIntegrationRecovery = error.recovery || null;
     showBranchIntegrationMessage(error.message, true);
   } finally {
     state.branchIntegrationBusy = false;
@@ -834,7 +1020,7 @@ async function refreshBranchIntegration() {
   }
 }
 
-async function prepareBranchIntegration() {
+async function prepareBranchIntegration(allowSpreadsheetRefresh = false) {
   state.branchIntegrationBusy = true;
   elements.branchIntegrationProgress.hidden = false;
   showBranchIntegrationMessage("Building and validating the isolated integration candidate. No real branch is being changed.");
@@ -843,7 +1029,11 @@ async function prepareBranchIntegration() {
     const started = await request("/api/branch-integration-prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmPrepare: true }),
+      body: JSON.stringify({
+        pendingChanges: pendingSessionItems().length,
+        confirmPrepare: true,
+        confirmSpreadsheetRefresh: allowSpreadsheetRefresh,
+      }),
     });
     sessionStorage.setItem(GUARDED_JOB_KEYS.branchIntegration, started.jobId);
     const result = await waitForGuardedJob(
@@ -852,10 +1042,14 @@ async function prepareBranchIntegration() {
       branchIntegrationProgressElements,
     );
     state.branchIntegration = result;
+    state.branchIntegrationRecovery = null;
     state.branchIntegrationReviewToken = result.reviewToken || null;
     elements.branchIntegrationConfirmPrepare.checked = false;
+    elements.integrationConfirmSpreadsheet.checked = false;
     showBranchIntegrationMessage(result.phase === "merge-main" ? "Candidate passed. Review the exact commits and files." : "Integration state refreshed.");
   } catch (error) {
+    state.branchIntegrationRecovery = error.recovery || null;
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showBranchIntegrationMessage(error.message, true);
   } finally {
     state.branchIntegrationBusy = false;
@@ -935,7 +1129,7 @@ function selectedPublicationMajor() {
 }
 
 function selectedSpreadsheetMode() {
-  return elements.publicationSpreadsheetChoices.find((choice) => choice.checked)?.value || "preserve";
+  return elements.publicationSpreadsheetChoices.find((choice) => choice.checked)?.value || "automatic";
 }
 
 function releaseHighlights() {
@@ -968,6 +1162,15 @@ function renderPublication() {
   elements.publicationSummary.textContent = summaries[phase] || summaries.checking;
   elements.publicationOutput.textContent = [result?.output, result?.spreadsheetState?.output].filter(Boolean).join("\n\n");
   elements.publicationDetails.hidden = !elements.publicationOutput.textContent;
+  const recoveryActions = new Set(result?.recoveryActions || []);
+  elements.publicationRecovery.hidden = !recoveryActions.size;
+  elements.publicationRecoverySummary.textContent = recoveryActions.has("open-finish-day")
+    ? "Finish Day must leave Main clean and synchronized before publication can continue."
+    : recoveryActions.has("open-review-build")
+      ? "Resolve pending work or spreadsheet readiness in Review & Build, then check publication again."
+      : "Refresh publication readiness after resolving the detailed condition.";
+  elements.publicationOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
+  elements.publicationOpenFinishDay.hidden = !recoveryActions.has("open-finish-day");
   elements.publicationMainHandoff.hidden = phase !== "main-handoff";
   elements.publicationNotesPanel.hidden = phase !== "release-notes";
   elements.publicationOptionsPanel.hidden = phase !== "ready";
@@ -976,10 +1179,13 @@ function renderPublication() {
   elements.publicationVersionLabel.textContent = result?.nextVersion ? `Version ${result.nextVersion}` : "the next version";
   if (result?.highlights?.length && !elements.publicationHighlights.value.trim()) elements.publicationHighlights.value = result.highlights.join("\n");
   const sheetStatus = result?.spreadsheetState?.status;
+  const buildIds = result?.spreadsheetState?.buildIds || result?.spreadsheetBuildIds || {};
+  const buildLabel = [buildIds.matrix ? `Matrix ${buildIds.matrix}` : "", buildIds.setup ? `Setup ${buildIds.setup}` : ""].filter(Boolean).join(" · ");
+  const refreshLabels = (result?.spreadsheetState?.refreshTargets || []).map((target) => target === "matrix" ? "Matrix" : "Setup").join(" and ");
   elements.publicationSpreadsheetStatus.textContent = sheetStatus === "current"
-    ? "Spreadsheet downloads are current."
+    ? `Spreadsheet downloads are current; Automatic will preserve them.${buildLabel ? ` ${buildLabel}.` : ""}`
     : sheetStatus === "refresh-needed"
-      ? "Spreadsheet inputs changed. Choose rebuild and replace, or deliberately remove the downloads."
+      ? `Automatic will rebuild and replace ${refreshLabels || "the stale workbook families"}.${buildLabel ? ` Expected builds: ${buildLabel}.` : ""}`
       : sheetStatus === "blocked" ? "Spreadsheet readiness is blocked; review the details above." : "";
   elements.reviewPublicationNotes.disabled = state.publicationBusy || !releaseHighlights().length;
   elements.reviewPublication.disabled = state.publicationBusy || phase !== "ready";
@@ -1034,6 +1240,7 @@ async function openMainEditor() {
     await request("/api/main-editor-launch", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
     showPublicationMessage("The Main project editor is opening in Chrome.");
   } catch (error) {
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showPublicationMessage(error.message, true);
   } finally {
     elements.openMainEditor.disabled = false;
@@ -1142,6 +1349,7 @@ async function startPublication() {
     state.publication = result;
     showPublicationMessage(result.message || "Publication complete and verified.");
   } catch (error) {
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showPublicationMessage(error.message, true);
   } finally {
     state.publicationBusy = false;
@@ -1284,7 +1492,12 @@ async function runWorkflowPreflight() {
   try {
     state.workflowPreflight = await request("/api/workflow-preflight", { method: "POST", body: "{}" });
   } catch (error) {
-    state.workflowPreflight = { status: "blocked", summary: error.message, output: "" };
+    state.workflowPreflight = {
+      status: "blocked",
+      summary: error.message,
+      output: "",
+      recoveryActions: error.recovery?.actions || ["retry-preflight"],
+    };
   } finally {
     elements.refreshWorkflowPreflight.disabled = false;
     renderWorkflowPreflight();
@@ -1639,7 +1852,12 @@ function switchView(viewName) {
     refreshCxFoundationFit();
   }
   if (viewName === "deleted-cards") loadDeletedCards();
-  if (viewName === "review-build") renderReviewBuild();
+  if (viewName === "camera-buttons" && !state.cameraButtons) loadCameraButtons(false);
+  if (viewName === "review-build") {
+    renderReviewBuild();
+    if (!state.cameraLabEvidence) refreshCameraLabEvidence();
+    if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild) && !state.localBuildBusy) reconnectLocalBuild();
+  }
   if (viewName === "today") renderTodayWorkflow();
   if (viewName === "finish-day" && !state.finishDayBusy) refreshFinishDay();
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
@@ -1792,6 +2010,11 @@ function hasMyMenuDraftChanges() {
   return Boolean(state.dictionary) && !equal(normalizedMyMenuDraft(), savedMyMenuDraft());
 }
 
+function hasCameraButtonChanges() {
+  return Boolean(state.cameraButtons?.draft)
+    && !equal(state.cameraButtons.draft, state.cameraButtons.saved);
+}
+
 function pendingSessionItems() {
   const items = [...state.profileDrafts.values()].map((draft) => ({
     type: "profile",
@@ -1800,6 +2023,7 @@ function pendingSessionItems() {
     detail: "Unsaved profile draft",
   }));
   if (hasMyMenuDraftChanges()) items.push({ type: "my-menu", key: "my-menu", label: "My Menu", detail: "Unsaved tab, shortcut, or color changes" });
+  if (hasCameraButtonChanges()) items.push({ type: "camera-buttons", key: "camera-buttons", label: "Camera Buttons", detail: "Unsaved control assignment or evidence changes" });
   if (hasCxAssignmentChanges()) items.push({ type: "cx-foundation", key: "cx-assignments", label: "Cx assignments", detail: "Unsaved C1-C3 profile assignments" });
   for (const [profile, start] of state.cxSelectionDrafts) {
     const item = state.cxFoundation?.profiles?.find((candidate) => candidate.name === profile);
@@ -1842,7 +2066,7 @@ function renderSessionStatus() {
   setBadge(elements.myMenuDraftBadge, menuCount);
   setBadge(elements.baselineDraftBadge, baselineCount);
   setBadge(elements.cxFoundationDraftBadge, cxCount);
-  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount);
+  setBadge(elements.pendingDraftBadge, profileCount + menuCount + baselineCount + cxCount + Number(hasCameraButtonChanges()));
   if (!document.querySelector("#review-build-view")?.hidden) renderReviewBuild();
   renderTodayWorkflow();
 }
@@ -1863,6 +2087,504 @@ function sessionSummaryCard(value, label) {
   return card;
 }
 
+function showCameraButtonsMessage(text, error = false) {
+  elements.cameraButtonsMessage.textContent = text;
+  elements.cameraButtonsMessage.classList.toggle("error", error);
+  elements.cameraButtonsMessage.hidden = !text;
+}
+
+function controlStatusLabel(value) {
+  return {
+    owner_confirmed: "Owner-confirmed current setup",
+    approved_target_pending_camera_verification: "Approved target—pending camera verification",
+    verified_canon_capability: "Verified Canon capability",
+    recommendation: "Project recommendation",
+    unresolved: "Unresolved",
+  }[value] || value;
+}
+
+async function loadCameraButtons(confirmDiscard = false) {
+  if (confirmDiscard && hasCameraButtonChanges()
+      && !window.confirm("Discard the unsaved Camera Buttons draft and reload saved controls?")) return;
+  elements.reloadCameraButtons.disabled = true;
+  try {
+    const detail = await request("/api/camera-buttons");
+    state.cameraButtons = {
+      saved: { controls: clone(detail.controls), dials: clone(detail.dials) },
+      draft: { controls: clone(detail.controls), dials: clone(detail.dials) },
+      evidenceStatuses: detail.evidenceStatuses,
+      evidenceStatusOptions: detail.evidenceStatusOptions || [],
+      options: detail.options || { controls: {}, dials: {} },
+      source: detail.source || {},
+      previewLoaded: false,
+    };
+    elements.cameraButtonsPreviewFrame.hidden = true;
+    elements.cameraButtonsPreviewFrame.removeAttribute("src");
+    elements.cameraButtonsPreviewEmpty.hidden = false;
+    elements.cameraButtonsPreviewPath.textContent = "";
+    elements.cameraButtonsPreviewStatus.textContent = "Preview not rendered";
+    elements.cameraButtonsPreviewPanel.classList.remove("is-stale");
+    elements.previewCameraButtons.textContent = "Preview Camera Buttons card";
+    renderCameraButtons();
+    invalidateBuildReadiness();
+    renderSessionStatus();
+    showCameraButtonsMessage("Saved Camera Buttons assignments loaded.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.reloadCameraButtons.disabled = false;
+  }
+}
+
+function markCameraButtonsPreviewStale() {
+  if (!state.cameraButtons?.previewLoaded) return;
+  elements.cameraButtonsPreviewStatus.textContent = "Draft changed · refresh preview";
+  elements.cameraButtonsPreviewPanel.classList.add("is-stale");
+}
+
+function choiceValue(row, field) {
+  const select = row.querySelector(`[data-field='${field}']`);
+  if (!select) return "";
+  if (select.value !== "__other__") return select.value.trim();
+  return row.querySelector(`[data-custom-for='${field}']`)?.value.trim() || "";
+}
+
+function infoChoiceValue(row, key) {
+  const select = [...row.querySelectorAll("[data-info-key]")].find((item) => item.dataset.infoKey === key);
+  if (!select) return "";
+  if (select.value !== "__other__") return select.value.trim();
+  return [...row.querySelectorAll("[data-custom-info-key]")]
+    .find((item) => item.dataset.customInfoKey === key)?.value.trim() || "";
+}
+
+function cameraButtonCardDetail(item) {
+  const labels = {
+    af_operation: "AF Operation",
+    af_method: "AF Method",
+    servo_af_characteristics: "Servo AF characteristics",
+  };
+  const parts = Object.entries(item.info_details || {}).map(([key, value]) => {
+    const normalized = String(key).trim().toLowerCase().replaceAll(" ", "_");
+    const label = labels[normalized]
+      || String(key).replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+    return `${label}: ${value}`;
+  });
+  for (const field of ["operation", "notes"]) {
+    const value = String(item[field] || "").trim().replace(/\.+$/, "");
+    if (value) parts.push(value);
+  }
+  return parts.join("; ") || "—";
+}
+
+function refreshCameraButtonCardDetails() {
+  for (const row of elements.cameraButtonsList.querySelectorAll(".camera-control-row")) {
+    const detail = row.querySelector("[data-card-detail]");
+    if (!detail) continue;
+    const item = state.cameraButtons.draft[row.dataset.group][Number(row.dataset.index)];
+    detail.textContent = cameraButtonCardDetail(item);
+  }
+}
+
+function syncCameraButtonDraft() {
+  if (!state.cameraButtons) return;
+  try {
+    for (const row of elements.cameraButtonsList.querySelectorAll(".camera-control-row")) {
+      const group = row.dataset.group;
+      const index = Number(row.dataset.index);
+      const item = state.cameraButtons.draft[group][index];
+      item.assignment = choiceValue(row, "assignment");
+      const operation = choiceValue(row, "operation");
+      if (operation) item.operation = operation;
+      else delete item.operation;
+      const notes = row.querySelector("[data-field='notes']").value.trim();
+      if (notes) item.notes = notes;
+      else delete item.notes;
+      item.status = row.querySelector("[data-field='status']").value;
+      const infoDetails = {};
+      for (const select of row.querySelectorAll("[data-info-key]")) {
+        const value = infoChoiceValue(row, select.dataset.infoKey);
+        if (value) infoDetails[select.dataset.infoKey] = value;
+      }
+      if (Object.keys(infoDetails).length) item.info_details = infoDetails;
+      else delete item.info_details;
+    }
+    refreshCameraButtonCardDetails();
+    showCameraButtonsMessage("");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  }
+  markCameraButtonsPreviewStale();
+  invalidateBuildReadiness();
+  renderSessionStatus();
+}
+
+function appendChoiceField(label, field, value, choices, onChange = syncCameraButtonDraft) {
+  const wrapper = document.createElement("label");
+  wrapper.textContent = label;
+  const select = document.createElement("select");
+  select.dataset.field = field;
+  const values = [...new Set([...(choices || []), value].filter((item) => item !== undefined && item !== null))];
+  for (const choice of values) {
+    const option = document.createElement("option");
+    option.value = String(choice);
+    option.textContent = choice === "" ? "None" : String(choice);
+    option.selected = String(choice) === String(value || "");
+    select.append(option);
+  }
+  const other = document.createElement("option");
+  other.value = "__other__";
+  other.textContent = "Other / exact camera label…";
+  select.append(other);
+  const custom = document.createElement("input");
+  custom.dataset.customFor = field;
+  custom.placeholder = "Enter the exact label shown on the camera";
+  custom.hidden = true;
+  select.addEventListener("change", () => {
+    custom.hidden = select.value !== "__other__";
+    if (!custom.hidden) custom.focus();
+    onChange();
+  });
+  custom.addEventListener("input", onChange);
+  wrapper.append(select, custom);
+  return wrapper;
+}
+
+function appendInfoChoice(labelText, key, value, definition) {
+  const label = document.createElement("label");
+  label.textContent = `INFO · ${labelText}`;
+  const select = document.createElement("select");
+  select.dataset.infoKey = key;
+  const values = [...new Set([...(definition.options || []), value].filter(Boolean))];
+  const none = document.createElement("option");
+  none.value = "";
+  none.textContent = "Not configured for this assignment";
+  select.append(none);
+  for (const choice of values) {
+    const option = document.createElement("option");
+    option.value = choice;
+    option.textContent = choice;
+    option.selected = choice === value;
+    select.append(option);
+  }
+  const other = document.createElement("option");
+  other.value = "__other__";
+  other.textContent = "Other / exact camera label…";
+  select.append(other);
+  const custom = document.createElement("input");
+  custom.dataset.customInfoKey = key;
+  custom.placeholder = "Enter the exact INFO-screen value";
+  custom.hidden = true;
+  const help = document.createElement("small");
+  help.textContent = definition.help || "Advanced option shown after pressing INFO for this assignment.";
+  select.addEventListener("change", () => {
+    custom.hidden = select.value !== "__other__";
+    if (!custom.hidden) custom.focus();
+    syncCameraButtonDraft();
+  });
+  custom.addEventListener("input", syncCameraButtonDraft);
+  label.append(select, custom, help);
+  return label;
+}
+
+function renderCameraButtons() {
+  elements.cameraButtonsList.replaceChildren();
+  if (!state.cameraButtons) return;
+  for (const [group, heading] of [["controls", "Buttons and physical controls"], ["dials", "Dials and control ring"]]) {
+    const section = document.createElement("section");
+    section.className = "camera-control-group";
+    const title = document.createElement("h3");
+    title.textContent = heading;
+    section.append(title);
+    state.cameraButtons.draft[group].forEach((item, index) => {
+      const definition = state.cameraButtons.options[group]?.[item.control] || {};
+      const row = document.createElement("article");
+      row.className = "camera-control-row";
+      row.dataset.group = group;
+      row.dataset.index = String(index);
+      const heading = document.createElement("div");
+      heading.className = "camera-control-heading";
+      if (definition.iconUrl) {
+        const icon = document.createElement("img");
+        icon.className = "camera-control-icon";
+        icon.src = definition.iconUrl;
+        icon.alt = "";
+        icon.setAttribute("aria-hidden", "true");
+        heading.append(icon);
+      }
+      const headingText = document.createElement("div");
+      const rowTitle = document.createElement("h4");
+      rowTitle.textContent = definition.displayLabel || item.control;
+      const defaultNote = document.createElement("p");
+      defaultNote.className = "camera-control-default";
+      defaultNote.textContent = `Canon default: ${definition.default || "Not documented"}${definition.canon_default_detail ? ` · ${definition.canon_default_detail}` : ""}`;
+      const description = document.createElement("small");
+      description.textContent = definition.help || "Physical camera control assignment.";
+      headingText.append(rowTitle, defaultNote, description);
+      heading.append(headingText);
+      const grid = document.createElement("div");
+      grid.className = "camera-control-grid";
+      grid.append(
+        appendChoiceField("Assignment · camera function", "assignment", item.assignment || "", definition.assignment_options),
+        appendChoiceField("Operation · what happens when used", "operation", item.operation || "", definition.operation_options || [""]),
+      );
+      const infoDefinitions = { ...(definition.info_fields || {}) };
+      for (const key of Object.keys(item.info_details || {})) {
+        if (!infoDefinitions[key]) infoDefinitions[key] = { options: [], help: "Saved INFO-screen option." };
+      }
+      for (const [key, infoDefinition] of Object.entries(infoDefinitions)) {
+        grid.append(appendInfoChoice(key, key, item.info_details?.[key] || "", infoDefinition));
+      }
+      const notesLabel = document.createElement("label");
+      notesLabel.textContent = "Notes · project explanation (free text)";
+      const notes = document.createElement("textarea");
+      notes.dataset.field = "notes";
+      notes.value = item.notes || "";
+      notes.addEventListener("input", syncCameraButtonDraft);
+      notesLabel.append(notes);
+      grid.append(notesLabel);
+      const statusLabel = document.createElement("label");
+      statusLabel.textContent = "Evidence · what is known about this row";
+      const status = document.createElement("select");
+      status.dataset.field = "status";
+      const configuredStatuses = state.cameraButtons.evidenceStatusOptions.length
+        ? state.cameraButtons.evidenceStatusOptions
+        : state.cameraButtons.evidenceStatuses.map((value) => ({ value, label: controlStatusLabel(value), help: "" }));
+      for (const configured of configuredStatuses) {
+        const option = document.createElement("option");
+        option.value = configured.value;
+        option.textContent = configured.label;
+        option.selected = configured.value === item.status;
+        status.append(option);
+      }
+      const statusHelp = document.createElement("small");
+      const updateStatusHelp = () => {
+        statusHelp.textContent = configuredStatuses.find((option) => option.value === status.value)?.help || "";
+      };
+      status.addEventListener("change", syncCameraButtonDraft);
+      status.addEventListener("change", updateStatusHelp);
+      updateStatusHelp();
+      statusLabel.append(status, statusHelp);
+      grid.append(statusLabel);
+      row.append(heading, grid);
+      if (group === "controls") {
+        const detail = document.createElement("aside");
+        detail.className = "camera-control-card-detail";
+        const detailLabel = document.createElement("strong");
+        detailLabel.textContent = "Card detail";
+        const detailText = document.createElement("p");
+        detailText.dataset.cardDetail = "";
+        detailText.textContent = cameraButtonCardDetail(item);
+        const detailHelp = document.createElement("small");
+        detailHelp.textContent = "Live text shown beneath this assignment on the Camera Buttons card.";
+        detail.append(detailLabel, detailText, detailHelp);
+        row.append(detail);
+      }
+      section.append(row);
+    });
+    elements.cameraButtonsList.append(section);
+  }
+}
+
+async function previewCameraButtons() {
+  syncCameraButtonDraft();
+  elements.previewCameraButtons.disabled = true;
+  elements.previewCameraButtons.textContent = "Rendering…";
+  showCameraButtonsMessage("Rendering a temporary Camera Buttons preview…");
+  try {
+    const payload = await request("/api/camera-buttons-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state.cameraButtons.draft),
+    });
+    elements.cameraButtonsPreviewPath.textContent = payload.outputFile;
+    elements.cameraButtonsPreviewFrame.src = `${payload.previewUrl}?t=${Date.now()}`;
+    elements.cameraButtonsPreviewFrame.hidden = false;
+    elements.cameraButtonsPreviewEmpty.hidden = true;
+    state.cameraButtons.previewLoaded = true;
+    elements.cameraButtonsPreviewPanel.classList.remove("is-stale");
+    elements.cameraButtonsPreviewStatus.textContent = "Current draft preview";
+    showCameraButtonsMessage("Preview rendered from the unsaved Camera Buttons draft.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.previewCameraButtons.disabled = false;
+    elements.previewCameraButtons.textContent = state.cameraButtons?.previewLoaded
+      ? "Refresh Camera Buttons preview"
+      : "Preview Camera Buttons card";
+  }
+}
+
+async function reviewCameraButtons() {
+  syncCameraButtonDraft();
+  if (!hasCameraButtonChanges()) {
+    showCameraButtonsMessage("The Camera Buttons draft matches the saved controls.", true);
+    return;
+  }
+  elements.reviewCameraButtons.disabled = true;
+  try {
+    const review = await request("/api/camera-buttons-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state.cameraButtons.draft),
+    });
+    showSpecialReview("camera-buttons", review);
+    showCameraButtonsMessage("Candidate validation passed. Review the exact synchronized YAML.");
+  } catch (error) {
+    showCameraButtonsMessage(error.message, true);
+  } finally {
+    elements.reviewCameraButtons.disabled = false;
+  }
+}
+
+function showCameraLabEvidenceMessage(text, error = false) {
+  elements.cameraLabEvidenceMessage.textContent = text;
+  elements.cameraLabEvidenceMessage.classList.toggle("error", error);
+  elements.cameraLabEvidenceMessage.hidden = !text;
+}
+
+async function refreshCameraLabEvidence() {
+  elements.refreshCameraLabEvidence.disabled = true;
+  try {
+    state.cameraLabEvidence = await request("/api/camera-lab-evidence");
+    renderCameraLabEvidence();
+    showCameraLabEvidenceMessage(
+      state.cameraLabEvidence.workbookBlocked
+        ? state.cameraLabEvidence.workbookMessage
+        : state.cameraLabEvidence.boundary,
+      state.cameraLabEvidence.workbookBlocked,
+    );
+  } catch (error) {
+    showCameraLabEvidenceMessage(error.message, true);
+  } finally {
+    elements.refreshCameraLabEvidence.disabled = false;
+  }
+}
+
+function renderCameraLabEvidence() {
+  elements.cameraLabEvidenceList.replaceChildren();
+  const detail = state.cameraLabEvidence;
+  if (!detail) return;
+  const available = detail.candidates.filter((item) => !item.alreadyImported);
+  if (!available.length) {
+    const empty = document.createElement("p");
+    empty.className = "pending-empty";
+    empty.textContent = detail.sessions.length
+      ? "No new exact C1–C3 setting evidence is available to import."
+      : "No completed physical-camera Camera Lab sessions were found.";
+    elements.cameraLabEvidenceList.append(empty);
+  }
+  for (const item of available) {
+    const label = document.createElement("label");
+    label.className = "camera-evidence-row";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = item.candidateId;
+    checkbox.disabled = detail.workbookBlocked;
+    checkbox.addEventListener("change", updateCameraLabEvidenceSelection);
+    const copy = document.createElement("span");
+    const title = document.createElement("strong");
+    title.textContent = `${item.slot} · ${item.setting} → ${item.target}`;
+    const note = document.createElement("small");
+    note.textContent = `${item.profile} · ${item.evidenceMethod} · ${item.completedAt || "time unavailable"}`;
+    copy.append(title, note);
+    label.append(checkbox, copy);
+    elements.cameraLabEvidenceList.append(label);
+  }
+  updateCameraLabEvidenceSelection();
+}
+
+function selectedCameraLabEvidence() {
+  return [...elements.cameraLabEvidenceList.querySelectorAll("input:checked")].map((input) => input.value);
+}
+
+function updateCameraLabEvidenceSelection() {
+  const selected = selectedCameraLabEvidence();
+  elements.reviewCameraLabEvidence.disabled = !selected.length || Boolean(state.cameraLabEvidence?.workbookBlocked);
+  elements.reviewCameraLabEvidence.textContent = selected.length
+    ? `Review ${selected.length} selected ${selected.length === 1 ? "item" : "items"}`
+    : "Review selected evidence";
+}
+
+async function reviewCameraLabEvidence() {
+  captureCurrentProfileDraft();
+  const pending = pendingSessionItems().length;
+  if (pending) {
+    showCameraLabEvidenceMessage(`Resolve ${pending} browser ${pending === 1 ? "draft" : "drafts"} before importing evidence.`, true);
+    return;
+  }
+  elements.reviewCameraLabEvidence.disabled = true;
+  try {
+    const review = await request("/api/camera-lab-evidence-reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateIds: selectedCameraLabEvidence(), pendingChanges: 0 }),
+    });
+    showSpecialReview("camera-lab-evidence", review);
+    showCameraLabEvidenceMessage("Candidate status validation passed. Review the exact tracker change.");
+  } catch (error) {
+    showCameraLabEvidenceMessage(error.message, true);
+  } finally {
+    updateCameraLabEvidenceSelection();
+  }
+}
+
+function showSpecialReview(kind, review) {
+  state.specialReviewToken = review.reviewToken;
+  state.specialReviewKind = kind;
+  const evidence = kind === "camera-lab-evidence";
+  elements.specialReviewEyebrow.textContent = evidence ? "Required evidence review" : "Required Camera Buttons review";
+  elements.specialReviewTitle.textContent = evidence ? "Promote physical-camera evidence?" : "Save Camera Buttons changes?";
+  elements.specialReviewSummary.textContent = review.summary;
+  elements.specialReviewWarning.textContent = evidence
+    ? "Only configured status for the exact settings shown will change. Read-back, registration, operational tests, and Canon verification remain untouched."
+    : "Both authoritative control records are one protected transaction. Changed confirmed behavior is returned to pending camera verification.";
+  elements.specialReviewDiff.textContent = review.diff;
+  elements.specialReviewConfirm.checked = false;
+  elements.specialReviewConfirmRow.hidden = !evidence;
+  elements.saveSpecialReview.disabled = evidence;
+  elements.saveSpecialReview.textContent = evidence ? "Import reviewed evidence" : "Save reviewed Camera Buttons";
+  elements.specialReviewDialog.showModal();
+}
+
+function closeSpecialReview() {
+  state.specialReviewToken = null;
+  state.specialReviewKind = null;
+  elements.specialReviewDialog.close();
+}
+
+async function saveSpecialReview() {
+  if (!state.specialReviewToken || !state.specialReviewKind) return;
+  const kind = state.specialReviewKind;
+  elements.saveSpecialReview.disabled = true;
+  try {
+    const endpoint = kind === "camera-lab-evidence"
+      ? "/api/camera-lab-evidence-saves"
+      : "/api/camera-buttons-saves";
+    const result = await request(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewToken: state.specialReviewToken,
+        confirmImport: kind === "camera-lab-evidence" ? elements.specialReviewConfirm.checked : undefined,
+      }),
+    });
+    closeSpecialReview();
+    invalidateBuildReadiness();
+    if (kind === "camera-lab-evidence") {
+      await refreshCameraLabEvidence();
+      showCameraLabEvidenceMessage(`Evidence imported, tracker refreshed, and validation passed. Recovery backup: ${result.backup}`);
+    } else {
+      await loadCameraButtons(false);
+      await loadProfiles(state.detail?.name, false);
+      showCameraButtonsMessage(`Camera Buttons saved and validated. Recovery backup: ${result.backup}`);
+    }
+  } catch (error) {
+    closeSpecialReview();
+    if (kind === "camera-lab-evidence") showCameraLabEvidenceMessage(error.message, true);
+    else showCameraButtonsMessage(error.message, true);
+  }
+}
+
 function renderReviewBuild() {
   const items = pendingSessionItems();
   const profileCount = items.filter((item) => item.type === "profile").length;
@@ -1871,6 +2593,7 @@ function renderReviewBuild() {
     sessionSummaryCard(items.filter((item) => item.type === "cx-foundation").length, "Cx Foundation drafts"),
     sessionSummaryCard(items.some((item) => item.type === "my-menu") ? 1 : 0, "My Menu draft"),
     sessionSummaryCard(items.some((item) => item.type === "baseline") ? 1 : 0, "baseline draft"),
+    sessionSummaryCard(items.some((item) => item.type === "camera-buttons") ? 1 : 0, "Camera Buttons draft"),
     sessionSummaryCard(state.buildReadiness?.ready ? "Ready" : "Locked", "local build"),
   );
   elements.pendingChangeCount.textContent = `${items.length} ${items.length === 1 ? "change" : "changes"}`;
@@ -1906,7 +2629,9 @@ function renderReviewBuild() {
     row.append(copy, actions);
     elements.pendingChangeList.append(row);
   }
-  elements.runLocalBuild.disabled = !(state.buildReadiness?.ready && items.length === 0);
+  elements.validateReadiness.disabled = state.localBuildBusy;
+  elements.importVerificationTracker.disabled = state.localBuildBusy;
+  elements.runLocalBuild.disabled = state.localBuildBusy || !(state.buildReadiness?.ready && items.length === 0);
 }
 
 async function openPendingItem(item) {
@@ -1921,6 +2646,10 @@ async function openPendingItem(item) {
   }
   if (item.type === "my-menu") {
     switchView("my-menu");
+    return;
+  }
+  if (item.type === "camera-buttons") {
+    switchView("camera-buttons");
     return;
   }
   if (item.type === "baseline") {
@@ -1942,6 +2671,8 @@ async function discardPendingItem(item) {
   if (!window.confirm(`Discard ${item.label}? These unsaved browser changes cannot be recovered.`)) return;
   if (item.type === "my-menu") {
     loadSavedMenus(true);
+  } else if (item.type === "camera-buttons") {
+    await loadCameraButtons(true);
   } else if (item.type === "cx-foundation") {
     if (item.key === "cx-assignments") state.cxAssignments = clone(state.cxFoundation.assignments);
     if (item.profile) state.cxSelectionDrafts.delete(item.profile);
@@ -1975,7 +2706,7 @@ async function validateBuildReadiness() {
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
     });
     state.buildReadiness = readiness;
-    elements.localBuildOutput.hidden = false;
+    elements.localBuildDetails.hidden = false;
     const refreshDetails = readiness.derivedArtifacts?.refreshNeeded
       ? `\n\nSpreadsheet refresh will run automatically:\n${readiness.derivedArtifacts.details.join("\n")}`
       : "\n\nSpreadsheet-derived artifacts are current; no workbook refresh is needed.";
@@ -2004,7 +2735,7 @@ async function importVerificationTracker() {
   }
   if (!window.confirm("Import the most recently modified local verification tracker into canonical project status? Save and close Numbers or Excel first.")) return;
   elements.importVerificationTracker.disabled = true;
-  elements.localBuildOutput.hidden = false;
+  elements.localBuildDetails.hidden = false;
   elements.localBuildOutput.textContent = "Importing verification tracker…";
   showReviewBuildMessage("Importing the most recently modified local verification tracker. Keep this page open.");
   try {
@@ -2027,18 +2758,33 @@ async function importVerificationTracker() {
 }
 
 async function runLocalBuild() {
+  state.localBuildBusy = true;
   elements.buildConfirmRun.disabled = true;
   elements.runLocalBuild.disabled = true;
   elements.buildConfirmDialog.close();
-  elements.localBuildOutput.hidden = false;
-  elements.localBuildOutput.textContent = "Running source validation, any required spreadsheet refresh, local build, and full validation…";
+  elements.localBuildDetails.hidden = false;
+  elements.localBuildOutput.textContent = "Build started. Live details are available in Watch command log.";
+  renderGuardedJobProgress(localBuildProgressElements, {
+    status: "running",
+    stage: "Starting local build…",
+    elapsedSeconds: 0,
+    command: "Preparing the first command…",
+    log: [],
+  });
   showReviewBuildMessage("Local build is running. Keep this page open.");
+  let started = null;
   try {
-    const result = await request("/api/local-build", {
+    started = await request("/api/local-build", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length, confirmLocalBuild: true }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.localBuild, started.jobId);
+    const result = await waitForGuardedJob(
+      started.jobId,
+      GUARDED_JOB_KEYS.localBuild,
+      localBuildProgressElements,
+    );
     elements.localBuildOutput.textContent = result.steps
       .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
       .join("\n\n");
@@ -2047,8 +2793,55 @@ async function runLocalBuild() {
   } catch (error) {
     state.buildReadiness = null;
     elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    if (!started) {
+      renderGuardedJobProgress(localBuildProgressElements, {
+        status: "failed",
+        error: error.message,
+        elapsedSeconds: 0,
+        log: [`✕ Local build stopped\n${error.message}`],
+      });
+    }
+    if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showReviewBuildMessage(error.message, true);
   } finally {
+    state.localBuildBusy = false;
+    elements.buildConfirmRun.disabled = false;
+    renderReviewBuild();
+  }
+}
+
+async function reconnectLocalBuild() {
+  const jobId = sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild);
+  if (!jobId || state.localBuildBusy) return;
+  state.localBuildBusy = true;
+  elements.localBuildDetails.hidden = false;
+  showReviewBuildMessage("Reconnected to the running local build.");
+  renderReviewBuild();
+  try {
+    const result = await waitForGuardedJob(
+      jobId,
+      GUARDED_JOB_KEYS.localBuild,
+      localBuildProgressElements,
+    );
+    elements.localBuildOutput.textContent = result.steps
+      .map((step) => `${step.label} — ${step.status}\n${step.output || "(no output)"}`)
+      .join("\n\n");
+    state.buildReadiness = null;
+    showReviewBuildMessage("Spreadsheet readiness, local build, and full validation passed. Git and publishing were not run.");
+  } catch (error) {
+    state.buildReadiness = null;
+    elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
+    if (elements.localBuildProgress.hidden) {
+      renderGuardedJobProgress(localBuildProgressElements, {
+        status: "failed",
+        error: error.message,
+        elapsedSeconds: 0,
+        log: [`✕ Local build progress unavailable\n${error.message}`],
+      });
+    }
+    showReviewBuildMessage(error.message, true);
+  } finally {
+    state.localBuildBusy = false;
     elements.buildConfirmRun.disabled = false;
     renderReviewBuild();
   }
@@ -2416,7 +3209,10 @@ function render() {
     renderReference();
     elements.customCount.textContent = "0";
     elements.inheritedCount.textContent = "0";
-    showMessage("This reference card remains read-only. Preview it here; edit My Menu through Configure My Menu.");
+    const referenceSource = state.detail?.name === "Camera Buttons"
+      ? "Edit its assignments through the dedicated Camera Buttons workspace."
+      : "Edit My Menu through Configure My Menu.";
+    showMessage(`This generated reference card remains read-only in Profiles. ${referenceSource}`);
     return;
   }
   renderMetadataState();
@@ -4069,6 +4865,13 @@ elements.sidebarCameraLab.addEventListener("click", openCurrentProfileInCameraLa
 elements.stopProfileEditor.addEventListener("click", stopProfileEditor);
 for (const step of elements.daySteps) step.addEventListener("click", () => setDayPhase(step.dataset.dayPhase));
 elements.refreshWorkflowPreflight.addEventListener("click", runWorkflowPreflight);
+elements.preflightOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.preflightImportTracker.addEventListener("click", () => {
+  switchView("review-build");
+  importVerificationTracker();
+});
+elements.preflightPullLatest.addEventListener("click", pullLatestFromPreflight);
+elements.preflightRetry.addEventListener("click", runWorkflowPreflight);
 elements.beginWork.addEventListener("click", () => setDayPhase("work"));
 elements.todayOpenProfiles.addEventListener("click", () => switchView("profiles"));
 elements.todayOpenCameraLab.addEventListener("click", openCurrentProfileInCameraLab);
@@ -4080,7 +4883,17 @@ elements.switchingMacs.addEventListener("change", () => { elements.handoffGuidan
 elements.continueToPublish.addEventListener("click", () => switchView("release-publish"));
 elements.refreshFinishDay.addEventListener("click", refreshFinishDay);
 elements.finishDayConfirmPrepare.addEventListener("change", renderFinishDay);
+elements.finishDayConfirmSpreadsheet.addEventListener("change", renderFinishDay);
 elements.prepareFinishDay.addEventListener("click", prepareFinishDay);
+elements.finishDayOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.finishDayImportTracker.addEventListener("click", () => {
+  switchView("review-build");
+  importVerificationTracker();
+});
+elements.finishDayShowDetails.addEventListener("click", () => {
+  elements.finishDayDetails.hidden = false;
+  elements.finishDayDetails.open = true;
+});
 elements.finishDayConfirmCommit.addEventListener("change", renderFinishDay);
 elements.finishDayCommitMessage.addEventListener("input", renderFinishDay);
 elements.commitFinishDay.addEventListener("click", commitFinishDay);
@@ -4089,7 +4902,11 @@ elements.pushFinishDay.addEventListener("click", pushFinishDay);
 elements.openBranchIntegration.addEventListener("click", () => switchView("branch-integration"));
 elements.refreshBranchIntegration.addEventListener("click", refreshBranchIntegration);
 elements.branchIntegrationConfirmPrepare.addEventListener("change", renderBranchIntegration);
-elements.prepareBranchIntegration.addEventListener("click", prepareBranchIntegration);
+elements.prepareBranchIntegration.addEventListener("click", () => prepareBranchIntegration(false));
+elements.integrationOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.integrationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
+elements.integrationConfirmSpreadsheet.addEventListener("change", renderBranchIntegration);
+elements.retryIntegrationSpreadsheet.addEventListener("click", () => prepareBranchIntegration(true));
 elements.branchIntegrationConfirmMerge.addEventListener("change", renderBranchIntegration);
 elements.mergeBranchToMain.addEventListener("click", mergeBranchToMain);
 elements.branchIntegrationConfirmPush.addEventListener("change", renderBranchIntegration);
@@ -4102,6 +4919,9 @@ elements.refreshCleanupReview.addEventListener("click", refreshCleanupReview);
 elements.cleanupConfirmDelete.addEventListener("change", renderCleanupSelection);
 elements.deleteCleanupCandidates.addEventListener("click", deleteCleanupCandidates);
 elements.refreshPublication.addEventListener("click", refreshPublication);
+elements.publicationOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
+elements.publicationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
+elements.publicationRetryStatus.addEventListener("click", refreshPublication);
 elements.openMainEditor.addEventListener("click", openMainEditor);
 elements.publicationVersionKind.addEventListener("change", () => {
   elements.publicationMajorField.hidden = elements.publicationVersionKind.value !== "major";
@@ -4161,6 +4981,9 @@ elements.discardProfileClose.addEventListener("click", closeProfileDiscardReview
 elements.discardProfileCancel.addEventListener("click", closeProfileDiscardReview);
 elements.discardProfileConfirm.addEventListener("click", saveProfileDiscard);
 elements.refreshDeletedCards.addEventListener("click", loadDeletedCards);
+elements.reloadCameraButtons.addEventListener("click", () => loadCameraButtons(true));
+elements.previewCameraButtons.addEventListener("click", previewCameraButtons);
+elements.reviewCameraButtons.addEventListener("click", reviewCameraButtons);
 elements.restoreProfileClose.addEventListener("click", closeProfileRestoreReview);
 elements.restoreProfileCancel.addEventListener("click", closeProfileRestoreReview);
 elements.restoreProfileConfirm.addEventListener("click", saveProfileRestore);
@@ -4229,6 +5052,16 @@ elements.refreshReviewBuild.addEventListener("click", () => {
 });
 elements.validateReadiness.addEventListener("click", validateBuildReadiness);
 elements.importVerificationTracker.addEventListener("click", importVerificationTracker);
+elements.refreshCameraLabEvidence.addEventListener("click", refreshCameraLabEvidence);
+elements.reviewCameraLabEvidence.addEventListener("click", reviewCameraLabEvidence);
+elements.specialReviewClose.addEventListener("click", closeSpecialReview);
+elements.specialReviewCancel.addEventListener("click", closeSpecialReview);
+elements.specialReviewConfirm.addEventListener("change", () => {
+  if (state.specialReviewKind === "camera-lab-evidence") {
+    elements.saveSpecialReview.disabled = !elements.specialReviewConfirm.checked;
+  }
+});
+elements.saveSpecialReview.addEventListener("click", saveSpecialReview);
 elements.runLocalBuild.addEventListener("click", () => {
   if (state.buildReadiness?.ready && pendingSessionItems().length === 0) elements.buildConfirmDialog.showModal();
 });
@@ -4246,7 +5079,9 @@ Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(),
 setDayPhase("start");
 renderTodayWorkflow();
 runWorkflowPreflight();
-if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
+if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild)) {
+  switchView("review-build");
+} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
   switchView("finish-day");
 } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
   switchView("branch-integration");

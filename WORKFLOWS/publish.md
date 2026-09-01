@@ -10,7 +10,7 @@ The supported publisher runs only from `main`. A prototype branch may be committ
 
 - Source changes are validated, committed, and pushed.
 - `main` is checked out, clean, and synchronized with `origin/main`.
-- If spreadsheet inputs changed, rebuild their release workbooks first.
+- Review the spreadsheet diagnosis. Profile Editor automatically rebuilds only stale families; use Force only when you intentionally want new files despite unchanged inputs.
 - Add concise reader-facing highlights for the upcoming version to `00 Master/release_notes.yaml`.
 - Confirm that updating the live website is intentional.
 
@@ -41,6 +41,16 @@ Or publish the next minor version while replacing both spreadsheet families:
 ```bash
 ./80\ Build/scripts/publish.sh --spreadsheet-downloads
 ```
+
+In Profile Editor, **Automatic (recommended)** chooses between those paths: it preserves exact verified downloads when current and rebuilds/replaces only diagnosed stale families. **Force rebuild and republish both** first runs:
+
+```bash
+./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks
+```
+
+and then publishes with `--spreadsheet-downloads`. This is the deliberate way to regenerate both families when their inputs are already current.
+
+Each workbook and website download displays the same deterministic spreadsheet build ID. Matrix IDs begin with `M`; Setup IDs begin with `S`. These identify workbook content independently from the website version.
 
 Publication automatically stops before building or pushing if the selected version has no curated entry in `00 Master/release_notes.yaml`.
 

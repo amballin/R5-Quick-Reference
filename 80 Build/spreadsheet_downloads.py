@@ -21,7 +21,7 @@ from spreadsheet_ooxml import (
     excel_column,
     worksheet_dimensions,
 )
-from spreadsheet_revisions import source_fingerprint, workbook_revision
+from spreadsheet_revisions import source_fingerprint, spreadsheet_build_id, workbook_revision
 from validators.common import load_yaml_checked
 
 
@@ -72,6 +72,7 @@ def download_catalog(paths, targets=SUPPORTED_TARGETS):
             {
                 "target": target,
                 "title": spec["layout"]["web_title"],
+                "build_id": spreadsheet_build_id(paths, target),
                 "xlsx_name": spec["layout"]["xlsx_name"],
                 "numbers_name": spec["layout"]["numbers_name"],
             }
@@ -248,6 +249,7 @@ def verify_prepared_download(paths, target, write_manifest=True):
         "prepared": datetime.now().astimezone().isoformat(),
         "workbook_revision": workbook_revision(paths, target),
         "source_fingerprint": source_fingerprint(paths, target),
+        "build_id": spreadsheet_build_id(paths, target),
         "xlsx": {
             "name": spec["xlsx"].name,
             "sha256": _sha256(spec["xlsx"]),
@@ -284,6 +286,10 @@ def validate_download_manifest(paths, target="matrix"):
     if payload.get("source_fingerprint") != source_fingerprint(paths, target):
         raise SpreadsheetDownloadError(
             f"Prepared {target} source inputs changed. Rebuild its downloads."
+        )
+    if payload.get("build_id") != spreadsheet_build_id(paths, target):
+        raise SpreadsheetDownloadError(
+            f"Prepared {target} spreadsheet build ID is stale. Rebuild its downloads."
         )
     for key in ("xlsx", "numbers"):
         path = spec[key]
@@ -400,6 +406,7 @@ def prepare_spreadsheet_release(
             entry = {
                 "workbook_revision": local["workbook_revision"],
                 "source_fingerprint": local["source_fingerprint"],
+                "build_id": local["build_id"],
                 "prepared": local["prepared"],
                 "files": {},
             }
@@ -430,6 +437,13 @@ def prepare_spreadsheet_release(
                 f"Published {target} workbook revision is outdated. "
                 f"Rebuild it or publish with --remove-spreadsheet-downloads."
             )
+        expected_build_id = spreadsheet_build_id(paths, target)
+        if prior.get("build_id") not in {None, expected_build_id}:
+            raise SpreadsheetDownloadError(
+                f"Published {target} spreadsheet build ID is outdated. "
+                f"Rebuild it or publish with --remove-spreadsheet-downloads."
+            )
+        preserved["build_id"] = expected_build_id
         preserved = deepcopy_json(prior)
         for key in ("xlsx", "numbers"):
             file_entry = (preserved.get("files") or {}).get(key) or {}
@@ -481,6 +495,8 @@ def validate_published_release(paths, root=None):
             raise SpreadsheetDownloadError(f"Unknown published spreadsheet target: {target}")
         if entry.get("source_fingerprint") != source_fingerprint(paths, target):
             raise SpreadsheetDownloadError(f"Published {target} release has a stale source fingerprint.")
+        if entry.get("build_id") != spreadsheet_build_id(paths, target):
+            raise SpreadsheetDownloadError(f"Published {target} release has a stale spreadsheet build ID.")
         for key in ("xlsx", "numbers"):
             file_entry = (entry.get("files") or {}).get(key) or {}
             path = root / "downloads" / str(file_entry.get("name") or "")

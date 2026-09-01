@@ -10,6 +10,8 @@ BUILD_DIR = Path(__file__).resolve().parent
 if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
+from asset_manager import ProjectPaths
+from spreadsheet_revisions import spreadsheet_build_id
 from subject_settings_matrix import _card_start_label
 
 
@@ -28,6 +30,11 @@ class SubjectSettingsMatrixRouteTests(unittest.TestCase):
 
     def test_profile_without_route_remains_blank(self):
         self.assertEqual(_card_start_label({}, "Unrouted"), "")
+
+    def test_spreadsheet_build_ids_are_concise_and_family_specific(self):
+        paths = ProjectPaths(BUILD_DIR.parent)
+        self.assertRegex(spreadsheet_build_id(paths, "matrix"), r"^M\d+-[0-9a-f]{12}$")
+        self.assertRegex(spreadsheet_build_id(paths, "setup"), r"^S\d+-[0-9a-f]{12}$")
 
 
 if __name__ == "__main__":

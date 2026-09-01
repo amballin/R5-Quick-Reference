@@ -171,6 +171,48 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
         self.assertIn("Development build", stages)
         self.assertIn("Creating reviewed integration candidate", stages)
 
+    def test_candidate_spreadsheet_refresh_requires_permission_and_retries_in_isolation(self):
+        verification = self.root / "80 Build" / "verification_status.py"
+        spreadsheets = self.root / "80 Build" / "spreadsheet_downloads.py"
+        refresh = self.root / "80 Build" / "scripts" / "build-all-spreadsheet-downloads.sh"
+        refresh.parent.mkdir(parents=True, exist_ok=True)
+        verification.write_text("print('Verification current')\n", encoding="utf-8")
+        spreadsheets.write_text(
+            "from pathlib import Path\n"
+            "import sys\n"
+            "marker = Path('.candidate-spreadsheets-current')\n"
+            "print('Current' if marker.exists() else 'Stale Matrix/settings and Setup')\n"
+            "raise SystemExit(0 if marker.exists() else 2)\n",
+            encoding="utf-8",
+        )
+        refresh.write_text(
+            "#!/usr/bin/env bash\nset -e\ntouch .candidate-spreadsheets-current\necho refreshed candidate spreadsheets\n",
+            encoding="utf-8",
+        )
+        refresh.chmod(0o755)
+        subprocess.run(
+            ["git", "add", "80 Build/verification_status.py", "80 Build/spreadsheet_downloads.py", "80 Build/scripts/build-all-spreadsheet-downloads.sh"],
+            cwd=self.root,
+            check=True,
+        )
+        subprocess.run(["git", "commit", "-m", "Add spreadsheet workflow"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+
+        with self.assertRaisesRegex(BranchIntegrationError, "requires a spreadsheet refresh") as stopped:
+            self.workflow.prepare(0, True)
+        self.assertEqual(stopped.exception.recovery["kind"], "integration-spreadsheet-refresh")
+        self.assertFalse((self.root / ".candidate-spreadsheets-current").exists())
+
+        prepared = self.workflow.prepare(0, True, allow_spreadsheet_refresh=True)
+        self.assertEqual(prepared["phase"], "merge-main")
+        self.assertTrue(any(step["label"] == "Spreadsheet refresh" for step in prepared["steps"]))
+        self.assertFalse((self.root / ".candidate-spreadsheets-current").exists())
+
     def test_runtime_source_changes_require_restart_after_app_refresh(self):
         runtime_source = self.root / "80 Build" / "profile_editor" / "app.js"
         runtime_source.parent.mkdir(parents=True)

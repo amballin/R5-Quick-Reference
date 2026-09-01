@@ -19,7 +19,7 @@ from html_renderer import (
 )
 from validators.common import flatten_paths, load_yaml_checked
 from spreadsheet_ooxml import enable_automatic_row_heights, ensure_freeze_panes, hide_columns
-from spreadsheet_revisions import short_fingerprint, source_fingerprint, workbook_revision
+from spreadsheet_revisions import source_fingerprint, spreadsheet_build_id, workbook_revision
 
 
 DEFAULT_NODE = "/Users/andy/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
@@ -97,9 +97,9 @@ def generate_subject_settings_matrix(paths):
         "shared_layout": layouts.get("shared") or {},
         "workbook_revision": workbook_revision(paths, "matrix"),
         "source_fingerprint": source_fingerprint(paths, "matrix"),
+        "spreadsheet_build_id": spreadsheet_build_id(paths, "matrix"),
         "release_label": (
-            f"Workbook revision {workbook_revision(paths, 'matrix')} • "
-            f"Source {short_fingerprint(source_fingerprint(paths, 'matrix'))} • "
+            f"Spreadsheet build {spreadsheet_build_id(paths, 'matrix')} • "
             f"Generated {datetime.now().astimezone().date().isoformat()}"
         ),
     }

@@ -55,35 +55,39 @@
           <span class="nav-label">Finish Day</span>
           <span class="nav-note">Review, commit, and synchronize</span>
         </button>
-        <button class="view-tab" type="button" data-view="branch-integration">
-          <span class="nav-label">Integrate Branch</span>
-          <span class="nav-note">Review and merge into main</span>
-        </button>
         <p class="nav-heading nav-heading-advanced">Profile setup</p>
         <button class="view-tab" type="button" data-view="cx-foundation">
           <span class="nav-label-line"><span class="nav-label">Cx Foundation</span><span id="cx-foundation-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Assign and choose C1–C3</span>
         </button>
-        <button class="view-tab" type="button" data-view="deleted-cards">
-          <span class="nav-label">Deleted Cards</span>
-          <span class="nav-note">Restore removed drafts</span>
-        </button>
         <button class="view-tab" type="button" data-view="my-menu">
           <span class="nav-label-line"><span class="nav-label">My Menu</span><span id="my-menu-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Arrange camera shortcuts</span>
+        </button>
+        <button class="view-tab" type="button" data-view="camera-buttons">
+          <span class="nav-label">Camera Buttons</span>
+          <span class="nav-note">Assignments and evidence</span>
         </button>
         <button class="view-tab" type="button" data-view="baseline">
           <span class="nav-label-line"><span class="nav-label">Baseline Setup</span><span id="baseline-draft-badge" class="nav-badge" hidden></span></span>
           <span class="nav-note">Plan shared-setting changes</span>
         </button>
+        <button class="view-tab" type="button" data-view="deleted-cards">
+          <span class="nav-label">Deleted Cards</span>
+          <span class="nav-note">Restore removed profile cards</span>
+        </button>
         <p class="nav-heading nav-heading-advanced">Occasional</p>
-        <button class="view-tab" type="button" data-view="cleanup-review">
-          <span class="nav-label">Cleanup Review</span>
-          <span class="nav-note">Optional exact deletion review</span>
+        <button class="view-tab" type="button" data-view="branch-integration">
+          <span class="nav-label">Integrate Branch</span>
+          <span class="nav-note">Review and merge into main</span>
         </button>
         <button class="view-tab" type="button" data-view="release-publish">
           <span class="nav-label">Release &amp; Publish</span>
           <span class="nav-note">Deliberate website release</span>
+        </button>
+        <button class="view-tab" type="button" data-view="cleanup-review">
+          <span class="nav-label">Cleanup Review</span>
+          <span class="nav-note">Optional exact deletion review</span>
         </button>
         <button class="view-tab" type="button" data-view="setup-sharing">
           <span class="nav-label">Setup &amp; Sharing</span>
@@ -100,7 +104,7 @@
     <section class="safety-note" aria-label="Editor safety notice">
       <strong>Review before every save.</strong>
       Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Reference-card edits, released-card removal, permanent card or source deletion, direct baseline edits, and publishing remain unavailable here. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Optional Cleanup Review may permanently remove only exact separately confirmed workflow-owned disposable items. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, and branch integration are available only through their separately confirmed guarded workspaces.
+      Camera Buttons and My Menu use dedicated guarded editors; other permanent reference-card content remains read-only. Released-card removal, permanent card or source deletion, and direct baseline edits remain unavailable. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Optional Cleanup Review may permanently remove only exact separately confirmed workflow-owned disposable items. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, publication, and branch integration remain confined to their separately confirmed guarded workspaces.
     </section>
 
     <section id="today-view" class="app-view">
@@ -138,6 +142,16 @@
           <summary>Show preflight details</summary>
           <pre id="workflow-preflight-output"></pre>
         </details>
+        <div id="workflow-preflight-recovery" class="workflow-recovery" hidden>
+          <strong>Fix this in Profile Editor</strong>
+          <p id="workflow-preflight-recovery-summary" class="muted"></p>
+          <div class="workflow-recovery-actions">
+            <button id="preflight-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
+            <button id="preflight-import-tracker" class="secondary" type="button" hidden>Import verification tracker</button>
+            <button id="preflight-pull-latest" class="primary" type="button" hidden>Pull latest changes</button>
+            <button id="preflight-retry" class="secondary" type="button">Check again</button>
+          </div>
+        </div>
         <div class="day-panel-actions">
           <span>Preflight never pulls, merges, builds, or publishes.</span>
           <button id="begin-work" class="primary" type="button" disabled>Begin work</button>
@@ -498,6 +512,41 @@
       <div id="baseline-settings" class="settings" aria-live="polite"></div>
     </section>
 
+    <section id="camera-buttons-view" class="app-view" hidden>
+      <div class="view-intro">
+        <div>
+          <p class="eyebrow">Purpose-built reference editor</p>
+          <h2>Camera Buttons</h2>
+          <p class="muted">Edit the existing physical-control assignments and evidence states. C1–C3 assignments remain in Cx Foundation.</p>
+        </div>
+        <div class="local-build-actions">
+          <button id="reload-camera-buttons" class="secondary" type="button">Reload saved controls</button>
+          <button id="review-camera-buttons" class="save-action" type="button">Review Camera Buttons changes</button>
+        </div>
+      </div>
+      <div class="configuration-state"><strong>Evidence safeguard</strong> · Changing an owner-confirmed assignment, operation, or INFO detail automatically returns that row to pending camera verification.</div>
+      <div id="camera-buttons-message" class="message" role="status" hidden></div>
+      <div class="camera-buttons-workspace">
+        <div id="camera-buttons-list" class="camera-buttons-list" aria-live="polite"></div>
+        <aside id="camera-buttons-preview-panel" class="preview-panel camera-buttons-preview-panel" aria-label="Camera Buttons card preview">
+          <div class="preview-heading">
+            <div>
+              <p class="eyebrow">Unsaved draft</p>
+              <h2>Card preview</h2>
+              <p id="camera-buttons-preview-status" class="preview-status">Preview not rendered</p>
+            </div>
+            <button id="preview-camera-buttons" class="primary" type="button">Preview Camera Buttons card</button>
+          </div>
+          <p id="camera-buttons-preview-path" class="preview-path muted"></p>
+          <div id="camera-buttons-preview-empty" class="preview-empty">
+            <strong>Preview the Camera Buttons card before saving.</strong>
+            <span>The preview uses the draft choices and the same renderer and icons as the released card.</span>
+          </div>
+          <iframe id="camera-buttons-preview-frame" title="Temporary Camera Buttons card preview" hidden></iframe>
+        </aside>
+      </div>
+    </section>
+
     <section id="review-build-view" class="app-view" hidden>
       <div class="view-intro">
         <div>
@@ -522,6 +571,22 @@
         <div id="pending-change-list" class="pending-change-list"></div>
       </section>
 
+      <section class="pending-review-panel lab-evidence-panel">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">Physical-camera evidence</p>
+            <h2>Camera Lab evidence</h2>
+            <p class="muted">Review exact completed physical-camera evidence before promoting it into C1–C3 configured status. Nothing is selected automatically.</p>
+          </div>
+          <div class="local-build-actions">
+            <button id="refresh-camera-lab-evidence" class="secondary" type="button">Refresh evidence</button>
+            <button id="review-camera-lab-evidence" class="primary" type="button" disabled>Review selected evidence</button>
+          </div>
+        </div>
+        <div id="camera-lab-evidence-message" class="message" role="status" hidden></div>
+        <div id="camera-lab-evidence-list" class="camera-lab-evidence-list"></div>
+      </section>
+
       <section class="local-build-panel">
         <div>
           <p class="eyebrow">Canonical source</p>
@@ -534,7 +599,15 @@
           <button id="run-local-build" class="save-action" type="button" disabled>Run local build</button>
         </div>
       </section>
-      <pre id="local-build-output" class="local-build-output" tabindex="0" hidden></pre>
+      <div id="local-build-progress" class="workflow-progress local-build-progress" hidden>
+        <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="local-build-progress-stage">Starting…</strong><span id="local-build-progress-elapsed" class="muted"></span></div>
+        <code id="local-build-progress-command" class="workflow-progress-command"></code>
+        <details><summary>Watch command log</summary><pre id="local-build-progress-log" tabindex="0"></pre></details>
+      </div>
+      <details id="local-build-details" class="workflow-details local-build-details" hidden>
+        <summary>Show status details</summary>
+        <pre id="local-build-output" class="local-build-output" tabindex="0"></pre>
+      </details>
     </section>
 
     <section id="finish-day-view" class="app-view" hidden>
@@ -569,6 +642,15 @@
             <summary>Show status details</summary>
             <pre id="finish-day-output"></pre>
           </details>
+          <div id="finish-day-recovery" class="workflow-recovery" hidden>
+            <strong>Next safe action</strong>
+            <p id="finish-day-recovery-summary" class="muted"></p>
+            <div class="workflow-recovery-actions">
+              <button id="finish-day-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
+              <button id="finish-day-import-tracker" class="secondary" type="button" hidden>Import verification tracker</button>
+              <button id="finish-day-show-details" class="secondary" type="button" hidden>Show status details</button>
+            </div>
+          </div>
         </section>
 
         <section id="finish-day-prepare-panel" class="finish-day-stage" hidden>
@@ -576,6 +658,7 @@
             <div><p class="eyebrow">Required checkpoint</p><h3>Validate and prepare source</h3></div>
           </div>
           <p class="muted">This runs source validation, the normal development build, and full validation. If the build changes <code>docs/</code>, Finish Day creates a recovery archive and restores those generated files so the handoff cannot publish Pages.</p>
+          <label id="finish-day-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="finish-day-confirm-spreadsheet" type="checkbox"><span>Rebuild only the stale spreadsheet-derived artifacts before validation. Apple Numbers may open in the background.</span></label>
           <label class="finish-day-confirm"><input id="finish-day-confirm-prepare" type="checkbox"><span>I understand this may update local build output and will safely restore generated <code>docs/</code>.</span></label>
           <button id="prepare-finish-day" class="primary" type="button" disabled>Validate and prepare</button>
           <div id="finish-day-progress" class="workflow-progress" hidden>
@@ -648,6 +731,16 @@
             <summary>Show status details</summary>
             <pre id="branch-integration-output"></pre>
           </details>
+          <div id="branch-integration-recovery" class="workflow-recovery" hidden>
+            <strong>Next safe action</strong>
+            <p id="branch-integration-recovery-summary" class="muted"></p>
+            <div class="workflow-recovery-actions">
+              <button id="integration-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
+              <button id="integration-open-finish-day" class="secondary" type="button" hidden>Open Finish Day</button>
+            </div>
+            <label id="integration-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="integration-confirm-spreadsheet" type="checkbox"><span>Retry in a fresh disposable candidate and rebuild only its stale spreadsheet-derived artifacts. Apple Numbers may open in the background.</span></label>
+            <button id="retry-integration-spreadsheet" class="primary" type="button" hidden disabled>Refresh spreadsheets and retry</button>
+          </div>
         </section>
 
         <section id="branch-integration-review-panel" class="finish-day-stage" hidden>
@@ -764,6 +857,15 @@
             <summary>Show readiness details</summary>
             <pre id="publication-output"></pre>
           </details>
+          <div id="publication-recovery" class="workflow-recovery" hidden>
+            <strong>Next safe action</strong>
+            <p id="publication-recovery-summary" class="muted"></p>
+            <div class="workflow-recovery-actions">
+              <button id="publication-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
+              <button id="publication-open-finish-day" class="secondary" type="button" hidden>Open Finish Day</button>
+              <button id="publication-retry-status" class="secondary" type="button">Check again</button>
+            </div>
+          </div>
         </section>
 
         <section id="publication-main-handoff" class="finish-day-stage" hidden>
@@ -800,8 +902,8 @@
           </div>
           <fieldset class="publication-options">
             <legend>Spreadsheet downloads</legend>
-            <label><input type="radio" name="publication-spreadsheets" value="preserve" checked><span><strong>Preserve current downloads</strong><small>Keep the exact verified workbook files already published.</small></span></label>
-            <label><input type="radio" name="publication-spreadsheets" value="replace"><span><strong>Rebuild and replace both families</strong><small>Prepare current Excel and Numbers downloads before publishing.</small></span></label>
+            <label><input type="radio" name="publication-spreadsheets" value="automatic" checked><span><strong>Automatic (recommended)</strong><small>Rebuild only stale workbook families; otherwise preserve the exact verified downloads.</small></span></label>
+            <label><input type="radio" name="publication-spreadsheets" value="force"><span><strong>Force rebuild and republish both</strong><small>Regenerate both Excel and Numbers families even when their inputs are already current.</small></span></label>
             <label><input type="radio" name="publication-spreadsheets" value="remove"><span><strong>Remove all spreadsheet downloads</strong><small>Deliberately remove both workbook families from the live site.</small></span></label>
           </fieldset>
           <p id="publication-spreadsheet-status" class="muted"></p>
@@ -957,6 +1059,24 @@
     <div class="review-actions">
       <button id="cx-foundation-review-cancel" class="secondary" type="button">Continue editing</button>
       <button id="save-cx-foundation" class="save-action" type="button">Save reviewed Cx Foundation</button>
+    </div>
+  </dialog>
+
+  <dialog id="special-review-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p id="special-review-eyebrow" class="eyebrow">Required exact review</p>
+        <h2 id="special-review-title">Review guarded changes</h2>
+        <p id="special-review-summary" class="muted"></p>
+      </div>
+      <button id="special-review-close" class="secondary" type="button" aria-label="Close review">Close</button>
+    </div>
+    <p id="special-review-warning" class="review-warning"></p>
+    <pre id="special-review-diff" class="review-diff" tabindex="0"></pre>
+    <label id="special-review-confirm-row" class="finish-day-confirm" hidden><input id="special-review-confirm" type="checkbox"><span>Import exactly the reviewed physical-camera evidence shown above.</span></label>
+    <div class="review-actions">
+      <button id="special-review-cancel" class="secondary" type="button">Continue reviewing</button>
+      <button id="save-special-review" class="save-action" type="button">Save reviewed changes</button>
     </div>
   </dialog>
 

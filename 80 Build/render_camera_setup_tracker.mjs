@@ -603,6 +603,7 @@ function buildMetadata() {
   const rows = [
     ["Type", "ID", "Revision"],
     ["workbook_revision", "", String(payload.workbook_revision)],
+    ["spreadsheet_build_id", "", payload.spreadsheet_build_id],
     ["source_fingerprint", "", payload.source_fingerprint],
     ...Object.entries(payload.definition_fingerprints.tests || {}).map(
       ([id, revision]) => ["test", id, revision],

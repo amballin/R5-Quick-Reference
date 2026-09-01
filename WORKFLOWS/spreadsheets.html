@@ -121,6 +121,9 @@
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
 <p>It first reports the verification working copy, Matrix/settings, and Setup states. If the verification copy may contain unimported edits, it stops before changing anything and directs you to import them. Otherwise it rebuilds only stale artifacts in the safe order and skips current files. It does not publish, commit, or push.</p>
 <p>Numbers is launched automatically before conversion and finalization; you do not need to open it manually.</p>
+<p>To deliberately regenerate both release workbook families even when they are current:</p>
+<div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks</code></pre></div>
+<p>The same diagnosis and unimported-edit safeguards run first. Each regenerated workbook shows its deterministic spreadsheet build ID in the banner; the Setup Metadata sheet records the same ID.</p>
 </section>
 <section class="step"><h2>Build one release workbook family</h2>
 <ul>
@@ -156,13 +159,14 @@
 <p>Changed requirements preserve history but mark affected prior passes for retesting.</p>
 </section>
 <section class="step"><h2>Publish replacement spreadsheets</h2>
-<p>First build both release families, then follow <a href="publish.html">Publish the Website</a> with:</p>
+<p>Profile Editor&#x27;s <strong>Automatic (recommended)</strong> publication option rebuilds only diagnosed stale families and preserves current families. To force new files for both families, use its <strong>Force rebuild and republish both</strong> option.</p>
+<p>For the equivalent Terminal recovery path, first run the force command above, then follow <a href="publish.html">Publish the Website</a> with:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/publish.sh --spreadsheet-downloads</code></pre></div>
 <p>This is a complete website publication, not a spreadsheet-only upload. An ordinary minor release is the default; a major-version option is never required.</p>
 </section>
 <section class="step"><h2>Verify published spreadsheet status</h2>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>python3 &quot;80 Build/verify_publication.py&quot; --require-target matrix --require-target setup</code></pre></div>
-<p>Success requires <code>PUBLICATION VERIFIED</code> and matching Matrix and Setup hashes.</p>
+<p>Success requires <code>PUBLICATION VERIFIED</code> and matching Matrix and Setup hashes. The website Downloads section, published manifest, workbook banner, and publication receipt must also agree on each family’s spreadsheet build ID.</p>
 </section>
     <footer>Generated from WORKFLOWS/spreadsheets.md. Local project guidance; never published.</footer>
   </main>

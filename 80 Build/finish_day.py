@@ -17,7 +17,9 @@ from asset_manager import ProjectPaths
 
 
 class FinishDayError(RuntimeError):
-    pass
+    def __init__(self, message, *, recovery=None):
+        super().__init__(message)
+        self.recovery = recovery
 
 
 class FinishDayWorkflow:
@@ -110,6 +112,7 @@ class FinishDayWorkflow:
             [sys.executable, "80 Build/verification_status.py", "check"], timeout=5 * 60
         )
         verification_output = verification.stdout[-80_000:].strip()
+        spreadsheet_state = self._spreadsheet_state(verification)
         source_status = self._worktree_status(include_docs=False)
         all_status = self._worktree_status(include_docs=True)
         source_files = [line for line in source_status.splitlines() if line.strip()]
@@ -117,13 +120,22 @@ class FinishDayWorkflow:
         blockers = []
         if pending:
             blockers.append(f"Resolve {pending} unsaved browser {'draft' if pending == 1 else 'drafts'} before Finish Day.")
-        if verification.returncode:
+        if verification.returncode not in {0, 2}:
             blockers.append(
                 verification_output
                 or "The verification tracker is not current and synchronized."
             )
+        if spreadsheet_state["status"] == "blocked":
+            blockers.extend(spreadsheet_state["details"])
         if status_code in self.STATUS_BLOCKED or status_code not in {0, 10, 20}:
             blockers.append("Repository synchronization safety did not pass. Review the status details.")
+        recovery_actions = []
+        if pending:
+            recovery_actions.append("open-review-build")
+        if verification.returncode not in {0, 2}:
+            recovery_actions.append("import-verification-tracker")
+        if status_code in self.STATUS_BLOCKED:
+            recovery_actions.append("show-status-details")
         ahead = status_code == 20
         if blockers:
             phase = "blocked"
@@ -142,10 +154,40 @@ class FinishDayWorkflow:
             "pendingChanges": pending,
             "sourceFiles": source_files,
             "generatedDocsChanged": has_docs,
+            "spreadsheetState": spreadsheet_state,
+            "recoveryActions": list(dict.fromkeys(recovery_actions)),
             "blockers": blockers,
             "statusCode": status_code,
             "output": "\n\n".join(part for part in (status_output, verification_output) if part),
         }
+
+    def _spreadsheet_state(self, verification=None):
+        verification = verification or self._run(
+            [sys.executable, "80 Build/verification_status.py", "check"], timeout=5 * 60
+        )
+        labels = []
+        details = []
+        if verification.returncode == 2:
+            labels.append("Verification tracker")
+            details.append(verification.stdout[-80_000:].strip())
+        spreadsheet_script = self.paths.root / "80 Build" / "spreadsheet_downloads.py"
+        if spreadsheet_script.is_file():
+            spreadsheets = self._run(
+                [sys.executable, str(spreadsheet_script), "all", "diagnose"], timeout=5 * 60
+            )
+            output = spreadsheets.stdout[-80_000:].strip()
+            if spreadsheets.returncode == 2:
+                labels.append("Matrix/settings and Setup")
+                details.append(output)
+            elif spreadsheets.returncode:
+                return {
+                    "status": "blocked",
+                    "refreshNeeded": False,
+                    "labels": [],
+                    "details": [output or "Spreadsheet readiness could not be determined."],
+                }
+        status = "refresh-needed" if labels else "current"
+        return {"status": status, "refreshNeeded": bool(labels), "labels": labels, "details": details}
 
     def _clean_generated_metadata(self):
         for root in (self.paths.pages_output_dir, self.paths.output_dir):
@@ -192,7 +234,13 @@ class FinishDayWorkflow:
             raise FinishDayError(f"Generated docs could not be restored completely. Recovery backup: {backup_dir}")
         return str(backup_dir)
 
-    def prepare(self, pending_changes, confirmed, progress=None):
+    def prepare(
+        self,
+        pending_changes,
+        confirmed,
+        progress=None,
+        allow_spreadsheet_refresh=False,
+    ):
         pending = self._pending_count(pending_changes)
         if pending:
             raise FinishDayError(f"Resolve {pending} unsaved browser drafts before preparing Finish Day.")
@@ -212,12 +260,39 @@ class FinishDayWorkflow:
         self._notify(progress, "Cleaning disposable build metadata", "Remove recognized .DS_Store files from generated output")
         self._clean_generated_metadata()
         self._notify(progress, "Cleaning disposable build metadata", completed=True)
-        self._notify(progress, "Checking verification status", "$ python3 '80 Build/verification_status.py' check")
+        steps = []
+        self._notify(progress, "Source validation", "$ python3 '80 Build/validator.py' --source-only")
+        source = self._require_success(
+            "Source validation", [sys.executable, "80 Build/validator.py", "--source-only"], timeout=15 * 60
+        )
+        steps.append(source)
+        self._notify(progress, "Source validation", output=source["output"], completed=True)
+        spreadsheet_state = initial.get("spreadsheetState") or {}
+        if spreadsheet_state.get("refreshNeeded") and allow_spreadsheet_refresh is not True:
+            raise FinishDayError(
+                "Finish Day requires a spreadsheet refresh before the development build.",
+                recovery={
+                    "kind": "finish-day-spreadsheet-refresh",
+                    "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts, then continue Finish Day. Apple Numbers may open in the background.",
+                    "details": spreadsheet_state.get("details") or [],
+                    "actions": ["retry-with-spreadsheet-refresh"],
+                },
+            )
+        if spreadsheet_state.get("refreshNeeded"):
+            refresh_command = self.paths.root / "80 Build" / "scripts" / "build-all-spreadsheet-downloads.sh"
+            self._notify(progress, "Refreshing spreadsheets", "$ rebuild stale spreadsheet-derived artifacts")
+            refresh = self._require_success(
+                "Spreadsheet refresh",
+                [str(refresh_command)],
+                timeout=45 * 60,
+            )
+            steps.append(refresh)
+            self._notify(progress, "Refreshing spreadsheets", output=refresh["output"], completed=True)
+        self._notify(progress, "Checking verification status", "$ check verification status")
         verification = self._verification_check()
+        steps.append(verification)
         self._notify(progress, "Checking verification status", output=verification["output"], completed=True)
-        steps = [verification]
         for label, command, timeout in (
-            ("Source validation", [sys.executable, "80 Build/validator.py", "--source-only"], 15 * 60),
             ("Development build", [sys.executable, "80 Build/build.py"], 15 * 60),
             ("Full validation", [sys.executable, "80 Build/validator.py"], 15 * 60),
         ):
@@ -321,10 +396,22 @@ def run_interactive(root):
         print("\nFINISHED FOR TODAY: Safe to switch Macs.")
         return 0
     if status["phase"] == "prepare":
+        allow_spreadsheet_refresh = False
+        spreadsheet_state = status.get("spreadsheetState") or {}
+        if spreadsheet_state.get("refreshNeeded"):
+            print("\nSpreadsheet refresh required: " + ", ".join(spreadsheet_state.get("labels") or []))
+            allow_spreadsheet_refresh = ask_yes_no(
+                "Rebuild only the stale spreadsheet-derived artifacts now? Apple Numbers may open"
+            )
+            if not allow_spreadsheet_refresh:
+                print("Preparation postponed. No spreadsheet, commit, or push action was performed.")
+                return 1
         if not ask_yes_no("Run validation/build and safely separate generated docs now?"):
             print("Preparation postponed. Nothing was committed or pushed.")
             return 1
-        status = workflow.prepare(0, True)
+        status = workflow.prepare(
+            0, True, allow_spreadsheet_refresh=allow_spreadsheet_refresh
+        )
         if status.get("output"):
             print("\n" + status["output"])
     if status["phase"] == "commit":

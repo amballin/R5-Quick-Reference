@@ -117,6 +117,16 @@ def short_fingerprint(value):
     return value.split(":", 1)[-1][:12]
 
 
+def spreadsheet_build_id(paths, target):
+    """Return the concise, deterministic identifier shown on a workbook and its download."""
+    prefixes = {"matrix": "M", "setup": "S"}
+    try:
+        prefix = prefixes[target]
+    except KeyError as exc:
+        raise ValueError(f"Unknown spreadsheet target: {target}") from exc
+    return f"{prefix}{workbook_revision(paths, target)}-{short_fingerprint(source_fingerprint(paths, target))}"
+
+
 def _fingerprint(value):
     return f"sha256:{hashlib.sha256(_canonical_json(value)).hexdigest()}"
 

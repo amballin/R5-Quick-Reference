@@ -50,6 +50,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         catalog = self.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         catalog.parent.mkdir(parents=True)
         shutil.copy2(PROJECT_ROOT / "80 Build" / "profile_editor" / "canon_options.yaml", catalog)
+        shutil.copy2(
+            PROJECT_ROOT / "80 Build" / "profile_editor" / "control_options.yaml",
+            catalog.parent / "control_options.yaml",
+        )
         for relative in (
             "80 Build/baseline_impact.py",
             "80 Build/application_version.py",
@@ -66,6 +70,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/my_menu_colors.py",
             "80 Build/my_menu_reference.py",
             "80 Build/control_reference.py",
+            "80 Build/camera_lab_tracker_import.py",
             "80 Build/profile_editor.py",
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
@@ -73,8 +78,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/project_context.py",
             "80 Build/publication_workflow.py",
             "80 Build/release_notes.py",
+            "80 Build/spreadsheet_revisions.py",
+            "80 Build/spreadsheet_downloads.py",
+            "80 Build/subject_settings_matrix.py",
+            "80 Build/camera_setup_tracker.py",
+            "80 Build/render_subject_settings_matrix.mjs",
+            "80 Build/render_camera_setup_tracker.mjs",
+            "80 Build/spreadsheet_ooxml.py",
             "80 Build/publish_metadata.yaml",
             "80 Build/scripts/profile-editor-runtime.sh",
+            "80 Build/scripts/build-all-spreadsheet-downloads.sh",
             "80 Build/scripts/preflight-git.sh",
             "80 Build/scripts/git-status-report.sh",
             "80 Build/scripts/publish.sh",
@@ -84,7 +97,16 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(PROJECT_ROOT / relative, destination)
-        self.model = ProfileEditorModel(self.root, source_validator=lambda _root: [])
+        self.model = ProfileEditorModel(
+            self.root,
+            source_validator=lambda _root: [],
+            derived_artifact_checker=lambda: {
+                "status": "current",
+                "refreshNeeded": False,
+                "details": [],
+                "blockers": [],
+            },
+        )
 
     def tearDown(self):
         self.temporary.cleanup()
@@ -243,6 +265,139 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(landscape["card"]["field_setup"]["source_card_id"], wildlife["card_id"])
         self.assertEqual(result["assignments"], assignments)
         self.assertFalse([issue for issue in control_validator.validate(self.root) if issue.level == "error"])
+
+    def test_camera_buttons_review_synchronizes_sources_and_downgrades_changed_confirmation(self):
+        detail = self.model.control_editor_detail()
+        af_on = next(item for item in detail["controls"] if item["control"] == "AF-ON")
+        af_on["assignment"] = "Metering start"
+        af_on["status"] = "owner_confirmed"
+        review = self.model.review_control_editor(
+            {"controls": detail["controls"], "dials": detail["dials"]}
+        )
+        self.assertIn("controls.yaml", review["diff"])
+        self.assertIn("data/canon_r5_custom_controls_current.yaml", review["diff"])
+        self.assertNotIn("custom_shooting_modes:", review["diff"])
+        self.assertNotIn("retired_evidence:", review["diff"])
+        result = self.model.save_control_editor(review["reviewToken"])
+        self.assertEqual(result["validation"], "passed")
+        project = load_yaml(self.root / "controls.yaml")
+        current = load_yaml(self.root / "data" / "canon_r5_custom_controls_current.yaml")
+        project_af_on = next(item for item in project["controls"] if item["control"] == "AF-ON")
+        current_af_on = next(item for item in current["buttons"] if item["control"] == "AF-ON")
+        self.assertEqual(project_af_on["status"], "approved_target_pending_camera_verification")
+        self.assertEqual(current_af_on["status"], "approved_target_pending_camera_verification")
+        self.assertEqual(project_af_on["assignment"], current_af_on["assignment"])
+        self.assertFalse([issue for issue in control_validator.validate(self.root) if issue.level == "error"])
+
+    def test_camera_buttons_editor_exposes_defaults_options_icons_and_plain_status_help(self):
+        detail = self.model.control_editor_detail()
+        af_on = detail["options"]["controls"]["AF-ON"]
+        self.assertEqual(af_on["default"], "Metering and AF start")
+        self.assertIn("Face + Tracking", af_on["info_fields"]["AF Method"]["options"])
+        self.assertIn("icon_btn-af-on.svg", af_on["iconUrl"])
+        self.assertTrue(all(
+            detail["options"][group][item["control"]].get("default")
+            for group in ("controls", "dials")
+            for item in detail[group]
+        ))
+        self.assertTrue(all(
+            detail["options"][group][item["control"]].get("iconUrl")
+            for group in ("controls", "dials")
+            for item in detail[group]
+        ))
+        confirmed = next(
+            option for option in detail["evidenceStatusOptions"]
+            if option["value"] == "owner_confirmed"
+        )
+        self.assertIn("Physically checked", confirmed["help"])
+
+    def test_camera_buttons_preview_uses_unsaved_candidate_without_writing_source(self):
+        detail = self.model.control_editor_detail()
+        source = self.root / "controls.yaml"
+        before = source.read_bytes()
+        af_on = next(item for item in detail["controls"] if item["control"] == "AF-ON")
+        af_on["assignment"] = "Metering start"
+        movie = next(item for item in detail["controls"] if item["control"] == "Movie Record")
+        movie["assignment"] = "Movie recording"
+        preview = self.model.preview_control_editor({
+            "controls": detail["controls"],
+            "dials": detail["dials"],
+        })
+        rendered = preview.read_text(encoding="utf-8")
+        self.assertIn("Metering start", rendered)
+        self.assertIn("icon_btn-af-on.svg", rendered)
+        self.assertIn("Movie Record", rendered)
+        self.assertIn("icon_btn-mov.svg", rendered)
+        self.assertEqual(source.read_bytes(), before)
+
+    def test_camera_lab_evidence_review_promotes_only_exact_physical_configured_state(self):
+        journal_root = Path(self.temporary.name) / "guarded-runs"
+        journal_root.mkdir()
+        session_id = "a" * 32
+        (journal_root / f"{session_id}.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "backend": "edsdk",
+                    "status": "complete",
+                    "session_id": session_id,
+                    "profile": {"name": "Wildlife", "title": "Wildlife"},
+                    "camera": {"firmware": "2.2.1"},
+                    "completed_at": "2026-08-30T12:00:00-04:00",
+                    "steps": [
+                        {
+                            "path": "exposure.metering",
+                            "property_key": "metering_mode",
+                            "label": "Metering",
+                            "target": "Evaluative",
+                            "status": "camera_verified",
+                            "evidence_method": "sdk_written_and_verified",
+                            "completed_at": "2026-08-30T12:00:00-04:00",
+                        },
+                        {
+                            "path": "exposure.metering",
+                            "property_key": "metering_mode",
+                            "label": "Metering duplicate",
+                            "target": "Evaluative",
+                            "status": "camera_verified",
+                            "evidence_method": "sdk_written_and_verified",
+                            "completed_at": "2026-08-30T12:00:01-04:00",
+                        },
+                        {
+                            "path": "lens.aperture.note",
+                            "label": "Aperture note",
+                            "target": "Manual context",
+                            "status": "manual_user_confirmed",
+                            "evidence_method": "manual_group_user_confirmed",
+                        },
+                    ],
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        model = ProfileEditorModel(
+            self.root,
+            source_validator=lambda _root: [],
+            camera_lab_journal_root=journal_root,
+        )
+        inventory = model.camera_lab_evidence_detail()
+        self.assertEqual(inventory["eligibleCount"], 1)
+        item = next(candidate for candidate in inventory["candidates"] if not candidate["alreadyImported"])
+        read_back_before = load_yaml(
+            self.root / "90 Testing" / "eos_r5_verification_status.yaml"
+        )["registration"]["Metering"].get("c1_read_back")
+        review = model.review_camera_lab_evidence([item["candidateId"]], 0)
+        self.assertIn("camera_lab_evidence_import", review["diff"])
+        with patch("verification_status.build_working_copy"):
+            result = model.save_camera_lab_evidence(review["reviewToken"], True)
+        self.assertEqual(result["validation"], "passed")
+        status = load_yaml(self.root / "90 Testing" / "eos_r5_verification_status.yaml")
+        self.assertEqual(status["registration"]["Metering"]["c1_configured"], "Pass")
+        self.assertEqual(status["registration"]["Metering"].get("c1_read_back"), read_back_before)
+        self.assertTrue(
+            any(entry.get("event") == "camera_lab_evidence_import" for entry in status["history"])
+        )
         self.assertFalse([issue for issue in profile_validator.validate(self.root) if issue.level == "error"])
         with self.assertRaisesRegex(ProfileConflictError, "expired or was already used"):
             self.model.save_cx_review(review["reviewToken"])
@@ -814,7 +969,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/main-editor-launch"', javascript)
         self.assertIn("Watch command log", html)
         self.assertIn("Publish live website", html)
-        self.assertIn("Rebuild and replace both families", html)
+        self.assertIn("Automatic (recommended)", html)
+        self.assertIn("Force rebuild and republish both", html)
         self.assertIn("Open Main project editor", html)
         self.assertIn("Permanently delete only the exact checked items", html)
         self.assertIn('<span>Push the reviewed integration commit to <code>origin/main</code>.', html)
@@ -824,6 +980,21 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Publication stopped — not completed or verified", javascript)
         self.assertIn("Publication complete and verified", javascript)
         self.assertIn("#publication-progress.is-stopped", stylesheet)
+        self.assertIn('id="local-build-progress"', html)
+        self.assertIn('id="local-build-progress-stage"', html)
+        self.assertIn('id="local-build-progress-elapsed"', html)
+        self.assertIn('id="local-build-progress-command"', html)
+        self.assertIn('id="local-build-progress-log"', html)
+        self.assertIn('id="local-build-details"', html)
+        self.assertIn("Show status details", html)
+        self.assertIn('localBuild: "profileEditor.localBuildJob"', javascript)
+        self.assertIn("reconnectLocalBuild", javascript)
+        self.assertIn('id="workflow-preflight-recovery"', html)
+        self.assertIn('id="finish-day-confirm-spreadsheet"', html)
+        self.assertIn('id="branch-integration-recovery"', html)
+        self.assertIn('id="publication-recovery"', html)
+        self.assertIn('request("/api/preflight-pull"', javascript)
+        self.assertIn("retry-with-spreadsheet-refresh", javascript)
 
     def test_guarded_job_manager_reports_progress_and_result(self):
         manager = GuardedJobManager()
@@ -864,6 +1035,25 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertTrue(any("Publishing and verifying the live website stopped" in entry for entry in result["log"]))
         self.assertTrue(any("Upload verification failed" in entry for entry in result["log"]))
 
+    def test_guarded_job_manager_preserves_structured_recovery(self):
+        manager = GuardedJobManager()
+
+        def action(_progress):
+            raise PrototypeError(
+                "Spreadsheet refresh permission required.",
+                recovery={"kind": "integration-spreadsheet-refresh", "actions": ["retry"]},
+            )
+
+        started = manager.start("branch-integration-prepare", action)
+        result = None
+        for _attempt in range(100):
+            result = manager.status(started["jobId"])
+            if result["status"] != "running":
+                break
+            threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["recovery"]["kind"], "integration-spreadsheet-refresh")
+
     def test_workflow_preflight_classifies_ready_notice_and_blocked_results(self):
         outcomes = (
             (0, "PREFLIGHT PASSED: Repository is clean and synchronized.", "ready"),
@@ -880,6 +1070,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 run.call_args.args[0][0],
                 str((self.root / "80 Build" / "scripts" / "preflight-git.sh").resolve()),
             )
+        with patch("profile_editor.subprocess.run") as run:
+            run.return_value = SimpleNamespace(
+                returncode=1,
+                stdout="PREFLIGHT BLOCKED: This clone is behind its upstream.\nWhen clean, use: git pull --ff-only",
+            )
+            behind = self.model.workflow_preflight()
+        self.assertIn("pull-latest", behind["recoveryActions"])
 
     def test_git_status_uses_current_branch_and_requires_matching_upstream(self):
         remote = Path(self.temporary.name) / "remote.git"
@@ -980,12 +1177,12 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             None,
             ["Added Terminal-free guarded publication.", "Added exact live-release verification."],
         )
-        self.assertEqual(review["nextVersion"], "2.04")
-        self.assertIn('"2.04"', review["diff"])
+        self.assertEqual(review["nextVersion"], "2.05")
+        self.assertIn('"2.05"', review["diff"])
         saved = workflow.save_release_notes(review["reviewToken"], True)
         notes = load_yaml(self.root / "00 Master" / "release_notes.yaml")
         self.assertEqual(
-            notes["releases"]["2.04"]["highlights"],
+            notes["releases"]["2.05"]["highlights"],
             ["Added Terminal-free guarded publication.", "Added exact live-release verification."],
         )
         self.assertTrue(Path(saved["backup"]).is_dir())
@@ -1027,10 +1224,64 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertEqual(result["phase"], "complete")
         self.assertEqual(result["version"], "3.00")
         self.assertTrue(any(Path(command[0]).name == "build-all-spreadsheet-downloads.sh" for command in commands))
+        builder_command = next(command for command in commands if Path(command[0]).name == "build-all-spreadsheet-downloads.sh")
+        self.assertIn("--force-release-workbooks", builder_command)
         publish_command = next(command for command in commands if Path(command[0]).name == "publish.sh")
         self.assertIn("--major-version", publish_command)
         self.assertIn("--spreadsheet-downloads", publish_command)
         self.assertIn("STATUS: CLEAN AND SYNCHRONIZED", result["output"])
+
+    def test_publication_automatic_mode_preserves_current_and_refreshes_only_stale_family(self):
+        from publication_workflow import PublicationWorkflow
+
+        workflow = PublicationWorkflow(self.root)
+        base = {
+            "phase": "ready",
+            "branch": "main",
+            "upstream": "origin/main",
+            "currentVersion": "2.04",
+            "nextVersion": "2.05",
+            "releaseKind": "minor",
+            "majorVersion": None,
+            "notesReady": True,
+            "highlights": ["Release highlight."],
+            "blockers": [],
+            "output": "ready",
+        }
+        workflow._git = lambda *args: "abc123" if args == ("rev-parse", "HEAD") else ""
+
+        current = dict(base)
+        current["spreadsheetState"] = {"status": "current", "refreshTargets": [], "output": "current"}
+        workflow.inspect = lambda *args, **kwargs: dict(current)
+        review = workflow.review_publication(0, None, "automatic")
+        self.assertEqual(review["spreadsheetTargets"], [])
+
+        stale = dict(base)
+        stale["spreadsheetState"] = {
+            "status": "refresh-needed",
+            "refreshTargets": ["matrix"],
+            "output": "matrix stale",
+        }
+        workflow.inspect = lambda *args, **kwargs: dict(stale)
+        commands = []
+
+        def run(command, **kwargs):
+            commands.append(command)
+            if Path(command[0]).name == "publish.sh":
+                return SimpleNamespace(returncode=0, stdout="PUBLICATION COMPLETE AND VERIFIED.")
+            if Path(command[0]).name == "git-status-report.sh":
+                return SimpleNamespace(returncode=0, stdout="STATUS: CLEAN AND SYNCHRONIZED")
+            return SimpleNamespace(returncode=0, stdout="prepared")
+
+        workflow._run = run
+        review = workflow.review_publication(0, None, "automatic")
+        result = workflow.publish(review["reviewToken"], True)
+        self.assertEqual(result["spreadsheetTargets"], ["matrix"])
+        builder_command = next(command for command in commands if Path(command[0]).name == "build-all-spreadsheet-downloads.sh")
+        self.assertNotIn("--force-release-workbooks", builder_command)
+        publish_command = next(command for command in commands if Path(command[0]).name == "publish.sh")
+        self.assertIn("--matrix-downloads", publish_command)
+        self.assertNotIn("--spreadsheet-downloads", publish_command)
 
     def test_publication_model_uses_guarded_background_job_without_publishing_in_test(self):
         class FakePublication:
@@ -1197,8 +1448,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         javascript = (editor / "app.js").read_text(encoding="utf-8")
         self.assertLess(html.index('data-view="today"'), html.index('data-view="profiles"'))
         self.assertLess(html.index('data-view="profiles"'), html.index('data-view="review-build"'))
-        self.assertLess(html.index('data-view="review-build"'), html.index('data-view="my-menu"'))
-        self.assertLess(html.index('data-view="my-menu"'), html.index('data-view="release-publish"'))
+        expected_sidebar_order = [
+            "today", "profiles", "review-build", "finish-day", "cx-foundation", "my-menu",
+            "camera-buttons", "baseline", "deleted-cards", "branch-integration",
+            "release-publish", "cleanup-review", "setup-sharing", "dictionary",
+        ]
+        positions = [html.index(f'data-view="{view}"') for view in expected_sidebar_order]
+        self.assertEqual(positions, sorted(positions))
         self.assertLess(html.index('data-view="release-publish"'), html.index('data-view="dictionary"'))
         self.assertIn('id="pending-change-list"', html)
         self.assertIn('id="build-confirm-dialog"', html)
@@ -1212,6 +1468,18 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Silver%20Logo.png", html)
         self.assertIn("Restore saved profile", html)
         self.assertIn('id="import-verification-tracker"', html)
+        self.assertIn('id="preview-camera-buttons"', html)
+        self.assertIn('id="camera-buttons-preview-frame"', html)
+        self.assertIn("camera-control-icon", javascript)
+        self.assertIn("Canon default:", javascript)
+        self.assertIn("Card detail", javascript)
+        self.assertIn("cameraButtonCardDetail", javascript)
+        self.assertIn("Live text shown beneath this assignment", javascript)
+        preview_panel = html.index('id="camera-buttons-preview-panel"')
+        preview_button = html.index('id="preview-camera-buttons"')
+        self.assertGreater(preview_button, preview_panel)
+        self.assertIn("Other / exact camera label", javascript)
+        self.assertIn('request("/api/camera-buttons-preview"', javascript)
         self.assertIn('window.addEventListener("beforeunload"', javascript)
         self.assertIn("profileDrafts: new Map()", javascript)
         self.assertIn("await loadCxFoundations(true)", javascript)
@@ -1222,6 +1490,26 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("profile.name === state.activeProfileName", javascript)
         self.assertIn("elements.profileActionMenu.open = false", javascript)
         self.assertIn("Permanent reference cards cannot be moved", javascript)
+
+    def test_confirmed_preflight_pull_is_fast_forward_only(self):
+        model = self.model
+        model._preflight_checker = lambda: {
+            "status": "ready",
+            "summary": "Repository is clean and synchronized.",
+            "output": "",
+        }
+        results = [
+            SimpleNamespace(returncode=0, stdout=""),
+            SimpleNamespace(returncode=0, stdout="codex/profile-editor-prototype\n"),
+            SimpleNamespace(returncode=0, stdout="origin/codex/profile-editor-prototype\n"),
+            SimpleNamespace(returncode=0, stdout="fetched\n"),
+            SimpleNamespace(returncode=0, stdout="0\t2\n"),
+            SimpleNamespace(returncode=0, stdout="updated\n"),
+        ]
+        with patch("profile_editor.subprocess.run", side_effect=results) as run:
+            result = model.pull_latest(0, True)
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual(run.call_args_list[-1].args[0], ["git", "pull", "--ff-only"])
 
     def test_build_readiness_blocks_pending_drafts_and_source_errors(self):
         pending = self.model.build_readiness(2)
@@ -1317,6 +1605,24 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             ["80 Build/validator.py"],
         ])
         self.assertFalse(any("git" in command or "publish" in command for command in commands))
+
+    def test_local_build_background_job_reports_reconnectable_step_progress(self):
+        with patch(
+            "profile_editor.subprocess.run",
+            return_value=SimpleNamespace(returncode=0, stdout="passed"),
+        ):
+            started = self.model.start_local_build(0, True)
+            result = None
+            for _attempt in range(100):
+                result = self.model.guarded_job_status(started["jobId"])
+                if result["status"] != "running":
+                    break
+                threading.Event().wait(0.01)
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["result"]["status"], "passed")
+        self.assertTrue(any("Source validation (1 of 3)" in entry for entry in result["log"]))
+        self.assertTrue(any("80 Build/validator.py" in entry and "--source-only" in entry for entry in result["log"]))
+        self.assertTrue(any(entry.startswith("✓ Full validation (3 of 3)") for entry in result["log"]))
 
     def test_verification_tracker_import_is_confirmed_and_serialized(self):
         with self.assertRaisesRegex(PrototypeError, "confirmation"):

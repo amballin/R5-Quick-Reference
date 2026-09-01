@@ -73,6 +73,21 @@ class ControlReferenceTests(unittest.TestCase):
             self.assertIn("Test dial", rendered)
             self.assertNotIn("CONTROL_REFERENCE_TABLE", rendered)
 
+    def test_candidate_source_can_render_without_replacing_canonical_file(self):
+        source = yaml.safe_load((PROJECT_ROOT / "controls.yaml").read_text(encoding="utf-8"))
+        source["controls"][0]["assignment"] = "Candidate assignment"
+        rows = card_reference_rows(PROJECT_ROOT, source=source)
+        self.assertEqual(rows[0]["value"], "Candidate assignment")
+        self.assertNotIn("Candidate assignment", (PROJECT_ROOT / "controls.yaml").read_text(encoding="utf-8"))
+
+    def test_optional_control_with_custom_behavior_is_automatically_included(self):
+        source = yaml.safe_load((PROJECT_ROOT / "controls.yaml").read_text(encoding="utf-8"))
+        movie = next(item for item in source["controls"] if item["control"] == "Movie Record")
+        self.assertNotIn("Movie Record", [row["label"] for row in card_reference_rows(PROJECT_ROOT, source=source)])
+
+        movie["assignment"] = "Movie recording"
+        self.assertIn("Movie Record", [row["label"] for row in card_reference_rows(PROJECT_ROOT, source=source)])
+
 
 if __name__ == "__main__":
     unittest.main()

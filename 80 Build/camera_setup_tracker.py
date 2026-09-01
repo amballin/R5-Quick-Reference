@@ -7,8 +7,8 @@ import subprocess
 
 from spreadsheet_revisions import (
     registration_definition_fingerprints,
-    short_fingerprint,
     source_fingerprint,
+    spreadsheet_build_id,
     tracker_definition_fingerprints,
     workbook_revision,
 )
@@ -73,13 +73,13 @@ def generate_camera_setup_tracker(
         "status": status_data,
         "workbook_revision": workbook_revision(paths, "setup"),
         "source_fingerprint": source_fingerprint(paths, "setup"),
+        "spreadsheet_build_id": spreadsheet_build_id(paths, "setup"),
         "definition_fingerprints": {
             "tests": tracker_definition_fingerprints(source),
             "registration": registration_definition_fingerprints(source),
         },
         "release_label": (
-            f"Workbook revision {workbook_revision(paths, 'setup')} • "
-            f"Source {short_fingerprint(source_fingerprint(paths, 'setup'))} • "
+            f"Spreadsheet build {spreadsheet_build_id(paths, 'setup')} • "
             f"Generated {datetime.now().astimezone().date().isoformat()}"
         ),
     }

@@ -39,6 +39,15 @@ fields:
   reference.m_fn_button:
     label: "M-Fn button"
     svg: "icons/canon_r5_official/icon_btn-m-fn.svg"
+  reference.movie_record:
+    label: "Movie Record"
+    svg: "icons/canon_r5_official/icon_btn-mov.svg"
+  reference.mode:
+    label: "MODE"
+    svg: "icons/canon_r5_official/icon_btn-mode.svg"
+  reference.lcd_panel_illumination:
+    label: "LCD panel illumination"
+    svg: "icons/canon_r5_official/icon_btn-panel-illum.svg"
   mode:
     label: "Shooting Mode"
     svg: "icons/card_icons/SVG/mode.svg"

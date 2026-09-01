@@ -138,7 +138,7 @@ When finished, read the receipt. **Profile applied successfully** means the revi
 - **Camera Lab window is missing:** reopen **R5 Camera Lab.app** to recover it.
 - **Camera Lab is unresponsive:** stop it, disconnect the camera if needed, and reopen the app. Never force a prior reviewed plan through a changed session.
 
-Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update the verification tracker.
+Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update the verification tracker itself. In Profile Editor's **Review & Build** workspace, **Camera Lab evidence** can deliberately promote exact evidence from a completed physical EDSDK session only into the matching current C1–C3 setting's configured result. Simulator and incomplete sessions are excluded, nothing is selected automatically, and read-back, registration, operational-test, backup, Canon-capability, and owner-confirmed evidence remain unchanged.
 
 ## Get more help
 

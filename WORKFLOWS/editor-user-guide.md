@@ -37,24 +37,33 @@ If source files change outside the editor, restart the editor before continuing.
 
 Use the workspace sidebar:
 
+**Daily work**
+
 - **Today** — Follow the short Start → Work → Finish path. It runs the existing preflight, points to the embedded workspaces, and opens the guarded Finish Day workspace.
 - **Profiles** — Preview, create, duplicate, or update shooting profiles inside Profile Editor.
 - **Camera Lab** — Launch the independent Camera Lab application with the selected saved profile. This is an application action, not an embedded workspace.
-- **Review & Build** — Resolve all browser drafts, validate source, and run the guarded local build.
+- **Review & Build** — Resolve all browser drafts, review exact Camera Lab evidence, validate source, and run the guarded local build.
 - **Finish Day** — Check repository state, validate and prepare source, review and commit the exact source list, then separately approve a push to the matching upstream. It never publishes.
-- **Integrate Branch** — Validate a finished branch against current `main`, review the exact result, then separately approve the local-main merge, main push, and branch resynchronization. It never publishes.
+
+**Profile setup**
+
 - **Cx Foundation** — Assign C1–C3 profiles, compare foundation fit, and make the final card-route selection.
-- **Deleted Cards** — Review and restore unreleased cards removed from active source.
 - **My Menu** — Arrange saved tabs, shortcuts, and card colors.
+- **Camera Buttons** — Review Canon defaults, choose assignments and advanced options from explained dropdowns, see the exact live card-detail text, let customized optional buttons appear automatically, refresh the preview from its fixed header, and save through a synchronized review.
 - **Baseline Setup** — Test a proposed shared change and review its effect across profiles.
-- **Cleanup Review** — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.
+- **Deleted Cards** — Review and restore unreleased cards removed from active source.
+
+**Occasional**
+
+- **Integrate Branch** — Validate a finished branch against current `main`, review the exact result, then separately approve the local-main merge, main push, and branch resynchronization. It never publishes.
 - **Release & Publish** — Prepare reader-facing highlights, select a minor or major version, choose how spreadsheet downloads are handled, review the exact live release, publish through the established main-only publisher, and require a verified clean result. A prototype workspace can open the Main project editor after integration.
+- **Cleanup Review** — Optionally review exact superseded workflow backups and disposable metadata. Nothing is selected automatically.
 - **Setup & Sharing** — Review multi-Mac guidance and the proposed future separation between shared application logic and independently owned profile data.
 - **Camera Reference** — Find and review setup records and their source links.
 
 On narrower windows, the sidebar becomes a compact navigation row above the workspace.
 
-Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into **Profile to evaluate** automatically.
+Moving to another tab does not save work, but the sidebar badges and Review & Build list preserve and identify pending profile, Cx Foundation, My Menu, Camera Buttons, and baseline work for this browser session. When you move from Profiles to Cx Foundation, the selected saved shooting profile is carried into **Profile to evaluate** automatically.
 
 ## Follow the daily path
 
@@ -99,7 +108,7 @@ Open **Release & Publish** only when you intend to update the live website.
 2. In Main, refresh readiness. The workspace requires no browser drafts, clean synchronized `main`, and exact `origin/main` tracking.
 3. If the upcoming version has no curated notes, choose the next minor release or a new major series, enter one reader-facing highlight per line, review the exact YAML addition, and save it. The editor creates a recovery backup and runs source validation.
 4. Open **Finish Day** to review, commit, and push that release-note source change. Return to **Release & Publish** after Main is clean and synchronized.
-5. Choose how spreadsheet downloads are handled: preserve the exact current verified files, rebuild and replace both workbook families, or deliberately remove all workbook downloads. Preserve is blocked when the published workbook inputs are stale.
+5. Choose how spreadsheet downloads are handled. **Automatic (recommended)** preserves exact verified files when current and rebuilds only stale families. **Force rebuild and republish both** regenerates both families even when current. Deliberate removal remains separate. Review the Matrix and Setup build IDs shown in the status and exact publication review.
 6. Review the exact version, highlights, spreadsheet action, and current main commit. Check the separate live-site confirmation only when those details are correct.
 7. Choose **Publish live website**. The page shows the current stage, elapsed time, safe command label, and expandable log; refreshing reconnects to the same publication.
 8. Treat the release as complete only when the editor states that the selected version is published and verified and that Main is clean and synchronized.
@@ -216,15 +225,16 @@ If validation or a concurrent-change check fails, stop and read the message. Rel
 
 Open **Review & Build** before finishing:
 
-1. Review every pending profile, Cx Foundation, My Menu, and baseline draft.
+1. Review every pending profile, Cx Foundation, My Menu, Camera Buttons, and baseline draft.
 2. Open each draft and save it through its exact-diff review, or choose **Discard** and confirm that decision.
-3. If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose **Import verification tracker** and confirm. The editor uses the existing importer and displays its result; it never imports automatically.
-4. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
-5. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm.
-6. Review the generated result, then open **Finish Day** when you are ready to commit and synchronize the completed source work.
-7. Stop the editor with **Control-C** in its Terminal window.
+3. For completed physical Camera Lab sessions, refresh **Camera Lab evidence**, check only exact items to retain, review the YAML, and separately confirm the import. It can mark only the mapped C1–C3 setting as configured; it never claims read-back, registration, operational testing, backups, or Canon verification.
+4. If the verification workbook has edits to bring into the project, save and close Numbers or Excel, then choose **Import verification tracker** and confirm. Neither import path runs automatically.
+5. When the pending list is empty, choose **Validate readiness**. It reports whether verification, Matrix/settings, or Setup spreadsheet-derived artifacts need refresh.
+6. After readiness passes, choose **Run local build**, read the final warning—including whether Apple Numbers may launch—and confirm. Follow the numbered stage, elapsed time, and current command; expand **Watch command log** for live step output or **Show status details** for readiness and final results. Refreshing the page reconnects to the running build.
+7. Review the generated result, then open **Finish Day** when you are ready to commit and synchronize the completed source work.
+8. Use **Stop Profile Editor** in the header when finished.
 
-The guarded Review & Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, readiness stops and directs you to import them first. It may refresh local output and tracked documentation, but it does not rename profiles, edit permanent reference cards, permanently delete cards, commit, push, publish, or change website version metadata. Commit and push remain confined to the separate Finish Day stages. Recoverable unreleased-card removal is available only through the separate reviewed Deleted Cards action described above.
+The guarded Review & Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, both evidence promotion and readiness stop. Permanent reference-card profile YAML remains read-only; My Menu and Camera Buttons change only through their dedicated structured editors. Review & Build does not rename profiles, permanently delete cards, commit, push, publish, or change website version metadata.
 
 ## Get more help
 

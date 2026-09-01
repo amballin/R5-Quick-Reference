@@ -151,6 +151,34 @@ class FinishDayWorkflowTests(unittest.TestCase):
         self.assertIn("Protecting generated website files", stages)
         self.assertTrue(any(details.get("command", "").startswith("$") for _stage, details in events))
 
+    def test_safely_stale_spreadsheets_require_permission_then_refresh(self):
+        marker = self.local / "spreadsheet-current"
+        (self.root / "80 Build" / "verification_status.py").write_text(
+            "from pathlib import Path\n"
+            f"marker = Path({str(marker)!r})\n"
+            "print('Verification status current' if marker.exists() else 'Verification working copy is safely rebuildable')\n"
+            "raise SystemExit(0 if marker.exists() else 2)\n",
+            encoding="utf-8",
+        )
+        refresh = self.root / "80 Build" / "scripts" / "build-all-spreadsheet-downloads.sh"
+        refresh.write_text(
+            "#!/usr/bin/env bash\nset -e\nmkdir -p " + repr(str(self.local)) + "\ntouch " + repr(str(marker)) + "\necho refreshed\n",
+            encoding="utf-8",
+        )
+        refresh.chmod(0o755)
+        (self.root / "source.txt").write_text("updated\n", encoding="utf-8")
+
+        inspected = self.workflow.inspect(0)
+        self.assertTrue(inspected["spreadsheetState"]["refreshNeeded"])
+        with self.assertRaisesRegex(FinishDayError, "requires a spreadsheet refresh") as stopped:
+            self.workflow.prepare(0, True)
+        self.assertEqual(stopped.exception.recovery["kind"], "finish-day-spreadsheet-refresh")
+
+        prepared = self.workflow.prepare(0, True, allow_spreadsheet_refresh=True)
+        self.assertEqual(prepared["phase"], "commit")
+        self.assertTrue(marker.is_file())
+        self.assertTrue(any(step["label"] == "Spreadsheet refresh" for step in prepared["steps"]))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -188,11 +188,11 @@
 <p>For an ordinary day, stop here after Finish Day reports that the repository is clean and synchronized.</p>
 </section>
 <section class="step"><h2>5. Build spreadsheet release files</h2>
-<p>When the next publication must replace the Matrix, Setup workbook, or both, open <a href="spreadsheets.html">Spreadsheet Workflows</a> and build the required release families now. These verified Excel and Numbers files are machine-local release artifacts; they are not part of the source commit.</p>
+<p>When you deliberately want replacement files despite unchanged inputs, open <a href="spreadsheets.html">Spreadsheet Workflows</a> and force-build both release families now. Ordinary stale-family refresh can be left to Profile Editor publication. These verified Excel and Numbers files are machine-local release artifacts; they are not part of the source commit.</p>
 <p>If spreadsheet downloads are unchanged and their source fingerprints are still current, continue to Step 6 without rebuilding them.</p>
 </section>
 <section class="step"><h2>6. Publish the website</h2>
-<p>Open <a href="publish.html">Publish the Website</a> only when you intentionally want to update GitHub Pages. Use ordinary publication when spreadsheet downloads remain current, or spreadsheet replacement publication after Step 5.</p>
+<p>Open <a href="publish.html">Publish the Website</a> only when you intentionally want to update GitHub Pages. Use <strong>Automatic (recommended)</strong> to preserve current downloads or refresh only stale families. Use Force only after deciding that both families should be regenerated despite already-current inputs.</p>
 </section>
 <section class="step"><h2>7. Verify the publication and final Git state</h2>
 <p>Complete both publication verification and the final clean-and-synchronized Git check described on <a href="publish.html">Publish the Website</a>. A clean Git report alone does not prove that publication succeeded.</p>

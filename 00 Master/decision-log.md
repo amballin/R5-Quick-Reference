@@ -2,6 +2,52 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## In-Editor Recovery for Guarded Workflow Stops
+
+**Status:** Accepted
+**Date:** 2026-09-01
+
+Every Profile Editor workflow blocker must present the safest applicable in-editor next action rather than making a terminal command the only recovery method. Keep exact commands in expandable expert details. Require explicit confirmation and fresh safety checks before any mutating recovery. Permit Today to offer a fast-forward-only pull only when the working tree is clean, the current branch tracks its exact same-named `origin` branch, the local branch has no unique commits, and the remote is strictly ahead. Never automate divergence, conflicts, branch switching, unexpected upstream repair, changed camera identity, or incomplete rollback.
+
+Finish Day must diagnose verification, Matrix/settings, and Setup spreadsheet state before its normal build. Safely stale state requires a separate visible permission that warns Apple Numbers may open, then runs the consolidated refresh before continuing the existing build and validation sequence. Possible unimported tracker edits must route to the existing confirmed Review & Build importer.
+
+Integrate Branch must diagnose spreadsheet state inside the exact disposable merged candidate. If safely stale, stop with a separately confirmed retry that creates a fresh candidate, rebuilds only its stale spreadsheet-derived artifacts there, and resumes validation. A refresh performed only in the original checkout does not satisfy candidate validation. Preserve conflicts and unsafe tracker state as non-automatic stops. When another serialized guarded action is already running, return its job identity so the browser can reconnect to that progress rather than ending at a generic busy error.
+
+## Workflow-Ordered Sidebar and Guided Camera Buttons Editor
+
+**Status:** Accepted
+**Date:** 2026-08-31
+
+Order Profile Editor navigation by working frequency and dependency. Keep **Today**, **Profiles**, **Camera Lab**, **Review & Build**, and **Finish Day** under **Daily work**. Keep **Cx Foundation**, **My Menu**, **Camera Buttons**, **Baseline Setup**, and **Deleted Cards** under **Profile setup**, in that order. Keep **Integrate Branch**, **Release & Publish**, **Cleanup Review**, **Setup & Sharing**, and **Camera Reference** under **Occasional**, in that order. Deleted Cards remains last in setup because it is a recovery destination; branch integration moves out of Daily work because it is not part of every editing session.
+
+Replace raw Camera Buttons assignment, operation, and INFO-detail entry with guided, control-specific dropdowns backed by a versioned Canon option catalog. Show the documented Canon default and a plain-language purpose for every fixed control; keep Notes as explicitly labeled free text and explain every evidence status. Permit **Other / exact camera label** so the curated catalog cannot force an inaccurate value. Use separate named INFO dropdowns when the assignment supports advanced settings.
+
+Show the official mapped physical-control icon immediately before every fixed button or dial name in the editor, including default-only controls omitted from the concise card. Where a control appears on the generated Camera Buttons card, use the same mapping in both places. Render an unsaved Camera Buttons draft through the production card renderer on explicit preview, without writing canonical source, and mark that preview stale after subsequent edits. Preserve the existing exact two-source review, evidence downgrade, backup, validation, atomic-write, and rollback safeguards.
+
+Show the exact assembled card-detail paragraph beneath each button's editable fields and update it immediately as INFO, operation, or Notes values change. Keep unchanged/default Movie Record, MODE, and LCD panel illumination off the concise card, but include any of them automatically when its assignment, operation, or INFO behavior is customized. Do not show a separate card-inclusion checkbox. Keep the preview action in the sticky card-preview header so it remains available while the owner scrolls the editor.
+
+## Automatic Spreadsheet Publication and Visible Build Identity
+
+**Status:** Accepted
+**Date:** 2026-08-31
+
+Make automatic spreadsheet handling the default in Profile Editor publication. Preserve exact verified workbook bytes when both families are current; when one or both families are stale, rebuild and replace only those stale families after the existing verification-working-copy safety check. Retain deliberate removal and add a genuine force-rebuild action that regenerates and republishes both release workbook families even when they are already current. The consolidated spreadsheet builder accepts this force action while preserving its diagnostic-first, unimported-edit, conversion, and verification safeguards.
+
+Give each workbook family a deterministic, family-specific spreadsheet build ID composed from its workbook revision and short source fingerprint. Show that ID conspicuously inside the workbook, in release manifests, beside the public download, during publication review, and in the completion receipt. Keep spreadsheet build identity independent from the website version so website-only releases do not create false workbook changes. Increment both workbook layout revisions for the new visible and metadata identity.
+
+This decision extends **Preserve Compatible Spreadsheets During Ordinary Publication**. It supersedes only the manual preserve-versus-replace choice in Profile Editor and any wording that described the prior current-only recovery command as a guaranteed rebuild when the workbooks were already current.
+
+## Reviewed Camera Lab Evidence Promotion and Camera Buttons Authoring
+
+**Status:** Accepted
+**Date:** 2026-08-30
+
+Add a guarded **Camera Lab evidence** review to Profile Editor. Inventory only completed physical-camera EDSDK sessions from the machine-local guarded-run journal; exclude simulator sessions, incomplete runs, ambiguous profile mappings, unsupported tracker fields, and evidence already promoted by stable candidate identity. The first release may mark only the exact matching C1–C3 registration setting as **configured** for the profile currently assigned to that slot. Preserve the evidence method, journal identity, profile, setting path, target, and completion time in canonical verification history. Never infer or change read-back, registration completion, operational-test results, backup completion, Canon-capability verification, or owner-confirmed project evidence. Select nothing automatically, block while the local workbook has unimported edits, require an exact YAML review and separate confirmation, rebuild the safely synchronized working tracker, and retain backup, concurrent-change, validation, atomic-write, and rollback safeguards.
+
+Add a dedicated **Camera Buttons** workspace as the only editor for existing button and dial assignments in `controls.yaml` and `data/canon_r5_custom_controls_current.yaml`. Preserve the fixed physical-control identities, row order, synchronized authority pair, and separate C1–C3 assignment workflow. Permit assignment, operation, INFO-detail, notes, and evidence-status edits through one exact reviewed two-file transaction. If an owner-confirmed assignment, operation, or INFO detail changes, automatically return that row to `approved_target_pending_camera_verification`; editorial note changes alone do not erase evidence. Keep `10 Profiles/Camera Buttons.yaml` generated-source metadata read-only, keep My Menu in its existing dedicated editor, and keep all other permanent reference-card authoring unavailable.
+
+This decision supersedes only the earlier blanket statements that every permanent reference source is read-only and that a Camera Lab-to-tracker importer is future-only. The permanent reference-card YAML boundary, automatic-import prohibition, evidence separation, and every unrelated editor safeguard remain binding.
+
 ## Automatic Main-App Freshness After Branch Integration
 
 **Status:** Accepted
@@ -30,6 +76,8 @@ Bind the final review token to the selected version, spreadsheet action, and cur
 **Date:** 2026-08-28
 
 Run Finish Day preparation and branch-integration preparation as serialized background jobs so the browser returns immediately and can display the current step, exact safe command, elapsed time, completed steps, and expandable command output. Keep the job identifier in browser session storage so a page refresh can reconnect to the running job. Do not expose environment values, credentials, or an unrestricted terminal, and do not change the existing confirmation, review-token, validation, Git, or publication boundaries.
+
+Use that same reconnectable bounded-progress mechanism for the confirmed **Review & Build** local build. Show its numbered current stage, elapsed time, exact safe command, and expandable **Watch command log** while it runs; retain a separate **Show status details** panel for readiness and final step output. Refreshing the page must return to Review & Build and reconnect to the running job. This changes visibility only and does not weaken readiness, spreadsheet, build, validation, Git, or publication boundaries.
 
 Add **Cleanup Review** as an optional final workspace, not a required Finish Day or integration stage. Inventory only recognized repository-owned disposable metadata and workflow-created backup directories with established timestamped names. For every recognized backup type and profile-operation target, always protect the newest successful recovery backup and list only superseded entries; apply no arbitrary age threshold. Ignore unrecognized or manually named backups. Select nothing by default, show exact paths, dates, sizes, and reasons, and require item-by-item selection plus a separate permanent-deletion confirmation. Recompute the inventory before deletion and stop if any selected item changed. Never offer canonical source, private-profile data, current deliverables, or temporary integration worktrees that should already be removed automatically.
 
