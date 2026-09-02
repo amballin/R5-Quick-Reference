@@ -56,6 +56,7 @@ const elements = {
   finishDayOpenReviewBuild: document.querySelector("#finish-day-open-review-build"),
   finishDayImportTracker: document.querySelector("#finish-day-import-tracker"),
   finishDayShowDetails: document.querySelector("#finish-day-show-details"),
+  resumeFinishDay: document.querySelector("#resume-finish-day"),
   finishDayPreparePanel: document.querySelector("#finish-day-prepare-panel"),
   finishDayConfirmSpreadsheetWrap: document.querySelector("#finish-day-confirm-spreadsheet-wrap"),
   finishDayConfirmSpreadsheet: document.querySelector("#finish-day-confirm-spreadsheet"),
@@ -141,6 +142,7 @@ const elements = {
   publicationOpenReviewBuild: document.querySelector("#publication-open-review-build"),
   publicationOpenFinishDay: document.querySelector("#publication-open-finish-day"),
   publicationRetryStatus: document.querySelector("#publication-retry-status"),
+  resumePublication: document.querySelector("#resume-publication"),
   publicationMainHandoff: document.querySelector("#publication-main-handoff"),
   openMainEditor: document.querySelector("#open-main-editor"),
   publicationNotesPanel: document.querySelector("#publication-notes-panel"),
@@ -322,6 +324,9 @@ const elements = {
   localBuildProgressElapsed: document.querySelector("#local-build-progress-elapsed"),
   localBuildProgressCommand: document.querySelector("#local-build-progress-command"),
   localBuildProgressLog: document.querySelector("#local-build-progress-log"),
+  localBuildRecovery: document.querySelector("#local-build-recovery"),
+  localBuildRecoverySummary: document.querySelector("#local-build-recovery-summary"),
+  resumeLocalBuild: document.querySelector("#resume-local-build"),
   localBuildDetails: document.querySelector("#local-build-details"),
   localBuildOutput: document.querySelector("#local-build-output"),
   buildConfirmDialog: document.querySelector("#build-confirm-dialog"),
@@ -360,6 +365,7 @@ const state = {
   filenameFollowsTitle: false,
   buildReadiness: null,
   localBuildBusy: false,
+  localBuildRecovery: null,
   workflowPreflight: null,
   finishDay: null,
   finishDayReviewToken: null,
@@ -376,6 +382,7 @@ const state = {
   publicationNotesReviewToken: null,
   publicationReviewToken: null,
   publicationBusy: false,
+  publicationRecovery: null,
   dayPhase: "start",
   activeView: "today",
   loadSequence: 0,
@@ -731,6 +738,8 @@ function renderFinishDay() {
   elements.finishDayOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
   elements.finishDayImportTracker.hidden = !recoveryActions.has("import-verification-tracker");
   elements.finishDayShowDetails.hidden = !recoveryActions.has("show-status-details");
+  elements.resumeFinishDay.hidden = !recoveryActions.has("resume-finish-day");
+  elements.resumeFinishDay.disabled = state.finishDayBusy;
   elements.finishDayPreparePanel.hidden = phase !== "prepare";
   const spreadsheetRefreshNeeded = Boolean(result?.spreadsheetState?.refreshNeeded);
   if (spreadsheetRefreshNeeded) {
@@ -811,6 +820,7 @@ async function refreshFinishDay() {
 
 async function prepareFinishDay() {
   state.finishDayBusy = true;
+  state.finishDayRecovery = null;
   elements.finishDayProgress.hidden = false;
   showFinishDayMessage("Running required validation and preparing the exact source handoff. Keep this page open.");
   renderFinishDay();
@@ -1162,15 +1172,18 @@ function renderPublication() {
   elements.publicationSummary.textContent = summaries[phase] || summaries.checking;
   elements.publicationOutput.textContent = [result?.output, result?.spreadsheetState?.output].filter(Boolean).join("\n\n");
   elements.publicationDetails.hidden = !elements.publicationOutput.textContent;
-  const recoveryActions = new Set(result?.recoveryActions || []);
+  const recovery = state.publicationRecovery;
+  const recoveryActions = new Set(recovery?.actions || result?.recoveryActions || []);
   elements.publicationRecovery.hidden = !recoveryActions.size;
-  elements.publicationRecoverySummary.textContent = recoveryActions.has("open-finish-day")
+  elements.publicationRecoverySummary.textContent = recovery?.summary || (recoveryActions.has("open-finish-day")
     ? "Finish Day must leave Main clean and synchronized before publication can continue."
     : recoveryActions.has("open-review-build")
       ? "Resolve pending work or spreadsheet readiness in Review & Build, then check publication again."
-      : "Refresh publication readiness after resolving the detailed condition.";
+      : "Refresh publication readiness after resolving the detailed condition.");
   elements.publicationOpenReviewBuild.hidden = !recoveryActions.has("open-review-build");
   elements.publicationOpenFinishDay.hidden = !recoveryActions.has("open-finish-day");
+  elements.resumePublication.hidden = !recoveryActions.has("resume-publication");
+  elements.resumePublication.disabled = state.publicationBusy;
   elements.publicationMainHandoff.hidden = phase !== "main-handoff";
   elements.publicationNotesPanel.hidden = phase !== "release-notes";
   elements.publicationOptionsPanel.hidden = phase !== "ready";
@@ -1196,6 +1209,7 @@ function renderPublication() {
 
 async function refreshPublication() {
   captureCurrentProfileDraft();
+  state.publicationRecovery = null;
   const runningJobId = sessionStorage.getItem(GUARDED_JOB_KEYS.publication);
   if (runningJobId) {
     state.publicationBusy = true;
@@ -1207,6 +1221,7 @@ async function refreshPublication() {
       state.publication = result;
       showPublicationMessage(result.message || "Publication complete and verified.");
     } catch (error) {
+      state.publicationRecovery = error.recovery || null;
       showPublicationMessage(error.message, true);
     } finally {
       state.publicationBusy = false;
@@ -1335,6 +1350,7 @@ async function startPublication() {
   state.publicationReviewToken = null;
   elements.publicationConfirmDialog.close();
   state.publicationBusy = true;
+  state.publicationRecovery = null;
   elements.publicationProgress.hidden = false;
   showPublicationMessage("Publishing the reviewed release. Keep this editor open; refreshing will reconnect.");
   renderPublication();
@@ -1349,12 +1365,20 @@ async function startPublication() {
     state.publication = result;
     showPublicationMessage(result.message || "Publication complete and verified.");
   } catch (error) {
+    state.publicationRecovery = error.recovery || null;
     if (error.recovery?.kind === "guarded-action-running") reconnectRunningAction(error.recovery);
     showPublicationMessage(error.message, true);
   } finally {
     state.publicationBusy = false;
     renderPublication();
   }
+}
+
+function resumePublication() {
+  const reviewToken = state.publicationRecovery?.reviewToken;
+  if (!reviewToken) return;
+  state.publicationReviewToken = reviewToken;
+  startPublication();
 }
 
 function formatFileSize(bytes) {
@@ -2632,6 +2656,10 @@ function renderReviewBuild() {
   elements.validateReadiness.disabled = state.localBuildBusy;
   elements.importVerificationTracker.disabled = state.localBuildBusy;
   elements.runLocalBuild.disabled = state.localBuildBusy || !(state.buildReadiness?.ready && items.length === 0);
+  const canResume = Boolean(state.localBuildRecovery?.actions?.includes("resume-local-build"));
+  elements.localBuildRecovery.hidden = !canResume;
+  elements.localBuildRecoverySummary.textContent = canResume ? state.localBuildRecovery.summary : "";
+  elements.resumeLocalBuild.disabled = state.localBuildBusy;
 }
 
 async function openPendingItem(item) {
@@ -2697,6 +2725,7 @@ async function discardPendingItem(item) {
 
 async function validateBuildReadiness() {
   captureCurrentProfileDraft();
+  state.localBuildRecovery = null;
   elements.validateReadiness.disabled = true;
   showReviewBuildMessage("Checking browser drafts and validating canonical source…");
   try {
@@ -2759,6 +2788,7 @@ async function importVerificationTracker() {
 
 async function runLocalBuild() {
   state.localBuildBusy = true;
+  state.localBuildRecovery = null;
   elements.buildConfirmRun.disabled = true;
   elements.runLocalBuild.disabled = true;
   elements.buildConfirmDialog.close();
@@ -2792,6 +2822,7 @@ async function runLocalBuild() {
     showReviewBuildMessage("Spreadsheet readiness, local build, and full validation passed. Git and publishing were not run.");
   } catch (error) {
     state.buildReadiness = null;
+    state.localBuildRecovery = error.recovery || null;
     elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
     if (!started) {
       renderGuardedJobProgress(localBuildProgressElements, {
@@ -2830,6 +2861,7 @@ async function reconnectLocalBuild() {
     showReviewBuildMessage("Spreadsheet readiness, local build, and full validation passed. Git and publishing were not run.");
   } catch (error) {
     state.buildReadiness = null;
+    state.localBuildRecovery = error.recovery || null;
     elements.localBuildOutput.textContent += `\n\nFAILED\n${error.message}`;
     if (elements.localBuildProgress.hidden) {
       renderGuardedJobProgress(localBuildProgressElements, {
@@ -4894,6 +4926,7 @@ elements.finishDayShowDetails.addEventListener("click", () => {
   elements.finishDayDetails.hidden = false;
   elements.finishDayDetails.open = true;
 });
+elements.resumeFinishDay.addEventListener("click", prepareFinishDay);
 elements.finishDayConfirmCommit.addEventListener("change", renderFinishDay);
 elements.finishDayCommitMessage.addEventListener("input", renderFinishDay);
 elements.commitFinishDay.addEventListener("click", commitFinishDay);
@@ -4922,6 +4955,7 @@ elements.refreshPublication.addEventListener("click", refreshPublication);
 elements.publicationOpenReviewBuild.addEventListener("click", () => switchView("review-build"));
 elements.publicationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
 elements.publicationRetryStatus.addEventListener("click", refreshPublication);
+elements.resumePublication.addEventListener("click", resumePublication);
 elements.openMainEditor.addEventListener("click", openMainEditor);
 elements.publicationVersionKind.addEventListener("change", () => {
   elements.publicationMajorField.hidden = elements.publicationVersionKind.value !== "major";
@@ -5068,6 +5102,7 @@ elements.runLocalBuild.addEventListener("click", () => {
 elements.buildConfirmClose.addEventListener("click", () => elements.buildConfirmDialog.close());
 elements.buildConfirmCancel.addEventListener("click", () => elements.buildConfirmDialog.close());
 elements.buildConfirmRun.addEventListener("click", runLocalBuild);
+elements.resumeLocalBuild.addEventListener("click", runLocalBuild);
 window.addEventListener("beforeunload", (event) => {
   captureCurrentProfileDraft();
   if (!pendingSessionItems().length) return;

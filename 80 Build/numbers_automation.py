@@ -12,6 +12,9 @@ from typing import Optional
 
 NUMBERS_BUNDLE_IDS = ("com.apple.Numbers", "com.apple.iWork.Numbers")
 LAUNCH_TIMEOUT_SECONDS = 20
+QUIT_TIMEOUT_SECONDS = 10
+NUMBERS_BUSY_MARKER = "NUMBERS_BUSY_RECOVERY"
+NUMBERS_CLEANUP_MARKER = "NUMBERS_CLEANUP_RECOVERY"
 
 
 class NumbersAutomationError(RuntimeError):
@@ -28,24 +31,61 @@ class NumbersApplication:
         return f"{self.bundle_id} ({self.path})" if self.path else self.bundle_id
 
 
+def numbers_resume_recovery(output, action):
+    """Return plain-language UI recovery metadata for a recoverable Numbers stop."""
+    text = str(output or "")
+    if not any(marker in text for marker in (NUMBERS_BUSY_MARKER, NUMBERS_CLEANUP_MARKER)):
+        return None
+    return {
+        "kind": "numbers-close-and-resume",
+        "summary": (
+            "Save and close every Numbers window. Then choose Resume after closing "
+            "Numbers; the project will recheck its work and continue with only the "
+            "spreadsheet artifacts that still need attention."
+        ),
+        "actions": [action],
+    }
+
+
 def run_numbers_applescript(script, operation, success=None):
-    """Launch each supported Numbers candidate, then run an AppleScript operation."""
+    """Run one background Numbers operation and clean up only the app launched here."""
+    running = _running_numbers_bundle_ids()
+    if running:
+        raise NumbersAutomationError(
+            f"{NUMBERS_BUSY_MARKER}: Apple Numbers is already open. Save and close "
+            "Numbers, then choose Resume after closing Numbers (or rerun the same "
+            "spreadsheet command). The open Numbers session was not changed."
+        )
     errors = []
     for application in numbers_applications():
         try:
-            ensure_numbers_running(application)
+            ensure_numbers_running(application, cleanup_on_failure=True)
         except NumbersAutomationError as exc:
             errors.append(f"{application.label}: {exc}")
             continue
-        result = subprocess.run(
-            [
-                "osascript",
-                "-e",
-                script.replace("__BUNDLE_ID__", application.bundle_id),
-            ],
-            capture_output=True,
-            text=True,
-        )
+        result = None
+        cleanup_error = None
+        try:
+            result = subprocess.run(
+                [
+                    "osascript",
+                    "-e",
+                    script.replace("__BUNDLE_ID__", application.bundle_id),
+                ],
+                capture_output=True,
+                text=True,
+            )
+        finally:
+            try:
+                _quit_numbers(application)
+            except NumbersAutomationError as exc:
+                cleanup_error = str(exc)
+        if cleanup_error:
+            raise NumbersAutomationError(
+                f"{NUMBERS_CLEANUP_MARKER}: The Numbers operation stopped during cleanup. "
+                f"{cleanup_error} Save and close Numbers, then choose Resume after closing "
+                "Numbers (or rerun the same spreadsheet command)."
+            )
         valid = result.returncode == 0 and (success is None or success(result))
         if valid:
             return result, application
@@ -80,7 +120,7 @@ def open_numbers_document(path):
     raise NumbersAutomationError(_failure_message("open the workbook", errors))
 
 
-def ensure_numbers_running(application, launch=True):
+def ensure_numbers_running(application, launch=True, cleanup_on_failure=False):
     """Explicitly launch a Numbers candidate and wait for AppleScript responsiveness."""
     if launch:
         command = ["open", "-gj"]
@@ -110,7 +150,58 @@ def ensure_numbers_running(application, launch=True):
             return
         last_error = result.stderr.strip() or last_error
         time.sleep(0.25)
+    if launch and cleanup_on_failure:
+        try:
+            _quit_numbers(application)
+        except NumbersAutomationError as cleanup_exc:
+            raise NumbersAutomationError(
+                f"{last_error}. Automatic cleanup also failed: {cleanup_exc}"
+            ) from cleanup_exc
     raise NumbersAutomationError(last_error)
+
+
+def _running_numbers_bundle_ids():
+    """Return supported Numbers bundle IDs currently registered with Launch Services."""
+    result = subprocess.run(
+        ["lsappinfo", "list"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or "Launch Services did not return application state"
+        raise NumbersAutomationError(
+            f"{NUMBERS_BUSY_MARKER}: Could not safely determine whether Apple Numbers is already open: {detail}. "
+            "Save and close Numbers, then retry."
+        )
+    output = result.stdout.casefold()
+    return {
+        bundle_id
+        for bundle_id in NUMBERS_BUNDLE_IDS
+        if bundle_id.casefold() in output
+    }
+
+
+def _quit_numbers(application):
+    """Quit an automation-owned Numbers instance and verify that it stopped."""
+    script = (
+        f'tell application id {json.dumps(application.bundle_id)}\n'
+        "quit saving no\n"
+        "end tell"
+    )
+    result = subprocess.run(
+        ["osascript", "-e", script],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "quit failed"
+        raise NumbersAutomationError(f"Could not quit automation-launched Numbers: {detail}.")
+    deadline = time.monotonic() + QUIT_TIMEOUT_SECONDS
+    while time.monotonic() < deadline:
+        if application.bundle_id not in _running_numbers_bundle_ids():
+            return
+        time.sleep(0.25)
+    raise NumbersAutomationError("Automation-launched Numbers did not quit within 10 seconds.")
 
 
 def numbers_applications():

@@ -85,6 +85,7 @@ from control_reference import (
 )
 from profile_loader import load_baseline, load_yaml
 from project_context import project_context_info
+from numbers_automation import numbers_resume_recovery
 from publication_workflow import (
     MainEditorLauncher,
     PublicationWorkflow,
@@ -167,6 +168,7 @@ EDITOR_BUILD_FILES = (
     "80 Build/my_menu_colors.py",
     "80 Build/my_menu.py",
     "80 Build/my_menu_reference.py",
+    "80 Build/numbers_automation.py",
     "80 Build/profile_editor.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/control_options.yaml",
@@ -2201,7 +2203,10 @@ class ProfileEditorModel:
                 if completed.returncode:
                     if progress_callback:
                         progress_callback(stage, command=command_text, output=output or "Command failed without output.")
-                    raise PrototypeError(f"{label} failed.\n{output}")
+                    raise PrototypeError(
+                        f"{label} failed.\n{output}",
+                        recovery=numbers_resume_recovery(output, "resume-local-build"),
+                    )
                 if progress_callback:
                     progress_callback(stage, command=command_text, output=output or "(no output)", completed=True)
             return {"status": "passed", "steps": results}
@@ -2383,7 +2388,7 @@ class ProfileEditorModel:
                     review_token, confirmed, progress=progress_callback
                 )
             except PublicationWorkflowError as exc:
-                raise PrototypeError(str(exc)) from exc
+                raise PrototypeError(str(exc), recovery=getattr(exc, "recovery", None)) from exc
         finally:
             self._build_lock.release()
 

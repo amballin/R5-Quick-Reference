@@ -13,6 +13,7 @@ import tempfile
 
 from app_wrappers import refresh_app_wrappers
 from asset_manager import ProjectPaths
+from numbers_automation import numbers_resume_recovery
 
 
 class BranchIntegrationError(RuntimeError):
@@ -84,7 +85,10 @@ class BranchIntegrationWorkflow:
         completed = self._run(command, cwd=cwd, timeout=timeout)
         output = completed.stdout[-80_000:].strip()
         if completed.returncode:
-            raise BranchIntegrationError(f"{label} failed.\n{output}")
+            raise BranchIntegrationError(
+                f"{label} failed.\n{output}",
+                recovery=numbers_resume_recovery(output, "retry-with-spreadsheet-refresh"),
+            )
         return {"label": label, "status": "passed", "output": output}
 
     def _git(self, *args, cwd=None):
@@ -360,7 +364,7 @@ class BranchIntegrationWorkflow:
                     f"The isolated integration candidate requires a spreadsheet refresh: {labels}.",
                     recovery={
                         "kind": "integration-spreadsheet-refresh",
-                        "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts inside the disposable integration candidate, then continue validation. Apple Numbers may open in the background.",
+                        "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts inside the disposable integration candidate, then continue validation. Apple Numbers runs temporarily in the background and closes automatically.",
                         "labels": spreadsheet_state["labels"],
                         "details": spreadsheet_state["details"],
                         "actions": ["retry-with-spreadsheet-refresh"],

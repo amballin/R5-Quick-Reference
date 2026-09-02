@@ -17,12 +17,15 @@ import sys
 import yaml
 
 from asset_manager import ProjectPaths
+from numbers_automation import numbers_resume_recovery
 from release_notes import load_release_notes
 from spreadsheet_revisions import spreadsheet_build_id
 
 
 class PublicationWorkflowError(RuntimeError):
-    pass
+    def __init__(self, message, *, recovery=None):
+        super().__init__(message)
+        self.recovery = recovery
 
 
 class PublicationWorkflow:
@@ -415,7 +418,14 @@ class PublicationWorkflow:
             built = self._run(command, timeout=45 * 60)
             output = built.stdout[-80_000:].strip()
             if built.returncode:
-                raise PublicationWorkflowError("Spreadsheet preparation failed.\n" + output)
+                recovery = numbers_resume_recovery(output, "resume-publication")
+                if recovery:
+                    self._publish_reviews[review["token"]] = review
+                    recovery["reviewToken"] = review["token"]
+                raise PublicationWorkflowError(
+                    "Spreadsheet preparation failed.\n" + output,
+                    recovery=recovery,
+                )
             steps.append({"label": "Spreadsheet preparation", "status": "passed", "output": output})
             self._notify(progress, "Preparing spreadsheet downloads", output=output, completed=True)
         command = [str(self.publisher)]

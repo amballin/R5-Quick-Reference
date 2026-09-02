@@ -120,7 +120,7 @@
 <p>This is the normal recovery command after spreadsheet definitions, layout, generator code, or canonical verification status changes:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh</code></pre></div>
 <p>It first reports the verification working copy, Matrix/settings, and Setup states. If the verification copy may contain unimported edits, it stops before changing anything and directs you to import them. Otherwise it rebuilds only stale artifacts in the safe order and skips current files. It does not publish, commit, or push.</p>
-<p>Numbers is launched automatically before conversion and finalization; you do not need to open it manually.</p>
+<p>Leave Numbers closed before starting. The workflow launches it quietly in the background, closes each generated workbook, and quits the Numbers process it launched. If Numbers is already open, the workflow stops without touching that session. Save and close Numbers, then choose <strong>Resume after closing Numbers</strong> in Profile Editor or rerun the same command; the fresh diagnosis skips spreadsheet artifacts that are already current.</p>
 <p>To deliberately regenerate both release workbook families even when they are current:</p>
 <div class="command"><button type="button" aria-label="Copy command">Copy</button><pre><code>./80\ Build/scripts/build-all-spreadsheet-downloads.sh --force-release-workbooks</code></pre></div>
 <p>The same diagnosis and unimported-edit safeguards run first. Each regenerated workbook shows its deterministic spreadsheet build ID in the banner; the Setup Metadata sheet records the same ID.</p>

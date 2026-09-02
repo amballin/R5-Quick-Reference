@@ -14,7 +14,7 @@ This is the normal recovery command after spreadsheet definitions, layout, gener
 
 It first reports the verification working copy, Matrix/settings, and Setup states. If the verification copy may contain unimported edits, it stops before changing anything and directs you to import them. Otherwise it rebuilds only stale artifacts in the safe order and skips current files. It does not publish, commit, or push.
 
-Numbers is launched automatically before conversion and finalization; you do not need to open it manually.
+Leave Numbers closed before starting. The workflow launches it quietly in the background, closes each generated workbook, and quits the Numbers process it launched. If Numbers is already open, the workflow stops without touching that session. Save and close Numbers, then choose **Resume after closing Numbers** in Profile Editor or rerun the same command; the fresh diagnosis skips spreadsheet artifacts that are already current.
 
 To deliberately regenerate both release workbook families even when they are current:
 

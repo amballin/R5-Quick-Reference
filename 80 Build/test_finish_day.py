@@ -179,6 +179,17 @@ class FinishDayWorkflowTests(unittest.TestCase):
         self.assertTrue(marker.is_file())
         self.assertTrue(any(step["label"] == "Spreadsheet refresh" for step in prepared["steps"]))
 
+    def test_numbers_refusal_offers_finish_day_resume(self):
+        completed = subprocess.CompletedProcess(
+            ["spreadsheet-refresh"],
+            1,
+            stdout="NUMBERS_BUSY_RECOVERY: Apple Numbers is already open.\n",
+        )
+        with patch.object(self.workflow, "_run", return_value=completed):
+            with self.assertRaisesRegex(FinishDayError, "Apple Numbers is already open") as stopped:
+                self.workflow._require_success("Spreadsheet refresh", ["spreadsheet-refresh"])
+        self.assertEqual(stopped.exception.recovery["actions"], ["resume-finish-day"])
+
 
 if __name__ == "__main__":
     unittest.main()
