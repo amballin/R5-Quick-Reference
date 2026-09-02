@@ -604,6 +604,13 @@
         <code id="local-build-progress-command" class="workflow-progress-command"></code>
         <details><summary>Watch command log</summary><pre id="local-build-progress-log" tabindex="0"></pre></details>
       </div>
+      <div id="local-build-recovery" class="workflow-recovery" hidden>
+        <strong>Next safe action</strong>
+        <p id="local-build-recovery-summary" class="muted"></p>
+        <div class="workflow-recovery-actions">
+          <button id="resume-local-build" class="primary" type="button">Resume after closing Numbers</button>
+        </div>
+      </div>
       <details id="local-build-details" class="workflow-details local-build-details" hidden>
         <summary>Show status details</summary>
         <pre id="local-build-output" class="local-build-output" tabindex="0"></pre>
@@ -649,6 +656,7 @@
               <button id="finish-day-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
               <button id="finish-day-import-tracker" class="secondary" type="button" hidden>Import verification tracker</button>
               <button id="finish-day-show-details" class="secondary" type="button" hidden>Show status details</button>
+              <button id="resume-finish-day" class="primary" type="button" hidden>Resume after closing Numbers</button>
             </div>
           </div>
         </section>
@@ -658,7 +666,7 @@
             <div><p class="eyebrow">Required checkpoint</p><h3>Validate and prepare source</h3></div>
           </div>
           <p class="muted">This runs source validation, the normal development build, and full validation. If the build changes <code>docs/</code>, Finish Day creates a recovery archive and restores those generated files so the handoff cannot publish Pages.</p>
-          <label id="finish-day-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="finish-day-confirm-spreadsheet" type="checkbox"><span>Rebuild only the stale spreadsheet-derived artifacts before validation. Apple Numbers may open in the background.</span></label>
+          <label id="finish-day-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="finish-day-confirm-spreadsheet" type="checkbox"><span>Rebuild only the stale spreadsheet-derived artifacts before validation. Apple Numbers runs temporarily in the background and closes automatically.</span></label>
           <label class="finish-day-confirm"><input id="finish-day-confirm-prepare" type="checkbox"><span>I understand this may update local build output and will safely restore generated <code>docs/</code>.</span></label>
           <button id="prepare-finish-day" class="primary" type="button" disabled>Validate and prepare</button>
           <div id="finish-day-progress" class="workflow-progress" hidden>
@@ -738,7 +746,7 @@
               <button id="integration-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
               <button id="integration-open-finish-day" class="secondary" type="button" hidden>Open Finish Day</button>
             </div>
-            <label id="integration-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="integration-confirm-spreadsheet" type="checkbox"><span>Retry in a fresh disposable candidate and rebuild only its stale spreadsheet-derived artifacts. Apple Numbers may open in the background.</span></label>
+            <label id="integration-confirm-spreadsheet-wrap" class="finish-day-confirm" hidden><input id="integration-confirm-spreadsheet" type="checkbox"><span>Retry in a fresh disposable candidate and rebuild only its stale spreadsheet-derived artifacts. Apple Numbers runs temporarily in the background and closes automatically.</span></label>
             <button id="retry-integration-spreadsheet" class="primary" type="button" hidden disabled>Refresh spreadsheets and retry</button>
           </div>
         </section>
@@ -864,6 +872,7 @@
               <button id="publication-open-review-build" class="secondary" type="button" hidden>Open Review &amp; Build</button>
               <button id="publication-open-finish-day" class="secondary" type="button" hidden>Open Finish Day</button>
               <button id="publication-retry-status" class="secondary" type="button">Check again</button>
+              <button id="resume-publication" class="primary" type="button" hidden>Resume after closing Numbers</button>
             </div>
           </div>
         </section>
@@ -1089,7 +1098,7 @@
       </div>
       <button id="build-confirm-close" class="secondary" type="button" aria-label="Close build confirmation">Close</button>
     </div>
-    <p class="review-warning"><strong>This may launch Apple Numbers and changes generated local output and tracked docs.</strong> It stops before overwriting a verification tracker with unimported edits. It does not commit, push, publish, or change website version metadata.</p>
+    <p class="review-warning"><strong>This may run Apple Numbers temporarily in the background and changes generated local output and tracked docs.</strong> Automation-launched Numbers closes automatically. It stops before overwriting a verification tracker with unimported edits. It does not commit, push, publish, or change website version metadata.</p>
     <div class="review-actions">
       <button id="build-confirm-cancel" class="secondary" type="button">Cancel</button>
       <button id="build-confirm-run" class="save-action" type="button">Run validated local build</button>

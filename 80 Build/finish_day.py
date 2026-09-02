@@ -14,6 +14,7 @@ import sys
 import tarfile
 
 from asset_manager import ProjectPaths
+from numbers_automation import numbers_resume_recovery
 
 
 class FinishDayError(RuntimeError):
@@ -50,7 +51,10 @@ class FinishDayWorkflow:
         completed = self._run(command, timeout=timeout, env=env)
         output = completed.stdout[-80_000:].strip()
         if completed.returncode:
-            raise FinishDayError(f"{label} failed.\n{output}")
+            raise FinishDayError(
+                f"{label} failed.\n{output}",
+                recovery=numbers_resume_recovery(output, "resume-finish-day"),
+            )
         return {"label": label, "status": "passed", "output": output}
 
     def _status_report(self):
@@ -273,7 +277,7 @@ class FinishDayWorkflow:
                 "Finish Day requires a spreadsheet refresh before the development build.",
                 recovery={
                     "kind": "finish-day-spreadsheet-refresh",
-                    "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts, then continue Finish Day. Apple Numbers may open in the background.",
+                    "summary": "Allow Profile Editor to rebuild only the stale spreadsheet-derived artifacts, then continue Finish Day. Apple Numbers runs temporarily in the background and closes automatically.",
                     "details": spreadsheet_state.get("details") or [],
                     "actions": ["retry-with-spreadsheet-refresh"],
                 },
@@ -401,7 +405,7 @@ def run_interactive(root):
         if spreadsheet_state.get("refreshNeeded"):
             print("\nSpreadsheet refresh required: " + ", ".join(spreadsheet_state.get("labels") or []))
             allow_spreadsheet_refresh = ask_yes_no(
-                "Rebuild only the stale spreadsheet-derived artifacts now? Apple Numbers may open"
+                "Rebuild only the stale spreadsheet-derived artifacts now? Apple Numbers runs temporarily in the background and closes automatically"
             )
             if not allow_spreadsheet_refresh:
                 print("Preparation postponed. No spreadsheet, commit, or push action was performed.")

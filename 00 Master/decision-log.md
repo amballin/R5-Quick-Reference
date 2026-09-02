@@ -2,6 +2,15 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Background-Owned Numbers Automation and One-Step Resume
+
+**Status:** Accepted
+**Date:** 2026-09-02
+
+Automatic spreadsheet generation may use Apple Numbers only when no Numbers session is already open. Launch it without foreground activation, close every automation-opened workbook after saving, and quit only the Numbers process launched by the automation. Apply the same cleanup after a failed operation. Never close or quit a pre-existing user session.
+
+If Numbers is already open, stop before the attempted Numbers operation changes workbook files and give the owner one plain recovery step: save and close Numbers, then choose **Resume after closing Numbers**. Review & Build, Finish Day, Integrate Branch, and Release & Publish must re-run their current safety diagnosis on resume and continue through the established workflow, while the consolidated spreadsheet builder skips artifacts that are already current. Terminal recovery must give the equivalent instruction to rerun the same spreadsheet command. Preserve detailed diagnostics and the manual conversion fallback for unavailable or otherwise failing Numbers automation.
+
 ## In-Editor Recovery for Guarded Workflow Stops
 
 **Status:** Accepted

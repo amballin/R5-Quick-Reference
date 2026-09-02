@@ -587,7 +587,6 @@ def _matrix_finalize_script(
     last_visible_defaults_column = 1 + len(layout["registered_profiles"]["keys"])
     return f"""
 tell application id "__BUNDLE_ID__"
-    activate
     open POSIX file {quoted_path}
     set targetDocument to front document
     tell sheet 1 of targetDocument
@@ -648,7 +647,9 @@ tell application id "__BUNDLE_ID__"
     tell table 1 of sheet {json.dumps(defaults["worksheet"])} of targetDocument to set defaultsProperties to ¬
         {{row count, column count, header row count, header rows frozen, ¬
             header column count, header columns frozen}}
-    return mainProperties & defaultsProperties
+    set finalizedProperties to mainProperties & defaultsProperties
+    close targetDocument saving yes
+    return finalizedProperties
 end tell
 """
 
@@ -665,7 +666,6 @@ def _setup_finalize_script(paths, numbers):
     imported_rows = expected_rows + checklist["excel"]["import_only_rows"]
     return f"""
 tell application id "__BUNDLE_ID__"
-    activate
     open POSIX file {quoted_path}
     set targetDocument to front document
     tell sheet {json.dumps(checklist["name"])} of targetDocument
@@ -725,9 +725,11 @@ tell application id "__BUNDLE_ID__"
     end tell
     set active sheet of targetDocument to sheet {json.dumps(layout["sheets"]["dashboard"]["name"])} of targetDocument
     save targetDocument
-    tell table 1 of sheet {json.dumps(checklist["name"])} of targetDocument to return ¬
+    tell table 1 of sheet {json.dumps(checklist["name"])} of targetDocument to set finalizedProperties to ¬
         {{row count, column count, header row count, header rows frozen, ¬
             header column count, header columns frozen, name of active sheet of targetDocument}}
+    close targetDocument saving yes
+    return finalizedProperties
 end tell
 """
 

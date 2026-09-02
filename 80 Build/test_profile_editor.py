@@ -69,6 +69,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/my_menu.py",
             "80 Build/my_menu_colors.py",
             "80 Build/my_menu_reference.py",
+            "80 Build/numbers_automation.py",
             "80 Build/control_reference.py",
             "80 Build/camera_lab_tracker_import.py",
             "80 Build/profile_editor.py",
@@ -986,6 +987,11 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="local-build-progress-command"', html)
         self.assertIn('id="local-build-progress-log"', html)
         self.assertIn('id="local-build-details"', html)
+        self.assertIn('id="resume-local-build"', html)
+        self.assertIn('id="resume-finish-day"', html)
+        self.assertIn('id="resume-publication"', html)
+        self.assertIn("Resume after closing Numbers", html)
+        self.assertIn("resume-local-build", javascript)
         self.assertIn("Show status details", html)
         self.assertIn('localBuild: "profileEditor.localBuildJob"', javascript)
         self.assertIn("reconnectLocalBuild", javascript)
@@ -1232,7 +1238,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("STATUS: CLEAN AND SYNCHRONIZED", result["output"])
 
     def test_publication_automatic_mode_preserves_current_and_refreshes_only_stale_family(self):
-        from publication_workflow import PublicationWorkflow
+        from publication_workflow import PublicationWorkflow, PublicationWorkflowError
 
         workflow = PublicationWorkflow(self.root)
         base = {
@@ -1282,6 +1288,32 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         publish_command = next(command for command in commands if Path(command[0]).name == "publish.sh")
         self.assertIn("--matrix-downloads", publish_command)
         self.assertNotIn("--spreadsheet-downloads", publish_command)
+
+        attempts = 0
+
+        def recoverable_run(command, **kwargs):
+            nonlocal attempts
+            if Path(command[0]).name == "build-all-spreadsheet-downloads.sh":
+                attempts += 1
+                if attempts == 1:
+                    return SimpleNamespace(
+                        returncode=1,
+                        stdout="NUMBERS_BUSY_RECOVERY: Apple Numbers is already open.",
+                    )
+                return SimpleNamespace(returncode=0, stdout="prepared")
+            if Path(command[0]).name == "publish.sh":
+                return SimpleNamespace(returncode=0, stdout="PUBLICATION COMPLETE AND VERIFIED.")
+            return SimpleNamespace(returncode=0, stdout="STATUS: CLEAN AND SYNCHRONIZED")
+
+        workflow._run = recoverable_run
+        review = workflow.review_publication(0, None, "automatic")
+        with self.assertRaisesRegex(PublicationWorkflowError, "Apple Numbers is already open") as stopped:
+            workflow.publish(review["reviewToken"], True)
+        recovery = stopped.exception.recovery
+        self.assertEqual(recovery["actions"], ["resume-publication"])
+        self.assertEqual(recovery["reviewToken"], review["reviewToken"])
+        resumed = workflow.publish(recovery["reviewToken"], True)
+        self.assertEqual(resumed["phase"], "complete")
 
     def test_publication_model_uses_guarded_background_job_without_publishing_in_test(self):
         class FakePublication:
@@ -1605,6 +1637,31 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             ["80 Build/validator.py"],
         ])
         self.assertFalse(any("git" in command or "publish" in command for command in commands))
+
+    def test_local_build_exposes_simple_numbers_resume_recovery(self):
+        model = ProfileEditorModel(
+            self.root,
+            source_validator=lambda _root: [],
+            derived_artifact_checker=lambda: {
+                "status": "refresh-needed",
+                "refreshNeeded": True,
+                "details": ["Setup requires refresh."],
+                "blockers": [],
+            },
+        )
+        results = [
+            SimpleNamespace(returncode=0, stdout="source passed"),
+            SimpleNamespace(
+                returncode=1,
+                stdout="NUMBERS_BUSY_RECOVERY: Apple Numbers is already open.",
+            ),
+        ]
+        with patch("profile_editor.subprocess.run", side_effect=results):
+            with self.assertRaisesRegex(PrototypeError, "Apple Numbers is already open") as stopped:
+                model.run_local_build(0, True)
+        self.assertEqual(stopped.exception.recovery["kind"], "numbers-close-and-resume")
+        self.assertEqual(stopped.exception.recovery["actions"], ["resume-local-build"])
+        self.assertIn("Resume after closing Numbers", stopped.exception.recovery["summary"])
 
     def test_local_build_background_job_reports_reconnectable_step_progress(self):
         with patch(
