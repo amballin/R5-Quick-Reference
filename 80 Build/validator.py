@@ -39,6 +39,8 @@ from validators import (  # noqa: E402
     workflow_guides_validator,
     yaml_validator,
 )
+from asset_manager import ProjectPaths  # noqa: E402
+from profile_pack import ProfilePackError  # noqa: E402
 
 
 VALIDATORS = [
@@ -105,9 +107,35 @@ SOURCE_ONLY_VALIDATORS = [
 ]
 
 
+COMBINED_CONTEXT_VALIDATORS = {
+    yaml_validator.validate,
+    baseline_validator.validate,
+    card_identity_validator.validate,
+    setting_access_validator.validate,
+    my_menu_validator.validate,
+    spreadsheet_spec_validator.validate,
+    spreadsheet_download_validator.validate,
+    verification_status_validator.validate,
+    control_validator.validate,
+    feature_interaction_validator.validate,
+    lens_guidance_validator.validate,
+    appendix_validator.validate,
+    profile_validator.validate,
+    profile_editor_validator.validate,
+    stabilization_validator.validate,
+    output_validator.validate,
+    pwa_validator.validate,
+}
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Validate the Photography Reference System.")
     parser.add_argument("--root", default=".", help="Project root. Defaults to current directory.")
+    parser.add_argument(
+        "--profile-pack",
+        metavar="PATH",
+        help="Validate with one explicit compatible private profile-pack Git repository.",
+    )
     parser.add_argument(
         "--source-only",
         action="store_true",
@@ -116,11 +144,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def run(root, source_only=False):
+def run(root, source_only=False, profile_pack_root=None):
+    paths = root if isinstance(root, ProjectPaths) else ProjectPaths(
+        root,
+        profile_pack_root=profile_pack_root,
+    )
     issues = []
     validators = SOURCE_ONLY_VALIDATORS if source_only else VALIDATORS
     for _, validator in validators:
-        issues.extend(validator(root))
+        target = paths if validator in COMBINED_CONTEXT_VALIDATORS else paths.application_root
+        issues.extend(validator(target))
     return issues
 
 
@@ -144,7 +177,19 @@ def print_report(issues, source_only=False):
 def main():
     args = parse_args()
     root = Path(args.root).resolve()
-    issues = run(root, source_only=args.source_only)
+    try:
+        paths = ProjectPaths(root, profile_pack_root=args.profile_pack)
+        issues = run(paths, source_only=args.source_only)
+    except (ProfilePackError, ValueError) as exc:
+        print(f"Profile-pack error: {exc}", file=sys.stderr)
+        return 2
+    if paths.profile_pack.mode == "external":
+        print(
+            f"External profile pack: {paths.profile_pack.pack_name} "
+            f"({paths.profile_pack.pack_id})"
+        )
+        print("Profile Editor guarded-write readiness passed for the selected external pack.")
+        print()
     print_report(issues, source_only=args.source_only)
     return 1 if any(issue.level == "error" for issue in issues) else 0
 

@@ -1,13 +1,12 @@
 from copy import deepcopy
 
-from asset_manager import ProjectPaths
 from camera_setup_tracker import materialize_registration_values
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
-def validate(root):
+def validate(paths_or_root):
     issues = []
-    paths = ProjectPaths(root)
+    paths = resolved_paths(paths_or_root)
     layouts = load_yaml_checked(paths.spreadsheet_layouts_file) or {}
     source = load_yaml_checked(paths.verification_tracker_source_file) or {}
     workbooks = layouts.get("workbooks") or {}

@@ -693,7 +693,7 @@ def lens_choices_section(profile, paths=None, guidance=None, equipment=None):
     if paths is None:
         return ""
     choices = resolved_choices(
-        profile, paths.root, guidance=guidance, equipment=equipment
+        profile, paths, guidance=guidance, equipment=equipment
     )
     if not choices:
         return ""
@@ -718,7 +718,7 @@ def compatibility_section(profile, merged, paths=None, guidance=None, equipment=
     messages = compatibility_messages(
         profile,
         merged,
-        paths.root,
+        paths,
         surface="card",
         guidance=guidance,
         equipment=equipment,

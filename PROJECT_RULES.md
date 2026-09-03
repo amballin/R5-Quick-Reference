@@ -72,6 +72,7 @@ Architectural or permanent rule changes require explicit project-owner approval.
 ## Specifications
 
 - [Architecture](00%20Master/specifications/Architecture.md)
+- [Profile Pack Specification](00%20Master/specifications/Profile%20Pack%20Specification.md)
 - [Profile Specification](00%20Master/specifications/Profile%20Specification.md)
 - [Card Specification](00%20Master/specifications/Card%20Specification.md)
 - [Appendix Specification](00%20Master/specifications/Appendix%20Specification.md)

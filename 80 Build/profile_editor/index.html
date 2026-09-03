@@ -21,7 +21,12 @@
         <button id="stop-profile-editor" class="header-button" type="button">Stop Profile Editor</button>
       </div>
       <div class="header-meta">
-        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
+        <label class="profile-pack-picker">
+          <span class="profile-pack-label">Profile Pack:</span>
+          <select id="profile-pack-select" class="profile-pack-select embedded" aria-label="Active profile pack">
+            <option>Checking profile pack…</option>
+          </select>
+        </label>
       </div>
       <details class="build-badge header-version">
         <summary id="editor-version" aria-live="polite">Loading editor version…</summary>
@@ -30,6 +35,11 @@
       <img class="editor-camera-logo" src="/source/60%20Assets/Card%20Logos/png/Silver%20Logo.png" alt="" aria-hidden="true">
     </div>
   </header>
+
+  <section id="external-pack-boundary-banner" class="external-pack-boundary-banner" hidden>
+    <strong>External profile pack · guarded editing</strong>
+    <span id="external-pack-boundary-detail">Only selected pack sources can be changed.</span>
+  </section>
 
   <main class="app-shell">
     <aside class="app-sidebar">
@@ -560,7 +570,7 @@
       <section id="session-summary" class="session-summary" aria-label="Session change summary"></section>
       <div id="review-build-message" class="message" role="status" hidden></div>
 
-      <section class="pending-review-panel">
+      <section id="pending-review-summary" class="pending-review-panel">
         <div class="collection-heading">
           <div>
             <p class="eyebrow">Browser session</p>
@@ -587,7 +597,7 @@
         <div id="camera-lab-evidence-list" class="camera-lab-evidence-list"></div>
       </section>
 
-      <section class="local-build-panel">
+      <section id="local-build-panel" class="local-build-panel">
         <div>
           <p class="eyebrow">Canonical source</p>
           <h2>Validation and local build</h2>

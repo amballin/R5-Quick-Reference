@@ -7,7 +7,7 @@ from control_reference import (
     inject_control_tables,
 )
 
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
 EVIDENCE_STATUSES = {
@@ -37,56 +37,61 @@ DEPRECATED_AF_REPLACEMENT = (
 )
 
 
-def validate(root):
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
     issues = []
-    project_path = root / "controls.yaml"
+    project_path = paths.controls_file
     current_path = root / "data" / "canon_r5_custom_controls_current.yaml"
+    external_pack = paths.profile_pack.mode == "external"
 
     try:
         project = load_yaml_checked(project_path)
     except Exception as exc:
         return [error("controls", project_path, f"Control record parse error: {exc}")]
-    try:
-        current = load_yaml_checked(current_path)
-    except Exception as exc:
-        return [error("controls", current_path, f"Control record parse error: {exc}")]
+    current = None
+    if not external_pack:
+        try:
+            current = load_yaml_checked(current_path)
+        except Exception as exc:
+            return [error("controls", current_path, f"Control record parse error: {exc}")]
 
     issues.extend(_status_issues(project_path, project.get("controls"), "controls"))
     issues.extend(_status_issues(project_path, project.get("dials"), "dials"))
-    issues.extend(_status_issues(current_path, current.get("buttons"), "buttons"))
-    issues.extend(_status_issues(current_path, current.get("dials"), "dials"))
     project_controls = _normalize_entries(project.get("controls"))
-    current_controls = _normalize_entries(current.get("buttons"))
-    if project_controls != current_controls:
-        issues.append(error("controls", current_path, "Button/control records do not agree with controls.yaml."))
-
     project_dials = _normalize_entries(project.get("dials"))
-    current_dials = _normalize_entries(current.get("dials"))
-    if project_dials != current_dials:
-        issues.append(error("controls", current_path, "Dial records do not agree with controls.yaml."))
-
     project_modes = _mode_mapping(project.get("custom_shooting_modes"))
-    current_modes = _mode_mapping(current.get("custom_shooting_modes"))
-    if project_modes != current_modes:
-        issues.append(error("controls", current_path, "C1-C3 mappings do not agree with controls.yaml."))
+    if not external_pack:
+        issues.extend(_status_issues(current_path, current.get("buttons"), "buttons"))
+        issues.extend(_status_issues(current_path, current.get("dials"), "dials"))
+        current_controls = _normalize_entries(current.get("buttons"))
+        if project_controls != current_controls:
+            issues.append(error("controls", current_path, "Button/control records do not agree with controls.yaml."))
+        current_dials = _normalize_entries(current.get("dials"))
+        if project_dials != current_dials:
+            issues.append(error("controls", current_path, "Dial records do not agree with controls.yaml."))
+        current_modes = _mode_mapping(current.get("custom_shooting_modes"))
+        if project_modes != current_modes:
+            issues.append(error("controls", current_path, "C1-C3 mappings do not agree with controls.yaml."))
     if set(project_modes) != {"C1", "C2", "C3"}:
         issues.append(error("controls", project_path, "C1-C3 mappings must define C1, C2, and C3."))
 
-    owner_scope = (
-        current.get("evidence", {})
-        .get("owner_confirmation", {})
-        .get("status")
-    )
-    if owner_scope != "applies_only_to_entries_marked_owner_confirmed":
-        issues.append(
-            error(
-                "controls",
-                current_path,
-                "Owner-confirmation scope must apply only to entries marked owner_confirmed.",
-            )
+    if not external_pack:
+        owner_scope = (
+            current.get("evidence", {})
+            .get("owner_confirmation", {})
+            .get("status")
         )
+        if owner_scope != "applies_only_to_entries_marked_owner_confirmed":
+            issues.append(
+                error(
+                    "controls",
+                    current_path,
+                    "Owner-confirmation scope must apply only to entries marked owner_confirmed.",
+                )
+            )
 
-    profile_ids = _profile_ids(root)
+    profile_ids = _profile_ids(paths.profiles_dir)
     assigned_ids = []
     for mode, mapping in project_modes.items():
         profile_id = mapping.get("profile_id")
@@ -101,7 +106,7 @@ def validate(root):
     if len(assigned_ids) == 3 and len(set(assigned_ids)) != 3:
         issues.append(error("controls", project_path, "C1, C2, and C3 must use three different profiles."))
 
-    for profile_path in sorted((root / "10 Profiles").glob("*.yaml")):
+    for profile_path in sorted(paths.profiles_dir.glob("*.yaml")):
         try:
             profile = load_yaml_checked(profile_path)
         except Exception:
@@ -120,22 +125,23 @@ def validate(root):
                 )
             )
 
-    issues.extend(_canonical_setting_issues(root))
-    issues.extend(_deprecated_af_workflow_issues(root))
-    issues.extend(_derived_reference_issues(root, project))
+    issues.extend(_canonical_setting_issues(paths))
+    issues.extend(_deprecated_af_workflow_issues(paths))
+    issues.extend(_derived_reference_issues(paths, project))
     return issues
 
 
-def _derived_reference_issues(root, project):
+def _derived_reference_issues(paths, project):
+    root = paths.application_root
     issues = []
-    card_path = root / "10 Profiles" / "Camera Buttons.yaml"
+    card_path = paths.profiles_dir / "Camera Buttons.yaml"
     try:
         card = load_yaml_checked(card_path) or {}
         if card.get("reference_source") != "controls":
             issues.append(error("controls", card_path, "Camera Buttons must derive its rows from controls.yaml."))
         if "reference_settings" in card:
             issues.append(error("controls", card_path, "Derived Camera Buttons rows must not be authored in profile YAML."))
-        if not card_reference_rows(root):
+        if not card_reference_rows(paths):
             issues.append(error("controls", card_path, "Canonical control data produced no Camera Buttons rows."))
     except Exception as exc:
         issues.append(error("controls", card_path, f"Derived Camera Buttons readiness failed: {exc}"))
@@ -158,7 +164,7 @@ def _derived_reference_issues(root, project):
                     )
                 )
                 continue
-            rendered = inject_control_tables(source, root)
+            rendered = inject_control_tables(source, paths)
             if CONTROL_TABLE_PATTERN.search(rendered):
                 issues.append(error("controls", path, "Canonical control-table marker was not expanded."))
             for group in ("controls", "dials"):
@@ -218,9 +224,9 @@ def _mode_mapping(data):
     }
 
 
-def _profile_ids(root):
+def _profile_ids(profiles_dir):
     values = set()
-    for path in sorted((root / "10 Profiles").glob("*.yaml")):
+    for path in sorted(profiles_dir.glob("*.yaml")):
         try:
             profile = load_yaml_checked(path)
         except Exception:
@@ -231,11 +237,11 @@ def _profile_ids(root):
     return values
 
 
-def _canonical_setting_issues(root):
+def _canonical_setting_issues(paths):
     issues = []
-    paths = [root / "00 Master" / "baseline.yaml"]
-    paths.extend(sorted((root / "10 Profiles").glob("*.yaml")))
-    for path in paths:
+    source_paths = [paths.baseline_file]
+    source_paths.extend(sorted(paths.profiles_dir.glob("*.yaml")))
+    for path in source_paths:
         try:
             data = load_yaml_checked(path)
         except Exception:
@@ -247,26 +253,45 @@ def _canonical_setting_issues(root):
     return issues
 
 
-def _deprecated_af_workflow_issues(root):
+def _deprecated_af_workflow_issues(paths_or_root):
     """Reject retired registered-AF operating language in active user-facing sources."""
+    if hasattr(paths_or_root, "profile_pack"):
+        paths = paths_or_root
+        root = paths.application_root
+        controls_file = paths.controls_file
+        profiles_dir = paths.profiles_dir
+        external = paths.profile_pack.mode == "external"
+    else:
+        paths = None
+        root = paths_or_root
+        controls_file = root / "controls.yaml"
+        profiles_dir = root / "10 Profiles"
+        external = False
     issues = []
     excluded = {
         root / "50 Field Guide" / "Appendices" / "Canon EOS R5 Official Icon Reference.md",
     }
-    paths = [
-        root / "controls.yaml",
+    source_paths = [
+        controls_file,
         root / "data" / "canon_r5_custom_controls_current.yaml",
     ]
     for directory, patterns in (
-        (root / "10 Profiles", ("*.yaml",)),
+        (profiles_dir, ("*.yaml",)),
         (root / "50 Field Guide", ("*.md",)),
         (root / "WORKFLOWS", ("*.md",)),
-        (root / "90 Testing", ("*.md", "*.yaml")),
+        (root / "90 Testing", ("*.md",)),
     ):
         for pattern in patterns:
-            paths.extend(directory.rglob(pattern))
+            source_paths.extend(directory.rglob(pattern))
 
-    for path in sorted(set(paths)):
+    if external:
+        source_paths.extend(
+            [paths.registration_targets_file, paths.verification_status_file]
+        )
+    else:
+        source_paths.extend((root / "90 Testing").rglob("*.yaml"))
+
+    for path in sorted(set(source_paths)):
         if path in excluded or not path.is_file():
             continue
         try:

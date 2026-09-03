@@ -44,7 +44,7 @@ def validate_project(paths):
     results.extend(validate_assets(paths))
     results.extend(validate_canon_official_modes(paths))
     results.extend(validate_required_appendices(paths))
-    for issue in validate_setting_access(paths.root):
+    for issue in validate_setting_access(paths):
         results.append((issue.level, "setting_access", f"{issue.path}: {issue.message}"))
     return results
 

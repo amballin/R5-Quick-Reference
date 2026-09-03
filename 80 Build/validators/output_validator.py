@@ -1,14 +1,14 @@
 import re
+from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-from asset_manager import ProjectPaths
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
-def validate(root):
+def validate(paths_or_root):
     issues = []
-    paths = ProjectPaths(root)
-    profiles = sorted((root / "10 Profiles").glob("*.yaml"))
+    paths = resolved_paths(paths_or_root)
+    profiles = sorted(paths.profiles_dir.glob("*.yaml"))
     output_folders = [
         paths.output_dir,
         paths.html_output_dir,
@@ -178,7 +178,20 @@ def _html_issues(path):
     viewport = 'name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"'
     if viewport not in text:
         issues.append(error("html_viewport", path, "Responsive viewport metadata is missing."))
-    if re.search(r'(?:file://|/Users/|[A-Za-z]:\\\\)', text):
+    references = re.findall(
+        r'(?:src|href)=["\']([^"\']+)["\']',
+        text,
+        flags=re.IGNORECASE,
+    )
+    if any(
+        reference.startswith("file://")
+        or re.match(r"^[A-Za-z]:\\\\", unquote(reference))
+        or (
+            not urlparse(reference).scheme
+            and Path(unquote(urlparse(reference).path)).is_absolute()
+        )
+        for reference in references
+    ):
         issues.append(error("html_absolute_path", path, "Generated HTML contains an absolute local filesystem path."))
     if re.search(r'\{\{[^}]+\}\}|(?:PLACEHOLDER|TEMPLATE_VARIABLE)', text, flags=re.IGNORECASE):
         issues.append(error("html_template", path, "Generated HTML contains unresolved template text."))
@@ -186,7 +199,7 @@ def _html_issues(path):
     duplicates = sorted({value for value in ids if ids.count(value) > 1})
     if duplicates:
         issues.append(error("html_duplicate_id", path, f"Duplicate HTML IDs: {', '.join(duplicates)}"))
-    for reference in re.findall(r'(?:src|href)=["\']([^"\']+)["\']', text, flags=re.IGNORECASE):
+    for reference in references:
         parsed = urlparse(reference)
         if not reference or reference.startswith("#") or parsed.scheme in {"data", "http", "https", "mailto", "tel"}:
             continue

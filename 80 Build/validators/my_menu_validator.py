@@ -1,8 +1,10 @@
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
-def validate(root):
-    path = root / "00 Master" / "my_menu.yaml"
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
+    path = paths.my_menu_file
     try:
         from my_menu import MyMenuError, validate_my_menu
 

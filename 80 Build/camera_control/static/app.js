@@ -3,8 +3,11 @@ const requestedProfileName = new URLSearchParams(window.location.search).get("pr
 
 const elements = {
   backendBadge: document.querySelector("#backend-badge"),
-  projectContextBadge: document.querySelector("#project-context-badge"),
+  profilePackBadge: document.querySelector("#profile-pack-badge"),
+  externalPackBoundary: document.querySelector("#external-pack-boundary"),
+  externalPackBoundaryDetail: document.querySelector("#external-pack-boundary-detail"),
   cameraLabVersion: document.querySelector("#camera-lab-version"),
+  cameraLabBranch: document.querySelector("#camera-lab-branch"),
   cameraLabSourceHash: document.querySelector("#camera-lab-source-hash"),
   backendSwitchButton: document.querySelector("#backend-switch-button"),
   physicalWriteModeButton: document.querySelector("#physical-write-mode-button"),
@@ -165,8 +168,16 @@ let requestedPhysicalWriteMode = null;
 let guardedRunState = null;
 let writeQualificationState = null;
 let writeQualificationCandidates = [];
-const checklistStorageKey = "camera-lab-phase1-checklist-v1";
+const checklistStorageKeyPrefix = "camera-lab-phase1-checklist-v1";
+let checklistStorageKey = `${checklistStorageKeyPrefix}:unresolved`;
 let checklistState = loadChecklistState();
+
+function scopeChecklistStorage(packId) {
+  const nextKey = `${checklistStorageKeyPrefix}:${packId || "unresolved"}`;
+  if (nextKey === checklistStorageKey) return;
+  checklistStorageKey = nextKey;
+  checklistState = loadChecklistState();
+}
 
 function loadChecklistState() {
   try {
@@ -551,13 +562,21 @@ function renderStatus(status) {
   const reconnectAvailable = Boolean(status.reconnect_available);
   const app = status.app || {};
   const projectContext = app.project_context || {};
-  elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
-  elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
-  elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
+  const profilePack = app.profile_pack || {};
+  const externalPack = profilePack.mode === "external";
+  scopeChecklistStorage(profilePack.pack_id);
+  elements.profilePackBadge.textContent = `Profile Pack: ${profilePack.pack_name || "unavailable"}`;
+  elements.profilePackBadge.className = `profile-pack-badge ${externalPack ? "external" : "embedded"}`;
+  elements.profilePackBadge.title = profilePack.pack_id ? `Pack ID ${profilePack.pack_id} · fingerprint ${profilePack.fingerprint || "unavailable"}` : "Profile-pack identity unavailable";
+  elements.externalPackBoundary.hidden = !externalPack;
+  if (externalPack) {
+    elements.externalPackBoundaryDetail.textContent = `${profilePack.pack_name || "This pack"} may use simulator or explicitly enabled camera operations. Profile-pack source changes and evidence promotion remain unavailable.`;
+  }
   const contextName = app.context_name || (projectContext.kind === "main" ? "Main" : projectContext.kind === "prototype" ? "Prototype" : "Unknown");
   elements.cameraLabVersion.textContent = app.version
     ? `Camera Lab ${app.version} · ${contextName}`
     : "Camera Lab version unavailable";
+  elements.cameraLabBranch.textContent = projectContext.branch ? `Branch ${projectContext.branch}` : "Branch unavailable";
   elements.cameraLabSourceHash.textContent = app.build ? `Source hash ${app.build}` : "Source hash unavailable";
   elements.backendBadge.textContent = status.backend_mode === "simulated" ? "Simulated camera" : "Canon EDSDK";
   elements.backendBadge.classList.toggle("live", status.backend_mode === "edsdk");
@@ -606,7 +625,7 @@ function renderStatus(status) {
     : status.physical_write_enabled ? "Changes require review" : "No setting writes";
 
   elements.simulationPanel.hidden = status.backend_mode !== "simulated";
-  const guardedAvailable = status.backend_mode === "simulated" || status.physical_guarded_runs;
+  const guardedAvailable = status.simulated_guarded_runs || status.physical_guarded_runs;
   elements.prepareGuardedButton.hidden = !guardedAvailable || !comparisonState;
   elements.writeQualificationControls.hidden = !status.physical_write_qualification;
   if (!guardedAvailable) {
@@ -1104,7 +1123,7 @@ function renderComparison(comparison, { recordScan = false } = {}) {
   renderChecklistSummary();
   elements.compareStep.classList.remove("locked");
   elements.compareStep.classList.add("active");
-  const guardedAvailable = statusState?.backend_mode === "simulated" || statusState?.physical_guarded_runs;
+  const guardedAvailable = statusState?.simulated_guarded_runs || statusState?.physical_guarded_runs;
   elements.prepareGuardedButton.hidden = !guardedAvailable;
   elements.configureStep.classList.toggle("locked", !guardedAvailable);
 }

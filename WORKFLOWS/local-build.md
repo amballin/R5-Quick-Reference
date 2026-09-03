@@ -14,6 +14,36 @@ You may copy and run the complete block. The `&&` connections stop the sequence 
 
 The Profile Editor provides the same sequence under **Review & Build**. It first requires every browser draft to be saved or explicitly discarded, then requires a fresh readiness check and a final confirmation. This is convenient after profile, My Menu, or baseline work; the command block remains available for troubleshooting and other project changes.
 
+## External profile-pack development build
+
+Step 3A supports an explicit external pack for isolated build-parity review:
+
+```bash
+python3 "80 Build/build.py" --profile-pack "/absolute/path/to/private-profile-pack"
+```
+
+The selected path must be the root of a separate compatible Git repository containing `profile-pack.yaml`. The command validates the manifest and routes pack-owned baseline, profiles, My Menu, controls, lens/equipment, registration, and verification sources through the central resolver. Default builds continue to use the embedded sources.
+
+External output is isolated at `<local workspace>/Profile Packs/<pack_id>/Build Output/`. Open `merged-build/index.html` there for the complete local PWA or `pages/index.html` for its isolated Pages mirror. The external build does not update application `docs/` or tracked workflow HTML and cannot publish. Spreadsheet flags are not supported in Step 3A. Step 4C separately permits saved Profile Editor selection and guarded transactions; Steps 5A–5B permit external-pack Camera Lab comparison and guarded camera operation; Step 5C permits reviewed evidence promotion into pack-owned verification status. Direct Camera Lab pack-source writes, editor-initiated builds, Finish Day, Git/handoff, cleanup, and publication remain embedded-only.
+
+Step 3B adds the matching combined validation sequence:
+
+```bash
+python3 "80 Build/validator.py" --profile-pack "/absolute/path/to/private-profile-pack" --source-only &&
+python3 "80 Build/build.py" --profile-pack "/absolute/path/to/private-profile-pack" &&
+python3 "80 Build/validator.py" --profile-pack "/absolute/path/to/private-profile-pack"
+```
+
+The source-only pass validates application-owned definitions together with the selected pack's canonical sources. The final pass validates the isolated external cards, guides, card candidates, PWA, provenance, and Pages mirror. Both validator commands identify the selected pack and validate Profile Editor's guarded-write readiness against that same resolved context. Profile Editor's saved selection does not affect these build commands: their external pack remains explicit. Camera Lab comparison and guarded operation are activated separately by Steps 5A–5B, and Step 5C evidence promotion remains a Profile Editor transaction; spreadsheet generation, editor-initiated builds, Git, handoff, cleanup, and publication are not activated for external packs.
+
+To edit the same selected pack through guarded reviewed transactions, run:
+
+```bash
+python3 -B "80 Build/profile_editor.py" --profile-pack "/absolute/path/to/private-profile-pack"
+```
+
+The editor displays the manifest's friendly `pack_name` and permits only pack-namespaced previews plus reviewed Profile/lens, baseline, C1-C3, My Menu, Camera Buttons, removal, restore, and Camera Lab evidence-promotion transactions. It rejects spreadsheet import/generation, build, cleanup, Git, handoff, integration, main-editor launch, and publication. Restart it after changing pack source outside the editor. The normal app launcher uses the current valid machine-local editor selection; it does not change which pack an explicit build or validator command uses.
+
 ## Why three commands
 
 - The source-only validator checks editable source without treating expected stale generated files as errors.

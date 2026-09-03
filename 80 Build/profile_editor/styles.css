@@ -105,7 +105,39 @@ h2 { margin-bottom: .25rem; }
 .project-context-badge.main { background: var(--teal); }
 .project-context-badge.prototype { color: #3e2b00; background: #ffd267; }
 .project-context-badge.unknown { background: #66717d; }
+.profile-pack-picker { display: inline-flex; align-items: center; gap: .5rem; }
+.profile-pack-label { color: #d9ebfb; font-size: .8rem; font-weight: 750; white-space: nowrap; }
+.profile-pack-select {
+  display: inline-flex;
+  padding: .42rem .65rem;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  background: #516b83;
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.profile-pack-select.external { color: #123b35; background: #bce9df; }
+.profile-pack-select.embedded { background: #66717d; }
+.profile-pack-select:focus-visible { outline: 3px solid rgba(255,255,255,.82); outline-offset: 2px; }
 .editor-camera-logo { display: block; width: 42px; height: 42px; object-fit: contain; }
+
+.external-pack-boundary-banner {
+  display: flex;
+  justify-content: center;
+  gap: .55rem;
+  padding: .7rem 1rem;
+  border-bottom: 1px solid #d5b04f;
+  color: #4b3400;
+  background: var(--gold-soft);
+  font-size: .88rem;
+}
+.external-pack-boundary-banner[hidden] { display: none; }
+#session-summary[hidden], #pending-review-summary[hidden], #local-build-panel[hidden] { display: none; }
+.external-pack-guarded [data-external-disabled="true"] { cursor: not-allowed; opacity: .55; }
 
 .app-shell {
   display: grid;

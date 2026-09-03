@@ -1,9 +1,11 @@
 import re
 
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
-def validate(root):
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
     issues = []
     manifest_path = root / "50 Field Guide" / "required_appendices.yaml"
     if not manifest_path.exists():
@@ -42,7 +44,7 @@ def validate(root):
         else:
             ids.add(appendix_id)
 
-    profile_ids = _profile_ids(root)
+    profile_ids = _profile_ids(paths.profiles_dir)
     for entry in appendices:
         if not isinstance(entry, dict):
             continue
@@ -109,9 +111,9 @@ def _headings(text):
     return headings
 
 
-def _profile_ids(root):
+def _profile_ids(profiles_dir):
     values = set()
-    for path in sorted((root / "10 Profiles").glob("*.yaml")):
+    for path in sorted(profiles_dir.glob("*.yaml")):
         try:
             data = load_yaml_checked(path) or {}
         except Exception:

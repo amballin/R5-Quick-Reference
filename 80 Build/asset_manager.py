@@ -1,19 +1,79 @@
 import os
 from pathlib import Path
 
+from profile_pack import resolve_profile_pack
+
+
+def application_local_workspace(root):
+    """Return machine-local application state without applying pack namespacing."""
+    root = Path(root).resolve()
+    override = os.environ.get("PRS_LOCAL_WORKSPACE")
+    if override:
+        return Path(override).expanduser().resolve()
+    return root.parent / f"{root.name} Local"
+
 
 class ProjectPaths:
     """Resolve source, publishing, and machine-local workspace paths."""
 
-    def __init__(self, root):
+    def __init__(self, root, profile_pack_root=None, profile_pack_context=None):
         self.root = Path(root).resolve()
+        if profile_pack_root is not None and profile_pack_context is not None:
+            raise ValueError("Choose profile_pack_root or profile_pack_context, not both.")
+        if (
+            profile_pack_context is not None
+            and profile_pack_context.application_root != self.root
+        ):
+            raise ValueError("Profile-pack context belongs to a different application root.")
+        self.profile_pack = profile_pack_context or resolve_profile_pack(
+            self.root,
+            explicit_root=profile_pack_root,
+        )
+
+    @property
+    def application_root(self):
+        return self.root
+
+    @property
+    def profile_pack_root(self):
+        return self.profile_pack.root
+
+    def profile_pack_source(self, key):
+        return self.profile_pack.source(key)
+
+    def profile_pack_relative_source(self, key):
+        return self.profile_pack_source(key).relative_to(self.profile_pack_root).as_posix()
+
+    def mutable_source_path(self, relative):
+        """Resolve an editor write target without crossing the selected pack boundary."""
+        relative = Path(relative)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError(f"Mutable source path must be pack-relative: {relative}")
+        root = self.profile_pack_root.resolve()
+        target = (root / relative).resolve()
+        if target != root and root not in target.parents:
+            raise ValueError(f"Mutable source escapes the selected profile pack: {relative}")
+        if self.profile_pack.mode == "embedded":
+            return target
+        exact = {
+            source.resolve()
+            for key, source in self.profile_pack.sources.items()
+            if key != "profiles"
+        }
+        profiles = self.profiles_dir.resolve()
+        if target in exact or (
+            target.parent == profiles
+            and target.suffix == ".yaml"
+        ):
+            return target
+        raise ValueError(f"External editor target is not owned by the selected profile pack: {relative}")
 
     @property
     def local_workspace_dir(self):
-        override = os.environ.get("PRS_LOCAL_WORKSPACE")
-        if override:
-            return Path(override).expanduser().resolve()
-        return self.root.parent / f"{self.root.name} Local"
+        base = application_local_workspace(self.root)
+        if self.profile_pack.mode == "external":
+            return base / "Profile Packs" / self.profile_pack.pack_id
+        return base
 
     @property
     def output_dir(self):
@@ -29,7 +89,7 @@ class ProjectPaths:
 
     @property
     def baseline_file(self):
-        return self.root / "00 Master" / "baseline.yaml"
+        return self.profile_pack_source("baseline")
 
     @property
     def card_layout_file(self):
@@ -41,11 +101,27 @@ class ProjectPaths:
 
     @property
     def my_menu_colors_file(self):
-        return self.root / "00 Master" / "my_menu_colors.yaml"
+        return self.profile_pack_source("my_menu_colors")
 
     @property
     def my_menu_file(self):
-        return self.root / "00 Master" / "my_menu.yaml"
+        return self.profile_pack_source("my_menu")
+
+    @property
+    def profile_lens_guidance_file(self):
+        return self.profile_pack_source("profile_lens_guidance")
+
+    @property
+    def owned_equipment_file(self):
+        return self.profile_pack_source("owned_equipment")
+
+    @property
+    def controls_file(self):
+        return self.profile_pack_source("controls")
+
+    @property
+    def registration_targets_file(self):
+        return self.profile_pack_source("registration_targets")
 
     @property
     def spreadsheet_layouts_file(self):
@@ -53,14 +129,16 @@ class ProjectPaths:
 
     @property
     def verification_tracker_source_file(self):
+        if self.profile_pack.mode == "external":
+            return self.registration_targets_file
         return self.root / "90 Testing" / "eos_r5_verification_tracker.yaml"
 
     @property
     def verification_status_file(self):
-        return self.root / "90 Testing" / "eos_r5_verification_status.yaml"
+        return self.profile_pack_source("verification_status")
 
     def profile_file(self, profile_name):
-        return self.root / "10 Profiles" / f"{profile_name}.yaml"
+        return self.profiles_dir / f"{profile_name}.yaml"
 
     @property
     def card_template(self):
@@ -68,7 +146,7 @@ class ProjectPaths:
 
     @property
     def profiles_dir(self):
-        return self.root / "10 Profiles"
+        return self.profile_pack_source("profiles")
 
     @property
     def merged_output_dir(self):
@@ -96,6 +174,8 @@ class ProjectPaths:
 
     @property
     def pages_output_dir(self):
+        if self.profile_pack.mode == "external":
+            return self.output_dir / "pages"
         return self.root / "docs"
 
     @property

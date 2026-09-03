@@ -140,6 +140,7 @@ class GuardedRunManager:
                 "schema_version": 1,
                 "kind": "camera_lab_simulated_guarded_run",
                 "backend": self.service.backend_mode,
+                "profile_pack": dict(self.service.app_info.get("profile_pack") or {}),
                 "camera_session_id": self.service.camera_session_id,
                 "profile": comparison["profile"],
                 "camera": camera,
@@ -573,6 +574,13 @@ class GuardedRunManager:
         }
 
     def _verify_record_identity(self, record):
+        expected_pack = record.get("profile_pack") or {}
+        active_pack = self.service.app_info.get("profile_pack") or {}
+        if expected_pack and expected_pack.get("pack_id") != active_pack.get("pack_id"):
+            raise CameraSessionError("The guarded run belongs to a different profile pack.")
+        if not expected_pack and self.service.external_pack:
+            raise CameraSessionError("This guarded run predates external profile-pack identity records; prepare a new run.")
+        self.service.assert_profile_pack_current()
         if self.service.backend is None or self.service.camera is None:
             raise CameraSessionError("The camera session disconnected; the guarded run stopped immediately.")
         observed_name = normalize_product_name(self.service.backend.poll_product_name())

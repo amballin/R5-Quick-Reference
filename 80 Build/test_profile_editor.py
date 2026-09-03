@@ -72,7 +72,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/numbers_automation.py",
             "80 Build/control_reference.py",
             "80 Build/camera_lab_tracker_import.py",
+            "80 Build/asset_manager.py",
             "80 Build/profile_editor.py",
+            "80 Build/profile_pack.py",
+            "80 Build/profile_pack_selection.py",
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
@@ -908,13 +911,15 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('meta name="profile-editor-token"', html)
         self.assertIn('id="open-camera-lab"', html)
         self.assertIn('id="stop-profile-editor"', html)
-        self.assertIn('id="project-context-badge"', html)
+        self.assertNotIn('id="project-context-badge"', html)
+        self.assertIn('id="profile-pack-select"', html)
+        self.assertIn('<span class="profile-pack-label">Profile Pack:</span>', html)
         self.assertIn('id="editor-version"', html)
         self.assertIn('id="editor-source-hash"', html)
         self.assertLess(html.index(">User guide<"), html.index('id="open-camera-lab"'))
         self.assertLess(html.index('id="open-camera-lab"'), html.index('id="stop-profile-editor"'))
-        self.assertLess(html.index('id="stop-profile-editor"'), html.index('id="project-context-badge"'))
-        self.assertLess(html.index('id="project-context-badge"'), html.index('id="editor-version"'))
+        self.assertLess(html.index('id="stop-profile-editor"'), html.index('id="profile-pack-select"'))
+        self.assertLess(html.index('id="profile-pack-select"'), html.index('id="editor-version"'))
         self.assertIn('<details class="build-badge header-version">', html)
         self.assertIn(".header-meta { grid-column: 1; grid-row: 2;", stylesheet)
         self.assertIn(".header-version { grid-column: 1; grid-row: 3; justify-self: end; }", stylesheet)
@@ -923,6 +928,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("profilePayloadChanged(profileDraftPayload())", javascript)
         self.assertIn("Camera Lab, if running, remains independent", javascript)
         self.assertIn("info.project_context", javascript)
+        self.assertIn("Git branch ${projectContext.branch}", javascript)
+        self.assertIn("switchProfilePack", javascript)
+        self.assertIn("Camera Lab evidence can be deliberately promoted", javascript)
         self.assertIn("grid-template-rows: auto auto auto", stylesheet)
         self.assertIn("grid-row: 1 / span 3", stylesheet)
 

@@ -10,7 +10,6 @@ import json
 from pathlib import Path
 
 from build_validator import discover_profiles, is_reference_card
-from camera_control.session_journal import default_journal_root
 from camera_setup_tracker import effective_registration_definition_fingerprints
 from profile_loader import load_yaml
 from verification_status import load_status, working_copy_state, WORKING_COPY_CONFLICT, WORKING_COPY_PENDING
@@ -27,7 +26,11 @@ def inspect_evidence(paths, journal_root=None):
     """Return completed physical sessions and exact registration candidates."""
     state, message = working_copy_state(paths)
     workbook_blocked = state in {WORKING_COPY_PENDING, WORKING_COPY_CONFLICT}
-    root = Path(journal_root).expanduser().resolve() if journal_root else default_journal_root()
+    root = (
+        Path(journal_root).expanduser().resolve()
+        if journal_root
+        else paths.local_workspace_dir / "Camera Lab" / "Guarded Runs"
+    )
     assignment_by_title = _assignment_titles(paths)
     registration_by_path = _registration_paths(paths)
     imported = _imported_candidate_ids(load_status(paths))
@@ -56,6 +59,14 @@ def inspect_evidence(paths, journal_root=None):
                 "eligibleCount": 0,
                 "skippedReason": None,
             }
+            if paths.profile_pack.mode == "external":
+                recorded_pack = record.get("profile_pack") or {}
+                if recorded_pack.get("pack_id") != paths.profile_pack.pack_id:
+                    session["skippedReason"] = (
+                        "The journal does not belong to the active profile pack."
+                    )
+                    sessions.append(session)
+                    continue
             if not slot:
                 session["skippedReason"] = "The profile is not currently assigned to C1, C2, or C3."
                 sessions.append(session)
@@ -89,7 +100,11 @@ def inspect_evidence(paths, journal_root=None):
     candidates = list(candidates_by_id.values())
     candidates.sort(key=lambda item: (item["completedAt"] or "", item["slot"], item["setting"]), reverse=True)
     return {
-        "journalRoot": str(root),
+        "journalLocation": (
+            "Pack-scoped machine-local Camera Lab evidence"
+            if paths.profile_pack.mode == "external"
+            else "Machine-local Camera Lab evidence"
+        ),
         "workbookBlocked": workbook_blocked,
         "workbookMessage": message,
         "sessions": sessions,

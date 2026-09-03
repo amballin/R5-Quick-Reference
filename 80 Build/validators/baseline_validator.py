@@ -1,11 +1,12 @@
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
 ICON_POSITIONS = {"header", "left", "right"}
 
 
-def validate(root):
-    path = root / "00 Master" / "baseline.yaml"
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    path = paths.baseline_file
     issues = []
     if not path.exists():
         return [error("baseline", path, "Baseline file is missing.")]

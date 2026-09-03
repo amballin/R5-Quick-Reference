@@ -23,6 +23,7 @@ import sys
 import tempfile
 import threading
 import time
+from types import SimpleNamespace
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, unquote, urlparse
 from urllib.request import urlopen
@@ -84,6 +85,11 @@ from control_reference import (
     reference_setting_key as control_reference_setting_key,
 )
 from profile_loader import load_baseline, load_yaml
+from profile_pack import ProfilePackError, profile_pack_revision, resolve_profile_pack
+from profile_pack_selection import (
+    ProfilePackSelectionError,
+    ProfilePackSelectionStore,
+)
 from project_context import project_context_info
 from numbers_automation import numbers_resume_recovery
 from publication_workflow import (
@@ -140,11 +146,41 @@ CONTROL_EVIDENCE_STATUSES = {
 PROFILE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 .&+()'_-]{0,79}")
 REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
+EXTERNAL_PACK_EDITOR_ENDPOINTS = {
+    "/api/profile-pack-switch",
+    "/api/camera-lab-launch",
+    "/api/preview",
+    "/api/profile-drafts",
+    "/api/profile-reviews",
+    "/api/profile-saves",
+    "/api/profile-removal-reviews",
+    "/api/profile-removals",
+    "/api/profile-restore-reviews",
+    "/api/profile-restores",
+    "/api/baseline-impact",
+    "/api/baseline-plan",
+    "/api/baseline-migration-reviews",
+    "/api/baseline-migration-saves",
+    "/api/my-menu-color-reviews",
+    "/api/my-menu-color-saves",
+    "/api/my-menu-reviews",
+    "/api/my-menu-saves",
+    "/api/cx-foundation-fit",
+    "/api/cx-assignment-reviews",
+    "/api/cx-selection-reviews",
+    "/api/cx-foundation-saves",
+    "/api/camera-buttons-preview",
+    "/api/camera-buttons-reviews",
+    "/api/camera-buttons-saves",
+    "/api/camera-lab-evidence-reviews",
+    "/api/camera-lab-evidence-saves",
+}
 EDITOR_BUILD_FILES = (
     "00 Master/application_version.yaml",
     "00 Master/feature_interactions.yaml",
     "00 Master/profile_lens_guidance.yaml",
     "80 Build/application_version.py",
+    "80 Build/asset_manager.py",
     "controls.yaml",
     "data/canon_r5_custom_controls_current.yaml",
     "data/stabilization_reference.yaml",
@@ -170,6 +206,8 @@ EDITOR_BUILD_FILES = (
     "80 Build/my_menu_reference.py",
     "80 Build/numbers_automation.py",
     "80 Build/profile_editor.py",
+    "80 Build/profile_pack.py",
+    "80 Build/profile_pack_selection.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/control_options.yaml",
     "80 Build/profile_editor/index.html",
@@ -305,23 +343,37 @@ class IndentedYamlDumper(yaml.SafeDumper):
 class CameraLabLauncher:
     """Start or reuse the independent Camera Lab and open a saved profile."""
 
-    def __init__(self, root=PROJECT_ROOT):
-        self.root = Path(root).resolve()
+    def __init__(self, paths_or_root=PROJECT_ROOT):
+        self.paths = (
+            paths_or_root
+            if hasattr(paths_or_root, "profile_pack")
+            else ProjectPaths(paths_or_root)
+        )
+        self.root = self.paths.application_root
         self.start_script = self.root / "80 Build" / "scripts" / "start-camera-lab.sh"
-        local_workspace = Path(os.environ.get("PRS_LOCAL_WORKSPACE", f"{self.root} Local")).expanduser().resolve()
-        self.log_file = local_workspace / "Logs" / "R5 Camera Lab.log"
+        self.log_file = self.paths.local_workspace_dir / "Logs" / "R5 Camera Lab.log"
 
     @staticmethod
     def profile_url(profile_name):
         return f"{CAMERA_LAB_ORIGIN}/?profile={quote(profile_name)}"
 
-    def _is_running(self):
+    def _running_status(self):
         try:
             with urlopen(f"{CAMERA_LAB_ORIGIN}/api/camera-control/status", timeout=0.5) as response:
                 payload = json.load(response)
         except (HTTPError, URLError, TimeoutError, json.JSONDecodeError, OSError):
-            return False
-        return payload.get("read_only") is True and payload.get("backend_mode") in {"edsdk", "simulated"}
+            return None
+        if payload.get("ok") is not True or payload.get("backend_mode") not in {"edsdk", "simulated"}:
+            return None
+        return payload
+
+    def _is_running(self):
+        payload = self._running_status()
+        return bool(
+            payload
+            and ((payload.get("app") or {}).get("profile_pack") or {}).get("pack_id")
+            == self.paths.profile_pack.pack_id
+        )
 
     @staticmethod
     def _open_url(url):
@@ -336,15 +388,26 @@ class CameraLabLauncher:
 
     def launch(self, profile_name):
         url = self.profile_url(profile_name)
-        if self._is_running():
+        running = self._running_status()
+        if running:
+            running_pack = ((running.get("app") or {}).get("profile_pack") or {})
+            if running_pack.get("pack_id") != self.paths.profile_pack.pack_id:
+                name = running_pack.get("pack_name") or "another profile pack"
+                raise PrototypeError(
+                    f"Camera Lab is already running with {name}. Stop it before opening "
+                    f"{self.paths.profile_pack.pack_name}."
+                )
             self._open_url(url)
             return {"url": url, "started": False, "reused": True}
         if not self.start_script.is_file() or not os.access(self.start_script, os.X_OK):
             raise PrototypeError(f"Camera Lab launcher is missing or not executable: {self.start_script}")
         self.log_file.parent.mkdir(parents=True, exist_ok=True)
         with self.log_file.open("ab") as log_handle:
+            command = [str(self.start_script), "--profile", profile_name]
+            if self.paths.profile_pack.mode == "external":
+                command.extend(["--profile-pack", str(self.paths.profile_pack_root)])
             process = subprocess.Popen(
-                [str(self.start_script), "--profile", profile_name],
+                command,
                 cwd=self.root,
                 stdin=subprocess.DEVNULL,
                 stdout=log_handle,
@@ -404,8 +467,15 @@ class ProfileEditorModel:
         publication_workflow=None,
         main_editor_launcher=None,
         camera_lab_journal_root=None,
+        profile_pack_root=None,
+        project_paths=None,
     ):
-        self.paths = ProjectPaths(root)
+        if profile_pack_root is not None and project_paths is not None:
+            raise ValueError("Choose profile_pack_root or project_paths, not both.")
+        self.paths = project_paths or ProjectPaths(root, profile_pack_root=profile_pack_root)
+        self.external_pack = self.paths.profile_pack.mode == "external"
+        self.read_only = False
+        self._profile_pack_fingerprint = self.paths.profile_pack.fingerprint()
         self.catalog_file = self.paths.root / "80 Build" / "profile_editor" / "canon_options.yaml"
         self.control_catalog_file = (
             self.paths.root / "80 Build" / "profile_editor" / "control_options.yaml"
@@ -425,7 +495,7 @@ class ProfileEditorModel:
         self.my_menu_catalog = self.option_catalog.get("my_menu") or {}
         self._validate_reference_catalog()
         self.my_menu = load_my_menu(self.paths, self._all_my_menu_item_ids())
-        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths)
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
         self._source_validator = source_validator or self._validate_project_sources
@@ -441,7 +511,7 @@ class ProfileEditorModel:
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
         self.guarded_jobs = GuardedJobManager()
-        self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths.root)
+        self.camera_lab_launcher = camera_lab_launcher or CameraLabLauncher(self.paths)
         self.finish_day_workflow = finish_day_workflow or FinishDayWorkflow(self.paths.root)
         self.branch_integration_workflow = branch_integration_workflow or BranchIntegrationWorkflow(self.paths.root)
         self.cleanup_review = cleanup_review or CleanupReview(self.paths.root)
@@ -468,7 +538,7 @@ class ProfileEditorModel:
             )
         except CameraLabTrackerImportError as exc:
             raise PrototypeError(str(exc)) from exc
-        relative = "90 Testing/eos_r5_verification_status.yaml"
+        relative = self.paths.profile_pack_relative_source("verification_status")
         return self._create_special_review(
             "camera-lab-evidence",
             {relative: self._dump_yaml(candidate)},
@@ -488,7 +558,7 @@ class ProfileEditorModel:
         return self._save_special_review(review_token, "camera-lab-evidence")
 
     def control_editor_detail(self):
-        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        controls = load_yaml(self.paths.controls_file) or {}
         catalog = load_yaml(self.control_catalog_file) or {}
         if not isinstance(catalog, dict):
             raise PrototypeError("Camera Buttons option catalog must be a mapping.")
@@ -533,10 +603,10 @@ class ProfileEditorModel:
     def _candidate_control_sources(self, payload):
         if not isinstance(payload, dict):
             raise PrototypeError("Camera Buttons input must be an object.")
-        controls_path = self.paths.root / "controls.yaml"
+        controls_path = self.paths.controls_file
         current_path = self.paths.root / "data" / "canon_r5_custom_controls_current.yaml"
         controls = load_yaml(controls_path) or {}
-        current = load_yaml(current_path) or {}
+        current = {} if self.external_pack else (load_yaml(current_path) or {})
         for group, current_group in (("controls", "buttons"), ("dials", "dials")):
             existing = controls.get(group) or []
             existing_current = current.get(current_group) or []
@@ -588,28 +658,29 @@ class ProfileEditorModel:
                 )
                 rows.append(row)
             controls[group] = copy.deepcopy(rows)
-            current_rows = []
-            for saved, row in zip(existing, rows):
-                current_row = copy.deepcopy(current_by_control.get(saved.get("control")) or saved)
-                for field in ("assignment", "operation", "status"):
-                    if field in row:
-                        current_row[field] = row[field]
-                    else:
-                        current_row.pop(field, None)
-                if row.get("info_details") != saved.get("info_details"):
-                    current_row["info_details"] = {
-                        str(key).casefold().replace(" ", "_"): value
-                        for key, value in (row.get("info_details") or {}).items()
-                    }
-                    if not current_row["info_details"]:
-                        current_row.pop("info_details", None)
-                if row.get("notes") != saved.get("notes"):
-                    if row.get("notes"):
-                        current_row["notes"] = row["notes"]
-                    else:
-                        current_row.pop("notes", None)
-                current_rows.append(current_row)
-            current[current_group] = current_rows
+            if not self.external_pack:
+                current_rows = []
+                for saved, row in zip(existing, rows):
+                    current_row = copy.deepcopy(current_by_control.get(saved.get("control")) or saved)
+                    for field in ("assignment", "operation", "status"):
+                        if field in row:
+                            current_row[field] = row[field]
+                        else:
+                            current_row.pop(field, None)
+                    if row.get("info_details") != saved.get("info_details"):
+                        current_row["info_details"] = {
+                            str(key).casefold().replace(" ", "_"): value
+                            for key, value in (row.get("info_details") or {}).items()
+                        }
+                        if not current_row["info_details"]:
+                            current_row.pop("info_details", None)
+                    if row.get("notes") != saved.get("notes"):
+                        if row.get("notes"):
+                            current_row["notes"] = row["notes"]
+                        else:
+                            current_row.pop("notes", None)
+                    current_rows.append(current_row)
+                current[current_group] = current_rows
         return controls, current
 
     def preview_control_editor(self, payload):
@@ -618,17 +689,19 @@ class ProfileEditorModel:
         return self._render_preview("Camera Buttons", profile, control_source=controls)
 
     def review_control_editor(self, payload):
-        controls_path = self.paths.root / "controls.yaml"
+        relative_controls = self.paths.profile_pack_relative_source("controls")
+        controls_path = self.paths.controls_file
         current_path = self.paths.root / "data" / "canon_r5_custom_controls_current.yaml"
         controls, current = self._candidate_control_sources(payload)
         candidates = {
-            "controls.yaml": self._replace_control_sections(
+            relative_controls: self._replace_control_sections(
                 controls_path.read_text(encoding="utf-8"), controls["controls"], controls["dials"], "controls"
             ).encode("utf-8"),
-            "data/canon_r5_custom_controls_current.yaml": self._replace_control_sections(
-                current_path.read_text(encoding="utf-8"), current["buttons"], current["dials"], "buttons"
-            ).encode("utf-8"),
         }
+        if not self.external_pack:
+            candidates["data/canon_r5_custom_controls_current.yaml"] = self._replace_control_sections(
+                current_path.read_text(encoding="utf-8"), current["buttons"], current["dials"], "buttons"
+            ).encode("utf-8")
         return self._create_special_review(
             "camera-buttons",
             candidates,
@@ -640,6 +713,7 @@ class ProfileEditorModel:
         return self._save_special_review(review_token, "camera-buttons")
 
     def launch_camera_lab(self, profile_name):
+        self.assert_profile_pack_current()
         name = self._validate_profile_name(profile_name)
         profile = self._profile(name)
         if is_reference_card(profile):
@@ -990,11 +1064,18 @@ class ProfileEditorModel:
         setup = ((profile.get("card") or {}).get("field_setup") or {})
         selected = str(setup.get("start") or "")
         return {
-            "sourceFiles": [
-                "controls.yaml",
-                "data/canon_r5_custom_controls_current.yaml",
-                "90 Testing/eos_r5_verification_tracker.yaml",
-            ],
+            "sourceFiles": (
+                [
+                    self.paths.profile_pack_relative_source("controls"),
+                    self.paths.profile_pack_relative_source("registration_targets"),
+                ]
+                if self.external_pack
+                else [
+                    "controls.yaml",
+                    "data/canon_r5_custom_controls_current.yaml",
+                    "90 Testing/eos_r5_verification_tracker.yaml",
+                ]
+            ),
             "assignments": saved_assignments,
             "candidateAssignments": candidate_assignments,
             "profiles": shooting,
@@ -1050,7 +1131,7 @@ class ProfileEditorModel:
                 )
             before = {}
             for relative, expected_sha in review["source_sha256"].items():
-                data = (self.paths.root / relative).read_bytes()
+                data = self._source_path(relative).read_bytes()
                 if self._sha256(data) != expected_sha:
                     raise ProfileConflictError(
                         f"{relative} changed after review. Reload Cx Foundation and review again."
@@ -1064,16 +1145,16 @@ class ProfileEditorModel:
                         raise ProfileConflictError("The reviewed Cx Foundation candidate is no longer valid.")
                     if candidate == before[relative]:
                         continue
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     self._atomic_write(target, candidate, before[relative])
                     written.append(relative)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
                 rollback_errors = []
                 for relative in reversed(written):
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     try:
                         self._atomic_write(target, before[relative], target.read_bytes())
                     except Exception as rollback_exc:  # pragma: no cover
@@ -1098,7 +1179,7 @@ class ProfileEditorModel:
             }
 
     def _cx_assignments(self):
-        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        controls = load_yaml(self.paths.controls_file) or {}
         modes = controls.get("custom_shooting_modes") or {}
         assignments = {}
         for start in ("C1", "C2", "C3"):
@@ -1129,15 +1210,15 @@ class ProfileEditorModel:
         return clean
 
     def _cx_assignment_candidates(self, assignments):
-        relative_controls = "controls.yaml"
+        relative_controls = self.paths.profile_pack_relative_source("controls")
         relative_current = "data/canon_r5_custom_controls_current.yaml"
-        relative_tracker = "90 Testing/eos_r5_verification_tracker.yaml"
-        controls_path = self.paths.root / relative_controls
+        relative_tracker = self.paths.profile_pack_relative_source("registration_targets")
+        controls_path = self.paths.controls_file
         current_path = self.paths.root / relative_current
-        tracker_path = self.paths.root / relative_tracker
+        tracker_path = self.paths.registration_targets_file
         controls = load_yaml(controls_path) or {}
         current = load_yaml(current_path) or {}
-        tracker = load_yaml(self.paths.root / relative_tracker) or {}
+        tracker = load_yaml(tracker_path) or {}
         old_assignments = self._cx_assignments()
         registration = tracker.setdefault("registration", {})
         profile_entries = registration.get("profiles") or []
@@ -1173,11 +1254,12 @@ class ProfileEditorModel:
             relative_controls: self._replace_cx_mode_assignments(
                 controls_path.read_text(encoding="utf-8"), assignments, old_assignments
             ).encode("utf-8"),
-            relative_current: self._replace_cx_mode_assignments(
-                current_path.read_text(encoding="utf-8"), assignments, old_assignments
-            ).encode("utf-8"),
             relative_tracker: tracker_text.encode("utf-8"),
         }
+        if not self.external_pack:
+            candidates[relative_current] = self._replace_cx_mode_assignments(
+                current_path.read_text(encoding="utf-8"), assignments, old_assignments
+            ).encode("utf-8")
         for name, profile in self.profiles.items():
             if is_reference_card(profile):
                 continue
@@ -1189,7 +1271,33 @@ class ProfileEditorModel:
             setup["source_card_id"] = self._card_id_for_title(assignments[start])
             relative = f"10 Profiles/{name}.yaml"
             candidates[relative] = self._dump_profile(candidate)
+        if self.external_pack:
+            relative_status = self.paths.profile_pack_relative_source("verification_status")
+            candidates[relative_status] = self._reconciled_verification_status_candidate(
+                candidates[relative_tracker]
+            )
         return candidates
+
+    def _reconciled_verification_status_candidate(self, tracker_candidate, baseline_candidate=None):
+        from verification_status import reconcile_status
+
+        with tempfile.TemporaryDirectory(prefix="profile-editor-cx-status-") as temporary:
+            root = Path(temporary)
+            baseline = root / "baseline.yaml"
+            tracker = root / "registration-targets.yaml"
+            status = root / "verification-status.yaml"
+            baseline.write_bytes(baseline_candidate or self.paths.baseline_file.read_bytes())
+            tracker.write_bytes(tracker_candidate)
+            status.write_bytes(self.paths.verification_status_file.read_bytes())
+            reconcile_status(
+                SimpleNamespace(
+                    baseline_file=baseline,
+                    verification_tracker_source_file=tracker,
+                    verification_status_file=status,
+                ),
+                write=True,
+            )
+            return status.read_bytes()
 
     @staticmethod
     def _replace_tracker_assignment_labels(text, start, old_title, new_title):
@@ -1258,7 +1366,7 @@ class ProfileEditorModel:
         return card_id
 
     def _create_cx_review(self, candidates, summary, kind):
-        before = {relative: (self.paths.root / relative).read_bytes() for relative in candidates}
+        before = {relative: self._source_path(relative).read_bytes() for relative in candidates}
         changed = {relative: data for relative, data in candidates.items() if data != before[relative]}
         if not changed:
             raise PrototypeError("The Cx Foundation draft matches the saved source.")
@@ -1308,6 +1416,7 @@ class ProfileEditorModel:
             target.write_bytes(data)
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": f"cx-foundation-{review['kind']}",
             "source_sha256": review["source_sha256"],
@@ -1317,7 +1426,7 @@ class ProfileEditorModel:
         return backup
 
     def _create_special_review(self, kind, candidates, summary, metadata):
-        before = {relative: (self.paths.root / relative).read_bytes() for relative in candidates}
+        before = {relative: self._source_path(relative).read_bytes() for relative in candidates}
         changed = {relative: data for relative, data in candidates.items() if data != before[relative]}
         if not changed:
             raise PrototypeError("The reviewed changes already match the saved source.")
@@ -1374,7 +1483,7 @@ class ProfileEditorModel:
                 )
             before = {}
             for relative, expected_sha in review["source_sha256"].items():
-                current = (self.paths.root / relative).read_bytes()
+                current = self._source_path(relative).read_bytes()
                 if self._sha256(current) != expected_sha:
                     raise ProfileConflictError(f"{relative} changed after review. Reload and review again.")
                 before[relative] = current
@@ -1402,25 +1511,29 @@ class ProfileEditorModel:
                 for relative, candidate in review["candidates"].items():
                     if self._sha256(candidate) != review["candidate_sha256"][relative]:
                         raise ProfileConflictError("The reviewed candidate bytes are no longer valid.")
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     self._atomic_write(target, candidate, before[relative])
                     written.append(relative)
-                if expected_kind == "camera-lab-evidence":
+                if expected_kind == "camera-lab-evidence" and not self.external_pack:
                     from verification_status import build_working_copy
 
                     build_working_copy(self.paths)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
                 rollback_errors = []
                 for relative in reversed(written):
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     try:
                         self._atomic_write(target, before[relative], target.read_bytes())
                     except Exception as rollback_exc:  # pragma: no cover
                         rollback_errors.append(f"{relative}: {rollback_exc}")
-                if expected_kind == "camera-lab-evidence" and not rollback_errors:
+                if (
+                    expected_kind == "camera-lab-evidence"
+                    and not self.external_pack
+                    and not rollback_errors
+                ):
                     try:
                         from verification_status import build_working_copy
 
@@ -1456,6 +1569,16 @@ class ProfileEditorModel:
         with tempfile.TemporaryDirectory(prefix=f"profile-editor-{kind}-candidate-") as temporary:
             shadow = Path(temporary)
             if kind == "camera-buttons":
+                if self.external_pack:
+                    candidate = yaml.safe_load(candidates[self.paths.profile_pack_relative_source("controls")])
+                    assigned = {
+                        str((candidate.get("custom_shooting_modes") or {}).get(start, {}).get("profile_id") or "")
+                        for start in ("C1", "C2", "C3")
+                    }
+                    known = {str(profile.get("card_id") or "") for profile in self.profiles.values()}
+                    if "" in assigned or not assigned <= known or len(assigned) != 3:
+                        raise PrototypeError("Camera Buttons candidate has invalid C1-C3 profile identities.")
+                    return
                 for directory in ("10 Profiles", "50 Field Guide", "WORKFLOWS", "90 Testing"):
                     source = self.paths.root / directory
                     destination = shadow / directory
@@ -1477,16 +1600,27 @@ class ProfileEditorModel:
 
                 errors = [issue.message for issue in control_validator.validate(shadow) if issue.level == "error"]
             else:
-                for relative in (
-                    "00 Master/baseline.yaml",
-                    "90 Testing/eos_r5_verification_tracker.yaml",
-                    "90 Testing/eos_r5_verification_status.yaml",
-                ):
+                validation_sources = (
+                    (self.paths.baseline_file, "00 Master/baseline.yaml"),
+                    (
+                        self.paths.verification_tracker_source_file,
+                        "90 Testing/eos_r5_verification_tracker.yaml",
+                    ),
+                    (
+                        self.paths.verification_status_file,
+                        "90 Testing/eos_r5_verification_status.yaml",
+                    ),
+                )
+                for source, relative in validation_sources:
                     destination = shadow / relative
                     destination.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(self.paths.root / relative, destination)
+                    shutil.copy2(source, destination)
                 for relative, data in candidates.items():
-                    target = shadow / relative
+                    target = (
+                        shadow / "90 Testing/eos_r5_verification_status.yaml"
+                        if relative == self.paths.profile_pack_relative_source("verification_status")
+                        else shadow / relative
+                    )
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(data)
                 from validators import verification_status_validator
@@ -1517,6 +1651,7 @@ class ProfileEditorModel:
             target.write_bytes(data)
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": review["kind"],
             "source_sha256": review["source_sha256"],
@@ -1568,7 +1703,7 @@ class ProfileEditorModel:
             "00 Master/my_menu_colors.yaml": self._dump_yaml(color_candidate),
         }
         before = {
-            relative: (self.paths.root / relative).read_bytes()
+            relative: self._source_path(relative).read_bytes()
             for relative in candidates
         }
         diff_parts = []
@@ -1619,7 +1754,7 @@ class ProfileEditorModel:
                 raise ProfileConflictError("This My Menu review expired or was already used. Review the current layout again.")
             before = {}
             for relative, expected_sha in review["source_sha256"].items():
-                data = (self.paths.root / relative).read_bytes()
+                data = self._source_path(relative).read_bytes()
                 if self._sha256(data) != expected_sha:
                     raise ProfileConflictError(f"{relative} changed after review. Reload the editor and review again.")
                 before[relative] = data
@@ -1637,17 +1772,17 @@ class ProfileEditorModel:
             written = []
             try:
                 for relative, candidate in review["candidates"].items():
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     if candidate != before[relative]:
                         self._atomic_write(target, candidate, before[relative])
                         written.append(relative)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
                 rollback_errors = []
                 for relative in reversed(written):
-                    target = self.paths.root / relative
+                    target = self._source_path(relative)
                     try:
                         self._atomic_write(target, before[relative], target.read_bytes())
                     except Exception as rollback_exc:  # pragma: no cover
@@ -1764,6 +1899,7 @@ class ProfileEditorModel:
             target.write_bytes(data)
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": "update-my-menu",
             "source_sha256": review["source_sha256"],
@@ -1844,7 +1980,7 @@ class ProfileEditorModel:
             backup = self._create_my_menu_color_backup(review, before)
             try:
                 self._atomic_write(target, review["candidate"], before)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
@@ -1909,6 +2045,7 @@ class ProfileEditorModel:
         (candidate_dir / "my_menu_colors.yaml").write_bytes(review["candidate"])
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": "update-my-menu-colors",
             "source_sha256": review["source_sha256"],
@@ -1947,7 +2084,58 @@ class ProfileEditorModel:
             "build": digest.hexdigest()[:8],
             "context_name": version_info["context_name"],
             "project_context": version_info["project_context"],
+            "read_only": self.read_only,
+            "pack_access": "guarded-write" if self.external_pack else "embedded",
+            "application": {
+                "project_id": "canon-eos-r5-camera-reference",
+                "project_name": "Canon EOS R5 Camera Reference",
+            },
+            "profile_pack": {
+                "mode": self.paths.profile_pack.mode,
+                "pack_id": self.paths.profile_pack.pack_id,
+                "pack_name": self.paths.profile_pack.pack_name,
+                "fingerprint": self._profile_pack_fingerprint[:12],
+            },
         }
+
+    def assert_profile_pack_current(self):
+        """Reject a moved, replaced, incompatible, or changed external pack."""
+        if not self.external_pack:
+            return
+        try:
+            current = resolve_profile_pack(
+                self.paths.application_root,
+                explicit_root=self.paths.profile_pack_root,
+            )
+            fingerprint = current.fingerprint()
+        except ProfilePackError as exc:
+            raise PrototypeError(f"Selected profile pack is no longer valid: {exc}") from exc
+        if current.pack_id != self.paths.profile_pack.pack_id:
+            raise PrototypeError("Selected profile-pack identity changed. Stop and select the intended pack again.")
+        if fingerprint != self._profile_pack_fingerprint:
+            raise PrototypeError("Selected profile-pack sources changed. Restart the editor to review the current pack.")
+
+    def assert_mutation_allowed(self, endpoint):
+        self.assert_profile_pack_current()
+        if self.external_pack and endpoint not in EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            raise PrototypeError(
+                "This action is outside the guarded external-pack editing boundary. "
+                "Builds, spreadsheets, cleanup, Git, integration, and publication remain disabled."
+            )
+
+    def accept_profile_pack_state(self):
+        """Accept exact bytes written by one successful guarded transaction."""
+        if self.external_pack:
+            current = resolve_profile_pack(
+                self.paths.application_root,
+                explicit_root=self.paths.profile_pack_root,
+            )
+            if current.pack_id != self.paths.profile_pack.pack_id:
+                raise PrototypeError("Selected profile-pack identity changed during the transaction.")
+            self._profile_pack_fingerprint = current.fingerprint()
+
+    def _backup_pack_identity(self):
+        return profile_pack_revision(self.paths.profile_pack)
 
     def workflow_preflight(self):
         result = self._preflight_checker()
@@ -2085,7 +2273,7 @@ class ProfileEditorModel:
             raise PrototypeError("Pending-change count must be an integer.") from exc
         if pending < 0:
             raise PrototypeError("Pending-change count cannot be negative.")
-        source_errors = list(self._source_validator(self.paths.root))
+        source_errors = self._source_validation_errors()
         derived_artifacts = self._derived_artifact_checker()
         blockers = []
         if pending:
@@ -2524,6 +2712,13 @@ class ProfileEditorModel:
             )
         except BaselineMigrationError as exc:
             raise PrototypeError(str(exc)) from exc
+        if self.external_pack:
+            relative_baseline = self.paths.profile_pack_relative_source("baseline")
+            relative_status = self.paths.profile_pack_relative_source("verification_status")
+            candidates[relative_status] = self._reconciled_verification_status_candidate(
+                self.paths.registration_targets_file.read_bytes(),
+                candidates.get(relative_baseline, self.paths.baseline_file.read_bytes()),
+            )
         before = self._migration_source_bytes(candidates)
         diff = migration_diff(before, candidates)
         if not diff:
@@ -2585,16 +2780,16 @@ class ProfileEditorModel:
                 written = []
                 try:
                     for relative in sorted(review["candidates"]):
-                        target = self.paths.root / relative
+                        target = self._source_path(relative)
                         self._atomic_write(target, review["candidates"][relative], before[relative])
                         written.append(relative)
-                    errors = list(self._source_validator(self.paths.root))
+                    errors = self._source_validation_errors()
                     if errors:
                         raise PrototypeError("Post-migration source validation failed: " + "; ".join(errors))
                 except Exception as exc:
                     rollback_errors = []
                     for relative in reversed(written):
-                        target = self.paths.root / relative
+                        target = self._source_path(relative)
                         try:
                             self._atomic_write(target, before[relative], target.read_bytes())
                         except Exception as rollback_exc:  # pragma: no cover - catastrophic filesystem failure
@@ -2620,11 +2815,7 @@ class ProfileEditorModel:
     def _migration_source_bytes(self, candidates):
         before = {}
         for relative in candidates:
-            target = (self.paths.root / relative).resolve()
-            try:
-                target.relative_to(self.paths.root.resolve())
-            except ValueError as exc:
-                raise PrototypeError(f"Migration source escapes the project root: {relative}") from exc
+            target = self._source_path(relative)
             if not target.is_file():
                 raise ProfileConflictError(f"Migration source no longer exists: {relative}")
             before[relative] = target.read_bytes()
@@ -2635,8 +2826,10 @@ class ProfileEditorModel:
 
         with tempfile.TemporaryDirectory(prefix="baseline-migration-candidate-") as temporary:
             shadow = Path(temporary)
-            for directory in ("00 Master", "10 Profiles", "50 Field Guide"):
-                shutil.copytree(self.paths.root / directory, shadow / directory)
+            shutil.copytree(self.paths.root / "00 Master", shadow / "00 Master")
+            shutil.copytree(self.paths.profiles_dir, shadow / "10 Profiles")
+            shutil.copytree(self.paths.root / "50 Field Guide", shadow / "50 Field Guide")
+            shutil.copy2(self.paths.baseline_file, shadow / "00 Master" / "baseline.yaml")
             for relative, data in candidates.items():
                 target = shadow / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -2665,6 +2858,7 @@ class ProfileEditorModel:
             target.write_bytes(data)
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": "baseline_migration",
             "source_files": sorted(review["candidates"]),
@@ -2848,7 +3042,7 @@ class ProfileEditorModel:
             "lensChoices": lens_choices,
             "lensCatalog": self._lens_choice_catalog(),
             "lensGuidanceFingerprint": self._sha256(
-                (self.paths.root / "00 Master" / "profile_lens_guidance.yaml").read_bytes()
+                self.paths.profile_lens_guidance_file.read_bytes()
             ),
         }
 
@@ -2962,7 +3156,7 @@ class ProfileEditorModel:
             )
             target = self._profile_path(review["target_name"])
             before = target.read_bytes() if target.exists() else None
-            guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+            guidance_path = self.paths.profile_lens_guidance_file
             guidance_before = guidance_path.read_bytes()
             backup = self._create_transaction_backup(review, before, guidance_before)
             try:
@@ -2972,7 +3166,7 @@ class ProfileEditorModel:
                     self._atomic_write(
                         guidance_path, review["guidance_candidate"], guidance_before
                     )
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
             except Exception as exc:
@@ -3096,7 +3290,7 @@ class ProfileEditorModel:
                     os.fsync(directory)
                 finally:
                     os.close(directory)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-removal source validation failed: " + "; ".join(errors))
             except Exception as exc:
@@ -3135,6 +3329,9 @@ class ProfileEditorModel:
                 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
                 data = card_path.read_bytes()
             except (OSError, ValueError, json.JSONDecodeError):
+                continue
+            recorded_pack = manifest.get("profile_pack") or {}
+            if self.external_pack and recorded_pack.get("pack_id") != self.paths.profile_pack.pack_id:
                 continue
             if self._sha256(data) != manifest.get("source_sha256"):
                 continue
@@ -3204,7 +3401,7 @@ class ProfileEditorModel:
             backup = self._create_restore_backup(review, data)
             try:
                 self._atomic_write(target, data, None)
-                errors = list(self._source_validator(self.paths.root))
+                errors = self._source_validation_errors()
                 if errors:
                     raise PrototypeError("Post-restore source validation failed: " + "; ".join(errors))
             except Exception as exc:
@@ -3241,7 +3438,7 @@ class ProfileEditorModel:
     def _prepare_review(self, payload):
         profile, target_name, operation, source_name, source_fingerprint = self._candidate_profile(payload)
         candidate = self._dump_profile(profile)
-        guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+        guidance_path = self.paths.profile_lens_guidance_file
         guidance_before = guidance_path.read_bytes()
         guidance_source_sha256 = payload.get("lensGuidanceFingerprint")
         if not isinstance(guidance_source_sha256, str) or not re.fullmatch(
@@ -3459,7 +3656,7 @@ class ProfileEditorModel:
         target = self._profile_path(review["target_name"])
         if review["target_absent"] != (not target.exists()):
             raise ProfileConflictError("The target profile changed after review. Reload and review again.")
-        guidance_path = self.paths.root / "00 Master" / "profile_lens_guidance.yaml"
+        guidance_path = self.paths.profile_lens_guidance_file
         if self._sha256(guidance_path.read_bytes()) != review["guidance_source_sha256"]:
             raise ProfileConflictError(
                 "Lens guidance changed after review. Reload the profile and review again."
@@ -3495,11 +3692,11 @@ class ProfileEditorModel:
                 "00 Master/card_layout.yaml",
                 "50 Field Guide/required_appendices.yaml",
             ):
-                source = self.paths.root / relative
+                source = self.paths.baseline_file if relative == "00 Master/baseline.yaml" else self.paths.root / relative
                 destination = shadow / relative
                 shutil.copy2(source, destination)
             shutil.copy2(
-                self.paths.root / "data" / "stabilization_reference.yaml",
+                self.paths.owned_equipment_file,
                 shadow / "data" / "stabilization_reference.yaml",
             )
             for source in discover_profiles(self.paths):
@@ -3553,6 +3750,7 @@ class ProfileEditorModel:
             )
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": review["operation"],
             "source_profile": review["source_name"],
@@ -3581,6 +3779,7 @@ class ProfileEditorModel:
         (before_dir / f"{review['target_name']}.yaml").write_bytes(before)
         manifest = {
             "version": 1,
+            "profile_pack": self._backup_pack_identity(),
             "created": datetime.now().astimezone().isoformat(),
             "operation": "move_unreleased_profile_to_deleted_cards",
             "card_id": review["card_id"],
@@ -3604,6 +3803,7 @@ class ProfileEditorModel:
             (temporary / "card.yaml").write_bytes(data)
             manifest = {
                 "version": 1,
+                "profile_pack": self._backup_pack_identity(),
                 "card_id": review["card_id"],
                 "title": review["title"],
                 "target_profile": review["target_name"],
@@ -3633,6 +3833,9 @@ class ProfileEditorModel:
             data = (folder / "card.yaml").read_bytes()
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             raise PrototypeError("Deleted Cards entry is incomplete or unreadable.") from exc
+        recorded_pack = manifest.get("profile_pack") or {}
+        if self.external_pack and recorded_pack.get("pack_id") != self.paths.profile_pack.pack_id:
+            raise ProfileConflictError("Deleted Cards entry belongs to a different profile pack.")
         if manifest.get("card_id") != card_id or self._sha256(data) != manifest.get("source_sha256"):
             raise ProfileConflictError("Deleted Cards integrity check failed.")
         name = manifest.get("target_profile")
@@ -3662,6 +3865,7 @@ class ProfileEditorModel:
             json.dumps(
                 {
                     "version": 1,
+                    "profile_pack": self._backup_pack_identity(),
                     "created": datetime.now().astimezone().isoformat(),
                     "operation": "restore_profile_from_deleted_cards",
                     "card_id": review["card_id"],
@@ -3738,7 +3942,7 @@ class ProfileEditorModel:
 
     def _reload_profiles(self):
         self.profiles = self._load_profiles()
-        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths)
         self.choices = self._choice_catalog()
 
     def _reload_project_data(self):
@@ -3746,7 +3950,7 @@ class ProfileEditorModel:
         self.defaults = self.baseline.get("defaults") or {}
         self.default_fields = flatten(self.defaults)
         self.profiles = self._load_profiles()
-        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths.root)
+        self.lens_guidance, self.lens_equipment = load_lens_sources(self.paths)
         self._validate_option_catalog()
         self.setting_order = self._setting_order()
         self.choices = self._choice_catalog()
@@ -3756,6 +3960,12 @@ class ProfileEditorModel:
         if path.parent != self.paths.profiles_dir.resolve():
             raise PrototypeError("Profile path must stay inside 10 Profiles.")
         return path
+
+    def _source_path(self, relative):
+        try:
+            return self.paths.mutable_source_path(relative)
+        except ValueError as exc:
+            raise PrototypeError(str(exc)) from exc
 
     def _profile_fingerprint(self, name):
         path = self._profile_path(name)
@@ -3767,7 +3977,7 @@ class ProfileEditorModel:
         profile = self._profile(name)
         card_id = profile.get("card_id")
         blockers = []
-        controls = load_yaml(self.paths.root / "controls.yaml") or {}
+        controls = load_yaml(self.paths.controls_file) or {}
         modes = controls.get("custom_shooting_modes") or {}
         assigned = [start for start in ("C1", "C2", "C3") if (modes.get(start) or {}).get("profile_id") == card_id]
         if assigned:
@@ -3913,6 +4123,10 @@ class ProfileEditorModel:
 
         return [issue.message for issue in run(root, source_only=True) if issue.level == "error"]
 
+    def _source_validation_errors(self):
+        target = self.paths if self.external_pack else self.paths.root
+        return list(self._source_validator(target))
+
     def preview(self, name, flat_overrides):
         profile = copy.deepcopy(self._profile(name))
         if is_reference_card(profile):
@@ -4007,11 +4221,18 @@ class ProfileEditorModel:
 class EditorHandler(BaseHTTPRequestHandler):
     model = None
     request_token = None
+    selection_store = None
+    model_switch_lock = None
 
     def do_GET(self):
+        self.model = type(self).model
         parsed = urlparse(self.path)
         path = parsed.path
         try:
+            if path.startswith("/api/") and path != "/api/profile-packs":
+                self.model.assert_profile_pack_current()
+            if path == "/api/profile-packs":
+                return self._json(self.selection_store.catalog(self.model.paths.profile_pack))
             if path == "/api/profiles":
                 return self._json({"profiles": self.model.profile_list()})
             if path == "/api/dictionary":
@@ -4045,9 +4266,11 @@ class EditorHandler(BaseHTTPRequestHandler):
             return self._json({"error": f"Prototype error: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def do_POST(self):
+        self.model = type(self).model
         parsed = urlparse(self.path)
         if parsed.path not in {
             "/api/editor-shutdown",
+            "/api/profile-pack-switch",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4101,6 +4324,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             return self._json({"error": "Not found."}, HTTPStatus.NOT_FOUND)
         protected_lifecycle_paths = {
             "/api/editor-shutdown",
+            "/api/profile-pack-switch",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4128,12 +4352,23 @@ class EditorHandler(BaseHTTPRequestHandler):
         ):
             return self._json({"error": "Profile Editor request token is missing or invalid."}, HTTPStatus.FORBIDDEN)
         try:
+            if parsed.path == "/api/profile-pack-switch":
+                pass
+            elif self.model.external_pack and parsed.path != "/api/editor-shutdown":
+                try:
+                    self.model.assert_mutation_allowed(parsed.path)
+                except PrototypeError as exc:
+                    return self._json({"error": str(exc)}, HTTPStatus.FORBIDDEN)
+            else:
+                self.model.assert_profile_pack_current()
             payload = self._request_json()
             if parsed.path == "/api/editor-shutdown":
                 result = {"stopping": True, "server_closed": True}
                 self._json(result)
                 threading.Thread(target=self.server.shutdown, daemon=True).start()
                 return
+            if parsed.path == "/api/profile-pack-switch":
+                return self._json(self._switch_profile_pack(payload))
             if parsed.path == "/api/camera-lab-launch":
                 return self._json(self.model.launch_camera_lab(payload.get("profile")))
             if parsed.path == "/api/workflow-preflight":
@@ -4350,8 +4585,46 @@ class EditorHandler(BaseHTTPRequestHandler):
             if getattr(exc, "recovery", None):
                 payload["recovery"] = exc.recovery
             return self._json(payload, HTTPStatus.BAD_REQUEST)
+        except ProfilePackSelectionError as exc:
+            return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
         except Exception as exc:
             return self._json({"error": f"Profile editor operation failed: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    def _switch_profile_pack(self, payload):
+        if payload.get("pendingChanges") != 0:
+            raise PrototypeError("Save or discard every browser draft before switching profile packs.")
+        if payload.get("confirmSwitch") is not True:
+            raise PrototypeError("Profile-pack switching requires explicit confirmation.")
+        pack_id = payload.get("packId")
+        path = payload.get("path")
+        if pack_id is not None and not isinstance(pack_id, str):
+            raise PrototypeError("The selected profile-pack identity is invalid.")
+        if path is not None and not isinstance(path, str):
+            raise PrototypeError("The profile-pack path must be text.")
+        pack_id = (pack_id or "").strip()
+        path = (path or "").strip()
+        if bool(pack_id) == bool(path):
+            raise PrototypeError("Choose one remembered profile pack or provide one exact new path.")
+        with self.model_switch_lock:
+            context = (
+                self.selection_store.resolve_path(path)
+                if path
+                else self.selection_store.resolve_registered(pack_id)
+            )
+            replacement = ProfileEditorModel(
+                project_paths=ProjectPaths(
+                    self.model.paths.application_root,
+                    profile_pack_context=context,
+                )
+            )
+            self.selection_store.remember_selected(context)
+            type(self).model = replacement
+            self.model = replacement
+        return {
+            "switched": True,
+            "profile_pack": replacement.editor_info()["profile_pack"],
+            "reload": True,
+        }
 
     def _request_json(self):
         try:
@@ -4401,6 +4674,13 @@ class EditorHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def _json(self, payload, status=HTTPStatus.OK):
+        if (
+            status == HTTPStatus.OK
+            and self.command == "POST"
+            and self.model.external_pack
+            and urlparse(self.path).path in EXTERNAL_PACK_EDITOR_ENDPOINTS
+        ):
+            self.model.accept_profile_pack_state()
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -4427,36 +4707,79 @@ def parse_args():
         action="store_true",
         help="Load all prototype data and report readiness without starting the server.",
     )
+    parser.add_argument(
+        "--profile-pack",
+        metavar="PATH",
+        help="Load one explicit compatible private profile pack in guarded-write mode.",
+    )
+    parser.add_argument(
+        "--embedded",
+        action="store_true",
+        help="Ignore a saved profile-pack selection for this launch and use embedded sources.",
+    )
     return parser.parse_args()
 
 
-def create_server(model, port=DEFAULT_PORT, token=None):
+def create_server(model, port=DEFAULT_PORT, token=None, selection_store=None):
+    selection_store = selection_store or ProfilePackSelectionStore(model.paths.application_root)
     handler = type(
         "BoundEditorHandler",
         (EditorHandler,),
-        {"model": model, "request_token": token or secrets.token_urlsafe(32)},
+        {
+            "model": model,
+            "request_token": token or secrets.token_urlsafe(32),
+            "selection_store": selection_store,
+            "model_switch_lock": threading.Lock(),
+        },
     )
     return ThreadingHTTPServer((HOST, port), handler)
 
 
 def main():
     args = parse_args()
+    if args.profile_pack and args.embedded:
+        print("Choose --profile-pack or --embedded, not both.", file=sys.stderr)
+        return 2
     if args.print_default_port:
         print(default_editor_port())
         return 0
     port = args.port if args.port is not None else default_editor_port()
-    model = ProfileEditorModel()
+    selection_store = ProfilePackSelectionStore(PROJECT_ROOT)
+    try:
+        if args.profile_pack:
+            context = resolve_profile_pack(PROJECT_ROOT, explicit_root=args.profile_pack)
+        elif args.embedded:
+            context = resolve_profile_pack(PROJECT_ROOT)
+        else:
+            context = selection_store.selected_context()
+        model = ProfileEditorModel(
+            project_paths=ProjectPaths(PROJECT_ROOT, profile_pack_context=context)
+        )
+    except (ProfilePackError, ProfilePackSelectionError, ValueError) as exc:
+        print(f"Profile-pack error: {exc}", file=sys.stderr)
+        return 2
     if args.check:
         for profile in model.profile_list():
             model.profile_detail(profile["name"])
-        print(f"Profile editor check passed: {len(model.profiles)} profiles loaded.")
+        mode = "guarded external pack" if model.external_pack else "embedded sources"
+        print(f"Profile editor check passed: {len(model.profiles)} profiles loaded from {mode}.")
+        if model.external_pack:
+            print(
+                f"Profile pack: {model.paths.profile_pack.pack_name} "
+                f"({model.paths.profile_pack.pack_id})"
+            )
         print(f"Preview output: {model.paths.html_output_dir / PREVIEW_NAME}")
         return 0
     if not 1 <= port <= 65535:
         print("Port must be between 1 and 65535.", file=sys.stderr)
         return 2
-    server = create_server(model, port=port)
+    server = create_server(model, port=port, selection_store=selection_store)
     print("Canon Camera Reference — guarded profile editor")
+    if model.external_pack:
+        print(
+            f"Guarded profile pack: {model.paths.profile_pack.pack_name} "
+            f"({model.paths.profile_pack.pack_id})"
+        )
     print(f"Open http://{HOST}:{port}")
     print("Use Stop Profile Editor in the page header, or press Control-C here.")
     print("Profile saves require exact diff review, backup, and validation.")

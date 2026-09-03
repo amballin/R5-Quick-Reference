@@ -2,6 +2,84 @@
 
 Only entries marked **Accepted** are binding. **Proposed** entries are non-binding possibilities; **Superseded** and **Rejected** entries are historical only. Governance and precedence are defined in [`PROJECT_RULES.md`](../PROJECT_RULES.md).
 
+## Private Profile Pack and Independent Upstream Architecture
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Adopt a target architecture that composes an independently owned private profile-pack repository with an owner's application fork. The reusable application, schemas, Canon knowledge, templates, validators, and build logic remain eligible for selective updates from a separately configured shared upstream. The owner's application repository remains `origin` and the only ordinary application push destination; receiving shared upstream improvements is an explicit inbound workflow and never implies authority to push to the shared upstream.
+
+The private pack owns the operational baseline, profiles and reference-card declarations, My Menu configuration and colors, profile-specific lens guidance, owner controls, owner equipment selection, and mutable verification state. The pack preserves the baseline-plus-overrides model by keeping its baseline and inheriting profiles together. Shared Canon definitions, rendering rules, educational content, schemas, and validation logic remain application-owned. Sources that currently combine shared definitions with owner-specific state must be split before external-pack activation.
+
+Use a separate private Git repository rather than a submodule. A root `profile-pack.yaml` manifest provides stable pack identity, Canon camera identity, contract compatibility, canonical source locations, and publication policy. The application resolves a pack only through an explicit command selection or machine-local saved selection, validates both roots and their cross-boundary references, and must not persist a machine-specific pack path in tracked application source or generated output.
+
+Keep Git authority, backups, commits, pushes, handoff, and recovery independent for the application and pack repositories. A combined build or publication must bind the exact application commit, pack commit, and deterministic pack fingerprint. Private source status does not imply private output: only explicitly released profiles may be published, and verification evidence, machine paths, credentials, and unreleased profile identities must remain excluded.
+
+This decision accepts the architectural contract but does not activate it. Until a separately approved implementation completes resolver support, external-pack validation, editor and Camera Lab routing, two-repository workflows, deterministic parity checks, and migration acceptance, the current repository remains the sole authoritative source root and profiles remain in their established locations. No current source location, build command, editor write target, Git workflow, or publication behavior changes because of this decision alone.
+
+## Guarded External Profile-Pack Editing — Step 4B
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Permit Profile Editor to open one explicitly selected compatible external pack in guarded-write mode. The Profiles/lens-guidance, baseline migration, C1-C3 assignment and card-route, My Menu layout/colors, Camera Buttons, previews, and recoverable Deleted Cards workflows may operate on that pack. Existing exact review tokens, source and candidate fingerprints, concurrent-change checks, candidate and combined validation, atomic replacement, complete rollback, and recovery backups remain mandatory.
+
+Every canonical external write must resolve through the manifest and remain inside the selected pack; direct profile creation is limited to YAML children of its declared profile directory. Application-owned source and legacy mirrors are not external write targets. Backups, Deleted Cards entries, and previews are machine-local and namespaced by immutable pack ID. C1-C3 assignment changes reconcile affected pack-owned verification-status fingerprints in the same transaction.
+
+This phase does not activate saved pack selection or ordinary launcher use. Camera Lab, evidence import, equipment editing, independent verification editing, spreadsheets, editor-initiated local build, cleanup, Git, Finish Day, branch integration, main-editor launch, handoff, and publication remain unavailable in an external-pack session.
+
+## Machine-Local Profile-Pack Selection and Switching — Step 4C
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Add a machine-local Profile Editor registry and saved selection. A pack enters the registry only from an exact owner-supplied root; the editor never scans sibling or filesystem locations. Persist only canonical roots and immutable pack IDs, with restrictive file permissions and atomic replacement. Resolve user-facing names live from each available pack's `profile-pack.yaml`; do not store or display a path-derived alias.
+
+The normal Profile Editor launcher uses the valid saved selection when no explicit command override is supplied. Switching among remembered packs or embedded compatibility sources requires no pending browser drafts, explicit confirmation, complete identity/compatibility/containment checks, and successful construction of the replacement editor model before the selection changes. `--embedded` provides a one-launch recovery route for a missing, moved, identity-changed, or invalid saved pack. During that recovery launch, a separately confirmed valid selection may replace invalid registry state; ordinary startup remains fail-closed.
+
+Remove the redundant yellow project-context badge from the Profile Editor header because the version indicator already identifies Main or Prototype. Preserve branch and source-hash diagnostics inside the expandable version detail. The pack chooser becomes the sole adjacent context control and displays the live manifest `pack_name` without exposing the stored root. For Profile Editor only, this supersedes the earlier requirement to keep a separate checkout indicator on the second header row; Camera Lab retains its existing checkout badge.
+
+Step 4C does not expand external-pack authority beyond Step 4B content transactions. Camera Lab, evidence import, equipment editing, independent verification editing, spreadsheets, editor-initiated build, cleanup, Git, Finish Day, branch integration, handoff, main-editor launch, and publication remain unavailable for an external pack.
+
+## Read-Only External Profile-Pack Camera Lab — Step 5A
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Allow Profile Editor to launch Camera Lab with the exact active external profile-pack context. Camera Lab resolves the pack through the centralized source abstraction, displays the live manifest `pack_name`, loads pack-owned profiles, baseline, My Menu, lens/equipment, controls, and C1–C3 assignments, and keeps its machine-local state under the immutable pack ID. An already running Lab may be reused only when its pack ID matches; otherwise the owner must stop it before opening the other pack.
+
+This supersedes the Step 4C Camera Lab prohibition only for the read-only external-pack behavior defined here. Every other Step 4C external-pack boundary remains in force.
+
+External-pack Camera Lab is strictly read-only in Step 5A. It may connect, scan, compare, show setup routes, and support manual read-only review, but it exposes neither simulator guarded application nor physical camera writes, write qualification, evidence promotion, or pack-source writes. Every API request revalidates the external pack and stops on a missing, moved, identity-changed, incompatible, or independently changed pack. Responses display pack name, ID, mode, and shortened fingerprint without an absolute path.
+
+Add a compact visible `Profile Pack:` label beside Profile Editor's selector. Record a future, separately approved New Profile Pack wizard that collects a friendly name and exact destination, generates an immutable ID and canonical structure, validates the complete pack before registration, and treats Git initialization as a separate explicit choice. That creation capability is not part of Step 5A.
+
+## Guarded External Profile-Pack Camera Lab — Step 5B
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Extend the exact selected external-pack Camera Lab context through the existing guarded simulator and explicitly enabled physical-camera paths. The normal preflight, reviewed plan, separate confirmation, one-setting execution, immediate readback, reversible qualification, stop-on-change behavior, and camera-identity checks remain unchanged. Guarded-run records, qualifications, physical-write evidence, manual confirmations, and browser checklist state remain machine-local and pack-ID-namespaced; new journals also record path-free pack identity.
+
+Camera Lab must not modify profile-pack source or promote its local evidence into canonical verification state. External-pack evidence promotion remains unavailable in Profile Editor until separately approved. Every API operation continues to revalidate pack identity and fingerprint, and a legacy journal without pack identity cannot resume as an external-pack run.
+
+Remove Camera Lab's redundant yellow Main/Prototype checkout badge. The version summary remains the visible application-context signal, while its expandable detail retains the full branch and source hash. Keep the independent friendly `Profile Pack:` badge. A running Camera Lab may be recognized and reopened in either read-only or explicitly enabled physical-write mode, but only for the same pack ID.
+
+This supersedes the Step 5A prohibitions on external-pack guarded simulation, physical writes, qualification, and guarded-run routes; it also supersedes the Camera Lab portions of **Three-Row Local-Application Header**, **Shared Local-Application Version and Checkout Identity**, and **Local App Window Recovery** that required a separate checkout badge or read-only status for valid service reuse. All existing camera-write safeguards and every unrelated external-pack restriction remain binding.
+
+## Guarded External Profile-Pack Evidence Promotion — Step 5C
+
+**Status:** Accepted
+**Date:** 2026-09-03
+
+Permit Profile Editor to inventory and deliberately promote exact evidence from completed physical EDSDK Camera Lab guarded runs into the active external pack's canonical verification status. The inventory reads only the active pack ID's machine-local Camera Lab journal namespace, requires every external journal to record that same immutable pack ID, exposes no filesystem path, selects nothing automatically, and retains the existing exclusions for simulator, incomplete, ambiguous, non-registration, and already promoted evidence.
+
+Promotion may set only the exact current C1-C3 slot's configured result to `Pass` and append the existing journal provenance. It requires zero pending browser drafts, an exact YAML diff, a one-use review token, separate confirmation, journal-hash and source-fingerprint rechecks, combined source validation, a pack-ID-namespaced recovery backup, atomic replacement, and complete rollback on failure. Camera Lab itself remains unable to write pack source. External promotion updates only the manifest-owned verification-status YAML and does not generate or refresh a spreadsheet working copy.
+
+In external mode, Profile Editor exposes the existing review surface as **Evidence Review** and hides the unrelated draft-summary and local-build controls. Spreadsheet import/generation, editor-initiated builds, equipment editing, independent verification editing, cleanup, Git, Finish Day, branch integration, main-editor launch, handoff, and publication remain unavailable. The separately recorded New Profile Pack wizard remains future work.
+
+This supersedes only the Step 4B, Step 4C, Step 5A, and Step 5B prohibitions on external-pack Camera Lab evidence promotion. Every other external-pack boundary remains binding.
+
 ## Background-Owned Numbers Automation and One-Step Resume
 
 **Status:** Accepted

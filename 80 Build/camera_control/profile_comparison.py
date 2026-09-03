@@ -137,19 +137,20 @@ def compare_profile(
     equipment_choice=None,
     detected_lens_name=None,
     physical_camera=False,
+    paths=PATHS,
 ):
     context_choices = context_choices or {}
-    profile_info = next((item for item in list_profiles() if item["name"] == profile_name), None)
+    profile_info = next((item for item in list_profiles(paths) if item["name"] == profile_name), None)
     if profile_info is None:
         raise ValueError(f"Unknown profile: {profile_name}")
 
-    profile = _load_yaml(PATHS.profile_file(profile_name))
-    baseline = _load_yaml(PATHS.baseline_file)
+    profile = _load_yaml(paths.profile_file(profile_name))
+    baseline = _load_yaml(paths.baseline_file)
     merged = merge(baseline["defaults"], profile.get("overrides") or {})
     merged_fields = flatten(merged)
     equipment_choice = equipment_choice or {}
     equipment = resolve_equipment(
-        PATHS.root,
+        paths,
         profile,
         merged,
         detected_lens_name=detected_lens_name,
@@ -158,15 +159,19 @@ def compare_profile(
         physical_camera=physical_camera,
     )
     properties_by_path = _properties_by_path(properties)
-    access_config = (_load_yaml(PATHS.setting_access_file) or {}).get("setting_access") or {}
-    menu_access = _saved_menu_access()
-    value_colors = field_setup_value_colors(profile, merged, PATHS)
+    access_config = (_load_yaml(paths.setting_access_file) or {}).get("setting_access") or {}
+    menu_access = _saved_menu_access(paths)
+    value_colors = field_setup_value_colors(profile, merged, paths)
 
     represented = set()
     card_findings = []
-    for row in settings_rows(profile, merged, PATHS):
-        paths = [path for path in COMBINED_PATHS.get(row["key"], [row["key"]]) if path in merged_fields]
-        represented.update(paths)
+    for row in settings_rows(profile, merged, paths):
+        setting_paths = [
+            path
+            for path in COMBINED_PATHS.get(row["key"], [row["key"]])
+            if path in merged_fields
+        ]
+        represented.update(setting_paths)
         items = [
             _apply_context(
                 _compare_path(
@@ -178,7 +183,7 @@ def compare_profile(
                 ),
                 equipment,
             )
-            for path in paths
+            for path in setting_paths
         ]
         row_interactions = _unique_interactions(items)
         card_findings.append(
@@ -197,12 +202,12 @@ def compare_profile(
                 ],
                 "access_paths": _contextual_access_paths(
                     items,
-                    _access_paths(paths, access_config, menu_access),
+                    _access_paths(setting_paths, access_config, menu_access),
                 ),
             }
         )
 
-    ordered_paths = [path for path in card_setting_order(PATHS) if path in merged_fields]
+    ordered_paths = [path for path in card_setting_order(paths) if path in merged_fields]
     ordered_paths.extend(sorted(set(merged_fields) - set(ordered_paths)))
     additional_findings = []
     for path in ordered_paths:
@@ -336,17 +341,17 @@ def _properties_by_path(properties):
     return mapped
 
 
-def _saved_menu_access():
+def _saved_menu_access(paths=PATHS):
     mapped = {}
-    saved_tabs = (_load_yaml(PATHS.my_menu_file) or {}).get("tabs") or []
-    catalog = _load_yaml(PATHS.root / "80 Build" / "profile_editor" / "canon_options.yaml") or {}
+    saved_tabs = (_load_yaml(paths.my_menu_file) or {}).get("tabs") or []
+    catalog = _load_yaml(paths.root / "80 Build" / "profile_editor" / "canon_options.yaml") or {}
     items = {
         item["id"]: item
         for section in catalog.get("reference_sections") or []
         for item in section.get("items") or []
         if isinstance(item, dict) and item.get("id")
     }
-    colors = load_my_menu_colors(PATHS)
+    colors = load_my_menu_colors(paths)
     for tab_order, tab in enumerate(saved_tabs):
         tab_name = str(tab.get("name") or "").strip()
         for item_order, item_id in enumerate(tab.get("items") or []):

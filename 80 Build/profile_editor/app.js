@@ -3,7 +3,9 @@ const editorToken = document.querySelector('meta[name="profile-editor-token"]').
 const elements = {
   editorVersion: document.querySelector("#editor-version"),
   editorSourceHash: document.querySelector("#editor-source-hash"),
-  projectContextBadge: document.querySelector("#project-context-badge"),
+  profilePackSelect: document.querySelector("#profile-pack-select"),
+  externalPackBoundaryBanner: document.querySelector("#external-pack-boundary-banner"),
+  externalPackBoundaryDetail: document.querySelector("#external-pack-boundary-detail"),
   openCameraLab: document.querySelector("#open-camera-lab"),
   sidebarCameraLab: document.querySelector("#sidebar-camera-lab"),
   stopProfileEditor: document.querySelector("#stop-profile-editor"),
@@ -347,6 +349,8 @@ const elements = {
 };
 
 const state = {
+  externalPack: false,
+  activePackId: "embedded",
   dictionary: null,
   myMenus: Array.from({ length: 5 }, () => ({ name: "", colorChoice: "", items: Array(6).fill("") })),
   myMenuColorReviewToken: null,
@@ -451,16 +455,106 @@ async function loadEditorInfo() {
   try {
     const info = await request("/api/editor-info");
     const projectContext = info.project_context || {};
-    elements.projectContextBadge.textContent = projectContext.label || "Project context unavailable";
-    elements.projectContextBadge.className = `project-context-badge ${projectContext.kind || "unknown"}`;
-    elements.projectContextBadge.title = projectContext.branch ? `Git branch: ${projectContext.branch}` : "Git branch unavailable";
     const contextName = info.context_name || (projectContext.kind === "main" ? "Main" : projectContext.kind === "prototype" ? "Prototype" : "Unknown");
     elements.editorVersion.textContent = `Editor ${info.version} · ${contextName}`;
-    elements.editorSourceHash.textContent = `Source hash ${info.build}`;
+    elements.editorSourceHash.textContent = `${projectContext.branch ? `Git branch ${projectContext.branch} · ` : ""}Source hash ${info.build}`;
+    const pack = info.profile_pack || {};
+    state.externalPack = pack.mode === "external";
+    state.activePackId = pack.mode === "external" ? pack.pack_id : "embedded";
+    elements.profilePackSelect.className = `profile-pack-select ${pack.mode === "external" ? "external" : "embedded"}`;
+    elements.profilePackSelect.title = pack.mode === "external"
+      ? `Pack ID ${pack.pack_id || "unavailable"} · fingerprint ${pack.fingerprint || "unavailable"}`
+      : "Profiles are loaded from this application checkout.";
+    if (state.externalPack) {
+      document.body.classList.add("external-pack-guarded");
+      elements.externalPackBoundaryBanner.hidden = false;
+      elements.externalPackBoundaryDetail.textContent = `${pack.pack_name || "Selected pack"} can change only its manifest-owned sources. Camera Lab evidence can be deliberately promoted after exact review and confirmation; builds, spreadsheets, cleanup, Git, integration, and publication remain disabled.`;
+    }
   } catch (error) {
     elements.editorVersion.textContent = "Editor version unavailable";
     elements.editorSourceHash.textContent = "Source hash unavailable";
     showMessage(error.message, true);
+  }
+}
+
+async function loadProfilePacks() {
+  const result = await request("/api/profile-packs");
+  elements.profilePackSelect.replaceChildren();
+  for (const pack of result.packs || []) {
+    const option = document.createElement("option");
+    option.value = pack.pack_id;
+    option.textContent = pack.pack_name;
+    option.disabled = !pack.available;
+    option.selected = pack.active;
+    elements.profilePackSelect.append(option);
+  }
+  const choose = document.createElement("option");
+  choose.value = "__choose__";
+  choose.textContent = "Choose another profile pack…";
+  elements.profilePackSelect.append(choose);
+  elements.profilePackSelect.value = state.activePackId;
+}
+
+async function switchProfilePack() {
+  captureCurrentProfileDraft();
+  const pendingChanges = pendingSessionItems().length;
+  const selected = elements.profilePackSelect.value;
+  if (pendingChanges) {
+    window.alert("Save or discard every browser draft before switching profile packs.");
+    elements.profilePackSelect.value = state.activePackId;
+    return;
+  }
+  let path = "";
+  let packId = selected;
+  let label = elements.profilePackSelect.selectedOptions[0]?.textContent || "the selected profile pack";
+  if (selected === "__choose__") {
+    path = window.prompt("Enter the exact path to the private profile-pack folder on this Mac:", "")?.trim() || "";
+    packId = "";
+    label = "the profile pack at that path";
+    if (!path) {
+      elements.profilePackSelect.value = state.activePackId;
+      return;
+    }
+  }
+  if (packId === state.activePackId) return;
+  if (!window.confirm(`Switch to ${label}? The editor will reload with that pack's saved source.`)) {
+    elements.profilePackSelect.value = state.activePackId;
+    return;
+  }
+  elements.profilePackSelect.disabled = true;
+  try {
+    await request("/api/profile-pack-switch", {
+      method: "POST",
+      body: JSON.stringify({ packId: packId || null, path: path || null, pendingChanges, confirmSwitch: true }),
+    });
+    window.location.reload();
+  } catch (error) {
+    elements.profilePackSelect.disabled = false;
+    elements.profilePackSelect.value = state.activePackId;
+    window.alert(error.message);
+  }
+}
+
+const EXTERNAL_PACK_VIEWS = new Set(["profiles", "review-build", "cx-foundation", "my-menu", "camera-buttons", "baseline", "deleted-cards", "dictionary"]);
+
+function configureExternalEvidenceReview() {
+  const tab = document.querySelector('[data-view="review-build"]');
+  tab.querySelector(".nav-label").textContent = "Evidence Review";
+  tab.querySelector(".nav-note").textContent = "Promote Camera Lab evidence";
+  document.querySelector("#review-build-view .view-intro h2").textContent = "Evidence Review";
+  document.querySelector("#review-build-view .view-intro .muted").textContent = "Review completed physical-camera evidence before updating this profile pack's verification status.";
+  elements.refreshReviewBuild.hidden = true;
+  elements.sessionSummary.hidden = true;
+  document.querySelector("#pending-review-summary").hidden = true;
+  document.querySelector("#local-build-panel").hidden = true;
+}
+
+function enforceExternalPackBoundary() {
+  if (!state.externalPack) return;
+  for (const tab of elements.viewTabs) {
+    if (EXTERNAL_PACK_VIEWS.has(tab.dataset.view)) continue;
+    if (!tab.disabled) tab.disabled = true;
+    tab.dataset.externalDisabled = "true";
   }
 }
 
@@ -1862,6 +1956,7 @@ async function saveCxFoundation() {
 }
 
 function switchView(viewName) {
+  if (state.externalPack && !EXTERNAL_PACK_VIEWS.has(viewName)) return;
   state.activeView = viewName;
   const profilesView = document.querySelector("#profiles-view");
   if (viewName !== "profiles" && profilesView && !profilesView.hidden) captureCurrentProfileDraft();
@@ -2596,7 +2691,9 @@ async function saveSpecialReview() {
     invalidateBuildReadiness();
     if (kind === "camera-lab-evidence") {
       await refreshCameraLabEvidence();
-      showCameraLabEvidenceMessage(`Evidence imported, tracker refreshed, and validation passed. Recovery backup: ${result.backup}`);
+      showCameraLabEvidenceMessage(state.externalPack
+        ? `Evidence promoted into this profile pack and validation passed. Recovery backup: ${result.backup}`
+        : `Evidence imported, tracker refreshed, and validation passed. Recovery backup: ${result.backup}`);
     } else {
       await loadCameraButtons(false);
       await loadProfiles(state.detail?.name, false);
@@ -5047,6 +5144,7 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
   });
 }
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
+elements.profilePackSelect.addEventListener("change", switchProfilePack);
 for (const tab of elements.mobilePaneTabs) tab.addEventListener("click", () => setProfilePane(tab.dataset.pane));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);
@@ -5110,17 +5208,28 @@ window.addEventListener("beforeunload", (event) => {
   event.returnValue = "";
 });
 
-Promise.all([loadEditorInfo(), loadDictionary(), loadProfiles(), loadBaseline(), loadCxFoundations()]);
-setDayPhase("start");
-renderTodayWorkflow();
-runWorkflowPreflight();
-if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild)) {
-  switchView("review-build");
-} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
-  switchView("finish-day");
-} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
-  switchView("branch-integration");
-} else if (sessionStorage.getItem(GUARDED_JOB_KEYS.publication)) {
-  switchView("release-publish");
-}
-updateFloatingReturn();
+loadEditorInfo().then(async () => {
+  await loadProfilePacks();
+  await Promise.all([loadDictionary(), loadProfiles(), loadBaseline(), loadCxFoundations()]);
+  setDayPhase("start");
+  renderTodayWorkflow();
+  if (state.externalPack) {
+    configureExternalEvidenceReview();
+    switchView("profiles");
+    enforceExternalPackBoundary();
+    const observer = new MutationObserver(enforceExternalPackBoundary);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
+  } else {
+    runWorkflowPreflight();
+    if (sessionStorage.getItem(GUARDED_JOB_KEYS.localBuild)) {
+      switchView("review-build");
+    } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.finishDay)) {
+      switchView("finish-day");
+    } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.branchIntegration)) {
+      switchView("branch-integration");
+    } else if (sessionStorage.getItem(GUARDED_JOB_KEYS.publication)) {
+      switchView("release-publish");
+    }
+  }
+  updateFloatingReturn();
+});

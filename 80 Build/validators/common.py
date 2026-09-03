@@ -3,6 +3,8 @@ from pathlib import Path
 
 import yaml
 
+from asset_manager import ProjectPaths
+
 
 @dataclass
 class ValidationIssue:
@@ -71,3 +73,28 @@ def all_yaml_files(root):
         for path in root.glob("**/*.yaml")
         if not any(part in skipped_parts for part in path.relative_to(root).parts)
     )
+
+
+def resolved_paths(paths_or_root):
+    """Return the selected application/profile-pack path context."""
+    if isinstance(paths_or_root, ProjectPaths):
+        return paths_or_root
+    return ProjectPaths(paths_or_root)
+
+
+def application_root(paths_or_root):
+    return resolved_paths(paths_or_root).application_root
+
+
+def resolved_yaml_files(paths_or_root):
+    """Return application YAML plus every selected external-pack YAML source."""
+    paths = resolved_paths(paths_or_root)
+    files = set(all_yaml_files(paths.application_root))
+    if paths.profile_pack.mode == "external":
+        files.add(paths.profile_pack_root / "profile-pack.yaml")
+        for source in paths.profile_pack.sources.values():
+            if source.is_dir():
+                files.update(source.rglob("*.yaml"))
+            elif source.suffix.casefold() in {".yaml", ".yml"}:
+                files.add(source)
+    return sorted(files)

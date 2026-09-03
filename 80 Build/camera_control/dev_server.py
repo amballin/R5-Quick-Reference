@@ -19,11 +19,15 @@ if __package__ in {None, ""}:
     BUILD_DIR = Path(__file__).resolve().parents[1]
     if str(BUILD_DIR) not in sys.path:
         sys.path.insert(0, str(BUILD_DIR))
+    from asset_manager import ProjectPaths
     from camera_control.errors import CameraControlError
     from camera_control.service import CameraControlService
+    from profile_pack import ProfilePackError
 else:
+    from asset_manager import ProjectPaths
     from .errors import CameraControlError
     from .service import CameraControlService
+    from profile_pack import ProfilePackError
 
 
 HOST = "127.0.0.1"
@@ -55,6 +59,11 @@ def parse_args(argv=None):
         help="Expose reversible qualification and evidence-gated writes in EDSDK mode.",
     )
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
+    parser.add_argument(
+        "--profile-pack",
+        metavar="PATH",
+        help="Load profiles from one explicit compatible private profile-pack root.",
+    )
     args = parser.parse_args(argv)
     if args.port < 1 or args.port > 65535:
         parser.error("--port must be between 1 and 65535")
@@ -152,6 +161,8 @@ class CameraLabHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         try:
+            if path.startswith("/api/"):
+                self.service.assert_profile_pack_current()
             if path == "/api/camera-control/status":
                 self._send_json(self.service.status())
             elif path == "/api/camera-control/cameras":
@@ -246,6 +257,8 @@ class CameraLabHandler(BaseHTTPRequestHandler):
             return
         path = urlparse(self.path).path
         try:
+            if path != "/api/camera-control/shutdown":
+                self.service.assert_profile_pack_current()
             payload = self._read_json()
             if path.startswith("/api/camera-control/guarded-run/") and not self._guarded_endpoint_available():
                 self._send_error(HTTPStatus.NOT_FOUND, "not_found", "Unknown Camera Lab endpoint.")
@@ -402,12 +415,18 @@ def main(argv=None):
             os.environ.get("PRS_LOCAL_WORKSPACE", f"{PROJECT_ROOT} Local")
         ).expanduser().resolve()
         restart_sdk_path = local_workspace / "SDK" / "EDSDKHelper.app"
-    service = CameraControlService(
-        backend_mode=args.backend,
-        sdk_path=args.sdk_path,
-        simulated_scenario=args.scenario,
-        physical_write_enabled=args.enable_physical_writes,
-    )
+    try:
+        paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=args.profile_pack)
+        service = CameraControlService(
+            backend_mode=args.backend,
+            sdk_path=args.sdk_path,
+            simulated_scenario=args.scenario,
+            physical_write_enabled=args.enable_physical_writes,
+            project_paths=paths,
+        )
+    except (ProfilePackError, ValueError) as exc:
+        print(f"Camera Lab profile-pack error: {exc}", file=sys.stderr)
+        return 2
     server = create_server(
         service,
         port=args.port,
@@ -442,6 +461,8 @@ def main(argv=None):
         ]
         if restart_physical_writes and restart_backend == "edsdk":
             restart_args.append("--enable-physical-writes")
+        if service.paths.profile_pack.mode == "external":
+            restart_args.extend(["--profile-pack", str(service.paths.profile_pack_root)])
         os.execv(sys.executable, restart_args)
     return 0
 

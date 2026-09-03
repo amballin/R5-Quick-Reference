@@ -1,4 +1,4 @@
-from .common import all_yaml_files, error, load_yaml_checked
+from .common import application_root, error, load_yaml_checked, resolved_yaml_files
 
 
 LIST_SHAPED_YAML = {
@@ -7,9 +7,10 @@ LIST_SHAPED_YAML = {
 }
 
 
-def validate(root):
+def validate(paths_or_root):
+    root = application_root(paths_or_root)
     issues = []
-    for path in all_yaml_files(root):
+    for path in resolved_yaml_files(paths_or_root):
         try:
             data = load_yaml_checked(path)
         except Exception as exc:
@@ -26,4 +27,8 @@ def validate(root):
 
 
 def _allows_top_level_list(root, path):
-    return tuple(path.relative_to(root).parts) in LIST_SHAPED_YAML
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        return False
+    return tuple(relative.parts) in LIST_SHAPED_YAML
