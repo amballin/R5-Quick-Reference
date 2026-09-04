@@ -4,6 +4,47 @@ const elements = {
   editorVersion: document.querySelector("#editor-version"),
   editorSourceHash: document.querySelector("#editor-source-hash"),
   profilePackSelect: document.querySelector("#profile-pack-select"),
+  newProfilePackName: document.querySelector("#new-profile-pack-name"),
+  newProfilePackDestination: document.querySelector("#new-profile-pack-destination"),
+  chooseProfilePackDestination: document.querySelector("#choose-profile-pack-destination"),
+  profilePackCreationMessage: document.querySelector("#profile-pack-creation-message"),
+  reviewProfilePackCreation: document.querySelector("#review-profile-pack-creation"),
+  switchToEmbeddedForCreation: document.querySelector("#switch-to-embedded-for-creation"),
+  profilePackCreationDialog: document.querySelector("#profile-pack-creation-dialog"),
+  profilePackCreationSummary: document.querySelector("#profile-pack-creation-summary"),
+  profilePackCreationDestination: document.querySelector("#profile-pack-creation-destination"),
+  profilePackCreationManifest: document.querySelector("#profile-pack-creation-manifest"),
+  profilePackCreationFileCount: document.querySelector("#profile-pack-creation-file-count"),
+  profilePackCreationFileList: document.querySelector("#profile-pack-creation-file-list"),
+  profilePackCreationConfirm: document.querySelector("#profile-pack-creation-confirm"),
+  profilePackCreationClose: document.querySelector("#profile-pack-creation-close"),
+  profilePackCreationCancel: document.querySelector("#profile-pack-creation-cancel"),
+  createProfilePack: document.querySelector("#create-profile-pack"),
+  profilePackGitPanel: document.querySelector("#profile-pack-git-panel"),
+  refreshProfilePackGit: document.querySelector("#refresh-profile-pack-git"),
+  applicationGitSummary: document.querySelector("#application-git-summary"),
+  profilePackGitSummary: document.querySelector("#profile-pack-git-summary"),
+  combinedHandoffStatus: document.querySelector("#combined-handoff-status"),
+  profilePackGitMessage: document.querySelector("#profile-pack-git-message"),
+  profilePackCommitStage: document.querySelector("#profile-pack-commit-stage"),
+  profilePackCommitHeading: document.querySelector("#profile-pack-commit-heading"),
+  reviewProfilePackCommit: document.querySelector("#review-profile-pack-commit"),
+  profilePackCommitReview: document.querySelector("#profile-pack-commit-review"),
+  profilePackCommitFiles: document.querySelector("#profile-pack-commit-files"),
+  profilePackCommitMessage: document.querySelector("#profile-pack-commit-message"),
+  profilePackConfirmCommit: document.querySelector("#profile-pack-confirm-commit"),
+  commitProfilePack: document.querySelector("#commit-profile-pack"),
+  profilePackRemoteStage: document.querySelector("#profile-pack-remote-stage"),
+  profilePackRemoteUrl: document.querySelector("#profile-pack-remote-url"),
+  reviewProfilePackRemote: document.querySelector("#review-profile-pack-remote"),
+  profilePackRemoteReview: document.querySelector("#profile-pack-remote-review"),
+  profilePackRemoteChange: document.querySelector("#profile-pack-remote-change"),
+  profilePackConfirmRemote: document.querySelector("#profile-pack-confirm-remote"),
+  configureProfilePackRemote: document.querySelector("#configure-profile-pack-remote"),
+  profilePackPushStage: document.querySelector("#profile-pack-push-stage"),
+  profilePackPushTarget: document.querySelector("#profile-pack-push-target"),
+  profilePackConfirmPush: document.querySelector("#profile-pack-confirm-push"),
+  pushProfilePack: document.querySelector("#push-profile-pack"),
   externalPackBoundaryBanner: document.querySelector("#external-pack-boundary-banner"),
   externalPackBoundaryDetail: document.querySelector("#external-pack-boundary-detail"),
   openCameraLab: document.querySelector("#open-camera-lab"),
@@ -351,6 +392,10 @@ const elements = {
 const state = {
   externalPack: false,
   activePackId: "embedded",
+  profilePackCreationReviewToken: null,
+  profilePackGit: null,
+  profilePackGitCommitReviewToken: null,
+  profilePackGitRemoteReviewToken: null,
   dictionary: null,
   myMenus: Array.from({ length: 5 }, () => ({ name: "", colorChoice: "", items: Array(6).fill("") })),
   myMenuColorReviewToken: null,
@@ -468,7 +513,15 @@ async function loadEditorInfo() {
     if (state.externalPack) {
       document.body.classList.add("external-pack-guarded");
       elements.externalPackBoundaryBanner.hidden = false;
-      elements.externalPackBoundaryDetail.textContent = `${pack.pack_name || "Selected pack"} can change only its manifest-owned sources. Camera Lab evidence can be deliberately promoted after exact review and confirmation; builds, spreadsheets, cleanup, Git, integration, and publication remain disabled.`;
+      elements.externalPackBoundaryDetail.textContent = `${pack.pack_name || "Selected pack"} can change only its manifest-owned sources. Camera Lab evidence can be deliberately promoted after exact review and confirmation; independent pack Git also uses separate reviewed actions. Application Git, builds, spreadsheets, cleanup, integration, and publication remain disabled.`;
+    }
+    elements.newProfilePackName.disabled = state.externalPack;
+    elements.chooseProfilePackDestination.disabled = state.externalPack;
+    elements.reviewProfilePackCreation.disabled = state.externalPack;
+    elements.switchToEmbeddedForCreation.hidden = !state.externalPack;
+    elements.profilePackGitPanel.hidden = !state.externalPack;
+    if (state.externalPack) {
+      elements.profilePackCreationMessage.textContent = "New packs are migrated from embedded sources. Switch to embedded sources first.";
     }
   } catch (error) {
     elements.editorVersion.textContent = "Editor version unavailable";
@@ -535,7 +588,268 @@ async function switchProfilePack() {
   }
 }
 
-const EXTERNAL_PACK_VIEWS = new Set(["profiles", "review-build", "cx-foundation", "my-menu", "camera-buttons", "baseline", "deleted-cards", "dictionary"]);
+async function chooseProfilePackDestination() {
+  elements.chooseProfilePackDestination.disabled = true;
+  elements.profilePackCreationMessage.dataset.error = "false";
+  elements.profilePackCreationMessage.textContent = "Choose a new destination in the macOS window. You may create a parent folder there.";
+  try {
+    const result = await request("/api/profile-pack-destination-picker", {
+      method: "POST",
+      body: JSON.stringify({ suggestedName: elements.newProfilePackName.value }),
+    });
+    if (result.cancelled) {
+      elements.profilePackCreationMessage.textContent = "Destination selection cancelled. Nothing changed.";
+      return;
+    }
+    elements.newProfilePackDestination.value = result.destination;
+    elements.profilePackCreationMessage.textContent = "Destination selected. Review will confirm the exact path before anything is created.";
+  } catch (error) {
+    elements.profilePackCreationMessage.dataset.error = "true";
+    elements.profilePackCreationMessage.textContent = error.message;
+  } finally {
+    elements.chooseProfilePackDestination.disabled = state.externalPack;
+  }
+}
+
+function switchToEmbeddedForCreation() {
+  elements.profilePackSelect.value = "embedded";
+  switchProfilePack();
+}
+
+function closeProfilePackCreationReview() {
+  state.profilePackCreationReviewToken = null;
+  elements.profilePackCreationConfirm.checked = false;
+  elements.createProfilePack.disabled = true;
+  elements.profilePackCreationDialog.close();
+}
+
+async function reviewProfilePackCreation() {
+  captureCurrentProfileDraft();
+  state.profilePackCreationReviewToken = null;
+  elements.reviewProfilePackCreation.disabled = true;
+  elements.profilePackCreationMessage.dataset.error = "false";
+  elements.profilePackCreationMessage.textContent = "Reviewing the requested destination and embedded source inventory…";
+  try {
+    const review = await request("/api/profile-pack-creation-reviews", {
+      method: "POST",
+      body: JSON.stringify({
+        packName: elements.newProfilePackName.value,
+        destination: elements.newProfilePackDestination.value,
+        pendingChanges: pendingSessionItems().length,
+      }),
+    });
+    state.profilePackCreationReviewToken = review.reviewToken;
+    elements.profilePackCreationSummary.textContent = `${review.packName} will receive a new immutable pack ID and ${review.sourceFileCount} reviewed files, including the migrated embedded sources.`;
+    elements.profilePackCreationDestination.textContent = review.destination;
+    elements.profilePackCreationManifest.textContent = review.manifestYaml;
+    elements.profilePackCreationFileCount.textContent = String(review.sourceFileCount);
+    elements.profilePackCreationFileList.replaceChildren();
+    for (const path of review.sourceFiles || []) {
+      const item = document.createElement("li");
+      item.textContent = path;
+      elements.profilePackCreationFileList.append(item);
+    }
+    elements.profilePackCreationConfirm.checked = false;
+    elements.createProfilePack.disabled = true;
+    elements.profilePackCreationMessage.textContent = "Review ready. No folder or source has been created yet.";
+    elements.profilePackCreationDialog.showModal();
+  } catch (error) {
+    elements.profilePackCreationMessage.dataset.error = "true";
+    elements.profilePackCreationMessage.textContent = error.message;
+  } finally {
+    elements.reviewProfilePackCreation.disabled = false;
+  }
+}
+
+async function createProfilePack() {
+  if (!state.profilePackCreationReviewToken || !elements.profilePackCreationConfirm.checked) return;
+  elements.createProfilePack.disabled = true;
+  elements.profilePackCreationClose.disabled = true;
+  elements.profilePackCreationCancel.disabled = true;
+  elements.profilePackCreationSummary.textContent = "Creating and validating the reviewed profile pack. Keep this window open…";
+  elements.profilePackCreationMessage.dataset.error = "false";
+  elements.profilePackCreationMessage.textContent = "Creating, validating, registering, and selecting the new profile pack…";
+  try {
+    const result = await request("/api/profile-pack-creations", {
+      method: "POST",
+      body: JSON.stringify({
+        reviewToken: state.profilePackCreationReviewToken,
+        confirmCreate: true,
+      }),
+    });
+    state.profilePackCreationReviewToken = null;
+    elements.profilePackCreationDialog.close();
+    elements.profilePackCreationMessage.textContent = `${result.profile_pack.pack_name} was created and selected. Reloading the editor…`;
+    window.location.reload();
+  } catch (error) {
+    state.profilePackCreationReviewToken = null;
+    elements.profilePackCreationDialog.close();
+    elements.profilePackCreationMessage.dataset.error = "true";
+    elements.profilePackCreationMessage.textContent = error.message;
+  } finally {
+    elements.profilePackCreationClose.disabled = false;
+    elements.profilePackCreationCancel.disabled = false;
+  }
+}
+
+function showProfilePackGitMessage(text, error = false) {
+  elements.profilePackGitMessage.hidden = !text;
+  elements.profilePackGitMessage.dataset.error = error ? "true" : "false";
+  elements.profilePackGitMessage.textContent = text;
+}
+
+function repositorySummary(repository) {
+  if (!repository) return "Status unavailable";
+  const parts = [`Branch ${repository.branch || "unknown"}`];
+  if (!repository.headExists) parts.push("no commits yet");
+  else parts.push(repository.clean ? "clean" : `${repository.changes?.length || 0} changed item${repository.changes?.length === 1 ? "" : "s"}`);
+  if (repository.originConfigured) parts.push(repository.upstream ? (repository.synchronized ? "synchronized" : `${repository.ahead ?? "?"} ahead / ${repository.behind ?? "?"} behind`) : "origin configured; first push pending");
+  else parts.push("no origin configured");
+  return parts.join(" · ");
+}
+
+function renderProfilePackGit() {
+  const result = state.profilePackGit;
+  if (!result) return;
+  elements.applicationGitSummary.textContent = repositorySummary(result.application);
+  elements.profilePackGitSummary.textContent = repositorySummary(result.pack);
+  elements.combinedHandoffStatus.classList.toggle("is-ready", Boolean(result.handoff?.ready));
+  elements.combinedHandoffStatus.innerHTML = result.handoff?.ready
+    ? "<strong>Combined handoff ready.</strong> Both repositories are clean and synchronized with their matching origin branches."
+    : `<strong>Combined handoff not ready.</strong> ${(result.handoff?.blockers || []).join(" ")}`;
+  const canCommit = ["initial-commit", "commit"].includes(result.phase);
+  elements.profilePackCommitStage.hidden = !canCommit;
+  elements.profilePackCommitHeading.textContent = result.phase === "initial-commit" ? "Review initial pack commit" : "Review pack changes";
+  const canConfigureRemote = Boolean(result.pack?.headExists && result.pack?.clean && !result.pack?.blocker);
+  elements.profilePackRemoteStage.hidden = !canConfigureRemote;
+  if (result.pack?.originConfigured && !elements.profilePackRemoteUrl.value) {
+    elements.profilePackRemoteUrl.value = result.pack.origin || "";
+  }
+  elements.profilePackPushStage.hidden = result.phase !== "push";
+  elements.profilePackPushTarget.textContent = result.phase === "push"
+    ? `Push private pack branch ${result.pack.branch} to origin/${result.pack.branch}.`
+    : "";
+  elements.profilePackConfirmPush.checked = false;
+  elements.pushProfilePack.disabled = true;
+}
+
+async function refreshProfilePackGit() {
+  if (!state.externalPack) return;
+  elements.refreshProfilePackGit.disabled = true;
+  showProfilePackGitMessage("Checking the application and private-pack repositories separately…");
+  try {
+    state.profilePackGit = await request("/api/profile-pack-git-status", {
+      method: "POST",
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
+    });
+    renderProfilePackGit();
+    showProfilePackGitMessage(state.profilePackGit.phase === "blocked" ? (state.profilePackGit.blockers || []).join(" ") : "Repository status refreshed.", state.profilePackGit.phase === "blocked");
+  } catch (error) {
+    showProfilePackGitMessage(error.message, true);
+  } finally {
+    elements.refreshProfilePackGit.disabled = false;
+  }
+}
+
+async function reviewProfilePackCommit() {
+  state.profilePackGitCommitReviewToken = null;
+  elements.reviewProfilePackCommit.disabled = true;
+  try {
+    const review = await request("/api/profile-pack-git-commit-reviews", {
+      method: "POST",
+      body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
+    });
+    state.profilePackGitCommitReviewToken = review.reviewToken;
+    elements.profilePackCommitFiles.textContent = review.files.join("\n");
+    elements.profilePackCommitReview.hidden = false;
+    elements.profilePackConfirmCommit.checked = false;
+    elements.commitProfilePack.disabled = true;
+    showProfilePackGitMessage(review.includesAgents ? "Exact pack files reviewed. AGENTS.md is included." : "Exact pack files reviewed.");
+  } catch (error) {
+    showProfilePackGitMessage(error.message, true);
+  } finally {
+    elements.reviewProfilePackCommit.disabled = false;
+  }
+}
+
+async function commitProfilePack() {
+  elements.commitProfilePack.disabled = true;
+  showProfilePackGitMessage("Committing only the exact reviewed private-pack files. Nothing will be pushed.");
+  try {
+    state.profilePackGit = await request("/api/profile-pack-git-commits", {
+      method: "POST",
+      body: JSON.stringify({
+        reviewToken: state.profilePackGitCommitReviewToken,
+        message: elements.profilePackCommitMessage.value,
+        confirmCommit: elements.profilePackConfirmCommit.checked,
+      }),
+    });
+    state.profilePackGitCommitReviewToken = null;
+    elements.profilePackCommitReview.hidden = true;
+    renderProfilePackGit();
+    showProfilePackGitMessage("Private-pack commit completed. Remote configuration and push remain separate approvals.");
+  } catch (error) {
+    state.profilePackGitCommitReviewToken = null;
+    showProfilePackGitMessage(error.message, true);
+  }
+}
+
+async function reviewProfilePackRemote() {
+  state.profilePackGitRemoteReviewToken = null;
+  elements.reviewProfilePackRemote.disabled = true;
+  try {
+    const review = await request("/api/profile-pack-git-remote-reviews", {
+      method: "POST",
+      body: JSON.stringify({ remote: elements.profilePackRemoteUrl.value, pendingChanges: pendingSessionItems().length }),
+    });
+    state.profilePackGitRemoteReviewToken = review.reviewToken;
+    elements.profilePackRemoteChange.textContent = review.replacing
+      ? `Replace ${review.previousRemote} with ${review.remote}`
+      : `Add origin ${review.remote}`;
+    elements.profilePackRemoteReview.hidden = false;
+    elements.profilePackConfirmRemote.checked = false;
+    elements.configureProfilePackRemote.disabled = true;
+    showProfilePackGitMessage("Remote review ready. Nothing has changed yet.");
+  } catch (error) {
+    showProfilePackGitMessage(error.message, true);
+  } finally {
+    elements.reviewProfilePackRemote.disabled = false;
+  }
+}
+
+async function configureProfilePackRemote() {
+  elements.configureProfilePackRemote.disabled = true;
+  try {
+    state.profilePackGit = await request("/api/profile-pack-git-remotes", {
+      method: "POST",
+      body: JSON.stringify({ reviewToken: state.profilePackGitRemoteReviewToken, confirmRemote: elements.profilePackConfirmRemote.checked }),
+    });
+    state.profilePackGitRemoteReviewToken = null;
+    elements.profilePackRemoteReview.hidden = true;
+    renderProfilePackGit();
+    showProfilePackGitMessage("Private origin configured. Nothing was pushed.");
+  } catch (error) {
+    state.profilePackGitRemoteReviewToken = null;
+    showProfilePackGitMessage(error.message, true);
+  }
+}
+
+async function pushProfilePack() {
+  elements.pushProfilePack.disabled = true;
+  showProfilePackGitMessage("Pushing only the private pack and verifying its matching origin branch…");
+  try {
+    state.profilePackGit = await request("/api/profile-pack-git-pushes", {
+      method: "POST",
+      body: JSON.stringify({ confirmPush: elements.profilePackConfirmPush.checked }),
+    });
+    renderProfilePackGit();
+    showProfilePackGitMessage("Private profile pack is clean and synchronized. Review combined handoff status separately.");
+  } catch (error) {
+    showProfilePackGitMessage(error.message, true);
+  }
+}
+
+const EXTERNAL_PACK_VIEWS = new Set(["profiles", "review-build", "cx-foundation", "my-menu", "camera-buttons", "baseline", "deleted-cards", "setup-sharing", "dictionary"]);
 
 function configureExternalEvidenceReview() {
   const tab = document.querySelector('[data-view="review-build"]');
@@ -1982,6 +2296,7 @@ function switchView(viewName) {
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
   if (viewName === "cleanup-review" && !state.cleanupBusy) refreshCleanupReview();
   if (viewName === "release-publish" && !state.publicationBusy) refreshPublication();
+  if (viewName === "setup-sharing" && state.externalPack) refreshProfilePackGit();
   window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -5145,6 +5460,33 @@ for (const input of [elements.titleInput, elements.subtitleInput, elements.filen
 }
 for (const tab of elements.viewTabs) tab.addEventListener("click", () => switchView(tab.dataset.view));
 elements.profilePackSelect.addEventListener("change", switchProfilePack);
+elements.chooseProfilePackDestination.addEventListener("click", chooseProfilePackDestination);
+elements.reviewProfilePackCreation.addEventListener("click", reviewProfilePackCreation);
+elements.switchToEmbeddedForCreation.addEventListener("click", switchToEmbeddedForCreation);
+elements.profilePackCreationClose.addEventListener("click", closeProfilePackCreationReview);
+elements.profilePackCreationCancel.addEventListener("click", closeProfilePackCreationReview);
+elements.profilePackCreationConfirm.addEventListener("change", () => {
+  elements.createProfilePack.disabled = !elements.profilePackCreationConfirm.checked;
+});
+elements.createProfilePack.addEventListener("click", createProfilePack);
+elements.refreshProfilePackGit.addEventListener("click", refreshProfilePackGit);
+elements.reviewProfilePackCommit.addEventListener("click", reviewProfilePackCommit);
+elements.profilePackConfirmCommit.addEventListener("change", () => {
+  elements.commitProfilePack.disabled = !elements.profilePackConfirmCommit.checked || !elements.profilePackCommitMessage.value.trim();
+});
+elements.profilePackCommitMessage.addEventListener("input", () => {
+  elements.commitProfilePack.disabled = !elements.profilePackConfirmCommit.checked || !elements.profilePackCommitMessage.value.trim();
+});
+elements.commitProfilePack.addEventListener("click", commitProfilePack);
+elements.reviewProfilePackRemote.addEventListener("click", reviewProfilePackRemote);
+elements.profilePackConfirmRemote.addEventListener("change", () => {
+  elements.configureProfilePackRemote.disabled = !elements.profilePackConfirmRemote.checked;
+});
+elements.configureProfilePackRemote.addEventListener("click", configureProfilePackRemote);
+elements.profilePackConfirmPush.addEventListener("change", () => {
+  elements.pushProfilePack.disabled = !elements.profilePackConfirmPush.checked;
+});
+elements.pushProfilePack.addEventListener("click", pushProfilePack);
 for (const tab of elements.mobilePaneTabs) tab.addEventListener("click", () => setProfilePane(tab.dataset.pane));
 elements.dictionarySearch.addEventListener("input", renderDictionary);
 elements.dictionaryClassification.addEventListener("change", renderDictionary);

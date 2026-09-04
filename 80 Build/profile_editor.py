@@ -86,6 +86,8 @@ from control_reference import (
 )
 from profile_loader import load_baseline, load_yaml
 from profile_pack import ProfilePackError, profile_pack_revision, resolve_profile_pack
+from profile_pack_creation import ProfilePackCreationError, ProfilePackCreator
+from profile_pack_git import ProfilePackGitError, ProfilePackGitWorkflow
 from profile_pack_selection import (
     ProfilePackSelectionError,
     ProfilePackSelectionStore,
@@ -174,6 +176,12 @@ EXTERNAL_PACK_EDITOR_ENDPOINTS = {
     "/api/camera-buttons-saves",
     "/api/camera-lab-evidence-reviews",
     "/api/camera-lab-evidence-saves",
+    "/api/profile-pack-git-status",
+    "/api/profile-pack-git-commit-reviews",
+    "/api/profile-pack-git-commits",
+    "/api/profile-pack-git-remote-reviews",
+    "/api/profile-pack-git-remotes",
+    "/api/profile-pack-git-pushes",
 }
 EDITOR_BUILD_FILES = (
     "00 Master/application_version.yaml",
@@ -207,6 +215,9 @@ EDITOR_BUILD_FILES = (
     "80 Build/numbers_automation.py",
     "80 Build/profile_editor.py",
     "80 Build/profile_pack.py",
+    "80 Build/profile_pack_creation.py",
+    "80 Build/profile_pack_git.py",
+    "80 Build/profile_pack_templates/AGENTS.md",
     "80 Build/profile_pack_selection.py",
     "80 Build/profile_editor/app.js",
     "80 Build/profile_editor/control_options.yaml",
@@ -467,6 +478,7 @@ class ProfileEditorModel:
         publication_workflow=None,
         main_editor_launcher=None,
         camera_lab_journal_root=None,
+        profile_pack_git_workflow=None,
         profile_pack_root=None,
         project_paths=None,
     ):
@@ -518,6 +530,13 @@ class ProfileEditorModel:
         self.publication_workflow = publication_workflow or PublicationWorkflow(self.paths.root)
         self.main_editor_launcher = main_editor_launcher or MainEditorLauncher(self.paths.root)
         self.camera_lab_journal_root = camera_lab_journal_root
+        self.profile_pack_git_workflow = profile_pack_git_workflow
+        if self.external_pack and self.profile_pack_git_workflow is None:
+            self.profile_pack_git_workflow = ProfilePackGitWorkflow(
+                self.paths.root,
+                self.paths.profile_pack_root,
+                self.paths.profile_pack.pack_id,
+            )
 
     def camera_lab_evidence_detail(self):
         try:
@@ -2120,7 +2139,7 @@ class ProfileEditorModel:
         if self.external_pack and endpoint not in EXTERNAL_PACK_EDITOR_ENDPOINTS:
             raise PrototypeError(
                 "This action is outside the guarded external-pack editing boundary. "
-                "Builds, spreadsheets, cleanup, Git, integration, and publication remain disabled."
+                "Application Git, builds, spreadsheets, cleanup, integration, and publication remain disabled."
             )
 
     def accept_profile_pack_state(self):
@@ -2443,6 +2462,62 @@ class ProfileEditorModel:
             try:
                 return self.finish_day_workflow.push(confirmed)
             except FinishDayError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def _pack_git(self):
+        if not self.external_pack or self.profile_pack_git_workflow is None:
+            raise PrototypeError("Select a private profile pack before using its Git workflow.")
+        return self.profile_pack_git_workflow
+
+    def profile_pack_git_status(self, pending_changes):
+        try:
+            return self._pack_git().inspect(pending_changes)
+        except ProfilePackGitError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def review_profile_pack_git_commit(self, pending_changes):
+        try:
+            return self._pack_git().review_commit(pending_changes)
+        except ProfilePackGitError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def commit_profile_pack_git(self, review_token, message, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self._pack_git().commit(review_token, message, confirmed)
+            except ProfilePackGitError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def review_profile_pack_git_remote(self, remote_url, pending_changes):
+        try:
+            return self._pack_git().review_remote(remote_url, pending_changes)
+        except ProfilePackGitError as exc:
+            raise PrototypeError(str(exc)) from exc
+
+    def configure_profile_pack_git_remote(self, review_token, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self._pack_git().configure_remote(review_token, confirmed)
+            except ProfilePackGitError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
+    def push_profile_pack_git(self, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self._pack_git().push(confirmed)
+            except ProfilePackGitError as exc:
                 raise PrototypeError(str(exc)) from exc
         finally:
             self._build_lock.release()
@@ -4222,6 +4297,7 @@ class EditorHandler(BaseHTTPRequestHandler):
     model = None
     request_token = None
     selection_store = None
+    pack_creator = None
     model_switch_lock = None
 
     def do_GET(self):
@@ -4271,6 +4347,15 @@ class EditorHandler(BaseHTTPRequestHandler):
         if parsed.path not in {
             "/api/editor-shutdown",
             "/api/profile-pack-switch",
+            "/api/profile-pack-destination-picker",
+            "/api/profile-pack-creation-reviews",
+            "/api/profile-pack-creations",
+            "/api/profile-pack-git-status",
+            "/api/profile-pack-git-commit-reviews",
+            "/api/profile-pack-git-commits",
+            "/api/profile-pack-git-remote-reviews",
+            "/api/profile-pack-git-remotes",
+            "/api/profile-pack-git-pushes",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4325,6 +4410,15 @@ class EditorHandler(BaseHTTPRequestHandler):
         protected_lifecycle_paths = {
             "/api/editor-shutdown",
             "/api/profile-pack-switch",
+            "/api/profile-pack-destination-picker",
+            "/api/profile-pack-creation-reviews",
+            "/api/profile-pack-creations",
+            "/api/profile-pack-git-status",
+            "/api/profile-pack-git-commit-reviews",
+            "/api/profile-pack-git-commits",
+            "/api/profile-pack-git-remote-reviews",
+            "/api/profile-pack-git-remotes",
+            "/api/profile-pack-git-pushes",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4369,6 +4463,56 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return
             if parsed.path == "/api/profile-pack-switch":
                 return self._json(self._switch_profile_pack(payload))
+            if parsed.path == "/api/profile-pack-destination-picker":
+                return self._json(
+                    self.pack_creator.choose_destination(payload.get("suggestedName") or "")
+                )
+            if parsed.path == "/api/profile-pack-creation-reviews":
+                return self._json(
+                    self.pack_creator.review(
+                        payload.get("packName"),
+                        payload.get("destination"),
+                        payload.get("pendingChanges"),
+                    )
+                )
+            if parsed.path == "/api/profile-pack-creations":
+                return self._json(
+                    self._create_profile_pack(
+                        payload.get("reviewToken"), payload.get("confirmCreate")
+                    )
+                )
+            if parsed.path == "/api/profile-pack-git-status":
+                return self._json(
+                    self.model.profile_pack_git_status(payload.get("pendingChanges"))
+                )
+            if parsed.path == "/api/profile-pack-git-commit-reviews":
+                return self._json(
+                    self.model.review_profile_pack_git_commit(payload.get("pendingChanges"))
+                )
+            if parsed.path == "/api/profile-pack-git-commits":
+                return self._json(
+                    self.model.commit_profile_pack_git(
+                        payload.get("reviewToken"),
+                        payload.get("message"),
+                        payload.get("confirmCommit"),
+                    )
+                )
+            if parsed.path == "/api/profile-pack-git-remote-reviews":
+                return self._json(
+                    self.model.review_profile_pack_git_remote(
+                        payload.get("remote"), payload.get("pendingChanges")
+                    )
+                )
+            if parsed.path == "/api/profile-pack-git-remotes":
+                return self._json(
+                    self.model.configure_profile_pack_git_remote(
+                        payload.get("reviewToken"), payload.get("confirmRemote")
+                    )
+                )
+            if parsed.path == "/api/profile-pack-git-pushes":
+                return self._json(
+                    self.model.push_profile_pack_git(payload.get("confirmPush"))
+                )
             if parsed.path == "/api/camera-lab-launch":
                 return self._json(self.model.launch_camera_lab(payload.get("profile")))
             if parsed.path == "/api/workflow-preflight":
@@ -4587,6 +4731,8 @@ class EditorHandler(BaseHTTPRequestHandler):
             return self._json(payload, HTTPStatus.BAD_REQUEST)
         except ProfilePackSelectionError as exc:
             return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+        except ProfilePackCreationError as exc:
+            return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
         except Exception as exc:
             return self._json({"error": f"Profile editor operation failed: {exc}"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
@@ -4623,6 +4769,34 @@ class EditorHandler(BaseHTTPRequestHandler):
         return {
             "switched": True,
             "profile_pack": replacement.editor_info()["profile_pack"],
+            "reload": True,
+        }
+
+    def _create_profile_pack(self, review_token, confirm_create):
+        with self.model_switch_lock:
+            context = self.pack_creator.create(review_token, confirm_create)
+            try:
+                replacement = ProfileEditorModel(
+                    project_paths=ProjectPaths(
+                        self.model.paths.application_root,
+                        profile_pack_context=context,
+                    )
+                )
+                self.selection_store.remember_selected(context)
+            except Exception:
+                self.pack_creator.discard_created(context.root)
+                raise
+            type(self).model = replacement
+            self.model = replacement
+        return {
+            "created": True,
+            "profile_pack": replacement.editor_info()["profile_pack"],
+            "git": {
+                "initialized": True,
+                "committed": False,
+                "remoteConfigured": False,
+                "pushed": False,
+            },
             "reload": True,
         }
 
@@ -4720,8 +4894,9 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_server(model, port=DEFAULT_PORT, token=None, selection_store=None):
+def create_server(model, port=DEFAULT_PORT, token=None, selection_store=None, pack_creator=None):
     selection_store = selection_store or ProfilePackSelectionStore(model.paths.application_root)
+    pack_creator = pack_creator or ProfilePackCreator(model.paths.application_root)
     handler = type(
         "BoundEditorHandler",
         (EditorHandler,),
@@ -4729,6 +4904,7 @@ def create_server(model, port=DEFAULT_PORT, token=None, selection_store=None):
             "model": model,
             "request_token": token or secrets.token_urlsafe(32),
             "selection_store": selection_store,
+            "pack_creator": pack_creator,
             "model_switch_lock": threading.Lock(),
         },
     )

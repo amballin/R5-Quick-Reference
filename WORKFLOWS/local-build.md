@@ -34,7 +34,7 @@ python3 "80 Build/build.py" --profile-pack "/absolute/path/to/private-profile-pa
 python3 "80 Build/validator.py" --profile-pack "/absolute/path/to/private-profile-pack"
 ```
 
-The source-only pass validates application-owned definitions together with the selected pack's canonical sources. The final pass validates the isolated external cards, guides, card candidates, PWA, provenance, and Pages mirror. Both validator commands identify the selected pack and validate Profile Editor's guarded-write readiness against that same resolved context. Profile Editor's saved selection does not affect these build commands: their external pack remains explicit. Camera Lab comparison and guarded operation are activated separately by Steps 5A–5B, and Step 5C evidence promotion remains a Profile Editor transaction; spreadsheet generation, editor-initiated builds, Git, handoff, cleanup, and publication are not activated for external packs.
+The source-only pass validates application-owned definitions together with the selected pack's canonical sources. The final pass validates the isolated external cards, guides, card candidates, PWA, provenance, and Pages mirror. Both validator commands identify the selected pack and validate Profile Editor's guarded-write readiness against that same resolved context. Profile Editor's saved selection does not affect these build commands: their external pack remains explicit. Camera Lab comparison and guarded operation are activated separately by Steps 5A–5B, Step 5C evidence promotion remains a Profile Editor transaction, and Step 6B permits only independent pack Git plus read-only combined handoff; spreadsheet generation, editor-initiated builds, cleanup, application Git mutation, and publication are not activated for external packs.
 
 To edit the same selected pack through guarded reviewed transactions, run:
 
@@ -42,7 +42,7 @@ To edit the same selected pack through guarded reviewed transactions, run:
 python3 -B "80 Build/profile_editor.py" --profile-pack "/absolute/path/to/private-profile-pack"
 ```
 
-The editor displays the manifest's friendly `pack_name` and permits only pack-namespaced previews plus reviewed Profile/lens, baseline, C1-C3, My Menu, Camera Buttons, removal, restore, and Camera Lab evidence-promotion transactions. It rejects spreadsheet import/generation, build, cleanup, Git, handoff, integration, main-editor launch, and publication. Restart it after changing pack source outside the editor. The normal app launcher uses the current valid machine-local editor selection; it does not change which pack an explicit build or validator command uses.
+The editor displays the manifest's friendly `pack_name` and permits only pack-namespaced previews plus reviewed Profile/lens, baseline, C1-C3, My Menu, Camera Buttons, removal, restore, Camera Lab evidence-promotion, and Step 6B private-pack Git transactions. Setup & Sharing reports combined handoff without modifying application Git. It rejects spreadsheet import/generation, build, cleanup, application Finish Day/Git, integration, main-editor launch, and publication. Restart it after changing pack source outside the editor. The normal app launcher uses the current valid machine-local editor selection; it does not change which pack an explicit build or validator command uses.
 
 ## Why three commands
 

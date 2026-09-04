@@ -74,7 +74,10 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/camera_lab_tracker_import.py",
             "80 Build/asset_manager.py",
             "80 Build/profile_editor.py",
+            "80 Build/profile_pack_git.py",
             "80 Build/profile_pack.py",
+            "80 Build/profile_pack_creation.py",
+            "80 Build/profile_pack_templates/AGENTS.md",
             "80 Build/profile_pack_selection.py",
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
@@ -950,13 +953,38 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Edit Profiles", html)
         self.assertIn("Launch separate app", html)
         self.assertIn("Fork owner’s project", html)
+        self.assertIn('id="new-profile-pack-name"', html)
+        self.assertIn('id="new-profile-pack-destination"', html)
+        self.assertIn('id="choose-profile-pack-destination"', html)
+        self.assertIn('id="switch-to-embedded-for-creation"', html)
+        self.assertIn('id="profile-pack-creation-dialog"', html)
+        self.assertIn('id="create-profile-pack"', html)
+        self.assertIn('id="profile-pack-git-panel"', html)
+        self.assertIn('id="application-git-summary"', html)
+        self.assertIn('id="profile-pack-git-summary"', html)
+        self.assertIn('id="combined-handoff-status"', html)
+        self.assertIn('id="review-profile-pack-commit"', html)
+        self.assertIn('id="review-profile-pack-remote"', html)
+        self.assertIn('id="push-profile-pack"', html)
         self.assertNotIn("His profiles", html)
         self.assertIn('request("/api/workflow-preflight"', javascript)
         self.assertIn('switchView("profiles")', javascript)
         self.assertIn('switchView("release-publish")', javascript)
         self.assertIn('window.scrollTo({ top: 0, behavior: "auto" })', javascript)
+        self.assertIn('request("/api/profile-pack-creation-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-creations"', javascript)
+        self.assertIn('request("/api/profile-pack-destination-picker"', javascript)
+        self.assertIn('request("/api/profile-pack-git-status"', javascript)
+        self.assertIn('request("/api/profile-pack-git-commit-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-git-commits"', javascript)
+        self.assertIn('request("/api/profile-pack-git-remote-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-git-remotes"', javascript)
+        self.assertIn('request("/api/profile-pack-git-pushes"', javascript)
+        self.assertIn('"setup-sharing"', javascript)
         self.assertIn(".day-workflow", stylesheet)
         self.assertIn(".sharing-flow", stylesheet)
+        self.assertIn(".profile-pack-creation-panel", stylesheet)
+        self.assertIn("height: calc(100vh - 2rem)", stylesheet)
         self.assertIn("max-height: calc(100vh - 2rem)", stylesheet)
         self.assertIn('request("/api/finish-day-status"', javascript)
         self.assertIn('request("/api/finish-day-prepare"', javascript)
@@ -1367,6 +1395,36 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 "POST",
                 "/api/editor-shutdown",
                 body="{}",
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/profile-pack-git-status",
+                body=json.dumps({"pendingChanges": 0}),
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/profile-pack-creation-reviews",
+                body=json.dumps(
+                    {
+                        "packName": "Unauthorized Pack",
+                        "destination": "/private/tmp/unauthorized-profile-pack",
+                        "pendingChanges": 0,
+                    }
+                ),
                 headers={"Content-Type": "application/json"},
             )
             response = connection.getresponse()

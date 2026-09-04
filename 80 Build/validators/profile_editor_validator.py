@@ -17,6 +17,9 @@ REQUIRED_FILES = (
     "80 Build/baseline_migration.py",
     "80 Build/camera_lab_tracker_import.py",
     "80 Build/profile_editor.py",
+    "80 Build/profile_pack_creation.py",
+    "80 Build/profile_pack_git.py",
+    "80 Build/profile_pack_templates/AGENTS.md",
     "80 Build/profile_pack_selection.py",
     "80 Build/publication_workflow.py",
     "80 Build/profile_editor/app.js",
@@ -25,6 +28,8 @@ REQUIRED_FILES = (
     "80 Build/profile_editor/index.html",
     "80 Build/profile_editor/styles.css",
     "80 Build/test_profile_editor.py",
+    "80 Build/test_profile_pack_creation.py",
+    "80 Build/test_profile_pack_git.py",
     "80 Build/test_profile_pack_selection.py",
     "80 Build/test_baseline_impact.py",
     "80 Build/test_baseline_impact_check.py",
@@ -73,6 +78,23 @@ def validate(root):
         }
         if not evidence_endpoints <= EXTERNAL_PACK_EDITOR_ENDPOINTS:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "External guarded editing must allow only the reviewed Camera Lab evidence promotion endpoints."))
+        creation_endpoints = {
+            "/api/profile-pack-destination-picker",
+            "/api/profile-pack-creation-reviews",
+            "/api/profile-pack-creations",
+        }
+        if creation_endpoints & EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profile-pack creation must remain an embedded-source workflow."))
+        pack_git_endpoints = {
+            "/api/profile-pack-git-status",
+            "/api/profile-pack-git-commit-reviews",
+            "/api/profile-pack-git-commits",
+            "/api/profile-pack-git-remote-reviews",
+            "/api/profile-pack-git-remotes",
+            "/api/profile-pack-git-pushes",
+        }
+        if not pack_git_endpoints <= EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Step 6B independent pack-Git endpoints must be available only through the guarded external-pack boundary."))
         pack_info = editor_info.get("profile_pack") or {}
         if pack_info.get("pack_id") != paths.profile_pack.pack_id or pack_info.get("pack_name") != paths.profile_pack.pack_name:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Editor selected-pack identity is incomplete."))
@@ -106,6 +128,45 @@ def validate(root):
         html = (root / "80 Build" / "profile_editor" / "index.html").read_text(encoding="utf-8")
         script = (root / "80 Build" / "profile_editor" / "app.js").read_text(encoding="utf-8")
         styles = (root / "80 Build" / "profile_editor" / "styles.css").read_text(encoding="utf-8")
+        if not all(
+            marker in html
+            for marker in (
+                'id="new-profile-pack-name"',
+                'id="new-profile-pack-destination"',
+                'id="choose-profile-pack-destination"',
+                'id="switch-to-embedded-for-creation"',
+                'id="review-profile-pack-creation"',
+                'id="profile-pack-creation-dialog"',
+                'id="create-profile-pack"',
+            )
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 6A New Profile Pack review controls are incomplete."))
+        if not all(
+            marker in script
+            for marker in (
+                'request("/api/profile-pack-creation-reviews"',
+                'request("/api/profile-pack-creations"',
+                'request("/api/profile-pack-destination-picker"',
+                "pendingSessionItems().length",
+                "profilePackCreationReviewToken",
+            )
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 6A New Profile Pack guarded client flow is incomplete."))
+        if not all(
+            marker in html
+            for marker in (
+                'id="profile-pack-git-panel"',
+                'id="application-git-summary"',
+                'id="profile-pack-git-summary"',
+                'id="combined-handoff-status"',
+                'id="review-profile-pack-commit"',
+                'id="review-profile-pack-remote"',
+                'id="push-profile-pack"',
+            )
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 6B independent pack-Git and combined-handoff controls are incomplete."))
+        if not all(f'request("{endpoint}"' in script for endpoint in pack_git_endpoints):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 6B guarded pack-Git client flow is incomplete."))
         if not (
             html.find('data-view="profiles"')
             < html.find('data-view="cx-foundation"')

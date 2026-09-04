@@ -14,7 +14,7 @@ This specification defines the system boundaries and ownership of data, content,
 - The accepted target architecture separates reusable application source, an owner's application fork, and an independently owned private profile pack. [`Profile Pack Specification.md`](Profile%20Pack%20Specification.md) is authoritative for pack identity, ownership, compatibility, selection, privacy, publication, and migration requirements.
 - The application repository's `origin` is the owner's repository and remains the only ordinary application push destination. A separately configured shared upstream is an explicit inbound source of selected reusable improvements; no workflow may infer permission to push to it.
 - The target private pack is a separate private Git repository, not a Git submodule. It is composed with the application at build and runtime through one validated source resolver.
-- Until source migration and broader external-pack activation are separately approved, the current Git root remains the application authority and embedded compatibility sources remain available. The development build and general validator may compose one explicitly selected external pack for isolated parity review. Profile Editor Step 4C may use either an explicit or machine-local saved pack, switch among remembered packs and embedded sources after draft/confirmation checks, and perform guarded reviewed transactions only against the active pack's manifest-owned sources. Steps 5A–5B pass that exact context into Camera Lab for scan, comparison, guarded simulation, and explicitly enabled physical-camera operation. Step 5C lets Profile Editor deliberately promote exact completed physical-camera evidence into the pack-owned verification status. Camera Lab direct pack-source writes, editor-initiated build, cleanup, Git, handoff, spreadsheet-generation, main-editor launch, and publication workflows remain unavailable.
+- Until source migration activation and broader external-pack workflows are separately approved, the current Git root remains the application authority and embedded compatibility sources remain available. The development build and general validator may compose one explicitly selected external pack for isolated parity review. Profile Editor Step 4C may use either an explicit or machine-local saved pack, switch among remembered packs and embedded sources after draft/confirmation checks, and perform guarded reviewed transactions only against the active pack's manifest-owned sources. Steps 5A–5B pass that exact context into Camera Lab for scan, comparison, guarded simulation, and explicitly enabled physical-camera operation. Step 5C lets Profile Editor deliberately promote exact completed physical-camera evidence into the pack-owned verification status. Step 6A may create, validate, register, and select a new external pack containing a migrated copy of the unchanged embedded owner sources. Step 6B permits only separately reviewed Git actions in that pack and read-only combined handoff checks across the application and pack. Camera Lab direct pack-source writes, editor-initiated build, cleanup, application Git mutation from the external session, spreadsheet-generation, main-editor launch, and publication workflows remain unavailable.
 - Every profile and permanent reference card has an immutable canonical `card_id` UUID. Structured card relationships store UUIDs rather than mutable titles; editors and renderers resolve the current title for display. Existing cards use the documented deterministic migration and new or duplicated cards receive new UUIDs.
 - Distinguish five evidence classes in camera-control documentation: verified Canon capability, owner-confirmed current configuration, approved target pending physical verification, project recommendation, and unresolved item.
 - Do not treat approved targets, historical screenshots, inferred icon meanings, or recommendations as proof of the current camera configuration.
@@ -81,7 +81,8 @@ owner's application checkout + explicit or machine-local saved profile pack
                               -> combined validation or complete rollback
                               -> Camera Lab governed separately by Steps 5A–5B
                               -> Step 5C reviewed evidence promotion to pack verification status
-                              -> no direct Camera Lab pack-source writes, build, Git, cleanup, or publication boundary
+                              -> Step 6B separately reviewed pack Git and combined handoff
+                              -> no direct Camera Lab pack-source writes, build, application Git, cleanup, or publication boundary
 ```
 
 Steps 5A–5B Camera Lab flow:
@@ -109,6 +110,19 @@ active external pack + pack-ID-namespaced completed physical journal
                               -> no spreadsheet generation, build, Git, handoff, or publication
 ```
 
+Step 6B independent pack-Git and combined-handoff flow:
+
+```text
+active external pack + zero browser drafts
+                              -> separate application and pack Git inspection
+                              -> exact source-bound pack commit review (initial commit includes AGENTS.md)
+                              -> separate pack-only commit confirmation
+                              -> exact credential-free origin review and separate configuration confirmation
+                              -> separate non-force push to the same-named pack branch
+                              -> live remote-head equality for both independent repositories
+                              -> combined handoff ready, without application Git mutation
+```
+
 Accepted target flow after external-pack activation:
 
 ```text
@@ -126,7 +140,7 @@ The application and pack remain separate Git authorities. Combined output record
 ## Enforcement and Evidence
 
 - `00 Master/project_identity.yaml` is the machine-readable repository identity.
-- `00 Master/specifications/Profile Pack Specification.md` defines the accepted external-pack contract, limited Step 3A build, Step 3B validation, Step 4C saved selection and guarded editor support, Steps 5A–5B Camera Lab support, Step 5C reviewed evidence promotion, the deferred New Profile Pack capability, and the still-inactive source-migration state.
+- `00 Master/specifications/Profile Pack Specification.md` defines the accepted external-pack contract, limited Step 3A build, Step 3B validation, Step 4C saved selection and guarded editor support, Steps 5A–5B Camera Lab support, Step 5C reviewed evidence promotion, Step 6A New Profile Pack creation from embedded sources, Step 6B independent pack Git and combined handoff, and the still-inactive source-migration activation state.
 - `80 Build/profile_pack.py` implements embedded compatibility, strict external-manifest parsing, application/pack identity checks, source containment, deterministic pack fingerprints, and path-free combined-build provenance. `80 Build/profile_pack_selection.py` owns the machine-local editor registry and selection. `80 Build/asset_manager.py` exposes the central resolved context while isolating external output by pack ID. `python3 "80 Build/build.py" --profile-pack PATH` and `python3 "80 Build/validator.py" --profile-pack PATH` remain explicit external development-review commands.
 - `80 Build/card_identity.py`, `80 Build/migrate_card_ids.py`, and `80 Build/validators/card_identity_validator.py` own identity resolution, legacy migration, UUID uniqueness, and referential-integrity enforcement.
 - `80 Build/validators/project_identity_validator.py` checks the Git root, current working directory, prohibited path markers, required authoritative components, identity fields, and baseline camera agreement.

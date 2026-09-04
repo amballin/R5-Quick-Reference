@@ -80,6 +80,32 @@ In external mode, Profile Editor exposes the existing review surface as **Eviden
 
 This supersedes only the Step 4B, Step 4C, Step 5A, and Step 5B prohibitions on external-pack Camera Lab evidence promotion. Every other external-pack boundary remains binding.
 
+## Guarded New Profile Pack Creation and Embedded Migration — Step 6A
+
+**Status:** Accepted
+**Date:** 2026-09-04
+
+Add **New Profile Pack** under Profile Editor's Setup & Sharing workspace. It creates one new private pack from the current embedded owner sources only after the owner supplies a user-friendly name, chooses an exact absolute destination through the native macOS Save panel with normal Finder navigation and New Folder support, resolves every browser draft, reviews the exact manifest and source inventory, and separately confirms creation. Review performs no filesystem or Git mutation.
+
+Creation must generate a new immutable UUID, stage the complete contract-versioned pack and repository-owned `AGENTS.md`, initialize local Git without a commit, remote, push, or branch workflow, run combined source validation, and atomically install the destination before registering and selecting it. It must never scan for a destination, write inside either repository, overwrite an existing path, or leave a partial destination after failed staging, Git initialization, validation, editor-model loading, or registration. The embedded source remains unchanged and authoritative during the transition.
+
+The creation endpoints require the local editor request token and remain unavailable while an external pack is active. Setup & Sharing itself remains available and explains the boundary with a direct guarded switch to embedded sources. This step does not activate pack commits, remotes, pushes, builds, spreadsheets, Finish Day, cleanup, handoff, application-source deletion, or publication. Those remain separate future decisions.
+
+This supersedes the Step 5C statement that the New Profile Pack workflow remained future work. It does not supersede any other Step 5C boundary.
+
+## Independent Private-Pack Git and Combined Handoff — Step 6B
+
+**Status:** Accepted
+**Date:** 2026-09-04
+
+Add **Private Pack Git & Handoff** to Profile Editor's Setup & Sharing workspace whenever an external pack is active. The application and private pack remain separate repositories and separate authorities. The workflow may inspect both, but its mutating actions may stage, commit, configure `origin`, and push only the selected private pack. It must never create or switch a branch, commit or push the application, infer a remote, store credentials, publish, or represent two repositories as one atomic transaction.
+
+Every pack commit requires zero browser drafts, an exact one-use file review, a source-bound token, a non-empty message, and separate confirmation. The first commit must contain the repository-owned `AGENTS.md`; absence from either the working tree or staged file set stops the commit. Remote addition or replacement requires an exact credential-free HTTPS or SSH URL, one-use review, state recheck, and separate confirmation. Push requires another confirmation, a clean committed pack, an exact matching `origin/<current-branch>` target, noninteractive remote access, and rejection of remote-only or divergent work.
+
+Combined handoff is a read-only result, not a Git action. It is ready only when both repositories are clean and their current branches match the exact live heads of their respective matching `origin` branches. Remote heads are checked without mutating the application repository. A missing commit, missing remote, missing or mismatched upstream, unavailable remote, uncommitted change, ahead/behind state, or divergence keeps handoff incomplete. Source-migration activation, external builds from the editor, spreadsheets, cleanup, application Finish Day, integration, and publication remain unavailable.
+
+This supersedes only the Step 6A prohibitions on pack commit, remote, push, and two-repository handoff behavior. All other Step 6A transition boundaries remain binding.
+
 ## Background-Owned Numbers Automation and One-Step Resume
 
 **Status:** Accepted

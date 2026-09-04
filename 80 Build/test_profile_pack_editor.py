@@ -120,8 +120,32 @@ class ProfilePackEditorTests(unittest.TestCase):
         self.model.assert_mutation_allowed("/api/camera-lab-launch")
         self.model.assert_mutation_allowed("/api/camera-lab-evidence-reviews")
         self.model.assert_mutation_allowed("/api/camera-lab-evidence-saves")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-status")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-commit-reviews")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-commits")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-remote-reviews")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-remotes")
+        self.model.assert_mutation_allowed("/api/profile-pack-git-pushes")
         with self.assertRaisesRegex(PrototypeError, "outside the guarded"):
             self.model.assert_mutation_allowed("/api/local-build")
+        with self.assertRaisesRegex(PrototypeError, "outside the guarded"):
+            self.model.assert_mutation_allowed("/api/profile-pack-creations")
+
+    def test_external_pack_git_status_is_routed_to_the_selected_pack_workflow(self):
+        workflow = mock.Mock()
+        workflow.inspect.return_value = {
+            "phase": "initial-commit",
+            "packId": self.model.paths.profile_pack.pack_id,
+            "application": {"label": "Application"},
+            "pack": {"label": "Private profile pack"},
+        }
+        self.model.profile_pack_git_workflow = workflow
+        status = self.model.profile_pack_git_status(0)
+        self.assertEqual(status["phase"], "initial-commit")
+        self.assertEqual(status["packId"], self.model.paths.profile_pack.pack_id)
+        self.assertEqual(status["application"]["label"], "Application")
+        self.assertEqual(status["pack"]["label"], "Private profile pack")
+        workflow.inspect.assert_called_once_with(0)
 
     def test_cli_check_accepts_explicit_pack_as_guarded(self):
         completed = subprocess.run(
@@ -156,6 +180,12 @@ class ProfilePackEditorTests(unittest.TestCase):
         self.assertIn('"review-build"', script)
         self.assertIn("configureExternalEvidenceReview", script)
         self.assertIn("enforceExternalPackBoundary", script)
+        self.assertIn('"setup-sharing"', script)
+        self.assertIn("Switch to embedded sources first", script)
+        self.assertIn('id="profile-pack-git-panel"', html)
+        self.assertIn('id="combined-handoff-status"', html)
+        self.assertIn('request("/api/profile-pack-git-status"', script)
+        self.assertIn("AGENTS.md is included", script)
         self.assertIn("external-pack-boundary-banner", styles)
         self.assertIn("#session-summary[hidden]", styles)
 
