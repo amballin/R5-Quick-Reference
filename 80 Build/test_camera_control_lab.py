@@ -888,7 +888,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertLess(body.index('id="backend-switch-button"'), body.index('id="physical-write-mode-button"'))
         self.assertLess(body.index('id="physical-write-mode-button"'), body.index('id="stop-camera-lab-button"'))
 
-        self.assertLess(body.index("No setting writes"), body.index('id="profile-pack-badge"'))
+        self.assertLess(body.index("Read-only"), body.index('id="profile-pack-badge"'))
+        self.assertNotIn("No setting writes", body)
         self.assertLess(body.index('id="profile-pack-badge"'), body.index('id="camera-lab-version"'))
         self.assertNotIn('id="project-context-badge"', body)
         self.assertIn('id="camera-lab-branch"', body)
@@ -941,6 +942,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertEqual(status, 200)
         status, _, body = self.request("GET", "/app.js")
         self.assertEqual(status, 200)
+        self.assertIn('"Read-only"', body)
+        self.assertNotIn("No setting writes", body)
         self.assertIn("await compareSelectedProfile({ recordScan: true })", body)
         self.assertIn("showRecoveryInstructions(error.message)", body)
         self.assertIn('elements.compareButton.addEventListener("click", () => runAction(scanAndCompare))', body)

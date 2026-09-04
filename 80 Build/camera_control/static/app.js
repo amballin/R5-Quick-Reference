@@ -584,7 +584,7 @@ function renderStatus(status) {
     ? "Simulator changes only"
     : status.physical_write_enabled
       ? "Camera changes enabled"
-      : "No setting writes";
+      : "Read-only";
   elements.backendSwitchButton.textContent = status.backend_mode === "simulated" ? "Use Camera" : "Use Simulator";
   elements.physicalWriteModeButton.hidden = status.backend_mode !== "edsdk";
   elements.physicalWriteModeButton.textContent = status.physical_write_enabled
@@ -622,7 +622,7 @@ function renderStatus(status) {
     : status.physical_write_enabled ? "Camera changes enabled" : "Read-only";
   elements.comparisonSafetyBadge.textContent = status.backend_mode === "simulated"
     ? "Comparison stays read-only"
-    : status.physical_write_enabled ? "Changes require review" : "No setting writes";
+    : status.physical_write_enabled ? "Changes require review" : "Read-only";
 
   elements.simulationPanel.hidden = status.backend_mode !== "simulated";
   const guardedAvailable = status.simulated_guarded_runs || status.physical_guarded_runs;

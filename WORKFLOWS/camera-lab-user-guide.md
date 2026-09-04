@@ -14,7 +14,7 @@ Check the header before working:
 
 - The version summary's **Main** or **Prototype** suffix identifies the application checkout. Expand it for the full branch and diagnostic source hash; there is no separate checkout badge.
 - **Profile Pack:** identifies the active source set by its friendly manifest name without displaying its private path.
-- **Read-only** means Camera Lab can inspect but cannot write camera settings.
+- **Read-only** beside **Profile Pack:** means Camera Lab can inspect but cannot write camera settings.
 - **Simulator** identifies a rehearsal. It cannot change a physical EOS R5.
 - The version control expands to show the full branch and diagnostic source hash.
 
