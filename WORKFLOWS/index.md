@@ -28,6 +28,8 @@ If the testing workbook did not change, continue directly to Step 4.
 
 Open [Finish Day](../FINISH_DAY.html) and complete its source-synchronization step. It validates, builds, commits, and pushes the source work.
 
+Repository owners should complete the one-time [Application Owner Protection](application-owner-protection.html) setup after its tracked CODEOWNERS contract has reached `main`, and recheck it whenever repository access or rules change.
+
 For an ordinary day, stop here after Finish Day reports that the repository is clean and synchronized.
 
 ## 5. Build spreadsheet release files

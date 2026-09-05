@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Application Owner Protection</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #566573;
+      --accent: #9d1d20;
+      --code: #17202a;
+      --code-text: #f8f9f9;
+      --warning: #fff2cc;
+      --warning-text: #4d3b00;
+      --border: #d5d8dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font: 18px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(900px, calc(100% - 28px)); margin: 36px auto 64px; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h1 + p { color: var(--muted); font-size: 1.1em; margin-bottom: 30px; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 7px solid var(--accent);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+      margin: 18px 0;
+      padding: 22px clamp(18px, 4vw, 34px) 28px;
+    }
+    h2 { margin: 0 0 14px; font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.2; }
+    h3 { margin: 24px 0 10px; font-size: clamp(1.1rem, 3.4vw, 1.35rem); line-height: 1.25; }
+    li + li { margin-top: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+    p code, li code, aside code {
+      background: rgb(127 127 127 / 14%);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    .command { position: relative; margin: 16px 0; }
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--code-text);
+      padding: 18px 74px 18px 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .command button {
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      border: 1px solid #808b96;
+      border-radius: 7px;
+      background: #f8f9f9;
+      color: #17202a;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 7px 10px;
+    }
+    .warning {
+      border-radius: 10px;
+      background: var(--warning);
+      color: var(--warning-text);
+      font-weight: 650;
+      margin-top: 18px;
+      padding: 14px 16px;
+    }
+    footer { color: var(--muted); font-size: .86rem; margin-top: 24px; text-align: center; }
+    a { color: var(--accent); font-weight: 700; }
+    .guide-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 0 0 22px;
+    }
+    .guide-nav a {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      text-decoration: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111416;
+        --card: #1d2327;
+        --text: #f2f3f4;
+        --muted: #bdc3c7;
+        --border: #424949;
+      }
+    }
+    @media print {
+      body { background: white; color: black; font-size: 12pt; }
+      main { margin: 0; width: 100%; }
+      .step { break-inside: avoid; box-shadow: none; }
+      .command button { display: none; }
+      pre { background: #eee; color: black; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="guide-nav" aria-label="Workflow navigation"><a href="index.html">Workflow Index</a><a href="../FINISH_DAY.html">Finish Day</a></nav>
+<h1>Protect the Application Owner Boundary on GitHub</h1>
+<p>This is a one-time repository-owner setup for <code>amballin/R5-Quick-Reference</code>. Repeat the verification after changing collaborators, GitHub plans, repository visibility, or repository rules.</p>
+<p>The tracked <code>.github/CODEOWNERS</code> file assigns the protected application profile catalog to <code>@amballin</code>. It covers the ownership file itself, <code>00 Master/profile_catalog_policy.yaml</code>, <code>00 Master/profile_lens_guidance.yaml</code>, and everything under <code>10 Profiles/</code>.</p>
+<p>CODEOWNERS provides review routing. It does not block a direct push by itself. The active GitHub ruleset is the remote enforcement boundary.</p>
+<section class="step"><h2>When to activate this</h2>
+<p>Complete the current Step 7D source commit and integrate it into <code>main</code> first. GitHub uses the CODEOWNERS file from the pull request&#x27;s base branch, so the ownership rules must exist on <code>main</code> before they can govern later contributions.</p>
+</section>
+<section class="step"><h2>Create the main-owner ruleset</h2>
+<ol>
+<li>Open the GitHub repository, choose <strong>Settings</strong>, then under <strong>Code and automation</strong> choose <strong>Rules</strong> → <strong>Rulesets</strong>.</li>
+<li>Create a new <strong>Branch ruleset</strong> named <code>Application owner main protection</code> and set it to <strong>Active</strong>.</li>
+<li>Target the default branch, <code>main</code>.</li>
+<li>In <strong>Bypass list</strong>, add only <strong>Repository admins</strong> with <strong>Always allow</strong>. For this personal-account repository, <code>@amballin</code> is the single repository owner and therefore the sole administrator. Do not add Write, Maintain, collaborators, apps, or any other role.</li>
+<li>Enable <strong>Restrict updates</strong>, <strong>Restrict deletions</strong>, and <strong>Block force pushes</strong>.</li>
+<li>Enable <strong>Require a pull request before merging</strong> for contributors who are not the bypass owner.</li>
+<li>Require one approval, enable <strong>Dismiss stale pull request approvals when new commits are pushed</strong>, and enable <strong>Require review from Code Owners</strong>.</li>
+<li>Do not require a status check until this repository has a dedicated source-validation check that reports to GitHub. The existing Pages workflow validates published <code>docs/</code>; it is not a substitute for source validation.</li>
+<li>Save the ruleset, then reopen it and verify its status is <strong>Active</strong>, its target is <code>main</code>, and <strong>Repository admins</strong> is the only bypass actor.</li>
+</ol>
+<p>This arrangement preserves the existing Profile Editor <strong>Integrate Branch</strong> workflow for the owner: its direct <code>main</code> push is allowed through the <strong>Repository admins</strong> bypass. In a personal-account repository there is one owner with full control; ordinary collaborators have write access but are not repository administrators. Other contributors must use a pull request, and protected catalog changes require the CODEOWNERS review.</p>
+</section>
+<section class="step"><h2>Verify the protection</h2>
+<ul>
+<li>On <code>main</code>, open <code>.github/CODEOWNERS</code> and confirm GitHub shows no syntax errors and identifies <code>@amballin</code> as owner.</li>
+<li>In <strong>Settings</strong> → <strong>Rules</strong> → <strong>Rulesets</strong>, confirm <code>Application owner main protection</code> is Active and targets <code>main</code>.</li>
+<li>In the repository access list, confirm <code>@amballin</code> remains the personal repository owner. If the repository is ever transferred to an organization, stop and redesign the bypass boundary before relying on this setup.</li>
+<li>Use GitHub&#x27;s rules view for <code>main</code> to confirm the ruleset applies.</li>
+<li>When the first contributor pull request changes a protected catalog file, confirm GitHub requests <code>@amballin</code> and blocks merging until that review is approved.</li>
+<li>Do not treat the local Profile Editor checkbox, Git author name, commit email, or a clean validation result as proof of GitHub identity.</li>
+</ul>
+</section>
+<section class="step"><h2>Recovery</h2>
+<p>If the ruleset unexpectedly blocks the owner&#x27;s reviewed Profile Editor push, do not weaken or delete the rules. Confirm the signed-in GitHub account is <code>@amballin</code>, confirm <code>@amballin</code> is still the personal repository owner, confirm <strong>Repository admins</strong> is the sole Always-allow bypass actor, and confirm the Git remote still points to <code>amballin/R5-Quick-Reference</code>. Correct the exact mismatch, then retry the existing reviewed integration.</p>
+<p>GitHub references: <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">About code owners</a>, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository">Creating rulesets</a>, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets">Available rules</a>, and <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/permission-levels-for-a-personal-account-repository">Permission levels for a personal-account repository</a>.</p>
+</section>
+    <footer>Generated from WORKFLOWS/application-owner-protection.md. Local project guidance; never published.</footer>
+  </main>
+  <script>
+    for (const button of document.querySelectorAll(".command button")) {
+      button.addEventListener("click", async () => {
+        const command = button.nextElementSibling.innerText;
+        await navigator.clipboard.writeText(command);
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+      });
+    }
+  </script>
+</body>
+</html>

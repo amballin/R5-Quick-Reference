@@ -194,6 +194,7 @@ EXTERNAL_PACK_EDITOR_ENDPOINTS = {
 EDITOR_BUILD_FILES = (
     "00 Master/application_version.yaml",
     "00 Master/feature_interactions.yaml",
+    "00 Master/profile_catalog_policy.yaml",
     "00 Master/profile_lens_guidance.yaml",
     "80 Build/application_version.py",
     "80 Build/asset_manager.py",
@@ -2907,6 +2908,17 @@ class ProfileEditorModel:
         finally:
             self._build_lock.release()
 
+    def approve_branch_catalog_changes(self, review_token, confirmed):
+        if not self._build_lock.acquire(blocking=False):
+            raise PrototypeError("Another build or guarded Git action is already running.")
+        try:
+            try:
+                return self.branch_integration_workflow.approve_catalog_changes(review_token, confirmed)
+            except BranchIntegrationError as exc:
+                raise PrototypeError(str(exc)) from exc
+        finally:
+            self._build_lock.release()
+
     def push_integrated_main(self, confirmed):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("Another build or guarded Git action is already running.")
@@ -4770,6 +4782,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/finish-day-push",
             "/api/branch-integration-status",
             "/api/branch-integration-prepare",
+            "/api/branch-integration-approve-catalog",
             "/api/branch-integration-merge-main",
             "/api/branch-integration-push-main",
             "/api/branch-integration-resync",
@@ -4807,6 +4820,7 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/finish-day-push",
             "/api/branch-integration-status",
             "/api/branch-integration-prepare",
+            "/api/branch-integration-approve-catalog",
             "/api/branch-integration-merge-main",
             "/api/branch-integration-push-main",
             "/api/branch-integration-resync",
@@ -5040,6 +5054,12 @@ class EditorHandler(BaseHTTPRequestHandler):
                         payload.get("pendingChanges"),
                         payload.get("confirmPrepare"),
                         payload.get("confirmSpreadsheetRefresh"),
+                    )
+                )
+            if parsed.path == "/api/branch-integration-approve-catalog":
+                return self._json(
+                    self.model.approve_branch_catalog_changes(
+                        payload.get("reviewToken"), payload.get("confirmCatalogOwner")
                     )
                 )
             if parsed.path == "/api/branch-integration-merge-main":

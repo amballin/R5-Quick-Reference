@@ -1141,6 +1141,44 @@ Store independent profile packs as sibling roots rather than nesting one pack in
 
 New-pack review rejects a destination below any ancestor containing `profile-pack.yaml`, including an unremembered pack, and directs the owner to a sibling folder. Pack resolution and selection reject any root containing another profile-pack manifest. The owner-approved cleanup moved the uncommitted Test 7A pack out of the synchronized real private pack, preserved its files and Git metadata, updated its machine-local remembered location, retained the real pack as active, and validated both packs successfully.
 
+## Owner-Controlled Application Profile Catalog Architecture — Step 7D Task 1
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Treat all embedded `10 Profiles/*.yaml` declarations in the owner application fork as the protected application profile catalog. Protect matching embedded lens-guidance entries with their immutable profile identities. This boundary covers required starters, optional subject profiles, and permanent reference cards while leaving external-pack copies independently editable.
+
+Do not infer owner approval from Git author or committer metadata, names, email addresses, local account names, or general merge approval. A future inbound-upstream implementation must stop when a protected path, identity, or matching guidance entry changes and require a separate exact owner review bound to the candidate and both source heads. Rejection or a concurrent change leaves the owner fork unchanged.
+
+Hosted repository permissions and protected-branch rules remain the true remote identity control. `CODEOWNERS` can add review routing but is not enforcement without a corresponding hosting rule. This architecture task defines the boundary only; it does not yet change runtime behavior, integration, GitHub configuration, or private-pack update semantics.
+
+## Machine-Readable Application Profile Catalog Boundary — Step 7D Task 2
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Record the owner-controlled embedded catalog in `00 Master/profile_catalog_policy.yaml` with an explicit schema version, the exact protected profile filenames, and each profile's immutable `card_id`. The same policy declares itself, the embedded `10 Profiles` directory, and `00 Master/profile_lens_guidance.yaml` as protected application-fork sources.
+
+Run the catalog-policy validator in ordinary source and full validation. Reject missing, extra, nested, moved, duplicate, or identity-mismatched catalog files, changed protected-source declarations, and lens-guidance identities outside the protected catalog. This machine-readable boundary classifies what requires owner review; it does not infer owner authority, implement inbound integration, or alter an external profile pack.
+
+## Protected Catalog Branch-Integration Gate — Step 7D Task 3
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Apply the machine-readable catalog boundary to the existing branch-to-`origin/main` integration workflow. Classify protected changes using canonical fallback paths plus both the current-main and candidate policies so changing or renaming the policy cannot evade review. Present the exact protected statuses and YAML diff after isolated validation.
+
+Require a separate application-owner confirmation for the exact candidate commit and tree and the exact reviewed main and working-branch heads before the ordinary local-main merge confirmation can proceed. Any reviewed ref, worktree, candidate commit, or candidate tree change invalidates the approval. This local role assertion adds a deliberate owner gate but does not replace hosted permissions or prove remote account identity. It does not add or configure a separate shared-upstream remote.
+
+## GitHub Application-Owner Routing Contract — Step 7D Task 4
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Track an exact `.github/CODEOWNERS` boundary assigning `.github`, the application profile catalog policy, embedded profile lens guidance, and the complete embedded `10 Profiles` directory to `@amballin`. Validate the complete active rule list so a removed assignment, different owner, later override, or broader rule cannot pass unnoticed.
+
+Treat CODEOWNERS as review routing, not access control. After these files reach `main`, separately activate a GitHub `main` ruleset with only **Repository admins** as an always-allowed bypass actor, restricted updates and deletion, blocked force pushes, and pull-request plus code-owner review requirements for everyone else. For this personal-account repository, `@amballin` is the single owner and therefore the sole administrator; transferring the repository or changing that ownership model requires redesigning the bypass boundary. Do not make hosted repository-setting changes from source validation, builds, or Profile Editor. Do not require a GitHub status check until the repository has a dedicated source-validation check.
+
 ## Phase 4 — User Experience
 
 **Status:** Proposed (non-binding)

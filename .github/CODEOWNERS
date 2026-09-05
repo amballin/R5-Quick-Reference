@@ -1,0 +1,5 @@
+# Application-owner boundary. Keep this file exact and owner-controlled.
+/.github/ @amballin
+/00\ Master/profile_catalog_policy.yaml @amballin
+/00\ Master/profile_lens_guidance.yaml @amballin
+/10\ Profiles/ @amballin

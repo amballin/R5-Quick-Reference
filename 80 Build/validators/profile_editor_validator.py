@@ -91,6 +91,9 @@ def validate(root):
         }
         if creation_endpoints & EXTERNAL_PACK_EDITOR_ENDPOINTS:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profile-pack creation must remain an embedded-source workflow."))
+        catalog_integration_endpoint = "/api/branch-integration-approve-catalog"
+        if catalog_integration_endpoint in EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Application catalog integration approval must remain unavailable to external-pack sessions."))
         pack_git_endpoints = {
             "/api/profile-pack-git-status",
             "/api/profile-pack-git-commit-reviews",
@@ -190,6 +193,12 @@ def validate(root):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7C catalog and streamlined safety controls are incomplete."))
         if not all(f'request("{endpoint}"' in script for endpoint in profile_starter_endpoints):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 7B guarded official-profile client flow is incomplete."))
+        if not (
+            'id="branch-catalog-owner-review"' in html
+            and 'id="branch-catalog-protected-diff-content"' in html
+            and 'request("/api/branch-integration-approve-catalog"' in script
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7D protected catalog integration approval is incomplete."))
         if ".review-confirmation input[type=\"checkbox\"]" not in styles:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "styles.css", "Reviewed dialog confirmations must retain compact checkbox sizing."))
         if not (

@@ -111,6 +111,7 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
         self.assertEqual(self.remote_ref("main"), self.initial_main)
         self.assertTrue(any("source.txt" in line for line in prepared["files"]))
         self.assertFalse(any("docs/" in line for line in prepared["files"]))
+        self.assertFalse(prepared["catalogReviewRequired"])
 
         merged = self.workflow.merge_main(prepared["reviewToken"], True)
         self.assertEqual(merged["phase"], "push-main")
@@ -130,6 +131,123 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
         self.assertEqual(self.remote_ref("codex/integration-test"), integrated_main)
         self.assertEqual(self.git("rev-parse", "HEAD"), integrated_main)
         self.assertEqual((self.root / "docs" / "site.txt").read_text(encoding="utf-8"), "published main\n")
+
+    def test_protected_catalog_changes_require_separate_exact_owner_approval(self):
+        profiles = self.root / "10 Profiles"
+        master = self.root / "00 Master"
+        profiles.mkdir()
+        master.mkdir()
+        (profiles / "Catalog Test.yaml").write_text(
+            "card_id: 00000000-0000-0000-0000-000000000001\ntitle: Catalog Test\n",
+            encoding="utf-8",
+        )
+        (master / "profile_lens_guidance.yaml").write_text("profiles: []\n", encoding="utf-8")
+        (master / "profile_catalog_policy.yaml").write_text(
+            "schema_version: 1\n"
+            "protected_sources:\n"
+            "  policy: 00 Master/profile_catalog_policy.yaml\n"
+            "  profile_directory: 10 Profiles\n"
+            "  lens_guidance: 00 Master/profile_lens_guidance.yaml\n",
+            encoding="utf-8",
+        )
+        subprocess.run(
+            ["git", "add", "10 Profiles", "00 Master/profile_lens_guidance.yaml", "00 Master/profile_catalog_policy.yaml"],
+            cwd=self.root,
+            check=True,
+        )
+        subprocess.run(["git", "commit", "-m", "Change protected catalog"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+
+        prepared = self.workflow.prepare(0, True)
+        self.assertTrue(prepared["catalogReviewRequired"])
+        self.assertFalse(prepared["catalogOwnerApproved"])
+        self.assertTrue(any("10 Profiles/Catalog Test.yaml" in line for line in prepared["protectedFiles"]))
+        self.assertTrue(any("profile_catalog_policy.yaml" in line for line in prepared["protectedFiles"]))
+        self.assertTrue(any("profile_lens_guidance.yaml" in line for line in prepared["protectedFiles"]))
+        self.assertIn("+card_id: 00000000-0000-0000-0000-000000000001", prepared["protectedDiff"])
+        self.assertEqual(self.remote_ref("main"), self.initial_main)
+
+        with self.assertRaisesRegex(BranchIntegrationError, "separate owner approval"):
+            self.workflow.merge_main(prepared["reviewToken"], True)
+        with self.assertRaisesRegex(BranchIntegrationError, "requires confirmation"):
+            self.workflow.approve_catalog_changes(prepared["reviewToken"], False)
+
+        approved = self.workflow.approve_catalog_changes(prepared["reviewToken"], True)
+        self.assertTrue(approved["catalogOwnerApproved"])
+        self.assertEqual(approved["candidateCommit"], prepared["candidateCommit"])
+        self.assertEqual(approved["candidateTree"], prepared["candidateTree"])
+        self.assertEqual(self.remote_ref("main"), self.initial_main)
+
+        merged = self.workflow.merge_main(approved["reviewToken"], True)
+        self.assertEqual(merged["phase"], "push-main")
+        self.assertEqual(self.remote_ref("main"), self.initial_main)
+
+    def test_catalog_owner_approval_expires_when_reviewed_branch_moves(self):
+        profiles = self.root / "10 Profiles"
+        profiles.mkdir()
+        (profiles / "Catalog Test.yaml").write_text("card_id: test\n", encoding="utf-8")
+        subprocess.run(["git", "add", "10 Profiles/Catalog Test.yaml"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-m", "Change protected catalog"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+        prepared = self.workflow.prepare(0, True)
+        self.workflow.approve_catalog_changes(prepared["reviewToken"], True)
+
+        (self.root / "source.txt").write_text("changed after owner review\n", encoding="utf-8")
+        subprocess.run(["git", "add", "source.txt"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-m", "Move reviewed branch"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+        with self.assertRaisesRegex(BranchIntegrationError, "remote branch changed"):
+            self.workflow.merge_main(prepared["reviewToken"], True)
+        self.assertEqual(self.remote_ref("main"), self.initial_main)
+
+    def test_catalog_rename_reviews_both_old_and_new_paths(self):
+        original = self.main_worktree / "10 Profiles" / "Original.yaml"
+        original.parent.mkdir()
+        original.write_text("card_id: original\n", encoding="utf-8")
+        subprocess.run(["git", "add", "10 Profiles/Original.yaml"], cwd=self.main_worktree, check=True)
+        subprocess.run(["git", "commit", "-m", "Add main catalog profile"], cwd=self.main_worktree, check=True, capture_output=True)
+        subprocess.run(["git", "push", "origin", "main:main"], cwd=self.main_worktree, check=True, capture_output=True)
+        reviewed_main = self.remote_ref("main")
+
+        subprocess.run(["git", "fetch", "origin"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(["git", "merge", "--no-edit", "origin/main"], cwd=self.root, check=True, capture_output=True)
+        moved = self.root / "Moved Catalog"
+        moved.mkdir()
+        subprocess.run(
+            ["git", "mv", "10 Profiles/Original.yaml", "Moved Catalog/Original.yaml"],
+            cwd=self.root,
+            check=True,
+        )
+        subprocess.run(["git", "commit", "-m", "Move catalog profile"], cwd=self.root, check=True, capture_output=True)
+        subprocess.run(
+            ["git", "push", "origin", "HEAD:refs/heads/codex/integration-test"],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+
+        prepared = self.workflow.prepare(0, True)
+        protected = "\n".join(prepared["protectedFiles"])
+        self.assertIn("10 Profiles/Original.yaml", protected)
+        self.assertIn("Moved Catalog/Original.yaml", protected)
+        self.assertIn("10 Profiles/Original.yaml", prepared["protectedDiff"])
+        self.assertIn("Moved Catalog/Original.yaml", prepared["protectedDiff"])
+        self.assertEqual(self.remote_ref("main"), reviewed_main)
 
     def test_conflict_stops_without_changing_either_branch(self):
         other = Path(self.temporary.name) / "main-edit"

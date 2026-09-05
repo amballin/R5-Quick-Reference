@@ -11,6 +11,8 @@ import subprocess
 import sys
 import tempfile
 
+import yaml
+
 from app_wrappers import refresh_app_wrappers
 from asset_manager import ProjectPaths
 from numbers_automation import numbers_resume_recovery
@@ -40,9 +42,22 @@ APP_RUNTIME_FILES = {
     "requirements.txt",
 }
 
+CATALOG_POLICY_PATH = "00 Master/profile_catalog_policy.yaml"
+CATALOG_FALLBACK_FILES = {
+    CATALOG_POLICY_PATH,
+    "00 Master/profile_lens_guidance.yaml",
+}
+CATALOG_FALLBACK_PREFIXES = ("10 Profiles/",)
+
 
 def _changed_path(status_line):
     return str(status_line or "").split("\t")[-1].strip()
+
+
+def _changed_paths(status_line):
+    """Return both sides of a rename/copy and the single path of other changes."""
+    fields = str(status_line or "").split("\t")
+    return tuple(path.strip() for path in fields[1:] if path.strip())
 
 
 def app_restart_required(files):
@@ -141,6 +156,95 @@ class BranchIntegrationWorkflow:
             raise BranchIntegrationError(f"{branch_ref} does not exist.")
         return self._git("rev-parse", "origin/main"), self._git("rev-parse", branch_ref)
 
+    def _catalog_boundary(self, refs, *, cwd):
+        """Use canonical fallbacks plus both reviewed revisions to prevent policy evasion."""
+        exact = set(CATALOG_FALLBACK_FILES)
+        prefixes = set(CATALOG_FALLBACK_PREFIXES)
+        for ref in refs:
+            completed = self._run(
+                ["git", "show", f"{ref}:{CATALOG_POLICY_PATH}"],
+                cwd=cwd,
+                timeout=3 * 60,
+            )
+            if completed.returncode:
+                continue
+            try:
+                policy = yaml.safe_load(completed.stdout) or {}
+            except yaml.YAMLError:
+                continue
+            sources = policy.get("protected_sources") if isinstance(policy, dict) else None
+            if not isinstance(sources, dict):
+                continue
+            for key in ("policy", "lens_guidance"):
+                path = sources.get(key)
+                if isinstance(path, str) and path and not Path(path).is_absolute() and ".." not in Path(path).parts:
+                    exact.add(Path(path).as_posix())
+            directory = sources.get("profile_directory")
+            if isinstance(directory, str) and directory and not Path(directory).is_absolute() and ".." not in Path(directory).parts:
+                prefixes.add(Path(directory).as_posix().rstrip("/") + "/")
+        return exact, prefixes
+
+    def _catalog_review(self, main_ref, candidate_ref, files, *, cwd):
+        exact, prefixes = self._catalog_boundary((main_ref, candidate_ref), cwd=cwd)
+        protected_lines = []
+        protected_paths = set()
+        for line in files:
+            paths = _changed_paths(line)
+            matching = {
+                path
+                for path in paths
+                if path in exact or any(path.startswith(prefix) for prefix in prefixes)
+            }
+            if matching:
+                protected_lines.append(line)
+                protected_paths.update(paths)
+        diff = ""
+        if protected_paths:
+            diff = self._git(
+                "diff",
+                "--no-ext-diff",
+                "--unified=3",
+                f"{main_ref}..{candidate_ref}",
+                "--",
+                *sorted(protected_paths),
+                cwd=cwd,
+            )
+        return {
+            "catalogReviewRequired": bool(protected_lines),
+            "catalogOwnerApproved": False,
+            "protectedFiles": protected_lines,
+            "protectedDiff": diff,
+        }
+
+    @staticmethod
+    def _prepared_review_fields(prepared):
+        return {
+            "reviewToken": prepared["token"],
+            "candidateCommit": prepared["candidateCommit"],
+            "candidateTree": prepared["candidateTree"],
+            "catalogReviewRequired": prepared.get("catalogReviewRequired", False),
+            "catalogOwnerApproved": prepared.get("catalogOwnerApproved", False),
+            "protectedFiles": list(prepared.get("protectedFiles", [])),
+            "protectedDiff": prepared.get("protectedDiff", ""),
+        }
+
+    def _verify_prepared_candidate(self, prepared, *, refresh):
+        if refresh:
+            self._fetch()
+        main_sha, branch_sha = self._remote_state(prepared["branch"])
+        if main_sha != prepared["mainCommit"] or branch_sha != prepared["branchCommit"]:
+            raise BranchIntegrationError("A remote branch changed after review. Prepare the integration again.")
+        if self._git("rev-parse", "HEAD") != branch_sha or self._clean_status():
+            raise BranchIntegrationError("The working branch changed after review. Prepare the integration again.")
+        worktree = Path(prepared["worktree"])
+        if not worktree.is_dir():
+            raise BranchIntegrationError("The isolated integration candidate is no longer available. Prepare it again.")
+        if (
+            self._git("rev-parse", "HEAD", cwd=worktree) != prepared["candidateCommit"]
+            or self._git("rev-parse", "HEAD^{tree}", cwd=worktree) != prepared["candidateTree"]
+        ):
+            raise BranchIntegrationError("The isolated integration candidate changed after review. Prepare it again.")
+
     def inspect(self, pending_changes=0, *, refresh=True):
         pending = self._pending_count(pending_changes)
         branch, upstream = self._branch_info()
@@ -225,13 +329,7 @@ class BranchIntegrationWorkflow:
             "output": "\n\n".join(output_parts),
         }
         if phase == "merge-main" and self._prepared:
-            result.update(
-                {
-                    "reviewToken": self._prepared["token"],
-                    "candidateCommit": self._prepared["candidateCommit"],
-                    "candidateTree": self._prepared["candidateTree"],
-                }
-            )
+            result.update(self._prepared_review_fields(self._prepared))
         return result
 
     def _add_worktree(self, start_point, *, branch=None):
@@ -413,6 +511,12 @@ class BranchIntegrationWorkflow:
             if any(line.split("\t")[-1] == "docs" or line.split("\t")[-1].startswith("docs/") for line in files):
                 raise BranchIntegrationError("The reviewed integration candidate contains docs/ changes and was rejected.")
             token = secrets.token_urlsafe(24)
+            catalog_review = self._catalog_review(
+                state["mainCommit"],
+                candidate,
+                files,
+                cwd=worktree,
+            )
             self._prepared = {
                 "token": token,
                 "branch": state["branch"],
@@ -423,14 +527,13 @@ class BranchIntegrationWorkflow:
                 "worktree": worktree,
                 "commits": list(state["commits"]),
                 "files": files,
+                **catalog_review,
             }
             return {
                 **state,
                 "phase": "merge-main",
-                "reviewToken": token,
-                "candidateCommit": candidate,
-                "candidateTree": tree,
                 "files": files,
+                **self._prepared_review_fields(self._prepared),
                 "steps": steps,
                 "output": "\n\n".join(
                     f"{step['label']} — passed\n{step['output'] or '(no output)'}" for step in steps
@@ -440,6 +543,26 @@ class BranchIntegrationWorkflow:
             if not self._prepared or self._prepared.get("worktree") != worktree:
                 self._remove_worktree(worktree)
             raise
+
+    def approve_catalog_changes(self, review_token, confirmed):
+        if confirmed is not True:
+            raise BranchIntegrationError("Protected catalog owner approval requires confirmation.")
+        prepared = self._prepared
+        if not prepared or not secrets.compare_digest(str(review_token or ""), prepared["token"]):
+            raise BranchIntegrationError("Integration review expired. Prepare and review the candidate again.")
+        if not prepared.get("catalogReviewRequired"):
+            raise BranchIntegrationError("This integration candidate has no protected catalog changes to approve.")
+        self._verify_prepared_candidate(prepared, refresh=False)
+        prepared["catalogOwnerApproved"] = True
+        return {
+            "phase": "merge-main",
+            "branch": prepared["branch"],
+            "target": "origin/main",
+            "commits": list(prepared["commits"]),
+            "files": list(prepared["files"]),
+            **self._prepared_review_fields(prepared),
+            "message": "Protected catalog changes are approved for this exact candidate. Local main is still unchanged.",
+        }
 
     def _main_worktree(self):
         records = self._git("worktree", "list", "--porcelain").splitlines()
@@ -457,12 +580,13 @@ class BranchIntegrationWorkflow:
         prepared = self._prepared
         if not prepared or not secrets.compare_digest(str(review_token or ""), prepared["token"]):
             raise BranchIntegrationError("Integration review expired. Prepare and review the candidate again.")
-        self._fetch()
-        main_sha, branch_sha = self._remote_state(prepared["branch"])
-        if main_sha != prepared["mainCommit"] or branch_sha != prepared["branchCommit"]:
-            raise BranchIntegrationError("A remote branch changed after review. Prepare the integration again.")
-        if self._git("rev-parse", "HEAD") != branch_sha or self._clean_status():
-            raise BranchIntegrationError("The working branch changed after review. Prepare the integration again.")
+        if prepared.get("catalogReviewRequired") and not prepared.get("catalogOwnerApproved"):
+            raise BranchIntegrationError(
+                "Protected application catalog changes require separate owner approval before local main can change."
+            )
+        self._verify_prepared_candidate(prepared, refresh=True)
+        main_sha = prepared["mainCommit"]
+        branch_sha = prepared["branchCommit"]
         main_worktree, temporary = self._main_worktree()
         try:
             if self._clean_status(cwd=main_worktree):

@@ -133,8 +133,8 @@ The existing `finish-day.sh` command remains available and uses the same underly
 After Finish Day reports a clean synchronized non-main branch, open **Integrate Branch**. This is optional; finishing the day does not require integration.
 
 1. **Check** refreshes `origin`, confirms the current branch tracks its exact same-named upstream, and requires no local or browser changes.
-2. **Review** starts the same reconnectable in-page command progress, creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file.
-3. **Merge Main** requires confirmation and applies the exact validated tree to a clean local `main`. Nothing is pushed.
+2. **Review** starts the same reconnectable in-page command progress, creates a disposable worktree from current `origin/main`, attempts the merge there, rejects conflicts and `docs/` changes, runs source validation, the development build, and full validation, restores generated website files, and displays every proposed commit and file. If the protected application profile catalog, its policy, or its lens guidance changes, review the separate exact protected YAML diff and explicitly approve it as the application owner.
+3. **Merge Main** requires confirmation and applies the exact validated tree to a clean local `main`. A protected catalog candidate remains blocked until its separate owner approval is bound to that exact candidate and the same reviewed heads. Nothing is pushed.
 4. **Push Main** requires a separate confirmation and updates `origin/main`. It does not call the publisher, change website version metadata, or create a release.
 5. **Resync** requires another confirmation, fast-forwards the working branch to the integrated main commit, and pushes only its exact same-named `origin` branch. It then checks the persistent Main project's installed Profile Editor and Camera Lab wrappers and rebuilds only a missing or stale wrapper. It never rebases or rewrites shared history.
 

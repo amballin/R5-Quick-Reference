@@ -31,6 +31,17 @@ The shared application owns reusable behavior and camera-independent or Canon-gr
 
 An owner's application fork may retain owner-specific release notes, project branding, and publication metadata. Those sources belong to the fork and are not supplied by the private pack merely because the fork can receive shared application updates.
 
+### Owner-controlled application profile catalog
+
+- In the owner application fork, every embedded YAML declaration directly under `10 Profiles/` is a protected catalog item, including required C1–C3 starters, optional subject profiles, and permanent reference cards. The protected boundary is path- and immutable-card-ID-based; mutable titles do not determine membership.
+- Entries in the embedded `00 Master/profile_lens_guidance.yaml` whose `card_id` matches a protected catalog item are protected catalog accompaniment. The catalog boundary does not include the owner's external pack copy, its pack-owned lens guidance, or its operational baseline.
+- The **application owner** is the role controlling the owner fork's acceptance, release, and publication authority. Git commit author, committer name, email address, operating-system account name, and a textual claim of ownership are not proof of owner approval and must not bypass a guarded review.
+- An inbound shared-upstream workflow must compare the proposed tree with the current owner-fork tree before integration. If any protected profile path, protected immutable card identity, or matching lens-guidance entry changes, appears, disappears, or moves, the ordinary application-update path stops before merge or source mutation.
+- The stopped review identifies the exact protected files and card IDs, distinguishes profile changes from matching lens-guidance changes, presents the exact diff, and requires a separate explicit owner confirmation dedicated to the catalog change. Approval of general application files, a branch merge, a commit, or a push does not substitute for this catalog approval.
+- Catalog review may accept or reject only the exact reviewed candidate. Any intervening source, branch-head, upstream-head, catalog inventory, or diff change expires the review. Rejection leaves the owner fork unchanged.
+- Application catalog approval does not update an external pack automatically. **Add Profiles from Catalog** remains an explicit add-only copy of a currently approved catalog item. Any future workflow for updating an already-present pack profile requires separate architecture, conflict handling, exact review, backup, validation, and approval.
+- Remote repository access control and protected-branch rules are the authoritative control over who can update the hosted owner fork. A future `CODEOWNERS` rule may provide defense in depth but is not enforcement unless the hosting rules require its approval. Local safeguards cannot protect against someone who already controls the owner's operating-system account, filesystem, or repository credentials.
+
 ### Private profile-pack source
 
 The private pack owns:

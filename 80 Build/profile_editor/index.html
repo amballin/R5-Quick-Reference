@@ -722,7 +722,7 @@
         <div>
           <p class="eyebrow">Occasional guarded Git workflow</p>
           <h2>Integrate Branch</h2>
-          <p class="muted">Review a clean synchronized working branch, validate its exact result with current <code>main</code>, then separately approve the local merge, main push, and branch resynchronization. This never publishes the website.</p>
+          <p class="muted">Review a clean synchronized working branch, validate its exact result with current <code>main</code>, separately approve any protected application-catalog changes, then approve the local merge, main push, and branch resynchronization. This never publishes the website.</p>
         </div>
         <div class="finish-day-header-actions">
           <span id="branch-integration-branch" class="project-context-badge unknown">Checking branch…</span>
@@ -783,6 +783,19 @@
           </div>
           <label class="finish-day-field">Commits proposed for main<pre id="branch-integration-commit-list" class="finish-day-file-list" tabindex="0"></pre></label>
           <label class="finish-day-field">Files changed from current main<pre id="branch-integration-file-list" class="finish-day-file-list" tabindex="0"></pre></label>
+          <section id="branch-catalog-owner-review" class="workflow-recovery" hidden>
+            <p class="eyebrow">Separate application-owner approval</p>
+            <h4>Protected profile catalog changes detected</h4>
+            <p>The application catalog, its immutable profile identities, or its matching lens guidance would change. General merge approval is not enough.</p>
+            <label class="finish-day-field">Protected files in this candidate<pre id="branch-catalog-protected-files" class="finish-day-file-list" tabindex="0"></pre></label>
+            <details id="branch-catalog-protected-diff" class="workflow-details">
+              <summary>Review exact protected YAML diff</summary>
+              <pre id="branch-catalog-protected-diff-content" tabindex="0"></pre>
+            </details>
+            <p id="branch-catalog-owner-status" class="muted"></p>
+            <label class="finish-day-confirm"><input id="branch-catalog-confirm-owner" type="checkbox"><span>I am the application owner and approve exactly the protected catalog changes and source revisions shown above.</span></label>
+            <button id="approve-branch-catalog" class="primary" type="button" disabled>Approve protected catalog changes</button>
+          </section>
           <label class="finish-day-confirm"><input id="branch-integration-confirm-merge" type="checkbox"><span>Apply exactly this validated tree to local <code>main</code>. Nothing will be pushed or published.</span></label>
           <button id="merge-branch-to-main" class="save-action" type="button" disabled>Merge into local main</button>
         </section>

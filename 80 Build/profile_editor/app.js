@@ -187,6 +187,13 @@ const elements = {
   branchIntegrationCommitList: document.querySelector("#branch-integration-commit-list"),
   branchIntegrationFileCount: document.querySelector("#branch-integration-file-count"),
   branchIntegrationFileList: document.querySelector("#branch-integration-file-list"),
+  branchCatalogOwnerReview: document.querySelector("#branch-catalog-owner-review"),
+  branchCatalogProtectedFiles: document.querySelector("#branch-catalog-protected-files"),
+  branchCatalogProtectedDiff: document.querySelector("#branch-catalog-protected-diff"),
+  branchCatalogProtectedDiffContent: document.querySelector("#branch-catalog-protected-diff-content"),
+  branchCatalogOwnerStatus: document.querySelector("#branch-catalog-owner-status"),
+  branchCatalogConfirmOwner: document.querySelector("#branch-catalog-confirm-owner"),
+  approveBranchCatalog: document.querySelector("#approve-branch-catalog"),
   branchIntegrationConfirmMerge: document.querySelector("#branch-integration-confirm-merge"),
   mergeBranchToMain: document.querySelector("#merge-branch-to-main"),
   branchIntegrationPushPanel: document.querySelector("#branch-integration-push-panel"),
@@ -1650,14 +1657,31 @@ function renderBranchIntegration() {
   elements.branchIntegrationAppStatus.classList.toggle("error", appRefresh?.status === "failed");
   const commits = result?.commits || [];
   const files = result?.files || [];
+  const catalogReviewRequired = result?.catalogReviewRequired === true;
+  const catalogOwnerApproved = result?.catalogOwnerApproved === true;
+  const protectedFiles = result?.protectedFiles || [];
   elements.branchIntegrationCommitList.textContent = commits.join("\n") || "No commits are waiting for integration.";
   elements.branchIntegrationFileCount.textContent = `${files.length} ${files.length === 1 ? "file" : "files"}`;
   elements.branchIntegrationFileList.textContent = files.join("\n") || "No files differ from current main.";
+  elements.branchCatalogOwnerReview.hidden = phase !== "merge-main" || !catalogReviewRequired;
+  elements.branchCatalogProtectedFiles.textContent = protectedFiles.join("\n") || "No protected catalog files changed.";
+  elements.branchCatalogProtectedDiffContent.textContent = result?.protectedDiff || "No textual protected diff is available.";
+  elements.branchCatalogProtectedDiff.open = catalogReviewRequired && !catalogOwnerApproved;
+  elements.branchCatalogOwnerStatus.textContent = catalogOwnerApproved
+    ? "Owner approval is recorded for this exact candidate and both reviewed source heads."
+    : "Local main cannot change until this separate owner approval is completed.";
+  elements.branchCatalogConfirmOwner.disabled = catalogOwnerApproved;
+  elements.approveBranchCatalog.disabled = state.branchIntegrationBusy
+    || catalogOwnerApproved
+    || !elements.branchCatalogConfirmOwner.checked
+    || !state.branchIntegrationReviewToken;
   elements.refreshBranchIntegration.disabled = state.branchIntegrationBusy;
   elements.prepareBranchIntegration.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmPrepare.checked;
+  elements.branchIntegrationConfirmMerge.disabled = catalogReviewRequired && !catalogOwnerApproved;
   elements.mergeBranchToMain.disabled = state.branchIntegrationBusy
     || !elements.branchIntegrationConfirmMerge.checked
-    || !state.branchIntegrationReviewToken;
+    || !state.branchIntegrationReviewToken
+    || (catalogReviewRequired && !catalogOwnerApproved);
   elements.pushIntegratedMain.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmPush.checked;
   elements.resyncIntegratedBranch.disabled = state.branchIntegrationBusy || !elements.branchIntegrationConfirmResync.checked;
 }
@@ -1765,6 +1789,32 @@ async function mergeBranchToMain() {
     state.branchIntegrationReviewToken = null;
     elements.branchIntegrationConfirmMerge.checked = false;
     showBranchIntegrationMessage(result.message || "Local main updated. Push remains a separate approval.");
+  } catch (error) {
+    state.branchIntegrationReviewToken = null;
+    showBranchIntegrationMessage(error.message, true);
+  } finally {
+    state.branchIntegrationBusy = false;
+    renderBranchIntegration();
+  }
+}
+
+async function approveBranchCatalogChanges() {
+  state.branchIntegrationBusy = true;
+  showBranchIntegrationMessage("Verifying the exact protected catalog candidate and both reviewed branch heads.");
+  renderBranchIntegration();
+  try {
+    const result = await request("/api/branch-integration-approve-catalog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reviewToken: state.branchIntegrationReviewToken,
+        confirmCatalogOwner: true,
+      }),
+    });
+    state.branchIntegration = result;
+    state.branchIntegrationReviewToken = result.reviewToken || null;
+    elements.branchCatalogConfirmOwner.checked = false;
+    showBranchIntegrationMessage(result.message || "Protected catalog changes approved for this exact candidate.");
   } catch (error) {
     state.branchIntegrationReviewToken = null;
     showBranchIntegrationMessage(error.message, true);
@@ -5650,6 +5700,8 @@ elements.integrationOpenReviewBuild.addEventListener("click", () => switchView("
 elements.integrationOpenFinishDay.addEventListener("click", () => switchView("finish-day"));
 elements.integrationConfirmSpreadsheet.addEventListener("change", renderBranchIntegration);
 elements.retryIntegrationSpreadsheet.addEventListener("click", () => prepareBranchIntegration(true));
+elements.branchCatalogConfirmOwner.addEventListener("change", renderBranchIntegration);
+elements.approveBranchCatalog.addEventListener("click", approveBranchCatalogChanges);
 elements.branchIntegrationConfirmMerge.addEventListener("change", renderBranchIntegration);
 elements.mergeBranchToMain.addEventListener("click", mergeBranchToMain);
 elements.branchIntegrationConfirmPush.addEventListener("change", renderBranchIntegration);
