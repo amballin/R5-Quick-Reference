@@ -253,6 +253,19 @@ class ProfilePackTests(unittest.TestCase):
         with self.assertRaisesRegex(ProfilePackError, "does not match its Git root"):
             resolve_profile_pack(self.application, nested)
 
+    def test_rejects_profile_pack_containing_another_manifest(self):
+        nested = self.pack / "Nested Pack"
+        nested.mkdir()
+        (nested / "profile-pack.yaml").write_text(
+            yaml.safe_dump(self._manifest(), sort_keys=False),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(
+            ProfilePackError,
+            "cannot contain another profile pack.*separate sibling folder",
+        ):
+            resolve_profile_pack(self.application, self.pack)
+
 
 if __name__ == "__main__":
     unittest.main()

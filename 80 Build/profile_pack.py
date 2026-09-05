@@ -282,6 +282,7 @@ def _load_external_profile_pack(application_root, explicit_root):
     if not manifest_path.is_file():
         raise ProfilePackError(f"Profile-pack manifest is missing: {manifest_path}")
     _require_contained_path(root, manifest_path, "manifest")
+    _require_no_nested_profile_packs(root, manifest_path)
     try:
         manifest = yaml.load(manifest_path.read_text(encoding="utf-8"), Loader=_UniqueKeyLoader)
     except ProfilePackError:
@@ -318,6 +319,17 @@ def _load_external_profile_pack(application_root, explicit_root):
         manifest=MappingProxyType(manifest),
         sources=MappingProxyType(sources),
     )
+
+
+def _require_no_nested_profile_packs(root, manifest_path):
+    for candidate in root.rglob(MANIFEST_FILENAME):
+        if candidate == manifest_path:
+            continue
+        relative = candidate.relative_to(root).as_posix()
+        raise ProfilePackError(
+            "A profile pack cannot contain another profile pack. "
+            f"Move {relative} to a separate sibling folder."
+        )
 
 
 def _validate_manifest(manifest):

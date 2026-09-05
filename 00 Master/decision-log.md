@@ -1123,6 +1123,24 @@ Allow an existing external pack to add one or more absent official application-c
 
 Defer lens-list maintenance to a later guarded design. Canon equipment knowledge remains application-owned; a private pack may eventually own its selected lenses, preferences, and notes without duplicating Canon's catalog facts.
 
+## Profile Catalog Naming and Acceptance — Step 7C
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Present the existing-pack addition workflow as **Add Profiles from Catalog**. This describes the source and action more clearly than the internal implementation term “profile starters,” especially for an established pack.
+
+Retain the Step 7B add-only safeguards and automated regression coverage without changing the manifest or profile schema. The project owner manually verified that a missing profile could be selected, reviewed, and added successfully before Step 7C began. Automated acceptance continues to verify the exact profile and lens-guidance additions, collision rejection, source binding, backup, validation, and rollback.
+
+## Independent Profile-Pack Root Containment — Step 7C
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Store independent profile packs as sibling roots rather than nesting one pack inside another. Nested packs make Git status, ownership, selection, backup, and manual tracing ambiguous even when the editor correctly resolves each exact manifest.
+
+New-pack review rejects a destination below any ancestor containing `profile-pack.yaml`, including an unremembered pack, and directs the owner to a sibling folder. Pack resolution and selection reject any root containing another profile-pack manifest. The owner-approved cleanup moved the uncommitted Test 7A pack out of the synchronized real private pack, preserved its files and Git metadata, updated its machine-local remembered location, retained the real pack as active, and validated both packs successfully.
+
 ## Phase 4 — User Experience
 
 **Status:** Proposed (non-binding)

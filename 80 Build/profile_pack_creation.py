@@ -22,6 +22,7 @@ from profile_pack import (
     EMBEDDED_SOURCE_PATHS,
     EXPECTED_CAMERA,
     MANIFEST_VERSION,
+    MANIFEST_FILENAME,
     PROFILE_PACK_CONTRACT,
     PROHIBITED_COMPONENT_PATTERNS,
     REQUIRED_STARTER_CARD_IDS,
@@ -328,6 +329,12 @@ end run
             raise ProfilePackCreationError(
                 "The private profile pack must be outside and separate from the application repository."
             )
+        for ancestor in (parent, *parent.parents):
+            if (ancestor / MANIFEST_FILENAME).is_file():
+                raise ProfilePackCreationError(
+                    "A profile pack cannot be stored inside another profile pack. "
+                    "Choose a separate sibling folder."
+                )
         for component in destination.parts:
             normalized = re.sub(r"[_-]+", " ", component).casefold().strip()
             if any(pattern.search(normalized) for pattern in PROHIBITED_COMPONENT_PATTERNS):

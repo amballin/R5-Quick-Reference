@@ -963,6 +963,8 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="profile-pack-git-panel"', html)
         self.assertIn('id="profile-starter-panel"', html)
         self.assertIn('id="profile-starter-dialog"', html)
+        self.assertIn("Add Profiles from Catalog", html)
+        self.assertNotIn("Add profile starters to this pack", html)
         self.assertIn("Profile Packs &amp; Sharing", html)
         self.assertIn("How the editor protects your work", html)
         self.assertLess(html.index('id="today-view"'), html.index('class="safety-note"'))

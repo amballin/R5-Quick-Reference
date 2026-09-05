@@ -152,10 +152,12 @@ class ProfilePackEditorTests(unittest.TestCase):
 
         options = self.model.profile_starter_options()
         self.assertIn("Macro", [item["title"] for item in options["available"]])
+        self.assertIn("application catalog", options["message"])
         with self.assertRaisesRegex(PrototypeError, "browser draft"):
             self.model.review_profile_starters([macro_id], 1)
         review = self.model.review_profile_starters([macro_id], 0)
         self.assertEqual(review["profiles"], ["Macro"])
+        self.assertIn("from the application catalog", review["summary"])
         self.assertIn("10 Profiles/Macro.yaml", review["sourceFiles"])
         self.assertIn("00 Master/profile_lens_guidance.yaml", review["sourceFiles"])
         self.assertIn("/dev/null", review["diff"])

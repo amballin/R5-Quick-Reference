@@ -176,6 +176,17 @@ class ProfilePackCreationTests(unittest.TestCase):
             self.creator.create(review["reviewToken"], False)
         self.assertFalse(self.destination.exists())
 
+    def test_creation_rejects_destination_inside_another_profile_pack(self):
+        existing_pack = self.base / "Existing Pack"
+        existing_pack.mkdir()
+        (existing_pack / "profile-pack.yaml").write_text("manifest_version: 1\n", encoding="utf-8")
+        nested = existing_pack / "Nested Pack"
+        with self.assertRaisesRegex(
+            ProfilePackCreationError,
+            "cannot be stored inside another profile pack.*sibling folder",
+        ):
+            self.review(destination=str(nested))
+
     def test_creation_rechecks_source_and_rolls_back_failed_validation(self):
         review = self.review()
         with mock.patch.object(self.creator, "_embedded_fingerprint", return_value="changed"):

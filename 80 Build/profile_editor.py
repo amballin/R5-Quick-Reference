@@ -576,7 +576,7 @@ class ProfileEditorModel:
             "message": (
                 "All official subject profiles are already in this pack."
                 if not available
-                else "Choose official profile starters to add to this pack."
+                else "Choose profiles from the application catalog to add to this pack."
             ),
         }
 
@@ -698,7 +698,7 @@ class ProfileEditorModel:
             "profiles": review["profiles"],
             "sourceFiles": sorted(candidates),
             "diff": review["diff"],
-            "summary": f"Add {len(selected)} official profile starter{'s' if len(selected) != 1 else ''} to this private pack.",
+            "summary": f"Add {len(selected)} profile{'s' if len(selected) != 1 else ''} from the application catalog to this private pack.",
         }
 
     def save_profile_starters(self, review_token, confirmed):

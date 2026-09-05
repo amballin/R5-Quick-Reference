@@ -182,11 +182,12 @@ def validate(root):
                 'id="profile-starter-dialog"',
                 'id="profile-starter-confirm"',
                 'id="add-profile-starters"',
+                "Add Profiles from Catalog",
                 "How the editor protects your work",
                 "Profile Packs &amp; Sharing",
             )
         ):
-            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7B profile-starter and streamlined safety controls are incomplete."))
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7C catalog and streamlined safety controls are incomplete."))
         if not all(f'request("{endpoint}"' in script for endpoint in profile_starter_endpoints):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 7B guarded official-profile client flow is incomplete."))
         if ".review-confirmation input[type=\"checkbox\"]" not in styles:
