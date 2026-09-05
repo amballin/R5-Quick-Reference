@@ -12,6 +12,7 @@ PAGES = {
     "preflight": "Preflight",
     "other-mac": "Continue on Another Mac",
     "local-build": "Local Build",
+    "application-owner-protection": "Application Owner Protection",
     "profile-editor": "Profile Editor",
     "editor-user-guide": "Profile Editor User Guide",
     "camera-lab-user-guide": "Camera Lab User Guide",

@@ -86,6 +86,13 @@ class ProfilePackSelectionTests(unittest.TestCase):
         with self.assertRaisesRegex(ProfilePackSelectionError, "not registered"):
             self.store.resolve_registered("00000000-0000-0000-0000-000000000001")
 
+    def test_selection_rejects_a_pack_with_a_nested_manifest(self):
+        nested = self.pack / "Nested Pack"
+        nested.mkdir()
+        (nested / "profile-pack.yaml").write_text("manifest_version: 1\n", encoding="utf-8")
+        with self.assertRaisesRegex(ProfilePackSelectionError, "cannot contain another profile pack"):
+            self.store.select_path(self.pack)
+
     def test_confirmed_selection_repairs_corrupt_registry_but_startup_fails_closed(self):
         self.store.path.parent.mkdir(parents=True)
         self.store.path.write_text("not json\n", encoding="utf-8")

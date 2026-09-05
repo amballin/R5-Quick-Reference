@@ -1,5 +1,7 @@
 import re
 
+from profile_pack import valid_application_profile_reference_ids
+
 from .common import error, load_yaml_checked, resolved_paths
 
 
@@ -44,7 +46,7 @@ def validate(paths_or_root):
         else:
             ids.add(appendix_id)
 
-    profile_ids = _profile_ids(paths.profiles_dir)
+    profile_ids = valid_application_profile_reference_ids(paths)
     for entry in appendices:
         if not isinstance(entry, dict):
             continue

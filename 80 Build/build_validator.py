@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 
 import yaml
 
+from profile_pack import valid_application_profile_reference_ids
 from utilities import flatten
 from validators.setting_access_validator import validate as validate_setting_access
 
@@ -221,7 +222,7 @@ def validate_required_appendices(paths):
     if not required_sections:
         results.append(("error", "required_appendix_sections_empty", str(manifest_path)))
 
-    profile_ids = _profile_ids(paths)
+    profile_ids = valid_application_profile_reference_ids(paths)
     appendix_ids = {entry.get("id") for entry in appendices if isinstance(entry, dict)}
 
     for profile_path in discover_profiles(paths):

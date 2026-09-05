@@ -1,0 +1,36 @@
+schema_version: 1
+authority: owner_application_fork
+identity_field: card_id
+protected_sources:
+  policy: 00 Master/profile_catalog_policy.yaml
+  profile_directory: 10 Profiles
+  lens_guidance: 00 Master/profile_lens_guidance.yaml
+profiles:
+  - filename: Birds in Flight.yaml
+    card_id: d2609cc6-8056-5632-932d-45dcb4416185
+  - filename: Birds Perched.yaml
+    card_id: 61b4fa46-fe43-50a8-ba94-5087ba532cb6
+  - filename: Camera Buttons.yaml
+    card_id: 3f2f9197-1aff-54cf-a526-32cac18daee8
+  - filename: Camera Defaults.yaml
+    card_id: 24499188-e352-5bc4-b51b-2c54b50da333
+  - filename: Camera Setup Essentials.yaml
+    card_id: 468084df-890b-5b91-882e-221d2a61ab8e
+  - filename: Fireworks.yaml
+    card_id: 4c14a449-ef29-5769-a4fd-a595b0b8209d
+  - filename: Landscape.yaml
+    card_id: c4489d13-bc1c-507c-a4b3-fe09b02a5ffa
+  - filename: Macro.yaml
+    card_id: 48850916-669d-592f-9e3f-defc3994445e
+  - filename: My Menu.yaml
+    card_id: 7b1cf834-7ab2-504e-85a5-5e393092a63d
+  - filename: People.yaml
+    card_id: 24553406-f5c7-535b-9822-706b50a87dce
+  - filename: Sports.yaml
+    card_id: 355bb069-fb1e-520f-8a4d-e992925bee0b
+  - filename: Travel.yaml
+    card_id: 03b72e12-ee0e-5cbc-afd0-c13261db4611
+  - filename: Waterdrops.yaml
+    card_id: e12e4a0f-4591-5920-ab0d-6ca307aa7066
+  - filename: Wildlife.yaml
+    card_id: 3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42

@@ -78,6 +78,12 @@ def validate(root):
         }
         if not evidence_endpoints <= EXTERNAL_PACK_EDITOR_ENDPOINTS:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "External guarded editing must allow only the reviewed Camera Lab evidence promotion endpoints."))
+        profile_starter_endpoints = {
+            "/api/profile-starter-reviews",
+            "/api/profile-starter-saves",
+        }
+        if not profile_starter_endpoints <= EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Step 7B official profile addition must remain inside the guarded external-pack boundary."))
         creation_endpoints = {
             "/api/profile-pack-destination-picker",
             "/api/profile-pack-creation-reviews",
@@ -85,6 +91,9 @@ def validate(root):
         }
         if creation_endpoints & EXTERNAL_PACK_EDITOR_ENDPOINTS:
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "New profile-pack creation must remain an embedded-source workflow."))
+        catalog_integration_endpoint = "/api/branch-integration-approve-catalog"
+        if catalog_integration_endpoint in EXTERNAL_PACK_EDITOR_ENDPOINTS:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor.py", "Application catalog integration approval must remain unavailable to external-pack sessions."))
         pack_git_endpoints = {
             "/api/profile-pack-git-status",
             "/api/profile-pack-git-commit-reviews",
@@ -167,6 +176,31 @@ def validate(root):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 6B independent pack-Git and combined-handoff controls are incomplete."))
         if not all(f'request("{endpoint}"' in script for endpoint in pack_git_endpoints):
             issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 6B guarded pack-Git client flow is incomplete."))
+        if not all(
+            marker in html
+            for marker in (
+                'id="profile-starter-panel"',
+                'id="profile-starter-options"',
+                'id="review-profile-starters"',
+                'id="profile-starter-dialog"',
+                'id="profile-starter-confirm"',
+                'id="add-profile-starters"',
+                "Add Profiles from Catalog",
+                "How the editor protects your work",
+                "Profile Packs &amp; Sharing",
+            )
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7C catalog and streamlined safety controls are incomplete."))
+        if not all(f'request("{endpoint}"' in script for endpoint in profile_starter_endpoints):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "app.js", "Step 7B guarded official-profile client flow is incomplete."))
+        if not (
+            'id="branch-catalog-owner-review"' in html
+            and 'id="branch-catalog-protected-diff-content"' in html
+            and 'request("/api/branch-integration-approve-catalog"' in script
+        ):
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "index.html", "Step 7D protected catalog integration approval is incomplete."))
+        if ".review-confirmation input[type=\"checkbox\"]" not in styles:
+            issues.append(error("profile_editor", root / "80 Build" / "profile_editor" / "styles.css", "Reviewed dialog confirmations must retain compact checkbox sizing."))
         if not (
             html.find('data-view="profiles"')
             < html.find('data-view="cx-foundation"')
