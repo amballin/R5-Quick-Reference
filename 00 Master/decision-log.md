@@ -1179,6 +1179,17 @@ Track an exact `.github/CODEOWNERS` boundary assigning `.github`, the applicatio
 
 Treat CODEOWNERS as review routing, not access control. After these files reach `main`, separately activate a GitHub `main` ruleset with only **Repository admins** as an always-allowed bypass actor, restricted updates and deletion, blocked force pushes, and pull-request plus code-owner review requirements for everyone else. For this personal-account repository, `@amballin` is the single owner and therefore the sole administrator; transferring the repository or changing that ownership model requires redesigning the bypass boundary. Do not make hosted repository-setting changes from source validation, builds, or Profile Editor. Do not require a GitHub status check until the repository has a dedicated source-validation check.
 
+## Authenticated Application-Owner Authorization Architecture — Step 7E Task 1
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Treat the existing application-owner checkbox as exact-content acknowledgment and a local role assertion only. Before Profile Editor is distributed to other profile-pack owners, require authenticated application-owner authorization for protected embedded writes, every application local-main merge and `origin/main` push, application publication mutations, owner-policy/key changes, and protected future shared-upstream acceptance. Feature-branch proposals and independent private-pack work remain outside that acceptance authority.
+
+Use a dedicated external Ed25519 signing key. Track only its public identity in a versioned owner policy, trust the current `origin/main` policy rather than a candidate replacement, and verify a deterministic short-lived signed statement binding the repository, operation, candidate/tree, reviewed refs, protected diff or write-set digest, nonce, expiry, and one-use authorization ID. Keep the private key and credentials outside Git, packs, browser storage, generated output, logs, and publication. Require old-key authorization for normal rotation and fail closed to separately authenticated GitHub-owner recovery if the key is lost.
+
+Keep the active GitHub `main` ruleset and repository permissions as the independent remote enforcement boundary. Local authentication cannot claim that GitHub accepted an operation. The implementation, machine-readable policy, UI, validators, tests, manual wrong-user acceptance, and distribution-readiness decision require separate approval; this architecture task changes no runtime behavior.
+
 ## Phase 4 — User Experience
 
 **Status:** Proposed (non-binding)
