@@ -1,6 +1,7 @@
 const editorToken = document.querySelector('meta[name="profile-editor-token"]').content;
 
 const elements = {
+  appSidebar: document.querySelector("#app-sidebar"),
   editorVersion: document.querySelector("#editor-version"),
   editorSourceHash: document.querySelector("#editor-source-hash"),
   profilePackSelect: document.querySelector("#profile-pack-select"),
@@ -20,6 +21,9 @@ const elements = {
   profilePackCreationClose: document.querySelector("#profile-pack-creation-close"),
   profilePackCreationCancel: document.querySelector("#profile-pack-creation-cancel"),
   createProfilePack: document.querySelector("#create-profile-pack"),
+  profilePackCreationPanel: document.querySelector("#profile-pack-creation-panel"),
+  profilePackExistingSummary: document.querySelector("#profile-pack-existing-summary"),
+  currentPackSetupName: document.querySelector("#current-pack-setup-name"),
   profilePackGitPanel: document.querySelector("#profile-pack-git-panel"),
   refreshProfilePackGit: document.querySelector("#refresh-profile-pack-git"),
   applicationGitSummary: document.querySelector("#application-git-summary"),
@@ -45,6 +49,27 @@ const elements = {
   profilePackPushTarget: document.querySelector("#profile-pack-push-target"),
   profilePackConfirmPush: document.querySelector("#profile-pack-confirm-push"),
   pushProfilePack: document.querySelector("#push-profile-pack"),
+  changeProfilePackRemote: document.querySelector("#change-profile-pack-remote"),
+  profilePackSetupSteps: [
+    document.querySelector("#profile-pack-step-select"),
+    document.querySelector("#profile-pack-step-commit"),
+    document.querySelector("#profile-pack-step-remote"),
+    document.querySelector("#profile-pack-step-push"),
+  ],
+  profilePackGitProgress: document.querySelector("#profile-pack-git-progress"),
+  profilePackGitProgressStage: document.querySelector("#profile-pack-git-progress-stage"),
+  profilePackGitProgressElapsed: document.querySelector("#profile-pack-git-progress-elapsed"),
+  profilePackGitProgressCommand: document.querySelector("#profile-pack-git-progress-command"),
+  profilePackGitProgressLog: document.querySelector("#profile-pack-git-progress-log"),
+  profilePackGitReceipt: document.querySelector("#profile-pack-git-receipt"),
+  profilePackGitReceiptAction: document.querySelector("#profile-pack-git-receipt-action"),
+  profilePackGitReceiptPack: document.querySelector("#profile-pack-git-receipt-pack"),
+  profilePackGitReceiptBranch: document.querySelector("#profile-pack-git-receipt-branch"),
+  profilePackGitReceiptCommit: document.querySelector("#profile-pack-git-receipt-commit"),
+  profilePackGitReceiptRemote: document.querySelector("#profile-pack-git-receipt-remote"),
+  profilePackGitReceiptTime: document.querySelector("#profile-pack-git-receipt-time"),
+  profilePackGitReceiptResult: document.querySelector("#profile-pack-git-receipt-result"),
+  profilePackGitReceiptNext: document.querySelector("#profile-pack-git-receipt-next"),
   externalPackBoundaryBanner: document.querySelector("#external-pack-boundary-banner"),
   externalPackBoundaryDetail: document.querySelector("#external-pack-boundary-detail"),
   openCameraLab: document.querySelector("#open-camera-lab"),
@@ -506,6 +531,7 @@ async function loadEditorInfo() {
     const pack = info.profile_pack || {};
     state.externalPack = pack.mode === "external";
     state.activePackId = pack.mode === "external" ? pack.pack_id : "embedded";
+    state.activePackName = pack.pack_name || "Private profile pack";
     elements.profilePackSelect.className = `profile-pack-select ${pack.mode === "external" ? "external" : "embedded"}`;
     elements.profilePackSelect.title = pack.mode === "external"
       ? `Pack ID ${pack.pack_id || "unavailable"} · fingerprint ${pack.fingerprint || "unavailable"}`
@@ -515,14 +541,10 @@ async function loadEditorInfo() {
       elements.externalPackBoundaryBanner.hidden = false;
       elements.externalPackBoundaryDetail.textContent = `${pack.pack_name || "Selected pack"} can change only its manifest-owned sources. Camera Lab evidence can be deliberately promoted after exact review and confirmation; independent pack Git also uses separate reviewed actions. Application Git, builds, spreadsheets, cleanup, integration, and publication remain disabled.`;
     }
-    elements.newProfilePackName.disabled = state.externalPack;
-    elements.chooseProfilePackDestination.disabled = state.externalPack;
-    elements.reviewProfilePackCreation.disabled = state.externalPack;
-    elements.switchToEmbeddedForCreation.hidden = !state.externalPack;
+    elements.profilePackCreationPanel.hidden = state.externalPack;
+    elements.profilePackExistingSummary.hidden = !state.externalPack;
+    elements.currentPackSetupName.textContent = state.activePackName;
     elements.profilePackGitPanel.hidden = !state.externalPack;
-    if (state.externalPack) {
-      elements.profilePackCreationMessage.textContent = "New packs are migrated from embedded sources. Switch to embedded sources first.";
-    }
   } catch (error) {
     elements.editorVersion.textContent = "Editor version unavailable";
     elements.editorSourceHash.textContent = "Source hash unavailable";
@@ -708,6 +730,70 @@ function repositorySummary(repository) {
   return parts.join(" · ");
 }
 
+const PROFILE_PACK_RECEIPT_KEY = "profileEditor.profilePackGitReceipt";
+
+function renderProfilePackReceipt(receipt) {
+  if (!receipt) return;
+  localStorage.setItem(PROFILE_PACK_RECEIPT_KEY, JSON.stringify(receipt));
+  elements.profilePackGitReceipt.hidden = false;
+  elements.profilePackGitReceiptAction.textContent = receipt.action || "Completed";
+  elements.profilePackGitReceiptPack.textContent = state.activePackName || receipt.packId || "Private profile pack";
+  elements.profilePackGitReceiptBranch.textContent = receipt.branch || "—";
+  elements.profilePackGitReceiptCommit.textContent = receipt.commit || "—";
+  elements.profilePackGitReceiptRemote.textContent = receipt.remote || "Not configured";
+  elements.profilePackGitReceiptTime.textContent = receipt.completedAt
+    ? new Date(receipt.completedAt).toLocaleString()
+    : "Just now";
+  elements.profilePackGitReceiptResult.textContent = receipt.verified || "The action completed.";
+  elements.profilePackGitReceiptNext.textContent = receipt.nextStep || (receipt.action === "Private-pack commit"
+    ? "Next: create an empty private GitHub repository and connect it in Step 3."
+    : receipt.action === "Private origin configured"
+      ? "Next: review, push, and verify this pack in Step 4."
+      : "Setup is complete. Refresh status at any time to verify both repositories again.");
+}
+
+function restoreProfilePackReceipt() {
+  try {
+    const receipt = JSON.parse(localStorage.getItem(PROFILE_PACK_RECEIPT_KEY) || "null");
+    if (receipt && (!receipt.packId || receipt.packId === state.activePackId)) renderProfilePackReceipt(receipt);
+  } catch (_error) {
+    localStorage.removeItem(PROFILE_PACK_RECEIPT_KEY);
+  }
+}
+
+function reconcileProfilePackReceipt(result) {
+  if (!result?.pack?.synchronized || !result.pack.headShort) {
+    restoreProfilePackReceipt();
+    return;
+  }
+  const combinedReady = Boolean(result.handoff?.ready);
+  renderProfilePackReceipt({
+    action: "Private pack verified",
+    packId: result.packId,
+    branch: result.pack.branch,
+    commit: result.pack.headShort,
+    remote: result.pack.origin,
+    completedAt: new Date().toISOString(),
+    verified: combinedReady
+      ? `Setup complete. Commit ${result.pack.headShort} is verified on origin/${result.pack.branch}.`
+      : `Private pack commit ${result.pack.headShort} is verified on origin/${result.pack.branch}.`,
+    nextStep: combinedReady
+      ? "Setup is complete. No repository-creation or push action is needed."
+      : "The private pack is current. Resolve the application repository status shown in the details below.",
+  });
+}
+
+function renderProfilePackSetupSteps(result) {
+  const remoteReady = Boolean(result.pack?.originConfigured && result.pack?.remoteCheck !== "unavailable");
+  const complete = [true, Boolean(result.pack?.headExists), remoteReady, Boolean(result.pack?.synchronized)];
+  let active = complete.findIndex((value) => !value);
+  if (active < 0) active = 3;
+  elements.profilePackSetupSteps.forEach((item, index) => {
+    item.classList.toggle("is-complete", complete[index]);
+    item.classList.toggle("is-active", index === active && !complete[index]);
+  });
+}
+
 function renderProfilePackGit() {
   const result = state.profilePackGit;
   if (!result) return;
@@ -715,17 +801,19 @@ function renderProfilePackGit() {
   elements.profilePackGitSummary.textContent = repositorySummary(result.pack);
   elements.combinedHandoffStatus.classList.toggle("is-ready", Boolean(result.handoff?.ready));
   elements.combinedHandoffStatus.innerHTML = result.handoff?.ready
-    ? "<strong>Combined handoff ready.</strong> Both repositories are clean and synchronized with their matching origin branches."
-    : `<strong>Combined handoff not ready.</strong> ${(result.handoff?.blockers || []).join(" ")}`;
+    ? "<strong>Setup complete.</strong> The private pack is on GitHub and both repositories are clean and synchronized."
+    : `<strong>Next step required.</strong> ${result.phase === "blocked" ? ((result.blockers || []).join(" ") || (result.handoff?.blockers || []).join(" ")) : "Complete the action shown below."}`;
+  renderProfilePackSetupSteps(result);
   const canCommit = ["initial-commit", "commit"].includes(result.phase);
   elements.profilePackCommitStage.hidden = !canCommit;
   elements.profilePackCommitHeading.textContent = result.phase === "initial-commit" ? "Review initial pack commit" : "Review pack changes";
-  const canConfigureRemote = Boolean(result.pack?.headExists && result.pack?.clean && !result.pack?.blocker);
-  elements.profilePackRemoteStage.hidden = !canConfigureRemote;
+  const canRepairRemote = result.phase === "blocked" && result.pack?.headExists && result.pack?.clean && result.pack?.remoteCheck === "unavailable";
+  elements.profilePackRemoteStage.hidden = result.phase !== "remote" && !canRepairRemote;
   if (result.pack?.originConfigured && !elements.profilePackRemoteUrl.value) {
     elements.profilePackRemoteUrl.value = result.pack.origin || "";
   }
   elements.profilePackPushStage.hidden = result.phase !== "push";
+  elements.changeProfilePackRemote.hidden = !result.pack?.originConfigured || result.phase === "remote" || canRepairRemote;
   elements.profilePackPushTarget.textContent = result.phase === "push"
     ? `Push private pack branch ${result.pack.branch} to origin/${result.pack.branch}.`
     : "";
@@ -743,8 +831,10 @@ async function refreshProfilePackGit() {
       body: JSON.stringify({ pendingChanges: pendingSessionItems().length }),
     });
     renderProfilePackGit();
+    reconcileProfilePackReceipt(state.profilePackGit);
     showProfilePackGitMessage(state.profilePackGit.phase === "blocked" ? (state.profilePackGit.blockers || []).join(" ") : "Repository status refreshed.", state.profilePackGit.phase === "blocked");
   } catch (error) {
+    restoreProfilePackReceipt();
     showProfilePackGitMessage(error.message, true);
   } finally {
     elements.refreshProfilePackGit.disabled = false;
@@ -787,6 +877,7 @@ async function commitProfilePack() {
     state.profilePackGitCommitReviewToken = null;
     elements.profilePackCommitReview.hidden = true;
     renderProfilePackGit();
+    renderProfilePackReceipt(state.profilePackGit.receipt);
     showProfilePackGitMessage("Private-pack commit completed. Remote configuration and push remain separate approvals.");
   } catch (error) {
     state.profilePackGitCommitReviewToken = null;
@@ -819,17 +910,23 @@ async function reviewProfilePackRemote() {
 
 async function configureProfilePackRemote() {
   elements.configureProfilePackRemote.disabled = true;
+  showProfilePackGitMessage("Connecting the reviewed private GitHub repository…");
+  renderGuardedJobProgress(profilePackGitProgressElements, { status: "running", stage: "Starting private GitHub connection", elapsedSeconds: 0, log: [] });
   try {
-    state.profilePackGit = await request("/api/profile-pack-git-remotes", {
+    const started = await request("/api/profile-pack-git-remotes", {
       method: "POST",
       body: JSON.stringify({ reviewToken: state.profilePackGitRemoteReviewToken, confirmRemote: elements.profilePackConfirmRemote.checked }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.profilePackRemote, started.jobId);
+    state.profilePackGit = await waitForGuardedJob(started.jobId, GUARDED_JOB_KEYS.profilePackRemote, profilePackGitProgressElements);
     state.profilePackGitRemoteReviewToken = null;
     elements.profilePackRemoteReview.hidden = true;
     renderProfilePackGit();
+    renderProfilePackReceipt(state.profilePackGit.receipt);
     showProfilePackGitMessage("Private origin configured. Nothing was pushed.");
   } catch (error) {
     state.profilePackGitRemoteReviewToken = null;
+    elements.profilePackConfirmRemote.checked = false;
     showProfilePackGitMessage(error.message, true);
   }
 }
@@ -837,13 +934,32 @@ async function configureProfilePackRemote() {
 async function pushProfilePack() {
   elements.pushProfilePack.disabled = true;
   showProfilePackGitMessage("Pushing only the private pack and verifying its matching origin branch…");
+  renderGuardedJobProgress(profilePackGitProgressElements, { status: "running", stage: "Starting private-pack push", elapsedSeconds: 0, log: [] });
   try {
-    state.profilePackGit = await request("/api/profile-pack-git-pushes", {
+    const started = await request("/api/profile-pack-git-pushes", {
       method: "POST",
       body: JSON.stringify({ confirmPush: elements.profilePackConfirmPush.checked }),
     });
+    sessionStorage.setItem(GUARDED_JOB_KEYS.profilePackPush, started.jobId);
+    state.profilePackGit = await waitForGuardedJob(started.jobId, GUARDED_JOB_KEYS.profilePackPush, profilePackGitProgressElements);
     renderProfilePackGit();
+    renderProfilePackReceipt(state.profilePackGit.receipt);
     showProfilePackGitMessage("Private profile pack is clean and synchronized. Review combined handoff status separately.");
+  } catch (error) {
+    elements.profilePackConfirmPush.checked = false;
+    showProfilePackGitMessage(error.message, true);
+  }
+}
+
+async function reconnectProfilePackGitJob(kind) {
+  const storageKey = kind === "profile-pack-remote" ? GUARDED_JOB_KEYS.profilePackRemote : GUARDED_JOB_KEYS.profilePackPush;
+  const jobId = sessionStorage.getItem(storageKey);
+  if (!jobId) return;
+  try {
+    state.profilePackGit = await waitForGuardedJob(jobId, storageKey, profilePackGitProgressElements);
+    renderProfilePackGit();
+    renderProfilePackReceipt(state.profilePackGit.receipt);
+    showProfilePackGitMessage(kind === "profile-pack-remote" ? "Private origin configured. Nothing was pushed." : "Private profile pack push completed and verified.");
   } catch (error) {
     showProfilePackGitMessage(error.message, true);
   }
@@ -981,6 +1097,8 @@ const GUARDED_JOB_KEYS = {
   finishDay: "profileEditor.finishDayPrepareJob",
   branchIntegration: "profileEditor.branchIntegrationPrepareJob",
   publication: "profileEditor.publicationJob",
+  profilePackRemote: "profileEditor.profilePackRemoteJob",
+  profilePackPush: "profileEditor.profilePackPushJob",
 };
 
 function reconnectRunningAction(recovery) {
@@ -989,6 +1107,8 @@ function reconnectRunningAction(recovery) {
     "finish-day-prepare": ["finish-day", GUARDED_JOB_KEYS.finishDay],
     "branch-integration-prepare": ["branch-integration", GUARDED_JOB_KEYS.branchIntegration],
     "website-publication": ["release-publish", GUARDED_JOB_KEYS.publication],
+    "profile-pack-remote": ["setup-sharing", GUARDED_JOB_KEYS.profilePackRemote],
+    "profile-pack-push": ["setup-sharing", GUARDED_JOB_KEYS.profilePackPush],
   };
   const destination = destinations[recovery?.jobKind];
   if (!destination || !recovery?.jobId) return false;
@@ -999,9 +1119,21 @@ function reconnectRunningAction(recovery) {
     else if (recovery.jobKind === "finish-day-prepare") refreshFinishDay();
     else if (recovery.jobKind === "branch-integration-prepare") refreshBranchIntegration();
     else if (recovery.jobKind === "website-publication") refreshPublication();
+    else if (["profile-pack-remote", "profile-pack-push"].includes(recovery.jobKind)) reconnectProfilePackGitJob(recovery.jobKind);
   }, 75);
   return true;
 }
+
+const profilePackGitProgressElements = {
+  panel: elements.profilePackGitProgress,
+  stage: elements.profilePackGitProgressStage,
+  elapsed: elements.profilePackGitProgressElapsed,
+  command: elements.profilePackGitProgressCommand,
+  log: elements.profilePackGitProgressLog,
+  failedStage: "Private-pack Git action stopped — nothing further was changed",
+  completedStage: "Private-pack Git action complete",
+  completedMessage: "The result was verified. The receipt below remains available.",
+};
 
 function waitMilliseconds(milliseconds) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
@@ -2296,7 +2428,17 @@ function switchView(viewName) {
   if (viewName === "branch-integration" && !state.branchIntegrationBusy) refreshBranchIntegration();
   if (viewName === "cleanup-review" && !state.cleanupBusy) refreshCleanupReview();
   if (viewName === "release-publish" && !state.publicationBusy) refreshPublication();
-  if (viewName === "setup-sharing" && state.externalPack) refreshProfilePackGit();
+  if (viewName === "setup-sharing" && state.externalPack) {
+    if (sessionStorage.getItem(GUARDED_JOB_KEYS.profilePackRemote)) {
+      restoreProfilePackReceipt();
+      reconnectProfilePackGitJob("profile-pack-remote");
+    }
+    else if (sessionStorage.getItem(GUARDED_JOB_KEYS.profilePackPush)) {
+      restoreProfilePackReceipt();
+      reconnectProfilePackGitJob("profile-pack-push");
+    }
+    else refreshProfilePackGit();
+  }
   window.scrollTo({ top: 0, behavior: "auto" });
   requestAnimationFrame(updateFloatingReturn);
 }
@@ -4217,6 +4359,17 @@ function updateFloatingReturn() {
   elements.returnToTop.hidden = window.scrollY < 280;
 }
 
+function updateSidebarViewport() {
+  if (!elements.appSidebar) return;
+  if (window.matchMedia("(max-width: 1050px)").matches) {
+    elements.appSidebar.style.removeProperty("--sidebar-available-height");
+    return;
+  }
+  const top = Math.max(16, elements.appSidebar.getBoundingClientRect().top);
+  const available = Math.max(240, window.innerHeight - top - 16);
+  elements.appSidebar.style.setProperty("--sidebar-available-height", `${available}px`);
+}
+
 function renderBaselineAnalysis() {
   elements.baselineSummary.replaceChildren();
   elements.baselineResults.replaceChildren();
@@ -5419,6 +5572,9 @@ elements.previewButton.addEventListener("click", preview);
 elements.addLensChoice.addEventListener("click", addLensChoice);
 elements.returnToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 window.addEventListener("scroll", updateFloatingReturn, { passive: true });
+window.addEventListener("scroll", updateSidebarViewport, { passive: true });
+window.addEventListener("resize", updateSidebarViewport, { passive: true });
+updateSidebarViewport();
 elements.reviewButton.addEventListener("click", reviewChanges);
 elements.saveButton.addEventListener("click", saveReviewedProfile);
 elements.reviewClose.addEventListener("click", () => elements.reviewDialog.close());
@@ -5479,6 +5635,16 @@ elements.profilePackCommitMessage.addEventListener("input", () => {
 });
 elements.commitProfilePack.addEventListener("click", commitProfilePack);
 elements.reviewProfilePackRemote.addEventListener("click", reviewProfilePackRemote);
+elements.profilePackRemoteUrl.addEventListener("input", () => {
+  state.profilePackGitRemoteReviewToken = null;
+  elements.profilePackRemoteReview.hidden = true;
+  elements.profilePackConfirmRemote.checked = false;
+  elements.configureProfilePackRemote.disabled = true;
+});
+elements.changeProfilePackRemote.addEventListener("click", () => {
+  elements.profilePackRemoteStage.hidden = false;
+  elements.profilePackRemoteStage.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 elements.profilePackConfirmRemote.addEventListener("change", () => {
   elements.configureProfilePackRemote.disabled = !elements.profilePackConfirmRemote.checked;
 });
@@ -5574,4 +5740,5 @@ loadEditorInfo().then(async () => {
     }
   }
   updateFloatingReturn();
+  updateSidebarViewport();
 });

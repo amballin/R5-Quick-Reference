@@ -114,13 +114,16 @@ Step 6B independent pack-Git and combined-handoff flow:
 
 ```text
 active external pack + zero browser drafts
-                              -> separate application and pack Git inspection
+                              -> state-driven create/select, save, connect, push-and-verify steps
+                              -> separate application and pack Git inspection in optional detail
                               -> exact source-bound pack commit review (initial commit includes AGENTS.md)
                               -> separate pack-only commit confirmation
-                              -> exact credential-free origin review and separate configuration confirmation
-                              -> separate non-force push to the same-named pack branch
+                              -> in-context empty-private-GitHub-repository guidance
+                              -> exact credential-free origin review and separate guarded configuration job
+                              -> separate guarded non-force push to the same-named pack branch
                               -> live remote-head equality for both independent repositories
-                              -> combined handoff ready, without application Git mutation
+                              -> persistent verified receipt and combined handoff ready
+                              -> no application Git mutation
 ```
 
 Accepted target flow after external-pack activation:

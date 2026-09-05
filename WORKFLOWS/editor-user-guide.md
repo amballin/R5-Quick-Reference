@@ -30,15 +30,17 @@ Save or discard every browser draft first. Switching requires confirmation, vali
 
 Open **Setup & Sharing** and use **New Profile Pack**. If an external pack is active, use **Switch to embedded sources** first. Enter a friendly name, choose **Choose with Finder…**, and use the macOS window—including its New Folder control when useful—to select an exact new destination. Save or discard every browser draft, then choose **Review new profile pack**. Review the generated UUID manifest, exact destination, complete migrated source inventory, and local-Git boundary before checking the confirmation and choosing **Create and select profile pack**.
 
-The editor stages the new pack, copies the embedded owner sources without changing them, adds the private-pack working instructions, initializes local Git, validates the combined application and pack sources, then atomically installs, registers, selects, and reloads the pack. It refuses an existing destination and removes an incomplete new destination after failure. Step 6A creates no commit, remote, push, build, spreadsheet, handoff, or publication. When an external pack is active, switch to embedded sources before creating another pack.
+The editor stages the new pack, copies the embedded owner sources without changing them, adds the private-pack working instructions and a `.gitignore` that excludes Finder's `.DS_Store`, initializes local Git, validates the combined application and pack sources, then atomically installs, registers, selects, and reloads the pack. Finder metadata is also excluded defensively from pack review and commits. It refuses an existing destination and removes an incomplete new destination after failure. Step 6A creates no commit, remote, push, build, spreadsheet, handoff, or publication. When an external pack is active, switch to embedded sources before creating another pack.
 
 ### Save and hand off a private profile pack
 
-With the external pack selected, open **Setup & Sharing → Private Pack Git & Handoff**. **Refresh status** shows the application and pack separately. For a new pack, choose **Review exact pack files** and confirm that `AGENTS.md` is included. Enter a commit message, check the separate confirmation, and commit only the reviewed pack files. Nothing is pushed and application Git is untouched.
+With the external pack selected, open **Setup & Sharing**. Follow its four numbered steps: **Create or select**, **Save locally**, **Connect GitHub**, and **Push & verify**. Only the action needed next is open. For a new pack, review the exact pack files, confirm that `AGENTS.md` is included, enter the message, check the compact confirmation, and commit. Nothing is pushed and application Git is untouched.
 
-Next, enter the exact private repository HTTPS or SSH URL and choose **Review remote change**. Do not put a password or access token in the URL. After reviewing the exact addition or replacement, confirm **Configure private origin**. Push remains a third separate approval: verify the displayed current branch and exact same-named `origin` target, check the push confirmation, and choose **Push private pack**. The workflow never creates or switches a branch and never force-pushes.
+Before **Connect GitHub**, create an empty repository on GitHub: choose **New repository**, set it to **Private**, and do not add a README, `.gitignore`, or license. Copy its HTTPS URL; HTTPS is recommended on this Mac because credentials remain in the system credential manager. SSH is supported only when an SSH key is already configured. Never put a password or token in the URL. Review the exact URL and confirm the connection separately. If an old origin is unreachable, review the replacement URL here; the editor does not require the old origin to respond first.
 
-**Combined handoff ready** appears only after both the application and private pack are clean and their current commits match the live heads of their respective matching `origin` branches. A result for one repository never substitutes for the other. Resolve application Git work through its normal Finish Day workflow; external-pack Setup & Sharing never commits or pushes the application.
+Push remains a third separate approval. Verify the displayed current branch and exact same-named `origin` target, check the confirmation, and choose **Push private pack**. Connection and push show their stage and elapsed time, can reconnect after page navigation or reload, and stop a nonresponsive remote check after 20 seconds. When either finishes, a receipt remains with the pack, branch, commit, remote, time, verified result, and next step. Reopening the page reconciles that receipt with live status, so a synchronized pack shows its verified commit instead of stale instructions from an earlier commit step. On a timeout, refresh status before retrying. The workflow never creates, switches, or force-pushes a branch.
+
+**Setup complete** appears only after both the application and private pack are clean and their current commits match the live heads of their respective matching `origin` branches. Open **How the application and private pack stay separate** for the two repository status details. A result for one repository never substitutes for the other. Resolve application Git work through its normal Finish Day workflow; external-pack Setup & Sharing never commits or pushes the application.
 
 For a one-launch override that does not change the saved choice, run from the application repository root:
 
@@ -57,6 +59,8 @@ python3 -B "80 Build/profile_editor.py" --embedded
 ```
 
 ## Understand the working model
+
+On desktop, the left navigation has its own scrollbar sized to the space actually visible below the header. You can reach every navigation item without scrolling the content workspace on the right. At narrow responsive widths, navigation returns to ordinary page flow.
 
 The editor separates temporary work from saved source:
 

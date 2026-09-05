@@ -1086,6 +1086,19 @@ Document optical IS presence, physical Image Stabilizer On/Off and mode switches
 
 This structured appendix data does not change the profile schema. The existing separation of stabilization mode, IBIS, and Lens IS remains binding through the Profile Specification, and IBIS High Resolution Shot remains outside this lens-control guidance.
 
+## Streamlined Private-Pack Setup and Auditable Git Progress
+
+**Status:** Accepted
+**Date:** 2026-09-04
+
+Present private-pack setup as one state-driven four-step flow: create or select the pack, save it locally, connect an empty private GitHub repository, then push and verify. Show only the current required action; keep repository-ownership explanation and diagnostics in optional detail. Display appropriately scaled confirmations and include the empty-private-repository instructions directly where the remote URL is requested.
+
+Remote configuration and push run as reconnectable guarded jobs with visible stage, elapsed time, safe-operation description, bounded details, and a short noninteractive remote-check timeout. Every completed commit, remote configuration, or push leaves a persistent receipt identifying the friendly pack, branch, commit, credential-free remote, completion time, verified result, and next step. An unreachable existing origin must not prevent reviewing and replacing it with an exact new URL.
+
+On reopen or status refresh, reconcile any saved action receipt with the live repository result. A clean synchronized pack replaces stale commit-stage advice with the currently verified commit and explicitly states that repository creation and another push are unnecessary.
+
+Size the desktop navigation sidebar from its actual visible top edge rather than from the whole viewport so every navigation item is reachable without scrolling the content workspace. Every application and generated private-pack `.gitignore` excludes `.DS_Store`; pack creation installs that ignore file, and private-pack Git review and staging defensively omit Finder metadata even for older packs.
+
 ## Phase 4 — User Experience
 
 **Status:** Proposed (non-binding)

@@ -20,6 +20,7 @@ class ProfilePackGitError(RuntimeError):
 class ProfilePackGitWorkflow:
     REVIEW_TTL_SECONDS = 30 * 60
     SCP_REMOTE = re.compile(r"^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+:[^\s]+$")
+    IGNORED_METADATA_NAMES = {".DS_Store"}
 
     def __init__(self, application_root, pack_root, pack_id, *, allow_local_remotes=False):
         self.application_root = Path(application_root).resolve()
@@ -42,11 +43,15 @@ class ProfilePackGitWorkflow:
                 check=False,
                 env=env,
             )
-        except (OSError, subprocess.TimeoutExpired) as exc:
+        except subprocess.TimeoutExpired as exc:
+            raise ProfilePackGitError(
+                f"The Git service did not respond within {timeout} seconds. The action stopped; refresh status before trying again."
+            ) from exc
+        except OSError as exc:
             raise ProfilePackGitError(f"Could not run {Path(command[0]).name}: {exc}") from exc
 
-    def _git(self, root, *args, check=True, env=None):
-        completed = self._run(root, ["git", *args], env=env)
+    def _git(self, root, *args, check=True, env=None, timeout=3 * 60):
+        completed = self._run(root, ["git", *args], env=env, timeout=timeout)
         output = completed.stdout.strip()
         if check and completed.returncode:
             raise ProfilePackGitError(output or f"Git command failed: {' '.join(args)}")
@@ -83,14 +88,19 @@ class ProfilePackGitWorkflow:
 
     def _status_lines(self, root):
         output = self._git(root, "status", "--porcelain=v1", "--untracked-files=all").stdout
-        return [line for line in output.splitlines() if line.strip()]
+        return [
+            line for line in output.splitlines()
+            if line.strip() and Path(line[3:].strip('"')).name not in self.IGNORED_METADATA_NAMES
+        ]
 
     def _snapshot(self):
         digest = hashlib.sha256()
         for relative in sorted(
             path.relative_to(self.pack_root).as_posix()
             for path in self.pack_root.rglob("*")
-            if path.is_file() and ".git" not in path.relative_to(self.pack_root).parts
+            if path.is_file()
+            and ".git" not in path.relative_to(self.pack_root).parts
+            and path.name not in self.IGNORED_METADATA_NAMES
         ):
             path = self.pack_root / relative
             digest.update(relative.encode("utf-8"))
@@ -141,6 +151,7 @@ class ProfilePackGitWorkflow:
         branch = self._branch(root)
         status_lines = self._status_lines(root)
         head_exists = self._head_exists(root)
+        local_head = self._git(root, "rev-parse", "HEAD").stdout.strip() if head_exists else ""
         origin = self._origin(root)
         upstream_result = self._git(
             root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}", check=False
@@ -152,23 +163,29 @@ class ProfilePackGitWorkflow:
         remote_head = ""
         remote_check = "not-configured"
         if head_exists and origin:
-            remote = self._git(
-                root,
-                "ls-remote",
-                "--exit-code",
-                "origin",
-                f"refs/heads/{branch}",
-                check=False,
-                env=dict(os.environ, GIT_TERMINAL_PROMPT="0"),
-            )
-            if remote.returncode == 0 and remote.stdout.split():
-                remote_head = remote.stdout.split()[0]
-                remote_check = "found"
-            elif remote.returncode == 2:
-                remote_check = "missing"
-            else:
+            try:
+                remote = self._git(
+                    root,
+                    "ls-remote",
+                    "--exit-code",
+                    "origin",
+                    f"refs/heads/{branch}",
+                    check=False,
+                    env=dict(os.environ, GIT_TERMINAL_PROMPT="0"),
+                    timeout=20,
+                )
+            except ProfilePackGitError as exc:
                 remote_check = "unavailable"
-                blocker = "The exact origin branch could not be checked without prompting for credentials."
+                blocker = str(exc)
+            else:
+                if remote.returncode == 0 and remote.stdout.split():
+                    remote_head = remote.stdout.split()[0]
+                    remote_check = "found"
+                elif remote.returncode == 2:
+                    remote_check = "missing"
+                else:
+                    remote_check = "unavailable"
+                    blocker = "The exact origin branch could not be checked without prompting for credentials."
         if head_exists and origin and upstream:
             expected = f"origin/{branch}"
             if upstream != expected:
@@ -180,7 +197,6 @@ class ProfilePackGitWorkflow:
                 except (TypeError, ValueError):
                     blocker = "The local and remote branch comparison could not be determined."
                 else:
-                    local_head = self._git(root, "rev-parse", "HEAD").stdout.strip()
                     synchronized = (
                         not status_lines
                         and ahead == 0
@@ -198,6 +214,7 @@ class ProfilePackGitWorkflow:
             "label": label,
             "branch": branch,
             "headExists": head_exists,
+            "headShort": local_head[:7],
             "clean": not status_lines,
             "changes": status_lines,
             "originConfigured": bool(origin),
@@ -302,7 +319,15 @@ class ProfilePackGitWorkflow:
         if review["phase"] == "initial-commit" and not (self.pack_root / "AGENTS.md").is_file():
             self._commit_review = None
             raise ProfilePackGitError("The initial private-pack commit must include AGENTS.md.")
-        self._git(self.pack_root, "add", "-A")
+        self._git(
+            self.pack_root,
+            "add",
+            "-A",
+            "--",
+            ".",
+            ":(exclude).DS_Store",
+            ":(glob,exclude)**/.DS_Store",
+        )
         staged = self._git(self.pack_root, "diff", "--cached", "--name-only").stdout.splitlines()
         if review["phase"] == "initial-commit" and "AGENTS.md" not in staged:
             raise ProfilePackGitError("AGENTS.md did not enter the reviewed initial commit. Nothing was committed.")
@@ -311,34 +336,52 @@ class ProfilePackGitWorkflow:
         result = self.inspect(0)
         result["committedFiles"] = staged
         result["commitMessage"] = commit_message
+        result["receipt"] = {
+            "action": "Private-pack commit",
+            "packId": self.pack_id,
+            "branch": self._branch(self.pack_root),
+            "commit": self._git(self.pack_root, "rev-parse", "--short", "HEAD").stdout.strip(),
+            "remote": self._display_remote(self._origin(self.pack_root)) or "Not configured",
+            "completedAt": datetime.now(timezone.utc).isoformat(),
+            "verified": "Committed locally; nothing was pushed.",
+            "nextStep": "Create an empty private GitHub repository and connect it in Step 3.",
+        }
         return result
 
     def review_remote(self, remote_url, pending_changes=0):
-        status = self.inspect(pending_changes)
-        if status["pendingChanges"]:
+        pending = self._pending_count(pending_changes)
+        if pending:
             raise ProfilePackGitError("Resolve every unsaved browser draft before configuring a remote.")
-        if not status["pack"]["headExists"]:
+        self._assert_repository()
+        if not self._head_exists(self.pack_root):
             raise ProfilePackGitError("Create the reviewed initial pack commit before configuring a remote.")
         remote = self._validate_remote(remote_url)
+        branch = self._branch(self.pack_root)
+        previous = self._origin(self.pack_root)
         token = secrets.token_urlsafe(24)
         self._remote_review = {
             "token": token,
             "created": datetime.now(timezone.utc),
             "snapshot": self._snapshot(),
             "remote": remote,
-            "replacing": status["pack"]["originConfigured"],
-            "branch": status["pack"]["branch"],
+            "replacing": bool(previous),
+            "branch": branch,
             "head": self._git(self.pack_root, "rev-parse", "HEAD").stdout.strip(),
-            "previous": self._origin(self.pack_root),
+            "previous": previous,
         }
         return {
             "reviewToken": token,
             "remote": self._display_remote(remote),
-            "replacing": status["pack"]["originConfigured"],
-            "previousRemote": status["pack"]["origin"],
+            "replacing": bool(previous),
+            "previousRemote": self._display_remote(previous),
         }
 
-    def configure_remote(self, review_token, confirmed):
+    @staticmethod
+    def _notify(progress, stage, command="", output="", completed=False):
+        if progress:
+            progress(stage, command=command, output=output, completed=completed)
+
+    def configure_remote(self, review_token, confirmed, progress=None):
         if confirmed is not True:
             raise ProfilePackGitError("Remote configuration confirmation is required.")
         review = self._remote_review
@@ -358,11 +401,27 @@ class ProfilePackGitWorkflow:
             self._remote_review = None
             raise ProfilePackGitError("The private-pack branch, commit, or origin changed after review. Review the exact URL again.")
         command = ("set-url", "origin", review["remote"]) if review["replacing"] else ("add", "origin", review["remote"])
+        self._notify(progress, "Saving the reviewed private origin", "Update only the selected profile pack's Git configuration")
         self._git(self.pack_root, "remote", *command)
+        self._notify(progress, "Saving the reviewed private origin", output="Private origin saved. Nothing was pushed.", completed=True)
         self._remote_review = None
-        return self.inspect(0)
+        self._notify(progress, "Checking private GitHub access", "Read the exact remote branch without changing either repository")
+        result = self.inspect(0)
+        self._notify(progress, "Checking private GitHub access", output="Remote access check completed.", completed=True)
+        remote_verified = result["pack"]["remoteCheck"] != "unavailable"
+        result["receipt"] = {
+            "action": "Private origin configured",
+            "packId": self.pack_id,
+            "branch": result["pack"]["branch"],
+            "commit": self._git(self.pack_root, "rev-parse", "--short", "HEAD").stdout.strip(),
+            "remote": result["pack"]["origin"],
+            "completedAt": datetime.now(timezone.utc).isoformat(),
+            "verified": "Origin saved and GitHub access checked; nothing was pushed." if remote_verified else "Origin saved locally, but GitHub access could not be verified; nothing was pushed.",
+            "nextStep": "Review, push, and verify this pack in Step 4." if remote_verified else "Check the URL and Mac credentials, then refresh status or review a replacement connection.",
+        }
+        return result
 
-    def push(self, confirmed):
+    def push(self, confirmed, progress=None):
         if confirmed is not True:
             raise ProfilePackGitError("Pack push confirmation is required.")
         status = self.inspect(0)
@@ -372,6 +431,7 @@ class ProfilePackGitWorkflow:
         if not pack["originConfigured"]:
             raise ProfilePackGitError("Configure and review the private pack's origin before pushing.")
         branch = pack["branch"]
+        self._notify(progress, "Checking the exact private origin branch", f"Read origin/{branch} without prompting for credentials")
         remote = self._git(
             self.pack_root,
             "ls-remote",
@@ -380,17 +440,22 @@ class ProfilePackGitWorkflow:
             f"refs/heads/{branch}",
             check=False,
             env=dict(os.environ, GIT_TERMINAL_PROMPT="0"),
+            timeout=20,
         )
         if remote.returncode not in {0, 2}:
             raise ProfilePackGitError("The exact private origin branch could not be checked without prompting for credentials.")
+        self._notify(progress, "Checking the exact private origin branch", output="Remote branch state checked.", completed=True)
         if remote.returncode == 0:
+            self._notify(progress, "Refreshing the matching pack branch", f"Fetch only origin/{branch} into the private pack")
             self._git(
                 self.pack_root,
                 "fetch",
                 "origin",
                 f"refs/heads/{branch}:refs/remotes/origin/{branch}",
                 env=dict(os.environ, GIT_TERMINAL_PROMPT="0"),
+                timeout=60,
             )
+            self._notify(progress, "Refreshing the matching pack branch", output="Matching remote branch refreshed.", completed=True)
             counts = self._git(
                 self.pack_root,
                 "rev-list",
@@ -408,8 +473,23 @@ class ProfilePackGitWorkflow:
         if pack["upstream"] and pack["upstream"] != f"origin/{branch}":
             raise ProfilePackGitError("The current branch does not track its exact matching origin branch.")
         args = ("push", "--set-upstream", "origin", branch) if not pack["upstream"] else ("push", "origin", branch)
-        self._git(self.pack_root, *args, env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
+        self._notify(progress, "Pushing the private profile pack", f"Push only {branch} to origin/{branch}")
+        self._git(self.pack_root, *args, env=dict(os.environ, GIT_TERMINAL_PROMPT="0"), timeout=3 * 60)
+        self._notify(progress, "Pushing the private profile pack", output="Push command completed.", completed=True)
+        self._notify(progress, "Verifying the live GitHub commit", f"Compare the local commit with origin/{branch}")
         final = self.inspect(0)
         if not final["pack"]["synchronized"]:
             raise ProfilePackGitError("The push finished, but the private pack did not verify as synchronized.")
+        commit = self._git(self.pack_root, "rev-parse", "--short", "HEAD").stdout.strip()
+        self._notify(progress, "Verifying the live GitHub commit", output=f"Verified {commit} on origin/{branch}.", completed=True)
+        final["receipt"] = {
+            "action": "Private pack pushed",
+            "packId": self.pack_id,
+            "branch": branch,
+            "commit": commit,
+            "remote": final["pack"]["origin"],
+            "completedAt": datetime.now(timezone.utc).isoformat(),
+            "verified": f"Verified synchronized with origin/{branch}.",
+            "nextStep": "Setup is complete. Refresh status at any time to verify both repositories again.",
+        }
         return final

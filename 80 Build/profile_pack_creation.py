@@ -32,6 +32,7 @@ REVIEW_TTL_SECONDS = 30 * 60
 MAX_PENDING_REVIEWS = 20
 PACK_NAME_PATTERN = re.compile(r"[^\x00-\x1f/\\]{1,80}")
 PACK_INSTRUCTIONS = Path(__file__).resolve().parent / "profile_pack_templates" / "AGENTS.md"
+PACK_GITIGNORE = Path(__file__).resolve().parent / "profile_pack_templates" / ".gitignore"
 
 
 class ProfilePackCreationError(RuntimeError):
@@ -193,6 +194,7 @@ end run
             review["manifest_yaml"], encoding="utf-8"
         )
         shutil.copy2(PACK_INSTRUCTIONS, staging / "AGENTS.md")
+        shutil.copy2(PACK_GITIGNORE, staging / ".gitignore")
         for key, destination_relative in SOURCE_PATHS.items():
             source = self.application_root / EMBEDDED_SOURCE_PATHS[key]
             destination = staging / destination_relative
@@ -267,7 +269,7 @@ end run
         return value
 
     def _source_file_inventory(self):
-        files = ["AGENTS.md", "profile-pack.yaml"]
+        files = [".gitignore", "AGENTS.md", "profile-pack.yaml"]
         for key, destination_relative in SOURCE_PATHS.items():
             source = self.application_root / EMBEDDED_SOURCE_PATHS[key]
             destination = Path(destination_relative)

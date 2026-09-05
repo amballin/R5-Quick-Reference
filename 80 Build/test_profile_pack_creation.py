@@ -55,6 +55,7 @@ class ProfilePackCreationTests(unittest.TestCase):
         self.assertIn("pack_name: My Canon EOS R5 Profiles", review["manifestYaml"])
         self.assertIn("profile-pack.yaml", review["sourceFiles"])
         self.assertIn("AGENTS.md", review["sourceFiles"])
+        self.assertIn(".gitignore", review["sourceFiles"])
         self.assertIn("10 Profiles/Wildlife.yaml", review["sourceFiles"])
         self.assertEqual(review["sourceFileCount"], len(review["sourceFiles"]))
         self.assertIn("without a commit, remote, or push", review["gitAction"])
@@ -67,6 +68,7 @@ class ProfilePackCreationTests(unittest.TestCase):
         self.assertEqual(len(self.validated), 1)
         self.assertTrue((self.destination / ".git").is_dir())
         self.assertTrue((self.destination / "AGENTS.md").is_file())
+        self.assertEqual((self.destination / ".gitignore").read_text(encoding="utf-8"), ".DS_Store\n")
         manifest = yaml.safe_load((self.destination / "profile-pack.yaml").read_text(encoding="utf-8"))
         self.assertEqual(manifest["pack_id"], context.pack_id)
         for key, destination_relative in SOURCE_PATHS.items():

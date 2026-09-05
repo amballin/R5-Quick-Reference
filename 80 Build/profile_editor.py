@@ -2511,6 +2511,20 @@ class ProfileEditorModel:
         finally:
             self._build_lock.release()
 
+    def start_configure_profile_pack_git_remote(self, review_token, confirmed):
+        def action(progress):
+            if not self._build_lock.acquire(blocking=False):
+                raise PrototypeError("Another build or guarded Git action is already running.")
+            try:
+                try:
+                    return self._pack_git().configure_remote(review_token, confirmed, progress=progress)
+                except ProfilePackGitError as exc:
+                    raise PrototypeError(str(exc)) from exc
+            finally:
+                self._build_lock.release()
+
+        return self.guarded_jobs.start("profile-pack-remote", action)
+
     def push_profile_pack_git(self, confirmed):
         if not self._build_lock.acquire(blocking=False):
             raise PrototypeError("Another build or guarded Git action is already running.")
@@ -2521,6 +2535,20 @@ class ProfileEditorModel:
                 raise PrototypeError(str(exc)) from exc
         finally:
             self._build_lock.release()
+
+    def start_push_profile_pack_git(self, confirmed):
+        def action(progress):
+            if not self._build_lock.acquire(blocking=False):
+                raise PrototypeError("Another build or guarded Git action is already running.")
+            try:
+                try:
+                    return self._pack_git().push(confirmed, progress=progress)
+                except ProfilePackGitError as exc:
+                    raise PrototypeError(str(exc)) from exc
+            finally:
+                self._build_lock.release()
+
+        return self.guarded_jobs.start("profile-pack-push", action)
 
     def branch_integration_status(self, pending_changes):
         try:
@@ -4505,13 +4533,13 @@ class EditorHandler(BaseHTTPRequestHandler):
                 )
             if parsed.path == "/api/profile-pack-git-remotes":
                 return self._json(
-                    self.model.configure_profile_pack_git_remote(
+                    self.model.start_configure_profile_pack_git_remote(
                         payload.get("reviewToken"), payload.get("confirmRemote")
                     )
                 )
             if parsed.path == "/api/profile-pack-git-pushes":
                 return self._json(
-                    self.model.push_profile_pack_git(payload.get("confirmPush"))
+                    self.model.start_push_profile_pack_git(payload.get("confirmPush"))
                 )
             if parsed.path == "/api/camera-lab-launch":
                 return self._json(self.model.launch_camera_lab(payload.get("profile")))
