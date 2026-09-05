@@ -1,6 +1,5 @@
 import json
 
-from asset_manager import ProjectPaths
 from spreadsheet_downloads import (
     SUPPORTED_TARGETS,
     SpreadsheetDownloadError,
@@ -10,12 +9,12 @@ from spreadsheet_downloads import (
     validate_published_release,
 )
 from spreadsheet_revisions import source_fingerprint, spreadsheet_build_id
-from .common import error, warning
+from .common import error, resolved_paths, warning
 
 
-def validate(root):
+def validate(paths_or_root):
     issues = []
-    paths = ProjectPaths(root)
+    paths = resolved_paths(paths_or_root)
     for target in SUPPORTED_TARGETS:
         spec = target_spec(paths, target)
         manifest = spec["manifest"]

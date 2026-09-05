@@ -9,9 +9,10 @@ CAMERA_LAB_URL="$CAMERA_LAB_ORIGIN/"
 BACKEND="edsdk"
 CAMERA_LAB_PID=""
 PROFILE_NAME=""
+PROFILE_PACK_ROOT=""
 
 usage() {
-    echo "Usage: ./80\\ Build/scripts/start-camera-lab.sh [--simulated] [--profile NAME]"
+    echo "Usage: ./80\\ Build/scripts/start-camera-lab.sh [--simulated] [--profile NAME] [--profile-pack PATH]"
     echo
     echo "Without an option, starts the physical Canon EDSDK connection."
     echo "Use --simulated to start the Camera Lab simulator instead."
@@ -31,6 +32,14 @@ while [[ $# -gt 0 ]]; do
             PROFILE_NAME="$2"
             shift 2
             ;;
+        --profile-pack)
+            if [[ $# -lt 2 || -z "$2" ]]; then
+                usage
+                exit 2
+            fi
+            PROFILE_PACK_ROOT="$2"
+            shift 2
+            ;;
         --help|-h)
             usage
             exit 0
@@ -41,6 +50,16 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+EXPECTED_PACK_ID="$(python3 -B -c '
+import sys
+from pathlib import Path
+root = Path(sys.argv[1]).resolve()
+sys.path.insert(0, str(root / "80 Build"))
+from profile_pack import resolve_profile_pack
+context = resolve_profile_pack(root, explicit_root=sys.argv[2] or None)
+print(context.pack_id)
+' "$PROJECT_ROOT" "$PROFILE_PACK_ROOT")"
 
 if [[ -n "$PROFILE_NAME" ]]; then
     ENCODED_PROFILE="$(python3 -c 'import sys; from urllib.parse import quote; print(quote(sys.argv[1]))' "$PROFILE_NAME")"
@@ -59,17 +78,35 @@ payload = json.loads(sys.argv[1])
 app = payload.get("app")
 valid = (
     payload.get("ok") is True
-    and payload.get("read_only") is True
     and payload.get("backend_mode") in {"edsdk", "simulated"}
     and isinstance(app, dict)
     and isinstance(app.get("version"), str)
     and isinstance(app.get("project_context"), dict)
+    and isinstance(app.get("profile_pack"), dict)
+    and app["profile_pack"].get("pack_id") == sys.argv[2]
 )
 raise SystemExit(0 if valid else 1)
-' "$CAMERA_LAB_STATUS" 2>/dev/null; then
+' "$CAMERA_LAB_STATUS" "$EXPECTED_PACK_ID" 2>/dev/null; then
     open -a "Google Chrome" "$CAMERA_LAB_URL"
     echo "Camera Lab is already running on port 8770; Google Chrome reopened it."
     exit 0
+fi
+
+if [[ -n "$CAMERA_LAB_STATUS" ]]; then
+    RUNNING_PACK="$(python3 -c '
+import json, sys
+try:
+    app = json.loads(sys.argv[1]).get("app") or {}
+    pack = app.get("profile_pack") or {}
+    print(pack.get("pack_name") or "another profile pack")
+except Exception:
+    pass
+' "$CAMERA_LAB_STATUS")"
+    if [[ -n "$RUNNING_PACK" ]]; then
+        echo "Camera Lab is already running with $RUNNING_PACK."
+        echo "Stop that Camera Lab session, then open the selected profile pack again."
+        exit 1
+    fi
 fi
 
 if command -v lsof >/dev/null 2>&1 && lsof -nP -iTCP:8770 -sTCP:LISTEN >/dev/null 2>&1; then
@@ -79,6 +116,9 @@ if command -v lsof >/dev/null 2>&1 && lsof -nP -iTCP:8770 -sTCP:LISTEN >/dev/nul
 fi
 
 SERVER_COMMAND=(python3 -B "$PROJECT_ROOT/80 Build/camera_control/dev_server.py")
+if [[ -n "$PROFILE_PACK_ROOT" ]]; then
+    SERVER_COMMAND+=(--profile-pack "$PROFILE_PACK_ROOT")
+fi
 if [[ "$BACKEND" == "edsdk" ]]; then
     if [[ -n "${PRS_LOCAL_WORKSPACE:-}" ]]; then
         LOCAL_WORKSPACE="$PRS_LOCAL_WORKSPACE"

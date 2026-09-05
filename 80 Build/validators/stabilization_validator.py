@@ -1,14 +1,16 @@
 import re
 
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
 EXPECTED_MENU_LABEL = "IS (Image Stabilizer) mode"
 LENS_MARKER = re.compile(r"<!--\s*STABILIZATION_REFERENCE:\s*([a-z0-9_]+)\s*-->")
 
 
-def validate(root):
-    data_path = root / "data" / "stabilization_reference.yaml"
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
+    data_path = paths.owned_equipment_file
     quick_reference_path = root / "50 Field Guide" / "Appendices" / "R5 Quick Reference.md"
     lens_guide_path = root / "50 Field Guide" / "Appendices" / "Lens Capabilities.md"
     issues = []

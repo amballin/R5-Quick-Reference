@@ -8,20 +8,23 @@ Use the **User Guide** button in the Camera Lab header to reopen this page at an
 
 For routine use, double-click **R5 Camera Lab.app** in the machine-local `Applications` folder. It runs in the background without opening Terminal and opens Google Chrome automatically.
 
-You can also select a saved, unchanged Subject/Profile Card in Profile Editor and choose **Open in Camera Lab**. Camera Lab opens or reuses its window with that profile selected. It still waits for you to connect and scan; the handoff does not change the camera.
+You can also select a saved, unchanged Subject/Profile Card in Profile Editor and choose **Open in Camera Lab**. Camera Lab opens or reuses its window with that profile and the exact active profile pack selected. It still waits for you to connect and scan; the handoff does not change the camera. A Lab already running with another pack cannot be reused—stop it, then open the intended card again.
 
 Check the header before working:
 
-- **Main** or **Prototype** identifies the checkout supplying the profiles and C1–C3 assignments.
-- **Read-only** means Camera Lab can inspect but cannot write camera settings.
+- The version summary's **Main** or **Prototype** suffix identifies the application checkout. Expand it for the full branch and diagnostic source hash; there is no separate checkout badge.
+- **Profile Pack:** identifies the active source set by its friendly manifest name without displaying its private path.
+- **Read-only** beside **Profile Pack:** means Camera Lab can inspect but cannot write camera settings.
 - **Simulator** identifies a rehearsal. It cannot change a physical EOS R5.
-- The version badge expands to show a diagnostic source hash.
+- The version control expands to show the full branch and diagnostic source hash.
 
 Reopen the app if its Chrome window is missing. Choose **Stop Camera Lab** when finished; it closes the camera session and only the Camera Lab server.
 
+When Profile Editor opens an external pack in Camera Lab, the green boundary notice says **External profile pack · source protected**. You may connect, scan, compare, follow setup routes, rehearse guarded application in the simulator, and use the ordinary separately confirmed physical-camera write mode. Camera Lab does not change the selected pack's sources. Step 5C lets Profile Editor separately review and promote exact completed physical-camera evidence into that pack's verification status. If the pack changes independently, Camera Lab stops further API work; stop both tools and reopen the pack before continuing.
+
 ## Choose physical camera or simulator
 
-The ordinary app starts with Canon EDSDK for a physical EOS R5. Use this mode for actual readback, comparison, manual setup, and verified guarded changes.
+The ordinary app starts with Canon EDSDK for a physical EOS R5. Use this mode for actual readback, comparison, manual setup, and explicitly enabled verified guarded changes with embedded or external profile sources.
 
 Choose **Use Simulator** to rehearse without a camera. Confirming the switch ends the current session and restarts the same Camera Lab in simulated mode. Choose **Use Physical Camera** to return to Canon EDSDK. Switching modes clears the current scan and comparison.
 
@@ -138,7 +141,7 @@ When finished, read the receipt. **Profile applied successfully** means the revi
 - **Camera Lab window is missing:** reopen **R5 Camera Lab.app** to recover it.
 - **Camera Lab is unresponsive:** stop it, disconnect the camera if needed, and reopen the app. Never force a prior reviewed plan through a changed session.
 
-Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update the verification tracker itself. In Profile Editor's **Review & Build** workspace, **Camera Lab evidence** can deliberately promote exact evidence from a completed physical EDSDK session only into the matching current C1–C3 setting's configured result. Simulator and incomplete sessions are excluded, nothing is selected automatically, and read-back, registration, operational-test, backup, Canon-capability, and owner-confirmed evidence remain unchanged.
+Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update verification status itself. In Profile Editor's **Review & Build** workspace for embedded sources—or **Evidence Review** for an external pack—**Camera Lab evidence** can deliberately promote exact evidence from a completed physical EDSDK session only into the matching current C1–C3 setting's configured result. External review reads only the active pack's journal namespace and requires matching pack identity. Simulator, incomplete, legacy-without-pack-identity, and other-pack sessions are excluded; nothing is selected automatically, and read-back, registration, operational-test, backup, Canon-capability, and owner-confirmed evidence remain unchanged.
 
 ## Get more help
 

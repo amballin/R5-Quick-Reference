@@ -1,7 +1,7 @@
 from collections import Counter
 from uuid import UUID
 
-from .common import error, flatten_paths, load_yaml_checked
+from .common import error, flatten_paths, load_yaml_checked, resolved_paths
 
 
 LIST_KEYS = ["checklist", "watch_for", "common_mistakes", "notes"]
@@ -11,9 +11,11 @@ ICON_POSITIONS = {"header", "left", "right"}
 FIELD_SETUP_STARTS = {"C1", "C2", "C3"}
 
 
-def validate(root):
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
     issues = []
-    baseline_path = root / "00 Master" / "baseline.yaml"
+    baseline_path = paths.baseline_file
     baseline_paths = set()
     baseline_values = {}
     try:
@@ -24,7 +26,7 @@ def validate(root):
     except Exception:
         pass
 
-    profile_paths = sorted((root / "10 Profiles").glob("*.yaml"))
+    profile_paths = sorted(paths.profiles_dir.glob("*.yaml"))
     stems = [path.stem.lower() for path in profile_paths]
     profile_ids = _profile_ids(profile_paths)
     card_setting_paths = _card_setting_paths(root)
@@ -32,7 +34,7 @@ def validate(root):
     appendix_ids = _appendix_ids(root)
 
     for duplicate in _duplicates(stems):
-        issues.append(error("profiles", root / "10 Profiles", f"Duplicate profile filename stem: {duplicate}"))
+        issues.append(error("profiles", paths.profiles_dir, f"Duplicate profile filename stem: {duplicate}"))
 
     for path in profile_paths:
         try:
@@ -92,7 +94,7 @@ def validate(root):
         issues.extend(_validate_appendix_links(path, data.get("appendix_links"), appendix_ids))
 
     for duplicate in _duplicates(titles):
-        issues.append(error("profiles", root / "10 Profiles", f"Duplicate profile title: {duplicate}"))
+        issues.append(error("profiles", paths.profiles_dir, f"Duplicate profile title: {duplicate}"))
     return issues
 
 

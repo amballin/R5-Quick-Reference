@@ -118,18 +118,20 @@
 <p>Use the <strong>User Guide</strong> button in the Camera Lab header to reopen this page at any time. For SDK installation, development, physical-write qualification, and detailed evidence rules, use the <a href="usb-camera-configuration.html">USB Camera Configuration advanced reference</a>.</p>
 <section class="step"><h2>Start Camera Lab</h2>
 <p>For routine use, double-click <strong>R5 Camera Lab.app</strong> in the machine-local <code>Applications</code> folder. It runs in the background without opening Terminal and opens Google Chrome automatically.</p>
-<p>You can also select a saved, unchanged Subject/Profile Card in Profile Editor and choose <strong>Open in Camera Lab</strong>. Camera Lab opens or reuses its window with that profile selected. It still waits for you to connect and scan; the handoff does not change the camera.</p>
+<p>You can also select a saved, unchanged Subject/Profile Card in Profile Editor and choose <strong>Open in Camera Lab</strong>. Camera Lab opens or reuses its window with that profile and the exact active profile pack selected. It still waits for you to connect and scan; the handoff does not change the camera. A Lab already running with another pack cannot be reused—stop it, then open the intended card again.</p>
 <p>Check the header before working:</p>
 <ul>
-<li><strong>Main</strong> or <strong>Prototype</strong> identifies the checkout supplying the profiles and C1–C3 assignments.</li>
-<li><strong>Read-only</strong> means Camera Lab can inspect but cannot write camera settings.</li>
+<li>The version summary&#x27;s <strong>Main</strong> or <strong>Prototype</strong> suffix identifies the application checkout. Expand it for the full branch and diagnostic source hash; there is no separate checkout badge.</li>
+<li><strong>Profile Pack:</strong> identifies the active source set by its friendly manifest name without displaying its private path.</li>
+<li><strong>Read-only</strong> beside <strong>Profile Pack:</strong> means Camera Lab can inspect but cannot write camera settings.</li>
 <li><strong>Simulator</strong> identifies a rehearsal. It cannot change a physical EOS R5.</li>
-<li>The version badge expands to show a diagnostic source hash.</li>
+<li>The version control expands to show the full branch and diagnostic source hash.</li>
 </ul>
 <p>Reopen the app if its Chrome window is missing. Choose <strong>Stop Camera Lab</strong> when finished; it closes the camera session and only the Camera Lab server.</p>
+<p>When Profile Editor opens an external pack in Camera Lab, the green boundary notice says <strong>External profile pack · source protected</strong>. You may connect, scan, compare, follow setup routes, rehearse guarded application in the simulator, and use the ordinary separately confirmed physical-camera write mode. Camera Lab does not change the selected pack&#x27;s sources. Step 5C lets Profile Editor separately review and promote exact completed physical-camera evidence into that pack&#x27;s verification status. If the pack changes independently, Camera Lab stops further API work; stop both tools and reopen the pack before continuing.</p>
 </section>
 <section class="step"><h2>Choose physical camera or simulator</h2>
-<p>The ordinary app starts with Canon EDSDK for a physical EOS R5. Use this mode for actual readback, comparison, manual setup, and verified guarded changes.</p>
+<p>The ordinary app starts with Canon EDSDK for a physical EOS R5. Use this mode for actual readback, comparison, manual setup, and explicitly enabled verified guarded changes with embedded or external profile sources.</p>
 <p>Choose <strong>Use Simulator</strong> to rehearse without a camera. Confirming the switch ends the current session and restarts the same Camera Lab in simulated mode. Choose <strong>Use Physical Camera</strong> to return to Canon EDSDK. Switching modes clears the current scan and comparison.</p>
 <p>Camera Lab never runs the simulator and physical-camera backend at the same time.</p>
 </section>
@@ -226,7 +228,7 @@
 <li><strong>Camera Lab window is missing:</strong> reopen <strong>R5 Camera Lab.app</strong> to recover it.</li>
 <li><strong>Camera Lab is unresponsive:</strong> stop it, disconnect the camera if needed, and reopen the app. Never force a prior reviewed plan through a changed session.</li>
 </ul>
-<p>Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update the verification tracker itself. In Profile Editor&#x27;s <strong>Review &amp; Build</strong> workspace, <strong>Camera Lab evidence</strong> can deliberately promote exact evidence from a completed physical EDSDK session only into the matching current C1–C3 setting&#x27;s configured result. Simulator and incomplete sessions are excluded, nothing is selected automatically, and read-back, registration, operational-test, backup, Canon-capability, and owner-confirmed evidence remain unchanged.</p>
+<p>Camera Lab keeps guarded-run records and manual confirmations machine-locally. It does not commit, push, publish, edit profile source, or update verification status itself. In Profile Editor&#x27;s <strong>Review &amp; Build</strong> workspace for embedded sources—or <strong>Evidence Review</strong> for an external pack—<strong>Camera Lab evidence</strong> can deliberately promote exact evidence from a completed physical EDSDK session only into the matching current C1–C3 setting&#x27;s configured result. External review reads only the active pack&#x27;s journal namespace and requires matching pack identity. Simulator, incomplete, legacy-without-pack-identity, and other-pack sessions are excluded; nothing is selected automatically, and read-back, registration, operational-test, backup, Canon-capability, and owner-confirmed evidence remain unchanged.</p>
 </section>
 <section class="step"><h2>Get more help</h2>
 <p>Use the <a href="usb-camera-configuration.html">USB Camera Configuration advanced reference</a> for Canon EDSDK location, development commands, capability details, physical-write evidence, safety qualification, and troubleshooting depth. Use the <a href="editor-user-guide.html">Profile Editor User Guide</a> to change profile targets, lens choices, C1–C3 foundations, My Menu, and shared baseline settings.</p>

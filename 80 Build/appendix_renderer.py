@@ -117,7 +117,7 @@ def _inject_stabilization_references(markdown, paths):
     marker_pattern = re.compile(r"<!--\s*STABILIZATION_REFERENCE:\s*([a-z0-9_]+)\s*-->")
     if not marker_pattern.search(markdown):
         return markdown
-    data_path = paths.root / "data" / "stabilization_reference.yaml"
+    data_path = paths.owned_equipment_file
     data = load_yaml_checked(data_path) or {}
     lenses = {
         lens.get("id"): lens

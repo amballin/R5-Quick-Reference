@@ -86,13 +86,14 @@ def enrich_properties(properties):
     return enriched
 
 
-def capability_coverage():
+def capability_coverage(paths=None):
     catalog = load_catalog()
     mapped = {}
     for item in catalog["properties"]:
         for path in item.get("profile_paths") or []:
             mapped[path] = item["capability_classification"]
-    baseline = yaml.safe_load(BASELINE_PATH.read_text(encoding="utf-8"))["defaults"]
+    baseline_path = paths.baseline_file if paths is not None else BASELINE_PATH
+    baseline = yaml.safe_load(baseline_path.read_text(encoding="utf-8"))["defaults"]
     all_paths = sorted(_flatten_paths(baseline))
     exact = sorted(path for path, status in mapped.items() if status == "sdk_readable")
     conditional = sorted(path for path, status in mapped.items() if status == "conditional")

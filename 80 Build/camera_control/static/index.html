@@ -23,16 +23,22 @@
         <button id="stop-camera-lab-button" class="stop-server-button" type="button">Stop Camera Lab</button>
       </div>
       <div class="header-meta">
-        <span id="header-safety-badge" class="safety-badge">No setting writes</span>
-        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
+        <span id="header-safety-badge" class="safety-badge">Read-only</span>
+        <span id="profile-pack-badge" class="profile-pack-badge embedded">Profile Pack: checking…</span>
       </div>
       <details class="build-badge header-version">
         <summary id="camera-lab-version" aria-live="polite">Loading Camera Lab version…</summary>
+        <span id="camera-lab-branch" class="source-hash">Branch unavailable</span>
         <span id="camera-lab-source-hash" class="source-hash">Source hash unavailable</span>
       </details>
       <img class="camera-logo" src="/silver-camera-logo.png" alt="" aria-hidden="true">
     </div>
   </header>
+
+  <section id="external-pack-boundary" class="external-pack-boundary" hidden>
+    <strong>External profile pack · source protected</strong>
+    <span id="external-pack-boundary-detail">Camera operations use the normal safeguards; profile-pack source remains unchanged.</span>
+  </section>
 
   <main>
     <section class="stepper" aria-label="Camera configuration phases">
@@ -142,7 +148,7 @@
           <h2>Compare a Subject/Profile Card</h2>
           <p>Select a card after scanning the camera. Findings follow the card's visible setting order; when an authored target depends on subject, grouping, or lighting, choose that context in the finding before Camera Lab evaluates it.</p>
         </div>
-        <span id="comparison-safety-badge" class="safety-badge">No setting writes</span>
+        <span id="comparison-safety-badge" class="safety-badge">Read-only</span>
       </div>
       <div class="profile-controls">
         <label for="profile-select">Subject/Profile Card</label>

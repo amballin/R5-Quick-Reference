@@ -4,7 +4,7 @@ Profile Editor 1.0 is the main local interface for routine work and deliberate r
 
 ## Start the editor
 
-For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. It starts in the background without opening Terminal and opens Google Chrome automatically. The main project uses port 8765 and a development prototype uses port 8766, so both can run at the same time. Their header badges and macOS application identities remain distinct.
+For routine use, double-click **R5 Profile Editor.app** in the machine-local `Applications` folder. It starts in the background without opening Terminal and opens Google Chrome automatically. The main project uses port 8765 and a development prototype uses port 8766, so both can run at the same time. Their Main/Prototype version indicators and macOS application identities remain distinct.
 
 If an editor is running without a visible Chrome window, open that checkout's **R5 Profile Editor.app** again to recover the window. Use **Stop Profile Editor** in the header when finished; it warns before discarding unsaved browser drafts and stops only the editor server. If the window cannot be recovered, double-click **Stop Profile Editor.command** in that repository. It clears stale process records, recognizes one verified pre-upgrade prototype left on port 8765, and stops only a server verified as belonging to that exact checkout.
 
@@ -18,9 +18,49 @@ Open the local address shown in Terminal. Keep that Terminal window open while u
 
 The editor runs only on this Mac. Routine source commit and branch push are available only inside **Finish Day**. Merge to main, main push, and branch resynchronization are available only inside **Integrate Branch**. Live publication is available only inside **Release & Publish** in the Main project editor, after a separate exact review and confirmation.
 
-Before editing, confirm the header badge. **Main project** means the app is running from the authoritative `main` worktree. **Prototype · branch-name** means it is running from a development worktree. If the badge does not match the work you intend to do, stop that app and open the correct project-specific app instead.
+Before editing, confirm the expandable editor-version indicator. **Main** means the app is running from the authoritative `main` worktree; **Prototype** means it is running from a development worktree. Expand it for the exact branch and source hash. If the context does not match the work you intend to do, stop that app and open the correct project-specific app instead.
+
+### Select and edit a private profile pack
+
+Use the selector beside the compact **Profile Pack:** label to move among embedded sources and remembered private packs. Available external choices display the friendly name from that pack's `profile-pack.yaml`, never its folder name or filesystem path. Choose **Choose another profile pack…** and enter an exact root path to add a pack. The editor does not search the Mac for packs.
+
+Save or discard every browser draft first. Switching requires confirmation, validates and loads the complete new pack before saving the selection, and then reloads the editor. Future launches through **R5 Profile Editor.app** use that selection. Selecting embedded sources clears the active external choice but keeps valid remembered packs in the list.
+
+### Create a new private profile pack
+
+Open **Setup & Sharing** and use **New Profile Pack**. If an external pack is active, use **Switch to embedded sources** first. Enter a friendly name, choose **Choose with Finder…**, and use the macOS window—including its New Folder control when useful—to select an exact new destination. Save or discard every browser draft, then choose **Review new profile pack**. Review the generated UUID manifest, exact destination, complete migrated source inventory, and local-Git boundary before checking the confirmation and choosing **Create and select profile pack**.
+
+The editor stages the new pack, copies the embedded owner sources without changing them, adds the private-pack working instructions and a `.gitignore` that excludes Finder's `.DS_Store`, initializes local Git, validates the combined application and pack sources, then atomically installs, registers, selects, and reloads the pack. Finder metadata is also excluded defensively from pack review and commits. It refuses an existing destination and removes an incomplete new destination after failure. Step 6A creates no commit, remote, push, build, spreadsheet, handoff, or publication. When an external pack is active, switch to embedded sources before creating another pack.
+
+### Save and hand off a private profile pack
+
+With the external pack selected, open **Setup & Sharing**. Follow its four numbered steps: **Create or select**, **Save locally**, **Connect GitHub**, and **Push & verify**. Only the action needed next is open. For a new pack, review the exact pack files, confirm that `AGENTS.md` is included, enter the message, check the compact confirmation, and commit. Nothing is pushed and application Git is untouched.
+
+Before **Connect GitHub**, create an empty repository on GitHub: choose **New repository**, set it to **Private**, and do not add a README, `.gitignore`, or license. Copy its HTTPS URL; HTTPS is recommended on this Mac because credentials remain in the system credential manager. SSH is supported only when an SSH key is already configured. Never put a password or token in the URL. Review the exact URL and confirm the connection separately. If an old origin is unreachable, review the replacement URL here; the editor does not require the old origin to respond first.
+
+Push remains a third separate approval. Verify the displayed current branch and exact same-named `origin` target, check the confirmation, and choose **Push private pack**. Connection and push show their stage and elapsed time, can reconnect after page navigation or reload, and stop a nonresponsive remote check after 20 seconds. When either finishes, a receipt remains with the pack, branch, commit, remote, time, verified result, and next step. Reopening the page reconciles that receipt with live status, so a synchronized pack shows its verified commit instead of stale instructions from an earlier commit step. On a timeout, refresh status before retrying. The workflow never creates, switches, or force-pushes a branch.
+
+**Setup complete** appears only after both the application and private pack are clean and their current commits match the live heads of their respective matching `origin` branches. Open **How the application and private pack stay separate** for the two repository status details. A result for one repository never substitutes for the other. Resolve application Git work through its normal Finish Day workflow; external-pack Setup & Sharing never commits or pushes the application.
+
+For a one-launch override that does not change the saved choice, run from the application repository root:
+
+```bash
+python3 -B "80 Build/profile_editor.py" --profile-pack "/absolute/path/to/private-profile-pack"
+```
+
+The header shows the application checkout and selected pack independently, without displaying the private filesystem path. A gold **External profile pack · guarded editing** banner identifies the boundary. Profiles and lens choices, Cx Foundation, My Menu, Camera Buttons, Baseline Setup, Deleted Cards, and Camera Reference are available; previews, reviews, and saves use only manifest-owned pack sources and pack-ID-namespaced machine-local state. Each save retains the normal one-use review, fingerprint, backup, validation, atomic-write, and rollback safeguards.
+
+Steps 5A–5B allow **Open in Camera Lab** for connection, scan, comparison, equipment context, C1–C3 labels, setup routes, guarded simulation, and explicitly enabled physical-camera operation from the selected external pack. Camera Lab displays the manifest name, refuses to reuse a Lab running another pack, and keeps local journals, qualifications, evidence, confirmations, and checklist state isolated by pack ID. Step 5C adds **Evidence Review** for deliberately promoting exact completed physical-camera evidence into the selected pack's verification status. Camera Lab cannot write pack source itself. Step 6B permits only the reviewed private-pack Git and combined-handoff workflow described above. Equipment editing, independent verification editing, spreadsheets, builds, cleanup, application Finish Day/Git, integration, main-editor launch, and publication remain disabled and server-rejected for an external pack. Restart after changing pack source outside the editor.
+
+If a saved pack is missing, moved, or invalid and the ordinary launcher stops, use this recovery launch and then select embedded sources or another valid pack. The separately confirmed choice repairs invalid machine-local selection state:
+
+```bash
+python3 -B "80 Build/profile_editor.py" --embedded
+```
 
 ## Understand the working model
+
+On desktop, the left navigation has its own scrollbar sized to the space actually visible below the header. You can reach every navigation item without scrolling the content workspace on the right. At narrow responsive widths, navigation returns to ordinary page flow.
 
 The editor separates temporary work from saved source:
 
@@ -121,9 +161,9 @@ After Finish Day or Integrate Branch completes, choose **Review optional cleanup
 
 Nothing is checked automatically. Review each full path, date, size, and reason. To delete, check the exact items, then separately confirm permanent deletion. The editor checks the candidates again immediately before deletion and stops if one changed. Source files, private profile data, current deliverables, protected backups, and automatic integration worktrees are never offered.
 
-**Setup & Sharing** documents a possible future private profile pack for an independent fork owner. The current implementation does not move profiles or change their source location; they remain part of this repository.
+**Setup & Sharing** documents the private profile-pack architecture for an independent fork owner. Step 4C supports saved guarded editor selection, Steps 5A–5B let the selected external pack open in Camera Lab for comparison and guarded camera operation, Step 5C adds reviewed evidence promotion, Step 6A creates a validated migrated-copy pack from embedded sources, and Step 6B provides independent pack Git plus combined handoff checks. Embedded source remains authoritative. Direct Camera Lab pack-source writes, source-migration activation, external-pack publication, and other activation work remain future work.
 
-When a saved Subject/Profile Card is selected with no unsaved ordinary profile edits, choose **Open in Camera Lab** in the header to start or reuse the independent Lab with that profile preselected. The editor passes only the saved profile name; Camera Lab reloads the current profile and C1–C3 assignments. It does not connect, scan, compare, or change a setting automatically. After connecting and completing the first comparison, selecting another profile automatically refreshes its comparison and card-specific lens menu. The ordinary Canon EDSDK Lab remains read-only; choose **Enable camera changes** and confirm the safe restart before **Apply this profile to camera** becomes available. Apply defaults Lens to the attached lens (or the card's Primary), Flash to **None**, and Cards to **CFexpress & SD**, with controlled menus for the other supported contexts. If Camera Setup Essentials is already set, its optional readiness confirmation clears only matching Set & Forget targets that Camera Lab cannot verify directly. Camera Lab checks readiness and shows every proposed change, but removes already-correct and non-action rows from the work queue. Simulator-safe changes run and verify after the one final confirmation; remaining manual work is grouped by camera route with one rescan per group. The stationary **Do this now** card contains every exact target, and the complete list stays out of the active workspace. Completed manual groups immediately update Rapid setup and may follow an identical setting and target to another card only during the same unchanged connected-camera session. Camera Lab gives an explicit successful-or-not-fully-applied receipt. Each app's Stop button closes only that app.
+When a saved Subject/Profile Card is selected with no unsaved ordinary profile edits, choose **Open in Camera Lab** in the header to start or reuse the independent Lab with that profile preselected. The editor passes the exact active pack context and saved profile name; Camera Lab reloads the current profile and C1–C3 assignments from that pack. It does not connect, scan, compare, or change a setting automatically. After connecting and completing the first comparison, selecting another profile automatically refreshes its comparison and card-specific lens menu. The ordinary Canon EDSDK Lab starts read-only with embedded or external sources; choose **Enable camera changes** and confirm the safe restart before **Apply this profile to camera** becomes available. Apply defaults Lens to the attached lens (or the card's Primary), Flash to **None**, and Cards to **CFexpress & SD**, with controlled menus for the other supported contexts. If Camera Setup Essentials is already set, its optional readiness confirmation clears only matching Set & Forget targets that Camera Lab cannot verify directly. Camera Lab checks readiness and shows every proposed change, but removes already-correct and non-action rows from the work queue. Simulator-safe changes run and verify after the one final confirmation; remaining manual work is grouped by camera route with one rescan per group. The stationary **Do this now** card contains every exact target, and the complete list stays out of the active workspace. Completed manual groups immediately update Rapid setup and may follow an identical setting and target to another card only during the same unchanged connected-camera session. Camera Lab gives an explicit successful-or-not-fully-applied receipt. External-pack journals remain machine-local and Step 5C allows exact eligible evidence to be promoted through Profile Editor's guarded **Evidence Review**. Each app's Stop button closes only that app.
 
 ## Choose a Cx foundation
 
@@ -234,7 +274,9 @@ Open **Review & Build** before finishing:
 7. Review the generated result, then open **Finish Day** when you are ready to commit and synchronize the completed source work.
 8. Use **Stop Profile Editor** in the header when finished.
 
-The guarded Review & Build action runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. If the verification tracker may contain unimported edits, both evidence promotion and readiness stop. Permanent reference-card profile YAML remains read-only; My Menu and Camera Buttons change only through their dedicated structured editors. Review & Build does not rename profiles, permanently delete cards, commit, push, publish, or change website version metadata.
+For an external pack, this workspace is named **Evidence Review**. Refresh the evidence, select only the intended completed physical-camera items, review the exact verification-status YAML diff, acknowledge the narrow evidence boundary, and confirm. The transaction writes only the selected pack's verification-status source, creates a pack-scoped recovery backup, validates the combined source context, and does not create a spreadsheet or run a build.
+
+The guarded Review & Build action for embedded sources runs source-only validation, refreshes only safely stale spreadsheet-derived artifacts when needed, then runs the normal development build and full validation. For an external pack this workspace becomes **Evidence Review**, hides build controls, and may update only pack-owned verification status. If the active verification tracker may contain unimported edits, evidence promotion stops. Permanent reference-card profile YAML remains read-only; My Menu and Camera Buttons change only through their dedicated structured editors. Neither surface renames profiles, permanently deletes cards, commits, pushes, publishes, or changes website version metadata.
 
 ## Get more help
 

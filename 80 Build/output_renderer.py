@@ -96,9 +96,9 @@ def _payload(paths, profile_name, profile, merged, icon_manager, baseline=None):
                 f'{choice["role_label"]} — {choice["display_name"]}: '
                 f'{choice["use_when"]}. Check: {choice["field_check"]}'
             )
-            for choice in resolved_choices(profile, paths.root)
+            for choice in resolved_choices(profile, paths)
         ],
-        "compatibility": compatibility_messages(profile, merged, paths.root, surface="card"),
+        "compatibility": compatibility_messages(profile, merged, paths, surface="card"),
         "checklist": _plain_text_items(profile.get("checklist") or []),
         "watch_for": _plain_text_items(profile.get("watch_for") or []),
         "common_mistakes": _plain_text_items(profile.get("common_mistakes") or []),

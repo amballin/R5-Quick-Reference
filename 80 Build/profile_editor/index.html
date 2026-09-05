@@ -21,7 +21,12 @@
         <button id="stop-profile-editor" class="header-button" type="button">Stop Profile Editor</button>
       </div>
       <div class="header-meta">
-        <span id="project-context-badge" class="project-context-badge unknown">Checking project…</span>
+        <label class="profile-pack-picker">
+          <span class="profile-pack-label">Profile Pack:</span>
+          <select id="profile-pack-select" class="profile-pack-select embedded" aria-label="Active profile pack">
+            <option>Checking profile pack…</option>
+          </select>
+        </label>
       </div>
       <details class="build-badge header-version">
         <summary id="editor-version" aria-live="polite">Loading editor version…</summary>
@@ -31,8 +36,13 @@
     </div>
   </header>
 
+  <section id="external-pack-boundary-banner" class="external-pack-boundary-banner" hidden>
+    <strong>External profile pack · guarded editing</strong>
+    <span id="external-pack-boundary-detail">Only selected pack sources can be changed.</span>
+  </section>
+
   <main class="app-shell">
-    <aside class="app-sidebar">
+    <aside id="app-sidebar" class="app-sidebar">
       <nav class="view-tabs" aria-label="Editor workspace">
         <p class="nav-heading">Daily work</p>
         <button class="view-tab is-active" type="button" data-view="today">
@@ -560,7 +570,7 @@
       <section id="session-summary" class="session-summary" aria-label="Session change summary"></section>
       <div id="review-build-message" class="message" role="status" hidden></div>
 
-      <section class="pending-review-panel">
+      <section id="pending-review-summary" class="pending-review-panel">
         <div class="collection-heading">
           <div>
             <p class="eyebrow">Browser session</p>
@@ -587,7 +597,7 @@
         <div id="camera-lab-evidence-list" class="camera-lab-evidence-list"></div>
       </section>
 
-      <section class="local-build-panel">
+      <section id="local-build-panel" class="local-build-panel">
         <div>
           <p class="eyebrow">Canonical source</p>
           <h2>Validation and local build</h2>
@@ -936,30 +946,166 @@
     <section id="setup-sharing-view" class="app-view" hidden>
       <div class="view-intro">
         <div>
-          <p class="eyebrow">Computers and independent versions</p>
+          <p class="eyebrow">Private profile pack</p>
           <h2>Setup &amp; Sharing</h2>
-          <p class="muted">Routine work does not require a multi-Mac mode. This area keeps computer handoff and future fork guidance out of the daily path.</p>
+          <p class="muted">Follow the four steps below. The editor shows only the action that is needed next and keeps the application repository separate.</p>
         </div>
         <a class="secondary action-link" href="/source/WORKFLOWS/other-mac.html" target="_blank" rel="noreferrer">Other-Mac guide</a>
       </div>
       <section class="sharing-panel">
-        <div class="sharing-grid">
-          <article><strong>Shared application</strong><span>Editor, Camera Lab, validators, templates, Canon knowledge, and build logic.</span></article>
-          <article><strong>Private profile pack</strong><span>Personal profiles, My Menu, testing status, and supporting configuration.</span></article>
-          <article><strong>Independent publication</strong><span>A fork owner can build and publish a separate version from the shared application plus a selected profile pack.</span></article>
-        </div>
-        <div class="sharing-flow" aria-label="Proposed shared update flow">
-          <span><strong>Upstream project</strong><small>Shared logic updates</small></span>
-          <b aria-hidden="true">→</b>
-          <span><strong>Fork owner’s project</strong><small>Accept selected updates</small></span>
-          <b aria-hidden="true">+</b>
-          <span><strong>Private profile pack</strong><small>Remains independently owned</small></span>
-        </div>
-        <p class="configuration-state"><strong>Future architecture only.</strong> Profiles currently remain inside this repository. No profile-pack separation is implemented by this workflow change.</p>
+        <ol class="profile-pack-setup-steps" aria-label="Private profile pack setup progress">
+          <li id="profile-pack-step-select"><strong>1</strong><span><b>Create or select</b><small>Choose the pack used by the editor</small></span></li>
+          <li id="profile-pack-step-commit"><strong>2</strong><span><b>Save locally</b><small>Create the pack’s first Git snapshot</small></span></li>
+          <li id="profile-pack-step-remote"><strong>3</strong><span><b>Connect GitHub</b><small>Link an empty private repository</small></span></li>
+          <li id="profile-pack-step-push"><strong>4</strong><span><b>Push &amp; verify</b><small>Confirm the exact live commit</small></span></li>
+        </ol>
+
+        <section id="profile-pack-existing-summary" class="profile-pack-existing-summary" hidden>
+          <div><p class="eyebrow">Selected profile pack</p><h3 id="current-pack-setup-name">Private profile pack</h3><p class="muted">This pack remains separate from the Camera Guide application.</p></div>
+          <button id="switch-to-embedded-for-creation" class="secondary" type="button">Create another pack</button>
+        </section>
+
+        <section id="profile-pack-creation-panel" class="profile-pack-creation-panel">
+          <div>
+            <p class="eyebrow">Step 1 · create or select</p>
+            <h3>Create a new profile pack</h3>
+            <p class="muted">Choose a friendly name and a new destination whose parent folder already exists. The editor reviews the exact manifest and file inventory, stages the pack, validates it, then registers and selects it. Existing folders are never overwritten.</p>
+          </div>
+          <div class="profile-pack-creation-fields">
+            <label>Profile-pack name
+              <input id="new-profile-pack-name" type="text" maxlength="80" autocomplete="off" placeholder="My Canon EOS R5 Profiles">
+            </label>
+            <label>Exact destination on this Mac
+              <span class="profile-pack-destination-picker">
+                <input id="new-profile-pack-destination" type="text" autocomplete="off" spellcheck="false" placeholder="Choose with Finder…" readonly>
+                <button id="choose-profile-pack-destination" class="secondary" type="button">Choose with Finder…</button>
+              </span>
+            </label>
+          </div>
+          <p id="profile-pack-creation-message" class="muted" role="status">The new pack will contain a migrated copy. Embedded sources remain unchanged.</p>
+          <div class="profile-pack-creation-actions">
+            <button id="review-profile-pack-creation" class="primary" type="button">Review new profile pack</button>
+          </div>
+        </section>
+
+        <section id="profile-pack-git-panel" class="profile-pack-git-panel" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Current setup action</p>
+              <h3>Finish connecting this private pack</h3>
+              <p class="muted">Each action changes only the selected profile pack. The application is never committed or pushed here.</p>
+            </div>
+            <button id="refresh-profile-pack-git" class="secondary" type="button">Refresh status</button>
+          </div>
+          <div id="combined-handoff-status" class="configuration-state" role="status">Checking setup status…</div>
+          <div id="profile-pack-git-message" class="message" role="status" hidden></div>
+
+          <section id="profile-pack-commit-stage" class="profile-pack-git-stage" hidden>
+            <p class="eyebrow">Separate pack approval</p>
+            <h4 id="profile-pack-commit-heading">Review pack commit</h4>
+            <p class="muted">The initial commit must include the pack-owned <code>AGENTS.md</code>. Review captures an exact one-use file list; nothing is staged or committed until the separate confirmation.</p>
+            <button id="review-profile-pack-commit" class="secondary" type="button">Review exact pack files</button>
+            <div id="profile-pack-commit-review" hidden>
+              <pre id="profile-pack-commit-files" class="finish-day-file-list" tabindex="0"></pre>
+              <label class="finish-day-field">Pack commit message<input id="profile-pack-commit-message" type="text" maxlength="200" placeholder="Initialize private profile pack"></label>
+              <label class="finish-day-confirm"><input id="profile-pack-confirm-commit" type="checkbox"><span>Commit exactly the reviewed files in the private profile pack. The application repository will not change.</span></label>
+              <button id="commit-profile-pack" class="save-action" type="button" disabled>Commit reviewed pack files</button>
+            </div>
+          </section>
+
+          <section id="profile-pack-remote-stage" class="profile-pack-git-stage" hidden>
+            <p class="eyebrow">Step 3 · connect GitHub</p>
+            <h4>Create an empty private repository, then paste its URL</h4>
+            <ol class="github-repository-guide">
+              <li>On GitHub, choose <strong>New repository</strong> and set visibility to <strong>Private</strong>.</li>
+              <li>Leave README, <code>.gitignore</code>, and license unchecked so the repository is empty.</li>
+              <li>Create it, choose <strong>HTTPS</strong>, and copy the repository URL. HTTPS is recommended on this Mac; SSH works only if an SSH key is already configured.</li>
+            </ol>
+            <p class="muted">Do not put a password or access token in the URL. Sign-in remains in the Mac credential manager. You can replace an old or unreachable origin by reviewing the new URL here.</p>
+            <label class="finish-day-field">Private GitHub repository URL<input id="profile-pack-remote-url" type="text" autocomplete="off" spellcheck="false" placeholder="https://github.com/owner/private-profile-pack.git"></label>
+            <button id="review-profile-pack-remote" class="secondary" type="button">Review this connection</button>
+            <div id="profile-pack-remote-review" hidden>
+              <p id="profile-pack-remote-change" class="review-path"></p>
+              <label class="finish-day-confirm"><input id="profile-pack-confirm-remote" type="checkbox"><span>Configure only this private pack's <code>origin</code> using the exact reviewed URL.</span></label>
+              <button id="configure-profile-pack-remote" class="save-action" type="button" disabled>Connect private GitHub repository</button>
+            </div>
+          </section>
+
+          <section id="profile-pack-push-stage" class="profile-pack-git-stage" hidden>
+            <p class="eyebrow">Step 4 · push and verify</p>
+            <h4>Send this pack to its private GitHub repository</h4>
+            <p id="profile-pack-push-target" class="muted"></p>
+            <label class="finish-day-confirm"><input id="profile-pack-confirm-push" type="checkbox"><span>Push only the private pack's current branch to its exact matching <code>origin</code> branch. This does not push the application or publish a website.</span></label>
+            <button id="push-profile-pack" class="save-action" type="button" disabled>Push private pack</button>
+          </section>
+
+          <section id="profile-pack-git-progress" class="finish-day-stage profile-pack-git-progress" hidden>
+            <div class="workflow-progress-heading"><span class="progress-spinner" aria-hidden="true"></span><strong id="profile-pack-git-progress-stage">Starting…</strong><span id="profile-pack-git-progress-elapsed" class="muted"></span></div>
+            <code id="profile-pack-git-progress-command" class="workflow-progress-command"></code>
+            <details><summary>Show progress details</summary><pre id="profile-pack-git-progress-log" tabindex="0"></pre></details>
+          </section>
+
+          <section id="profile-pack-git-receipt" class="profile-pack-git-receipt" hidden aria-live="polite">
+            <div><p class="eyebrow">Latest verified result</p><h4 id="profile-pack-git-receipt-action">Verified</h4></div>
+            <dl>
+              <div><dt>Profile pack</dt><dd id="profile-pack-git-receipt-pack"></dd></div>
+              <div><dt>Branch</dt><dd id="profile-pack-git-receipt-branch"></dd></div>
+              <div><dt>Commit</dt><dd id="profile-pack-git-receipt-commit"></dd></div>
+              <div><dt>Remote</dt><dd id="profile-pack-git-receipt-remote"></dd></div>
+              <div><dt>Completed</dt><dd id="profile-pack-git-receipt-time"></dd></div>
+            </dl>
+            <p id="profile-pack-git-receipt-result"></p>
+            <p id="profile-pack-git-receipt-next" class="muted"></p>
+          </section>
+        </section>
+
+        <details class="ownership-details">
+          <summary>How the application and private pack stay separate</summary>
+          <div class="sharing-grid">
+            <article><strong>Shared application</strong><span>Editor, Camera Lab, validators, templates, Canon knowledge, and build logic.</span></article>
+            <article><strong>Private profile pack</strong><span>Personal profiles, My Menu, testing status, and supporting configuration.</span></article>
+            <article><strong>Independent publication</strong><span>A fork owner can build and publish a separate version from the shared application plus a selected profile pack.</span></article>
+          </div>
+          <div class="sharing-flow" aria-label="Independent shared update flow">
+            <span><strong>Upstream project</strong><small>Shared logic updates</small></span><b aria-hidden="true">→</b>
+            <span><strong>Fork owner’s project</strong><small>Accept selected updates</small></span><b aria-hidden="true">+</b>
+            <span><strong>Private profile pack</strong><small>Remains independently owned</small></span>
+          </div>
+          <div class="profile-pack-repository-grid">
+            <article><strong>Application repository</strong><span id="application-git-summary" class="muted">Checking…</span></article>
+            <article><strong>Private profile pack</strong><span id="profile-pack-git-summary" class="muted">Checking…</span></article>
+          </div>
+          <button id="change-profile-pack-remote" class="secondary" type="button" hidden>Change GitHub connection</button>
+        </details>
       </section>
     </section>
     </div>
   </main>
+
+  <dialog id="profile-pack-creation-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required creation review</p>
+        <h2>Create and select this profile pack?</h2>
+        <p id="profile-pack-creation-summary" class="muted"></p>
+      </div>
+      <button id="profile-pack-creation-close" class="secondary" type="button" aria-label="Close creation review">Close</button>
+    </div>
+    <p class="review-warning"><strong>No existing folder will be overwritten.</strong> The editor will initialize local Git but will not commit, configure a remote, push, build, or publish.</p>
+    <h3>Exact destination</h3>
+    <code id="profile-pack-creation-destination" class="review-path"></code>
+    <h3>New manifest</h3>
+    <pre id="profile-pack-creation-manifest" class="review-diff" tabindex="0"></pre>
+    <details class="profile-pack-creation-files">
+      <summary><span id="profile-pack-creation-file-count">0</span> files will be created</summary>
+      <ul id="profile-pack-creation-file-list"></ul>
+    </details>
+    <label class="review-confirmation"><input id="profile-pack-creation-confirm" type="checkbox"> I reviewed the name, exact destination, migrated source inventory, and local Git boundary.</label>
+    <div class="review-actions">
+      <button id="profile-pack-creation-cancel" class="secondary" type="button">Cancel</button>
+      <button id="create-profile-pack" class="save-action" type="button" disabled>Create and select profile pack</button>
+    </div>
+  </dialog>
 
   <dialog id="review-dialog" class="review-dialog">
     <div class="review-heading">

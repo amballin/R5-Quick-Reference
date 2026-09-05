@@ -1,4 +1,3 @@
-from asset_manager import ProjectPaths
 from camera_setup_tracker import effective_registration_definition_fingerprints
 from spreadsheet_revisions import tracker_definition_fingerprints
 from verification_status import (
@@ -9,12 +8,12 @@ from verification_status import (
     working_copy_state,
 )
 
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
-def validate(root):
+def validate(paths_or_root):
     issues = []
-    paths = ProjectPaths(root)
+    paths = resolved_paths(paths_or_root)
     try:
         status = load_status(paths)
     except Exception as exc:

@@ -10,8 +10,6 @@ from feature_interactions import evaluate, load_catalog as load_interaction_cata
 from utilities import flatten
 
 
-GUIDANCE_FILE = Path("00 Master") / "profile_lens_guidance.yaml"
-EQUIPMENT_FILE = Path("data") / "stabilization_reference.yaml"
 ROLE_LABELS = {
     "primary": "Primary",
     "alternative": "Alternative",
@@ -33,18 +31,34 @@ def _load_yaml(path):
     return data
 
 
-def load_sources(root):
-    root = Path(root)
-    return _load_yaml(root / GUIDANCE_FILE), _load_yaml(root / EQUIPMENT_FILE)
+def _application_root(paths_or_root):
+    return getattr(paths_or_root, "application_root", paths_or_root)
 
 
-def resolved_choices(profile, root, guidance=None, equipment=None):
+def load_sources(paths_or_root):
+    root = _application_root(paths_or_root)
+    if not hasattr(paths_or_root, "profile_lens_guidance_file"):
+        root = Path(root)
+    guidance_path = (
+        paths_or_root.profile_lens_guidance_file
+        if hasattr(paths_or_root, "profile_lens_guidance_file")
+        else root / "00 Master" / "profile_lens_guidance.yaml"
+    )
+    equipment_path = (
+        paths_or_root.owned_equipment_file
+        if hasattr(paths_or_root, "owned_equipment_file")
+        else root / "data" / "stabilization_reference.yaml"
+    )
+    return _load_yaml(guidance_path), _load_yaml(equipment_path)
+
+
+def resolved_choices(profile, paths_or_root, guidance=None, equipment=None):
     """Return ordered display choices for one immutable profile identity."""
     card_id = profile.get("card_id")
     if not card_id or profile.get("card_type", "profile") != "profile":
         return []
     if guidance is None or equipment is None:
-        loaded_guidance, loaded_equipment = load_sources(root)
+        loaded_guidance, loaded_equipment = load_sources(paths_or_root)
         guidance = guidance if guidance is not None else loaded_guidance
         equipment = equipment if equipment is not None else loaded_equipment
     entry = next(
@@ -78,12 +92,12 @@ def resolved_choices(profile, root, guidance=None, equipment=None):
     return choices
 
 
-def compatibility_messages(profile, merged, root, surface="card", guidance=None, equipment=None):
+def compatibility_messages(profile, merged, paths_or_root, surface="card", guidance=None, equipment=None):
     """Return de-duplicated profile and candidate-lens interaction messages."""
-    interactions = load_interaction_catalog(root)
+    interactions = load_interaction_catalog(_application_root(paths_or_root))
     findings = list(evaluate(merged, interactions, surface=surface))
     merged_fields = flatten(merged)
-    for choice in resolved_choices(profile, root, guidance=guidance, equipment=equipment):
+    for choice in resolved_choices(profile, paths_or_root, guidance=guidance, equipment=equipment):
         lens = choice["lens"]
         accessory = choice.get("accessory")
         context = {

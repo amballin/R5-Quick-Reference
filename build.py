@@ -13,6 +13,7 @@ if str(BUILD_DIR) not in sys.path:
     sys.path.insert(0, str(BUILD_DIR))
 
 from asset_manager import ProjectPaths
+from profile_pack import ProfilePackError, write_build_provenance
 from appendix_renderer import render_appendices
 from baseline import merge
 from build_validator import discover_profiles, is_reference_card, profile_name_from_path, validate_project
@@ -60,6 +61,11 @@ def parse_args():
     parser.add_argument("target", nargs="?")
     parser.add_argument("profile", nargs="?")
     parser.add_argument("--root", default=".")
+    parser.add_argument(
+        "--profile-pack",
+        metavar="PATH",
+        help="Build from an explicit compatible private profile-pack Git repository.",
+    )
     parser.add_argument("--pdf", action="store_true", help="Also generate card and appendix PDFs. Off by default.")
     parser.add_argument(
         "--settings-summary",
@@ -98,7 +104,7 @@ def parse_args():
 
 def build_profile(profile_name, root=".", include_pdf=False):
     profile_name = canonical_profile_name(profile_name)
-    paths = ProjectPaths(root)
+    paths = root if isinstance(root, ProjectPaths) else ProjectPaths(root)
     baseline = load_baseline(paths)
     profile = load_profile(paths, profile_name)
     merged = {} if is_reference_card(profile) else merge(baseline["defaults"], profile.get("overrides", {}))
@@ -135,7 +141,7 @@ def build_profiles(paths, profile_names, include_pdf=False):
     generated = {"HTML": 0, "PDF": 0}
     for profile_name in profile_names:
         try:
-            result = build_profile(profile_name, paths.root, include_pdf=include_pdf)
+            result = build_profile(profile_name, paths, include_pdf=include_pdf)
             successes.append(result)
             if result["html"].exists():
                 generated["HTML"] += 1
@@ -284,8 +290,23 @@ def main():
         spreadsheet_download_targets.append("matrix")
     if args.setup_downloads or args.spreadsheet_downloads:
         spreadsheet_download_targets.append("setup")
-    paths = ProjectPaths(args.root)
-    if not args.publish and not args.settings_summary and not spreadsheet_download_targets:
+    try:
+        paths = ProjectPaths(args.root, profile_pack_root=args.profile_pack)
+    except (ProfilePackError, ValueError) as exc:
+        print(f"Profile-pack error: {exc}", file=sys.stderr)
+        return 2
+    external_pack = paths.profile_pack.mode == "external"
+    if external_pack and args.publish:
+        print("External profile-pack builds cannot run in publish mode.", file=sys.stderr)
+        return 2
+    if external_pack and (args.settings_summary or spreadsheet_download_targets):
+        print(
+            "Step 3A external profile-pack builds support cards, guides, and the PWA only; "
+            "spreadsheet generation and downloads remain disabled.",
+            file=sys.stderr,
+        )
+        return 2
+    if not external_pack and not args.publish and not args.settings_summary and not spreadsheet_download_targets:
         stale_downloads = derived_download_issues(paths)
         if stale_downloads:
             print(format_refresh_issues(stale_downloads), file=sys.stderr)
@@ -296,8 +317,9 @@ def main():
                 "Including verified prepared spreadsheet downloads automatically: "
                 + ", ".join(spreadsheet_download_targets)
             )
-    write_finish_day_html(paths.root)
-    write_workflow_guides(paths.root)
+    if not external_pack:
+        write_finish_day_html(paths.root)
+        write_workflow_guides(paths.root)
     metadata_path = paths.root / "80 Build" / "publish_metadata.yaml"
     try:
         current_metadata = load_publish_metadata(metadata_path)
@@ -349,6 +371,7 @@ def main():
             spreadsheet_download_targets=spreadsheet_download_targets,
             keep_website=args.target == "website",
             publish_display=publish_display,
+            preserve_spreadsheet_downloads=not external_pack,
         )
         if status != 0:
             return status
@@ -358,7 +381,8 @@ def main():
             return 0
         if args.target == "pages":
             sync_pages_output(paths)
-            print(f"GitHub Pages docs generated: {paths.pages_output_dir}")
+            label = "Isolated Pages review" if external_pack else "GitHub Pages docs"
+            print(f"{label} generated: {paths.pages_output_dir}")
             return 0
     if args.command == "build":
         print("Unknown build target. Use: python build.py build website or python build.py build pages")
@@ -375,11 +399,13 @@ def main():
         include_settings_summary=args.settings_summary,
         spreadsheet_download_targets=spreadsheet_download_targets,
         publish_display=publish_display,
+        preserve_spreadsheet_downloads=not external_pack,
     )
     if status == 0 and requested_profile is None:
         sync_pages_output(paths)
         clean_generated_leftovers(paths, include_pdf=args.pdf, keep_website=False)
-        print(f"GitHub Pages docs generated: {paths.pages_output_dir}")
+        label = "Isolated Pages review" if external_pack else "GitHub Pages docs"
+        print(f"{label} generated: {paths.pages_output_dir}")
     return status
 
 
@@ -438,6 +464,12 @@ def build_site(
             preserve_spreadsheet_downloads=preserve_spreadsheet_downloads,
         )
     )
+    if paths.profile_pack.mode == "external":
+        write_build_provenance(
+            paths.profile_pack,
+            paths.merged_build_output_dir / "profile-pack-provenance.json",
+        )
+        generated["Profile Pack Provenance"] = 1
     generated.update(generate_pwa(paths))
     if include_settings_summary:
         try:
@@ -591,18 +623,22 @@ def clean_generated_leftovers(
     keep_website=False,
     full_build=False,
 ):
-    obsolete_generated_roots = [
-        paths.root / "Website",
-        paths.root / "30 Cards" / "HTML",
-        paths.root / "30 Cards" / "Merged",
-        paths.root / "30 Cards" / "PNG",
-        paths.root / "30 Cards" / "Phone PNG",
-        paths.root / "30 Cards" / "iPhone",
-        paths.root / "50 Field Guide" / "HTML",
-        paths.root / "output" / "Website",
-        paths.root / "assets",
-        paths.root / "output",
-    ]
+    obsolete_generated_roots = []
+    if paths.profile_pack.mode == "embedded":
+        obsolete_generated_roots.extend(
+            [
+                paths.root / "Website",
+                paths.root / "30 Cards" / "HTML",
+                paths.root / "30 Cards" / "Merged",
+                paths.root / "30 Cards" / "PNG",
+                paths.root / "30 Cards" / "Phone PNG",
+                paths.root / "30 Cards" / "iPhone",
+                paths.root / "50 Field Guide" / "HTML",
+                paths.root / "output" / "Website",
+                paths.root / "assets",
+                paths.root / "output",
+            ]
+        )
     if not keep_website:
         obsolete_generated_roots.append(paths.website_output_dir)
     if full_build:
@@ -617,21 +653,26 @@ def clean_generated_leftovers(
             shutil.rmtree(root)
 
     obsolete_generated_files = [
-        paths.root / ".DS_Store",
-        paths.root / "50 Field Guide" / "search_index.json",
-        paths.root / "manifest.webmanifest",
-        paths.root / "offline.html",
-        paths.root / "service-worker.js",
-        paths.root / "60 Assets" / ".DS_Store",
         paths.output_dir / ".DS_Store",
         paths.output_dir / "canon_r5_icon_reference.html",
     ]
+    if paths.profile_pack.mode == "embedded":
+        obsolete_generated_files.extend(
+            [
+                paths.root / ".DS_Store",
+                paths.root / "50 Field Guide" / "search_index.json",
+                paths.root / "manifest.webmanifest",
+                paths.root / "offline.html",
+                paths.root / "service-worker.js",
+                paths.root / "60 Assets" / ".DS_Store",
+            ]
+        )
     for path in obsolete_generated_files:
         if path.exists():
             path.unlink()
 
     obsolete_icons = paths.root / "icons"
-    if obsolete_icons.exists():
+    if paths.profile_pack.mode == "embedded" and obsolete_icons.exists():
         shutil.rmtree(obsolete_icons)
 
     generated_roots = [
@@ -660,7 +701,10 @@ def clean_generated_leftovers(
     if include_pdf:
         return
 
-    for pdf_dir in [paths.pdf_output_dir, paths.field_guide_pdf_output_dir, paths.root / "30 Cards" / "PDF", paths.root / "50 Field Guide" / "PDF"]:
+    pdf_dirs = [paths.pdf_output_dir, paths.field_guide_pdf_output_dir]
+    if paths.profile_pack.mode == "embedded":
+        pdf_dirs.extend([paths.root / "30 Cards" / "PDF", paths.root / "50 Field Guide" / "PDF"])
+    for pdf_dir in pdf_dirs:
         if pdf_dir.exists():
             shutil.rmtree(pdf_dir)
 

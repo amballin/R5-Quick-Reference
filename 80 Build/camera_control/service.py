@@ -10,6 +10,8 @@ import threading
 import uuid
 
 from application_version import application_version_info
+from asset_manager import ProjectPaths
+from profile_pack import ProfilePackError, resolve_profile_pack
 
 from .connector import EXPECTED_MODEL, is_expected_model, normalize_product_name
 from .capability_mapping import capability_coverage, enrich_properties
@@ -37,20 +39,19 @@ CAMERA_LAB_BUILD_INPUTS = (
     PROJECT_ROOT / "00 Master" / "application_version.yaml",
     PROJECT_ROOT / "80 Build" / "application_version.py",
     PROJECT_ROOT / "80 Build" / "project_context.py",
-    PROJECT_ROOT / "00 Master" / "baseline.yaml",
     PROJECT_ROOT / "00 Master" / "camera_capabilities.yaml",
     PROJECT_ROOT / "00 Master" / "card_layout.yaml",
-    PROJECT_ROOT / "00 Master" / "my_menu.yaml",
-    PROJECT_ROOT / "00 Master" / "my_menu_colors.yaml",
     PROJECT_ROOT / "00 Master" / "setting_access.yaml",
-    PROJECT_ROOT / "controls.yaml",
+    PROJECT_ROOT / "80 Build" / "asset_manager.py",
+    PROJECT_ROOT / "80 Build" / "profile_pack.py",
     PROJECT_ROOT / "WORKFLOWS" / "camera-lab-user-guide.md",
     PROJECT_ROOT / "WORKFLOWS" / "camera-lab-user-guide.html",
 )
 CAMERA_LAB_SOURCE_SUFFIXES = {".c", ".css", ".entitlements", ".h", ".html", ".js", ".py"}
 
 
-def camera_lab_info():
+def camera_lab_info(paths=None):
+    paths = paths or ProjectPaths(PROJECT_ROOT)
     digest = hashlib.sha256()
     sources = {
         source
@@ -58,10 +59,19 @@ def camera_lab_info():
         if source.is_file() and source.suffix in CAMERA_LAB_SOURCE_SUFFIXES
     }
     sources.update(source for source in CAMERA_LAB_BUILD_INPUTS if source.is_file())
-    sources.update((PROJECT_ROOT / "10 Profiles").glob("*.yaml"))
+    for pack_source in paths.profile_pack.sources.values():
+        if pack_source.is_dir():
+            sources.update(item for item in pack_source.rglob("*") if item.is_file())
+        elif pack_source.is_file():
+            sources.add(pack_source)
+    if paths.profile_pack.mode == "external":
+        sources.add(paths.profile_pack.root / "profile-pack.yaml")
     for source in sorted(sources):
-        relative = source.relative_to(PROJECT_ROOT)
-        digest.update(str(relative).encode("utf-8"))
+        if source == PROJECT_ROOT or PROJECT_ROOT in source.parents:
+            identity = f"application/{source.relative_to(PROJECT_ROOT).as_posix()}"
+        else:
+            identity = f"profile-pack/{source.relative_to(paths.profile_pack.root).as_posix()}"
+        digest.update(identity.encode("utf-8"))
         digest.update(b"\0")
         digest.update(source.read_bytes())
         digest.update(b"\0")
@@ -71,6 +81,12 @@ def camera_lab_info():
         "build": digest.hexdigest()[:8],
         "context_name": version_info["context_name"],
         "project_context": version_info["project_context"],
+        "profile_pack": {
+            "mode": paths.profile_pack.mode,
+            "pack_id": paths.profile_pack.pack_id,
+            "pack_name": paths.profile_pack.pack_name,
+            "fingerprint": paths.profile_pack.fingerprint()[:12],
+        },
     }
 
 
@@ -86,11 +102,21 @@ class CameraControlService:
         physical_write_enabled=False,
         physical_evidence_path=None,
         manual_confirmation_path=None,
+        project_paths=None,
     ):
         if backend_mode not in {"simulated", "edsdk"}:
             raise ValueError("backend_mode must be simulated or edsdk")
         if simulated_scenario not in SCENARIOS:
             raise ValueError(f"Unknown simulated scenario: {simulated_scenario}")
+        self.paths = project_paths or ProjectPaths(PROJECT_ROOT)
+        self.external_pack = self.paths.profile_pack.mode == "external"
+        if journal_root is None:
+            camera_lab_root = self.paths.local_workspace_dir / "Camera Lab"
+            journal_root = camera_lab_root / "Guarded Runs"
+            if manual_confirmation_path is None:
+                manual_confirmation_path = camera_lab_root / "Manual Confirmations.json"
+            if physical_evidence_path is None:
+                physical_evidence_path = camera_lab_root / "Physical Write Evidence.json"
         self.backend_mode = backend_mode
         self.sdk_path = sdk_path
         self.simulated_scenario = simulated_scenario
@@ -102,7 +128,8 @@ class CameraControlService:
         self.camera_session_id = None
         self.last_camera_index = None
         self.last_error = None
-        self.app_info = camera_lab_info()
+        self._profile_pack_fingerprint = self.paths.profile_pack.fingerprint()
+        self.app_info = camera_lab_info(self.paths)
         self.events = deque(maxlen=100)
         self.lock = threading.RLock()
         self.physical_write_evidence = PhysicalWriteEvidence(physical_evidence_path)
@@ -121,6 +148,30 @@ class CameraControlService:
             evidence_path=physical_evidence_path,
         )
         self._event("service_ready", f"Camera Lab started in {backend_mode} mode.")
+
+    def assert_profile_pack_current(self):
+        """Reject an unavailable, replaced, or independently changed external pack."""
+        if not self.external_pack:
+            return
+        try:
+            current = resolve_profile_pack(
+                self.paths.application_root,
+                explicit_root=self.paths.profile_pack_root,
+            )
+            fingerprint = current.fingerprint()
+        except ProfilePackError as exc:
+            raise CameraSessionError(f"Selected profile pack is no longer valid: {exc}") from exc
+        if current.pack_id != self.paths.profile_pack.pack_id:
+            raise CameraSessionError(
+                "Selected profile-pack identity changed. Stop Camera Lab and select the intended pack again."
+            )
+        if fingerprint != self._profile_pack_fingerprint:
+            raise CameraSessionError(
+                "Selected profile-pack sources changed. Stop and reopen Camera Lab before comparing profiles."
+            )
+
+    def _require_guarded_workflow_available(self):
+        self.assert_profile_pack_current()
 
     def _event(self, kind, message):
         self.events.append(
@@ -211,6 +262,7 @@ class CameraControlService:
                 "physical_write_enabled": self.physical_write_enabled,
                 "physical_write_qualification": self.backend_mode == "edsdk" and self.physical_write_enabled,
                 "physical_guarded_runs": self.backend_mode == "edsdk" and self.physical_write_enabled,
+                "external_pack_source_read_only": self.external_pack,
                 "physical_write_evidence": (
                     self.physical_write_evidence.public_summary(self.camera, self.sdk or {})
                     if self.backend_mode == "edsdk" and self.physical_write_enabled and self.camera
@@ -393,7 +445,7 @@ class CameraControlService:
         )
 
     def profiles(self):
-        return {"ok": True, "profiles": list_profiles()}
+        return {"ok": True, "profiles": list_profiles(self.paths)}
 
     def _capability_payload(self, properties):
         normalized = []
@@ -431,7 +483,7 @@ class CameraControlService:
                 "unreadable": len(normalized) - readable,
                 "descriptors_available": descriptors,
             },
-            "coverage": capability_coverage(),
+            "coverage": capability_coverage(self.paths),
         }
 
     def _build_comparison(self, profile_name, context_choices=None, equipment_choice=None):
@@ -443,6 +495,7 @@ class CameraControlService:
                 equipment_choice=equipment_choice,
                 detected_lens_name=(self.camera or {}).get("lens_name"),
                 physical_camera=self.backend_mode == "edsdk",
+                paths=self.paths,
             )
         except ValueError as exc:
             raise CameraSessionError(str(exc)) from exc
@@ -541,18 +594,21 @@ class CameraControlService:
 
     def prepare_guarded_run(self, profile_name, preflight, context_choices=None, equipment_choice=None):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.guarded_runs.prepare(profile_name, preflight, context_choices, equipment_choice)
             self._event("guarded_plan", f"Prepared a {self.backend_mode} guarded run for {profile_name}.")
             return result
 
     def confirm_guarded_run(self, session_id, confirmed):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.guarded_runs.confirm(session_id, confirmed)
             self._event("guarded_confirmed", f"{self.backend_mode} guarded execution was explicitly confirmed.")
             return result
 
     def execute_guarded_step(self, session_id, manual_confirmed=False):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.guarded_runs.execute_next(session_id, manual_confirmed)
             run = result["guarded_run"]
             self._event("guarded_step", f"Guarded run {session_id} is {run['status']} at step {run['current_step']}.")
@@ -560,38 +616,45 @@ class CameraControlService:
 
     def guarded_run(self, session_id):
         with self.lock:
+            self._require_guarded_workflow_available()
             return self.guarded_runs.get(session_id)
 
     def resume_guarded_run(self, session_id):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.guarded_runs.resume(session_id)
             self._event("guarded_resume", f"Guarded run {session_id} was deliberately resumed.")
             return result
 
     def abort_guarded_run(self, session_id):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.guarded_runs.abort(session_id)
             self._event("guarded_abort", f"Guarded run {session_id} was deliberately aborted.")
             return result
 
     def physical_write_candidates(self):
         with self.lock:
+            self._require_guarded_workflow_available()
             return self.write_qualifications.candidates()
 
     def prepare_write_qualification(self, property_key, target_raw, preflight):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.write_qualifications.prepare(property_key, target_raw, preflight)
             self._event("write_qualification_plan", f"Prepared reversible qualification for {property_key}.")
             return result
 
     def confirm_write_qualification(self, session_id, confirmed):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.write_qualifications.confirm(session_id, confirmed)
             self._event("write_qualification_confirmed", "Physical write qualification was explicitly confirmed.")
             return result
 
     def execute_write_qualification(self, session_id):
         with self.lock:
+            self._require_guarded_workflow_available()
             result = self.write_qualifications.execute(session_id)
             qualification = result["qualification"]
             self._event("write_qualification", f"Qualification {session_id} is {qualification['status']}.")
@@ -601,6 +664,7 @@ class CameraControlService:
 
     def write_qualification(self, session_id):
         with self.lock:
+            self._require_guarded_workflow_available()
             return self.write_qualifications.get(session_id)
 
     def event_log(self):

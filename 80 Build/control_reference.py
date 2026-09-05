@@ -40,7 +40,8 @@ def _root(paths_or_root):
 
 
 def load_control_source(paths_or_root):
-    source = load_yaml_checked(_root(paths_or_root) / "controls.yaml") or {}
+    source_path = getattr(paths_or_root, "controls_file", _root(paths_or_root) / "controls.yaml")
+    source = load_yaml_checked(source_path) or {}
     if not isinstance(source, dict):
         raise ValueError("controls.yaml must contain a mapping.")
     return source

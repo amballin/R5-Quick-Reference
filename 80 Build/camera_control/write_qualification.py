@@ -70,6 +70,7 @@ class PhysicalWriteQualificationManager:
                 "schema_version": 1,
                 "kind": "camera_lab_physical_write_qualification",
                 "backend": "edsdk",
+                "profile_pack": dict(self.service.app_info.get("profile_pack") or {}),
                 "status": "qualification_planned",
                 "camera": self._camera_identity(),
                 "sdk": {"framework_version": (self.service.sdk or {}).get("framework_version")},
@@ -202,6 +203,13 @@ class PhysicalWriteQualificationManager:
         }
 
     def _verify_identity(self, record):
+        expected_pack = record.get("profile_pack") or {}
+        active_pack = self.service.app_info.get("profile_pack") or {}
+        if expected_pack and expected_pack.get("pack_id") != active_pack.get("pack_id"):
+            raise CameraSessionError("The qualification belongs to a different profile pack.")
+        if not expected_pack and self.service.external_pack:
+            raise CameraSessionError("This qualification predates external profile-pack identity records; prepare a new qualification.")
+        self.service.assert_profile_pack_current()
         observed = self._camera_identity()
         if observed != record.get("camera"):
             raise CameraSessionError("Camera identity changed; physical write qualification stopped.")

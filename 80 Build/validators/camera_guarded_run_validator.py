@@ -27,6 +27,7 @@ def validate(root):
         "manual_confirmations": root / "80 Build/camera_control/manual_confirmation_ledger.py",
         "simulator": root / "80 Build/camera_control/simulated_backend.py",
         "server": root / "80 Build/camera_control/dev_server.py",
+        "service": root / "80 Build/camera_control/service.py",
         "native": root / "80 Build/camera_control/native_backend.py",
         "ctypes": root / "80 Build/camera_control/edsdk_backend.py",
         "helper": root / "80 Build/camera_control/native/edsdk_helper.c",
@@ -49,6 +50,7 @@ def validate(root):
     guarded = paths["guarded"].read_text(encoding="utf-8")
     simulator = paths["simulator"].read_text(encoding="utf-8")
     server = paths["server"].read_text(encoding="utf-8")
+    service = paths["service"].read_text(encoding="utf-8")
     journal = paths["journal"].read_text(encoding="utf-8")
     manual_confirmations = paths["manual_confirmations"].read_text(encoding="utf-8")
     helper = paths["helper"].read_text(encoding="utf-8")
@@ -81,6 +83,26 @@ def validate(root):
         issues.append(error("camera_guarded_run", paths["server"], "EDSDK mode must return not-found for guarded-run POST routes."))
     if 'path == "/api/camera-control/guarded-run" and self._guarded_endpoint_available()' not in server:
         issues.append(error("camera_guarded_run", paths["server"], "Guarded-run journal reads must be simulator-gated."))
+    for required in (
+        '"--profile-pack"',
+        "self.service.assert_profile_pack_current()",
+        'service.paths.profile_pack.mode == "external"',
+    ):
+        if required not in server:
+            issues.append(error("camera_guarded_run", paths["server"], f"External profile-pack server boundary is missing: {required}"))
+    for required in (
+        "ProjectPaths",
+        '"profile_pack"',
+        '"external_pack_source_read_only"',
+        "assert_profile_pack_current",
+        "_require_guarded_workflow_available",
+    ):
+        if required not in service:
+            issues.append(error("camera_guarded_run", paths["service"], f"External profile-pack service boundary is missing: {required}"))
+    if "not self.service.external_pack" in server:
+        issues.append(error("camera_guarded_run", paths["server"], "Step 5B guarded and qualification routes must not be blocked solely because a profile pack is external."))
+    if "self.external_pack and physical_write_enabled" in service or "self.service.external_pack and physical_write_enabled" in server:
+        issues.append(error("camera_guarded_run", paths["service"], "Step 5B must permit the explicit physical-write gate for a valid external profile pack."))
     if '"Camera Lab" / "Guarded Runs"' not in journal:
         issues.append(error("camera_guarded_run", paths["journal"], "Session journals must use the machine-local Camera Lab/Guarded Runs folder."))
     for required in (
@@ -157,9 +179,14 @@ def validate(root):
         'id="physical-write-mode-button"',
         'id="physical-write-mode-dialog"',
         'id="physical-write-mode-confirm"',
+        'id="profile-pack-badge"',
+        'id="external-pack-boundary"',
+        'id="camera-lab-branch"',
     ):
         if required not in html:
             issues.append(error("camera_guarded_run", paths["html"], f"Guarded-write mode control is missing: {required}"))
+    if 'id="project-context-badge"' in html or "projectContextBadge" in ui:
+        issues.append(error("camera_guarded_run", paths["html"], "Camera Lab must use its version detail instead of a redundant project-context badge."))
     for required in (
         "Apply this profile to camera",
         "Review what will change",
@@ -189,9 +216,20 @@ def validate(root):
         "sharedManualContext",
         "shared_manual_confirmation",
         'request("/api/camera-control/manual-confirmations/revoke"',
+        "scopeChecklistStorage(profilePack.pack_id)",
+        'profilePack.mode === "external"',
+        "elements.cameraLabBranch.textContent",
     ):
         if required not in ui:
             issues.append(error("camera_guarded_run", paths["ui"], f"Explicit write-mode restart guard is missing: {required}"))
+    for required in (
+        "list_profiles(paths)",
+        "paths.profile_file(profile_name)",
+        "paths.baseline_file",
+        "settings_rows(profile, merged, paths)",
+    ):
+        if required not in comparison:
+            issues.append(error("camera_guarded_run", paths["comparison"], f"Profile comparison is not selected-pack aware: {required}"))
     if "kEdsPropID_LensName" not in helper or '"lens_name"' not in paths["native"].read_text(encoding="utf-8"):
         issues.append(error("camera_guarded_run", paths["helper"], "Connected-lens readback must be retained for guarded preflight."))
     for required in (

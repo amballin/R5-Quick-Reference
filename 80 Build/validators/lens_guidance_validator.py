@@ -1,6 +1,6 @@
 import yaml
 
-from .common import error
+from .common import error, resolved_paths
 
 
 GUIDANCE = "00 Master/profile_lens_guidance.yaml"
@@ -8,9 +8,10 @@ EQUIPMENT = "data/stabilization_reference.yaml"
 ROLES = {"primary", "alternative", "specialist"}
 
 
-def validate(root):
-    path = root / GUIDANCE
-    equipment_path = root / EQUIPMENT
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    path = paths.profile_lens_guidance_file
+    equipment_path = paths.owned_equipment_file
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8"))
         equipment = yaml.safe_load(equipment_path.read_text(encoding="utf-8"))
@@ -21,7 +22,7 @@ def validate(root):
         return [error("lens_guidance", path, "Lens guidance must use schema_version 1.")]
     if data.get("camera") != {"manufacturer": "Canon", "model": "EOS R5"}:
         issues.append(error("lens_guidance", path, "Lens guidance must target Canon EOS R5 exactly."))
-    profiles = _profile_index(root)
+    profiles = _profile_index(paths.profiles_dir)
     subject_ids = {
         card_id
         for card_id, profile in profiles.items()
@@ -84,9 +85,9 @@ def validate(root):
     return issues
 
 
-def _profile_index(root):
+def _profile_index(profiles_dir):
     profiles = {}
-    for source in sorted((root / "10 Profiles").glob("*.yaml")):
+    for source in sorted(profiles_dir.glob("*.yaml")):
         try:
             profile = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
         except (OSError, yaml.YAMLError):

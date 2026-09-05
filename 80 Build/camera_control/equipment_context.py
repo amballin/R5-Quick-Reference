@@ -63,7 +63,7 @@ def _public_choice(choice):
 
 
 def resolve_equipment(
-    root,
+    paths_or_root,
     profile,
     merged,
     detected_lens_name=None,
@@ -72,9 +72,9 @@ def resolve_equipment(
     physical_camera=False,
 ):
     """Resolve one lens/accessory context without guessing missing equipment."""
-    guidance, equipment = load_sources(root)
+    guidance, equipment = load_sources(paths_or_root)
     lenses = list(equipment.get("lenses") or [])
-    options = resolved_choices(profile, root, guidance=guidance, equipment=equipment)
+    options = resolved_choices(profile, paths_or_root, guidance=guidance, equipment=equipment)
     public_options = [_public_choice(choice) for choice in options]
     options_by_key = {item["key"]: choice for item, choice in zip(public_options, options)}
     primary = next((choice for choice in options if choice.get("role") == "primary"), None)
@@ -189,7 +189,7 @@ def resolve_equipment(
         context["accessory"] = {"id": accessory["id"]}
     interactions = evaluate(
         merged,
-        load_interaction_catalog(root),
+        load_interaction_catalog(getattr(paths_or_root, "application_root", paths_or_root)),
         context=context,
         surface="camera_lab",
     )

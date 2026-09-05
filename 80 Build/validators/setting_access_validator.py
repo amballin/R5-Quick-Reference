@@ -1,11 +1,28 @@
+from pathlib import Path
+
 from .common import error, flatten_paths, load_yaml_checked
 
 
 REQUIRED_FIELDS = {"best_access", "menu_location", "rapid_order"}
 
 
-def validate(root):
-    access_path = root / "00 Master" / "setting_access.yaml"
+def _application_root(paths_or_root):
+    return Path(getattr(paths_or_root, "application_root", paths_or_root))
+
+
+def _profiles_dir(paths_or_root):
+    if hasattr(paths_or_root, "profiles_dir"):
+        return paths_or_root.profiles_dir
+    return _application_root(paths_or_root) / "10 Profiles"
+
+
+def validate(paths_or_root):
+    root = _application_root(paths_or_root)
+    access_path = (
+        paths_or_root.setting_access_file
+        if hasattr(paths_or_root, "setting_access_file")
+        else root / "00 Master" / "setting_access.yaml"
+    )
     if not access_path.exists():
         return [error("setting_access", access_path, "Setting-access mapping is missing.")]
     try:
@@ -42,7 +59,7 @@ def validate(root):
     if len(rapid_orders) != len(set(rapid_orders)):
         issues.append(error("setting_access", access_path, "rapid_order values must be unique."))
 
-    summary_keys = _subject_summary_keys(root)
+    summary_keys = _subject_summary_keys(paths_or_root)
     missing_keys = [key for key in summary_keys if key not in mapping]
     if missing_keys:
         issues.append(
@@ -66,7 +83,8 @@ def validate(root):
     return issues
 
 
-def _subject_summary_keys(root):
+def _subject_summary_keys(paths_or_root):
+    root = _application_root(paths_or_root)
     layout = load_yaml_checked(root / "00 Master" / "card_layout.yaml") or {}
     order = (layout.get("card_layout") or {}).get("display_order") or []
     always_show = (layout.get("card_layout") or {}).get("always_show") or []
@@ -75,7 +93,7 @@ def _subject_summary_keys(root):
         for entry in always_show
         if isinstance(entry, dict) and isinstance(entry.get("key"), str)
     }
-    for profile_path in sorted((root / "10 Profiles").glob("*.yaml")):
+    for profile_path in sorted(_profiles_dir(paths_or_root).glob("*.yaml")):
         profile = load_yaml_checked(profile_path) or {}
         if profile.get("card_type") == "reference":
             continue

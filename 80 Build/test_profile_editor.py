@@ -72,7 +72,13 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             "80 Build/numbers_automation.py",
             "80 Build/control_reference.py",
             "80 Build/camera_lab_tracker_import.py",
+            "80 Build/asset_manager.py",
             "80 Build/profile_editor.py",
+            "80 Build/profile_pack_git.py",
+            "80 Build/profile_pack.py",
+            "80 Build/profile_pack_creation.py",
+            "80 Build/profile_pack_templates/AGENTS.md",
+            "80 Build/profile_pack_selection.py",
             "80 Build/profile_editor/app.js",
             "80 Build/profile_editor/index.html",
             "80 Build/profile_editor/styles.css",
@@ -908,13 +914,15 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('meta name="profile-editor-token"', html)
         self.assertIn('id="open-camera-lab"', html)
         self.assertIn('id="stop-profile-editor"', html)
-        self.assertIn('id="project-context-badge"', html)
+        self.assertNotIn('id="project-context-badge"', html)
+        self.assertIn('id="profile-pack-select"', html)
+        self.assertIn('<span class="profile-pack-label">Profile Pack:</span>', html)
         self.assertIn('id="editor-version"', html)
         self.assertIn('id="editor-source-hash"', html)
         self.assertLess(html.index(">User guide<"), html.index('id="open-camera-lab"'))
         self.assertLess(html.index('id="open-camera-lab"'), html.index('id="stop-profile-editor"'))
-        self.assertLess(html.index('id="stop-profile-editor"'), html.index('id="project-context-badge"'))
-        self.assertLess(html.index('id="project-context-badge"'), html.index('id="editor-version"'))
+        self.assertLess(html.index('id="stop-profile-editor"'), html.index('id="profile-pack-select"'))
+        self.assertLess(html.index('id="profile-pack-select"'), html.index('id="editor-version"'))
         self.assertIn('<details class="build-badge header-version">', html)
         self.assertIn(".header-meta { grid-column: 1; grid-row: 2;", stylesheet)
         self.assertIn(".header-version { grid-column: 1; grid-row: 3; justify-self: end; }", stylesheet)
@@ -923,6 +931,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("profilePayloadChanged(profileDraftPayload())", javascript)
         self.assertIn("Camera Lab, if running, remains independent", javascript)
         self.assertIn("info.project_context", javascript)
+        self.assertIn("Git branch ${projectContext.branch}", javascript)
+        self.assertIn("switchProfilePack", javascript)
+        self.assertIn("Camera Lab evidence can be deliberately promoted", javascript)
         self.assertIn("grid-template-rows: auto auto auto", stylesheet)
         self.assertIn("grid-row: 1 / span 3", stylesheet)
 
@@ -935,6 +946,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="today-view"', html)
         self.assertIn('id="release-publish-view"', html)
         self.assertIn('id="setup-sharing-view"', html)
+        self.assertIn('id="app-sidebar"', html)
         self.assertIn('id="finish-day-view"', html)
         self.assertIn('id="branch-integration-view"', html)
         self.assertIn('id="cleanup-review-view"', html)
@@ -942,14 +954,56 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("Edit Profiles", html)
         self.assertIn("Launch separate app", html)
         self.assertIn("Fork owner’s project", html)
+        self.assertIn('id="new-profile-pack-name"', html)
+        self.assertIn('id="new-profile-pack-destination"', html)
+        self.assertIn('id="choose-profile-pack-destination"', html)
+        self.assertIn('id="switch-to-embedded-for-creation"', html)
+        self.assertIn('id="profile-pack-creation-dialog"', html)
+        self.assertIn('id="create-profile-pack"', html)
+        self.assertIn('id="profile-pack-git-panel"', html)
+        self.assertIn('id="application-git-summary"', html)
+        self.assertIn('id="profile-pack-git-summary"', html)
+        self.assertIn('id="combined-handoff-status"', html)
+        self.assertIn('id="review-profile-pack-commit"', html)
+        self.assertIn('id="review-profile-pack-remote"', html)
+        self.assertIn('id="push-profile-pack"', html)
+        self.assertIn('id="profile-pack-step-select"', html)
+        self.assertIn('id="profile-pack-step-push"', html)
+        self.assertIn('id="profile-pack-git-progress"', html)
+        self.assertIn('id="profile-pack-git-receipt"', html)
+        self.assertIn("Latest verified result", html)
+        self.assertIn('id="change-profile-pack-remote"', html)
+        self.assertIn("Leave README", html)
+        self.assertIn("HTTPS is recommended", html)
         self.assertNotIn("His profiles", html)
         self.assertIn('request("/api/workflow-preflight"', javascript)
         self.assertIn('switchView("profiles")', javascript)
         self.assertIn('switchView("release-publish")', javascript)
         self.assertIn('window.scrollTo({ top: 0, behavior: "auto" })', javascript)
+        self.assertIn('request("/api/profile-pack-creation-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-creations"', javascript)
+        self.assertIn('request("/api/profile-pack-destination-picker"', javascript)
+        self.assertIn('request("/api/profile-pack-git-status"', javascript)
+        self.assertIn('request("/api/profile-pack-git-commit-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-git-commits"', javascript)
+        self.assertIn('request("/api/profile-pack-git-remote-reviews"', javascript)
+        self.assertIn('request("/api/profile-pack-git-remotes"', javascript)
+        self.assertIn('request("/api/profile-pack-git-pushes"', javascript)
+        self.assertIn("profileEditor.profilePackRemoteJob", javascript)
+        self.assertIn("profileEditor.profilePackPushJob", javascript)
+        self.assertIn("PROFILE_PACK_RECEIPT_KEY", javascript)
+        self.assertIn("reconcileProfilePackReceipt", javascript)
+        self.assertIn("No repository-creation or push action is needed", javascript)
+        self.assertIn('"setup-sharing"', javascript)
         self.assertIn(".day-workflow", stylesheet)
         self.assertIn(".sharing-flow", stylesheet)
+        self.assertIn(".profile-pack-creation-panel", stylesheet)
+        self.assertIn("height: calc(100vh - 2rem)", stylesheet)
+        self.assertIn("--sidebar-available-height", stylesheet)
+        self.assertIn("updateSidebarViewport", javascript)
         self.assertIn("max-height: calc(100vh - 2rem)", stylesheet)
+        self.assertIn('.sharing-panel input[type="checkbox"]', stylesheet)
+        self.assertIn(".profile-pack-setup-steps", stylesheet)
         self.assertIn('request("/api/finish-day-status"', javascript)
         self.assertIn('request("/api/finish-day-prepare"', javascript)
         self.assertIn('request("/api/finish-day-commit"', javascript)
@@ -1359,6 +1413,36 @@ class ProfileEditorTransactionTests(unittest.TestCase):
                 "POST",
                 "/api/editor-shutdown",
                 body="{}",
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/profile-pack-git-status",
+                body=json.dumps({"pendingChanges": 0}),
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
+                "/api/profile-pack-creation-reviews",
+                body=json.dumps(
+                    {
+                        "packName": "Unauthorized Pack",
+                        "destination": "/private/tmp/unauthorized-profile-pack",
+                        "pendingChanges": 0,
+                    }
+                ),
                 headers={"Content-Type": "application/json"},
             )
             response = connection.getresponse()

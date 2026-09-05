@@ -14,6 +14,9 @@ import time
 from types import SimpleNamespace
 import unittest
 from urllib.parse import urlencode
+from unittest import mock
+
+import yaml
 
 BUILD_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BUILD_DIR.parent
@@ -26,7 +29,9 @@ from camera_control.profile_comparison import _conditional_evaluation, _conditio
 from camera_control.service import CameraControlService, camera_lab_info
 from camera_control.simulated_backend import SimulatedBackend
 from application_version import application_version_info
+from asset_manager import ProjectPaths
 from project_context import active_branch
+from test_profile_pack_build import write_pack_from_embedded_sources
 
 
 class CameraControlServiceTests(unittest.TestCase):
@@ -37,6 +42,7 @@ class CameraControlServiceTests(unittest.TestCase):
         )
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
             parse_args(["--backend", "simulated", "--enable-physical-writes"])
+        self.assertEqual(parse_args(["--profile-pack", "/private/pack"]).profile_pack, "/private/pack")
 
     def test_contextual_comparison_evaluates_exact_ranges_and_guidance(self):
         cases = [
@@ -123,6 +129,160 @@ class CameraControlServiceTests(unittest.TestCase):
         self.assertEqual(first["context_name"], "Main" if branch == "main" else "Prototype")
         self.assertEqual(first["project_context"]["branch"], branch)
         self.assertEqual(first["project_context"]["kind"], "main" if branch == "main" else "prototype")
+        self.assertEqual(first["profile_pack"]["mode"], "embedded")
+        self.assertEqual(first["profile_pack"]["pack_name"], "Embedded Canon EOS R5 sources")
+
+    def test_external_profile_pack_is_path_private_pack_aware_and_supports_guarded_operation(self):
+        with tempfile.TemporaryDirectory(prefix="camera-lab-external-pack-") as temporary:
+            root = Path(temporary)
+            pack = root / "private-pack"
+            workspace = root / "workspace"
+            write_pack_from_embedded_sources(pack)
+            manifest_path = pack / "profile-pack.yaml"
+            manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+            manifest["pack_name"] = "Andy's Field Camera Profiles"
+            manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+            landscape_path = pack / "10 Profiles" / "Landscape.yaml"
+            landscape = yaml.safe_load(landscape_path.read_text(encoding="utf-8"))
+            landscape["title"] = "Private Pack Landscape"
+            landscape_path.write_text(yaml.safe_dump(landscape, sort_keys=False), encoding="utf-8")
+            with mock.patch.dict(os.environ, {"PRS_LOCAL_WORKSPACE": str(workspace)}):
+                paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=pack)
+                service = CameraControlService(project_paths=paths)
+                try:
+                    status = service.status()
+                    self.assertTrue(status["external_pack_source_read_only"])
+                    self.assertTrue(status["simulated_guarded_runs"])
+                    self.assertFalse(status["physical_guarded_runs"])
+                    self.assertEqual(status["app"]["profile_pack"]["pack_name"], "Andy's Field Camera Profiles")
+                    self.assertNotIn(str(pack), json.dumps(status))
+                    self.assertEqual(
+                        service.guarded_runs.journal.root,
+                        workspace.resolve() / "Profile Packs" / paths.profile_pack.pack_id / "Camera Lab" / "Guarded Runs",
+                    )
+                    service.connect()
+                    service.scan_capabilities()
+                    comparison = service.compare_profile("Landscape")
+                    self.assertEqual(comparison["profile"]["title"], "Private Pack Landscape")
+                    guarded = service.prepare_guarded_run(
+                        "Landscape",
+                        {
+                            "still_movie_context": "still",
+                            "current_mode": "Fv",
+                            "lens": "RF 24-105",
+                            "flash": "None",
+                            "cards": "CFexpress & SD",
+                            "applications_closed": True,
+                            "camera_backup_confirmed": True,
+                            "backup_filename": "C123_CFG.CSD",
+                        },
+                    )["guarded_run"]
+                    self.assertEqual(guarded["status"], "planned")
+                    self.assertEqual(guarded["profile_pack"]["pack_id"], paths.profile_pack.pack_id)
+                finally:
+                    service.close()
+                physical_service = CameraControlService(
+                    project_paths=paths,
+                    physical_write_enabled=True,
+                    backend_mode="edsdk",
+                )
+                try:
+                    physical_status = physical_service.status(check_connection=False)
+                    self.assertTrue(physical_status["physical_write_enabled"])
+                    self.assertTrue(physical_status["physical_guarded_runs"])
+                    self.assertTrue(physical_status["physical_write_qualification"])
+                    self.assertTrue(physical_status["external_pack_source_read_only"])
+                finally:
+                    physical_service.close()
+
+    def test_external_profile_pack_change_is_rejected_before_another_api_operation(self):
+        with tempfile.TemporaryDirectory(prefix="camera-lab-external-pack-change-") as temporary:
+            pack = Path(temporary) / "private-pack"
+            write_pack_from_embedded_sources(pack)
+            paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=pack)
+            service = CameraControlService(project_paths=paths, journal_root=Path(temporary) / "journals")
+            manifest_path = pack / "profile-pack.yaml"
+            manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+            manifest["pack_name"] = "Changed after launch"
+            manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+            with self.assertRaisesRegex(CameraSessionError, "sources changed"):
+                service.assert_profile_pack_current()
+
+    def test_external_profile_pack_http_allows_guarded_simulation_and_fails_closed_on_change(self):
+        with tempfile.TemporaryDirectory(prefix="camera-lab-external-http-") as temporary:
+            root = Path(temporary)
+            pack = root / "private-pack"
+            write_pack_from_embedded_sources(pack)
+            paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=pack)
+            token = "external-pack-guarded-token"
+            service = CameraControlService(project_paths=paths, journal_root=root / "journals")
+            server = create_server(service, port=0, token=token)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+
+            def request(method, path, payload=None):
+                connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+                headers = {"Host": "127.0.0.1", "Accept": "application/json"}
+                body = None
+                if payload is not None:
+                    body = json.dumps(payload)
+                    headers.update(
+                        {"Content-Type": "application/json", "X-Camera-Lab-Token": token}
+                    )
+                connection.request(method, path, body=body, headers=headers)
+                response = connection.getresponse()
+                result = json.loads(response.read())
+                connection.close()
+                return response.status, result
+
+            try:
+                self.assertEqual(request("POST", "/api/camera-control/connect", {})[0], 200)
+                self.assertEqual(request("GET", "/api/camera-control/capabilities")[0], 200)
+                status, result = request(
+                    "POST",
+                    "/api/camera-control/guarded-run/prepare",
+                    {
+                        "profile": "Landscape",
+                        "preflight": {
+                            "still_movie_context": "still",
+                            "current_mode": "Fv",
+                            "lens": "RF 24-105",
+                            "flash": "None",
+                            "cards": "CFexpress & SD",
+                            "applications_closed": True,
+                            "camera_backup_confirmed": True,
+                            "backup_filename": "C123_CFG.CSD",
+                        },
+                    },
+                )
+                self.assertEqual(status, 200)
+                self.assertEqual(
+                    result["guarded_run"]["profile_pack"]["pack_id"],
+                    paths.profile_pack.pack_id,
+                )
+                status, confirmed = request(
+                    "POST",
+                    "/api/camera-control/guarded-run/confirm",
+                    {"session_id": result["guarded_run"]["session_id"], "confirmed": True},
+                )
+                self.assertEqual(status, 200)
+                self.assertGreater(
+                    confirmed["guarded_run"]["summary"]["automatic_actions"]["completed"],
+                    0,
+                )
+
+                manifest_path = pack / "profile-pack.yaml"
+                manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+                manifest["pack_name"] = "Changed during guarded operation"
+                manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+                status, result = request("GET", "/api/camera-control/status")
+                self.assertEqual(status, 409)
+                self.assertIn("sources changed", result["error"]["message"])
+            finally:
+                server.shutdown()
+                server.server_close()
+                service.close()
+                thread.join(timeout=2)
 
     def test_native_helper_pumps_canon_events_before_property_scans(self):
         source = (BUILD_DIR / "camera_control" / "native" / "edsdk_helper.c").read_text(encoding="utf-8")
@@ -135,7 +295,7 @@ class CameraControlServiceTests(unittest.TestCase):
             fake_bin = Path(temporary)
             (fake_bin / "open").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
             (fake_bin / "curl").write_text(
-                "#!/bin/sh\nprintf '%s\\n' '{\"ok\":true,\"read_only\":true,\"backend_mode\":\"edsdk\",\"app\":{\"version\":\"0.42.6\",\"project_context\":{}}}'\n",
+                "#!/bin/sh\nprintf '%s\\n' '{\"ok\":true,\"read_only\":false,\"backend_mode\":\"edsdk\",\"app\":{\"version\":\"0.42.6\",\"project_context\":{},\"profile_pack\":{\"pack_id\":\"embedded:canon-eos-r5-camera-reference\",\"pack_name\":\"Embedded Canon EOS R5 sources\"}}}'\n",
                 encoding="utf-8",
             )
             (fake_bin / "open").chmod(0o755)
@@ -689,6 +849,8 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn('href="/workflow/camera-lab-user-guide.html"', body)
         self.assertIn('id="backend-switch-button"', body)
         self.assertIn('id="physical-write-mode-button"', body)
+        self.assertIn('id="profile-pack-badge"', body)
+        self.assertIn('id="external-pack-boundary"', body)
         self.assertIn('id="backend-switch-dialog"', body)
         self.assertIn('id="backend-switch-confirm"', body)
         self.assertIn('id="physical-write-mode-dialog"', body)
@@ -726,8 +888,11 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertLess(body.index('id="backend-switch-button"'), body.index('id="physical-write-mode-button"'))
         self.assertLess(body.index('id="physical-write-mode-button"'), body.index('id="stop-camera-lab-button"'))
 
-        self.assertLess(body.index("No setting writes"), body.index('id="project-context-badge"'))
-        self.assertLess(body.index('id="project-context-badge"'), body.index('id="camera-lab-version"'))
+        self.assertLess(body.index("Read-only"), body.index('id="profile-pack-badge"'))
+        self.assertNotIn("No setting writes", body)
+        self.assertLess(body.index('id="profile-pack-badge"'), body.index('id="camera-lab-version"'))
+        self.assertNotIn('id="project-context-badge"', body)
+        self.assertIn('id="camera-lab-branch"', body)
         self.assertLess(body.index('id="cx-setup-panel"'), body.index('id="comparison-panel"'))
         self.assertIn('id="prepare-guarded-button"', body)
         self.assertIn('id="guarded-run-panel"', body)
@@ -777,12 +942,16 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertEqual(status, 200)
         status, _, body = self.request("GET", "/app.js")
         self.assertEqual(status, 200)
+        self.assertIn('"Read-only"', body)
+        self.assertNotIn("No setting writes", body)
         self.assertIn("await compareSelectedProfile({ recordScan: true })", body)
         self.assertIn("showRecoveryInstructions(error.message)", body)
         self.assertIn('elements.compareButton.addEventListener("click", () => runAction(scanAndCompare))', body)
         self.assertIn("function manualGroup(finding)", body)
         self.assertIn("function setupGroup(finding)", body)
-        self.assertIn('const checklistStorageKey = "camera-lab-phase1-checklist-v1"', body)
+        self.assertIn('const checklistStorageKeyPrefix = "camera-lab-phase1-checklist-v1"', body)
+        self.assertIn("function scopeChecklistStorage(packId)", body)
+        self.assertIn('scopeChecklistStorage(profilePack.pack_id)', body)
         self.assertIn('evidence_method: "manual_user_confirmed"', body)
         self.assertIn('"Saved as manual_user_confirmed"', body)
         self.assertIn('reason.className = "checklist-reason"', body)
@@ -834,8 +1003,12 @@ class CameraLabHttpTests(unittest.TestCase):
         self.assertIn("window.clearInterval(statusPollId)", body)
         self.assertIn("if (cameraLabStopped || requestPending) return", body)
         self.assertIn("statusPollId = window.setInterval", body)
-        self.assertIn('id="project-context-badge"', html)
+        self.assertNotIn('id="project-context-badge"', html)
+        self.assertNotIn("projectContextBadge", body)
+        self.assertIn("elements.cameraLabBranch.textContent", body)
         self.assertIn("app.project_context", body)
+        self.assertIn("app.profile_pack", body)
+        self.assertIn("status.simulated_guarded_runs || status.physical_guarded_runs", body)
         self.assertIn('new URLSearchParams(window.location.search).get("profile")', body)
         self.assertIn("was selected by Profile Editor", body)
         self.assertIn("not available in Camera Lab", body)

@@ -60,7 +60,7 @@ body {
 .header-tools .camera-logo { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
 .mode-stack { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .header-meta { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
-.badge, .safety-badge, .build-badge, .project-context-badge {
+.badge, .safety-badge, .build-badge, .profile-pack-badge {
   display: inline-flex;
   padding: 7px 11px;
   border-radius: 999px;
@@ -69,10 +69,8 @@ body {
 }
 .badge { background: #526979; }
 .badge.live { background: var(--green); }
-.project-context-badge { color: white; background: #5d6670; }
-.project-context-badge.main { background: var(--green); }
-.project-context-badge.prototype { color: #3e2b00; background: #ffd267; }
-.project-context-badge.unknown { background: #6f7780; }
+.profile-pack-badge { color: white; background: #5d6670; }
+.profile-pack-badge.external { color: #123b35; background: #bce9df; }
 .safety-badge { color: #704e00; background: #ffe7a6; }
 .build-badge { flex-direction: column; align-items: flex-end; color: #d9ebfb; background: rgba(10, 25, 43, 0.28); }
 .build-badge summary { cursor: pointer; }
@@ -81,6 +79,18 @@ body {
 .stop-server-button { min-height: 32px; padding: 6px 10px; color: white; border-color: rgba(255, 255, 255, 0.55); background: transparent; font-size: 0.78rem; }
 .stop-server-button:hover:not(:disabled) { border-color: white; background: rgba(255, 255, 255, 0.12); }
 .header-link { display: inline-flex; align-items: center; justify-content: center; border: 1px solid; border-radius: 8px; font-weight: 700; text-decoration: none; }
+
+.external-pack-boundary {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  color: #123b35;
+  background: #dff3ec;
+  border-bottom: 1px solid #9ccfc3;
+  font-size: .86rem;
+}
+.external-pack-boundary[hidden] { display: none; }
 
 main { width: min(1120px, calc(100% - 32px)); margin: 28px auto 48px; }
 

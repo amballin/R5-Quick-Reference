@@ -1,7 +1,7 @@
 from collections import Counter
 from uuid import UUID
 
-from .common import error, load_yaml_checked
+from .common import error, load_yaml_checked, resolved_paths
 
 
 def _valid_uuid(value):
@@ -13,12 +13,14 @@ def _valid_uuid(value):
         return False
 
 
-def validate(root):
+def validate(paths_or_root):
+    paths = resolved_paths(paths_or_root)
+    root = paths.application_root
     issues = []
     cards = {}
     titles = {}
     ids = []
-    for path in sorted((root / "10 Profiles").glob("*.yaml")):
+    for path in sorted(paths.profiles_dir.glob("*.yaml")):
         try:
             profile = load_yaml_checked(path) or {}
         except Exception:
@@ -34,7 +36,7 @@ def validate(root):
             titles[title] = card_id
     for duplicate, count in Counter(ids).items():
         if count > 1:
-            issues.append(error("card_identity", root / "10 Profiles", f"Duplicate card_id: {duplicate}"))
+            issues.append(error("card_identity", paths.profiles_dir, f"Duplicate card_id: {duplicate}"))
 
     for card_id, (path, profile) in cards.items():
         setup = ((profile.get("card") or {}).get("field_setup") or {})
@@ -44,8 +46,10 @@ def validate(root):
         if isinstance(setup, dict) and "source_profile" in setup:
             issues.append(error("card_identity", path, "Use source_card_id instead of legacy source_profile."))
 
-    for relative in ("controls.yaml", "data/canon_r5_custom_controls_current.yaml"):
-        path = root / relative
+    for path in (
+        paths.controls_file,
+        root / "data/canon_r5_custom_controls_current.yaml",
+    ):
         try:
             source = load_yaml_checked(path) or {}
         except Exception:
