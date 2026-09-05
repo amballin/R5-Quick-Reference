@@ -8,6 +8,8 @@ const elements = {
   newProfilePackName: document.querySelector("#new-profile-pack-name"),
   newProfilePackDestination: document.querySelector("#new-profile-pack-destination"),
   chooseProfilePackDestination: document.querySelector("#choose-profile-pack-destination"),
+  requiredStarterCards: document.querySelector("#required-starter-cards"),
+  optionalStarterCards: document.querySelector("#optional-starter-cards"),
   profilePackCreationMessage: document.querySelector("#profile-pack-creation-message"),
   reviewProfilePackCreation: document.querySelector("#review-profile-pack-creation"),
   switchToEmbeddedForCreation: document.querySelector("#switch-to-embedded-for-creation"),
@@ -24,6 +26,17 @@ const elements = {
   profilePackCreationPanel: document.querySelector("#profile-pack-creation-panel"),
   profilePackExistingSummary: document.querySelector("#profile-pack-existing-summary"),
   currentPackSetupName: document.querySelector("#current-pack-setup-name"),
+  profileStarterPanel: document.querySelector("#profile-starter-panel"),
+  profileStarterOptions: document.querySelector("#profile-starter-options"),
+  profileStarterMessage: document.querySelector("#profile-starter-message"),
+  reviewProfileStarters: document.querySelector("#review-profile-starters"),
+  profileStarterDialog: document.querySelector("#profile-starter-dialog"),
+  profileStarterSummary: document.querySelector("#profile-starter-summary"),
+  profileStarterDiff: document.querySelector("#profile-starter-diff"),
+  profileStarterConfirm: document.querySelector("#profile-starter-confirm"),
+  profileStarterClose: document.querySelector("#profile-starter-close"),
+  profileStarterCancel: document.querySelector("#profile-starter-cancel"),
+  addProfileStarters: document.querySelector("#add-profile-starters"),
   profilePackGitPanel: document.querySelector("#profile-pack-git-panel"),
   refreshProfilePackGit: document.querySelector("#refresh-profile-pack-git"),
   applicationGitSummary: document.querySelector("#application-git-summary"),
@@ -418,6 +431,7 @@ const state = {
   externalPack: false,
   activePackId: "embedded",
   profilePackCreationReviewToken: null,
+  profileStarterReviewToken: null,
   profilePackGit: null,
   profilePackGitCommitReviewToken: null,
   profilePackGitRemoteReviewToken: null,
@@ -543,6 +557,7 @@ async function loadEditorInfo() {
     }
     elements.profilePackCreationPanel.hidden = state.externalPack;
     elements.profilePackExistingSummary.hidden = !state.externalPack;
+    elements.profileStarterPanel.hidden = !state.externalPack;
     elements.currentPackSetupName.textContent = state.activePackName;
     elements.profilePackGitPanel.hidden = !state.externalPack;
   } catch (error) {
@@ -633,6 +648,130 @@ async function chooseProfilePackDestination() {
   }
 }
 
+async function loadProfilePackCreationOptions() {
+  if (state.externalPack) return;
+  const result = await request("/api/profile-pack-creation-options");
+  elements.requiredStarterCards.replaceChildren();
+  for (const card of result.required || []) {
+    const item = document.createElement("li");
+    item.textContent = `${card.role}: ${card.title}`;
+    elements.requiredStarterCards.append(item);
+  }
+  elements.optionalStarterCards.replaceChildren();
+  for (const card of result.optional || []) {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = card.cardId;
+    checkbox.dataset.profileTitle = card.title;
+    label.append(checkbox, document.createTextNode(card.title));
+    elements.optionalStarterCards.append(label);
+  }
+}
+
+function showProfileStarterMessage(text, error = false) {
+  elements.profileStarterMessage.textContent = text;
+  elements.profileStarterMessage.dataset.error = error ? "true" : "false";
+}
+
+function updateProfileStarterReviewButton() {
+  const selected = elements.profileStarterOptions.querySelectorAll('input[type="checkbox"]:checked').length;
+  elements.reviewProfileStarters.disabled = selected === 0;
+}
+
+async function loadProfileStarterOptions() {
+  elements.profileStarterPanel.hidden = !state.externalPack;
+  if (!state.externalPack) return;
+  elements.reviewProfileStarters.disabled = true;
+  try {
+    const result = await request("/api/profile-starter-options");
+    elements.profileStarterOptions.replaceChildren();
+    for (const profile of result.available || []) {
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = profile.cardId;
+      checkbox.addEventListener("change", updateProfileStarterReviewButton);
+      label.append(checkbox, document.createTextNode(profile.title));
+      elements.profileStarterOptions.append(label);
+    }
+    showProfileStarterMessage(result.message || "");
+    elements.reviewProfileStarters.hidden = !(result.available || []).length;
+    updateProfileStarterReviewButton();
+  } catch (error) {
+    showProfileStarterMessage(error.message, true);
+  }
+}
+
+function closeProfileStarterReview() {
+  state.profileStarterReviewToken = null;
+  elements.profileStarterConfirm.checked = false;
+  elements.addProfileStarters.disabled = true;
+  elements.profileStarterDialog.close();
+}
+
+async function reviewProfileStarters() {
+  captureCurrentProfileDraft();
+  state.profileStarterReviewToken = null;
+  elements.reviewProfileStarters.disabled = true;
+  showProfileStarterMessage("Preparing the exact profile and lens-guidance additions…");
+  try {
+    const review = await request("/api/profile-starter-reviews", {
+      method: "POST",
+      body: JSON.stringify({
+        cardIds: Array.from(
+          elements.profileStarterOptions.querySelectorAll('input[type="checkbox"]:checked'),
+          (input) => input.value,
+        ),
+        pendingChanges: pendingSessionItems().length,
+      }),
+    });
+    state.profileStarterReviewToken = review.reviewToken;
+    elements.profileStarterSummary.textContent = `${review.summary} Exact files: ${(review.sourceFiles || []).join(", ")}.`;
+    elements.profileStarterDiff.textContent = review.diff;
+    elements.profileStarterConfirm.checked = false;
+    elements.addProfileStarters.disabled = true;
+    elements.profileStarterDialog.showModal();
+    showProfileStarterMessage("Review ready. Nothing has been added yet.");
+  } catch (error) {
+    showProfileStarterMessage(error.message, true);
+    updateProfileStarterReviewButton();
+  }
+}
+
+async function addProfileStarters() {
+  if (!state.profileStarterReviewToken || !elements.profileStarterConfirm.checked) return;
+  elements.addProfileStarters.disabled = true;
+  elements.profileStarterClose.disabled = true;
+  elements.profileStarterCancel.disabled = true;
+  elements.profileStarterSummary.textContent = "Adding and validating the reviewed official profiles…";
+  try {
+    const result = await request("/api/profile-starter-saves", {
+      method: "POST",
+      body: JSON.stringify({
+        reviewToken: state.profileStarterReviewToken,
+        confirmAdd: true,
+      }),
+    });
+    state.profileStarterReviewToken = null;
+    elements.profileStarterDialog.close();
+    const selectedProfile = state.detail?.name || null;
+    await loadProfiles(selectedProfile);
+    await Promise.all([loadProfileStarterOptions(), loadCxFoundations(true)]);
+    invalidateBuildReadiness();
+    renderSessionStatus();
+    showProfileStarterMessage(`${result.addedProfiles.join(", ")} added and validated. Use Save locally below when you are ready to commit the pack changes.`);
+  } catch (error) {
+    state.profileStarterReviewToken = null;
+    elements.profileStarterDialog.close();
+    showProfileStarterMessage(error.message, true);
+  } finally {
+    elements.profileStarterClose.disabled = false;
+    elements.profileStarterCancel.disabled = false;
+    updateProfileStarterReviewButton();
+  }
+}
+
 function switchToEmbeddedForCreation() {
   elements.profilePackSelect.value = "embedded";
   switchProfilePack();
@@ -658,10 +797,15 @@ async function reviewProfilePackCreation() {
         packName: elements.newProfilePackName.value,
         destination: elements.newProfilePackDestination.value,
         pendingChanges: pendingSessionItems().length,
+        optionalProfileIds: Array.from(
+          elements.optionalStarterCards.querySelectorAll('input[type="checkbox"]:checked'),
+          (input) => input.value,
+        ),
       }),
     });
     state.profilePackCreationReviewToken = review.reviewToken;
-    elements.profilePackCreationSummary.textContent = `${review.packName} will receive a new immutable pack ID and ${review.sourceFileCount} reviewed files, including the migrated embedded sources.`;
+    const optionalCount = (review.selectedOptionalCards || []).length;
+    elements.profilePackCreationSummary.textContent = `${review.packName} will receive the required baseline, C1–C3 starters, permanent reference cards${optionalCount ? `, and ${optionalCount} selected optional profile${optionalCount === 1 ? "" : "s"}` : ""}. Camera verification begins unverified. The ${review.sourceFileCount} exact files appear below.`;
     elements.profilePackCreationDestination.textContent = review.destination;
     elements.profilePackCreationManifest.textContent = review.manifestYaml;
     elements.profilePackCreationFileCount.textContent = String(review.sourceFileCount);
@@ -2429,6 +2573,7 @@ function switchView(viewName) {
   if (viewName === "cleanup-review" && !state.cleanupBusy) refreshCleanupReview();
   if (viewName === "release-publish" && !state.publicationBusy) refreshPublication();
   if (viewName === "setup-sharing" && state.externalPack) {
+    loadProfileStarterOptions();
     if (sessionStorage.getItem(GUARDED_JOB_KEYS.profilePackRemote)) {
       restoreProfilePackReceipt();
       reconnectProfilePackGitJob("profile-pack-remote");
@@ -5625,6 +5770,13 @@ elements.profilePackCreationConfirm.addEventListener("change", () => {
   elements.createProfilePack.disabled = !elements.profilePackCreationConfirm.checked;
 });
 elements.createProfilePack.addEventListener("click", createProfilePack);
+elements.reviewProfileStarters.addEventListener("click", reviewProfileStarters);
+elements.profileStarterClose.addEventListener("click", closeProfileStarterReview);
+elements.profileStarterCancel.addEventListener("click", closeProfileStarterReview);
+elements.profileStarterConfirm.addEventListener("change", () => {
+  elements.addProfileStarters.disabled = !elements.profileStarterConfirm.checked;
+});
+elements.addProfileStarters.addEventListener("click", addProfileStarters);
 elements.refreshProfilePackGit.addEventListener("click", refreshProfilePackGit);
 elements.reviewProfilePackCommit.addEventListener("click", reviewProfilePackCommit);
 elements.profilePackConfirmCommit.addEventListener("change", () => {
@@ -5718,6 +5870,7 @@ window.addEventListener("beforeunload", (event) => {
 
 loadEditorInfo().then(async () => {
   await loadProfilePacks();
+  await Promise.all([loadProfilePackCreationOptions(), loadProfileStarterOptions()]);
   await Promise.all([loadDictionary(), loadProfiles(), loadBaseline(), loadCxFoundations()]);
   setDayPhase("start");
   renderTodayWorkflow();

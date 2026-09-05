@@ -42,6 +42,7 @@ if str(BUILD_DIR) not in sys.path:
 
 from asset_manager import ProjectPaths
 from application_version import application_version_info
+from appendix_renderer import render_appendices
 from baseline import merge
 from baseline_impact import (
     BaselineImpactError,
@@ -85,7 +86,12 @@ from control_reference import (
     reference_setting_key as control_reference_setting_key,
 )
 from profile_loader import load_baseline, load_yaml
-from profile_pack import ProfilePackError, profile_pack_revision, resolve_profile_pack
+from profile_pack import (
+    EMBEDDED_SOURCE_PATHS,
+    ProfilePackError,
+    profile_pack_revision,
+    resolve_profile_pack,
+)
 from profile_pack_creation import ProfilePackCreationError, ProfilePackCreator
 from profile_pack_git import ProfilePackGitError, ProfilePackGitWorkflow
 from profile_pack_selection import (
@@ -182,6 +188,8 @@ EXTERNAL_PACK_EDITOR_ENDPOINTS = {
     "/api/profile-pack-git-remote-reviews",
     "/api/profile-pack-git-remotes",
     "/api/profile-pack-git-pushes",
+    "/api/profile-starter-reviews",
+    "/api/profile-starter-saves",
 }
 EDITOR_BUILD_FILES = (
     "00 Master/application_version.yaml",
@@ -520,6 +528,7 @@ class ProfileEditorModel:
         self._pending_discard_reviews = {}
         self._pending_restore_reviews = {}
         self._pending_special_reviews = {}
+        self._pending_profile_starter_reviews = {}
         self._write_lock = threading.RLock()
         self._build_lock = threading.Lock()
         self.guarded_jobs = GuardedJobManager()
@@ -537,6 +546,319 @@ class ProfileEditorModel:
                 self.paths.profile_pack_root,
                 self.paths.profile_pack.pack_id,
             )
+
+    def profile_starter_options(self):
+        """Return official subject profiles that are absent from this pack."""
+        if not self.external_pack:
+            return {
+                "available": [],
+                "message": "Select a private profile pack before adding official profiles.",
+            }
+        active_ids = {
+            str(profile.get("card_id") or "")
+            for profile in self.profiles.values()
+        }
+        available = []
+        for card_id, entry in self._official_profile_catalog().items():
+            profile = entry["profile"]
+            if card_id in active_ids:
+                continue
+            available.append(
+                {
+                    "cardId": card_id,
+                    "title": str(profile.get("title") or entry["path"].stem),
+                    "filename": entry["path"].name,
+                }
+            )
+        available.sort(key=lambda item: item["title"].casefold())
+        return {
+            "available": available,
+            "message": (
+                "All official subject profiles are already in this pack."
+                if not available
+                else "Choose official profile starters to add to this pack."
+            ),
+        }
+
+    def review_profile_starters(self, card_ids, pending_changes):
+        if not self.external_pack:
+            raise PrototypeError("Official profiles can be added only to a private profile pack.")
+        try:
+            pending = int(pending_changes)
+        except (TypeError, ValueError) as exc:
+            raise PrototypeError("Pending-change count must be an integer.") from exc
+        if pending:
+            raise PrototypeError("Save or discard every browser draft before adding profiles.")
+        if (
+            not isinstance(card_ids, list)
+            or not card_ids
+            or any(not isinstance(card_id, str) for card_id in card_ids)
+        ):
+            raise PrototypeError("Select at least one official profile to add.")
+        if len(card_ids) != len(set(card_ids)):
+            raise PrototypeError("Official profile selections must not contain duplicates.")
+
+        catalog = self._official_profile_catalog()
+        available_ids = {
+            item["cardId"] for item in self.profile_starter_options()["available"]
+        }
+        unknown = sorted(set(card_ids) - available_ids)
+        if unknown:
+            raise PrototypeError(
+                "Selected profiles are unavailable or already present: " + ", ".join(unknown)
+            )
+        selected = sorted(
+            (catalog[card_id] for card_id in card_ids),
+            key=lambda entry: str(entry["profile"].get("title") or "").casefold(),
+        )
+        existing_names = {path.name.casefold() for path in self.paths.profiles_dir.glob("*.yaml")}
+        conflicts = [entry["path"].name for entry in selected if entry["path"].name.casefold() in existing_names]
+        if conflicts:
+            raise PrototypeError(
+                "An existing pack file would be overwritten: " + ", ".join(conflicts)
+            )
+
+        profiles_relative = Path(self.paths.profile_pack_relative_source("profiles"))
+        candidates = {
+            (profiles_relative / entry["path"].name).as_posix(): entry["path"].read_bytes()
+            for entry in selected
+        }
+        guidance_relative = self.paths.profile_pack_relative_source("profile_lens_guidance")
+        guidance_path = self.paths.profile_lens_guidance_file
+        guidance_before = guidance_path.read_bytes()
+        guidance = load_yaml(guidance_path) or {}
+        application_guidance_path = (
+            self.paths.application_root / EMBEDDED_SOURCE_PATHS["profile_lens_guidance"]
+        )
+        application_guidance = load_yaml(application_guidance_path) or {}
+        selected_ids = {entry["profile"]["card_id"] for entry in selected}
+        existing_guidance_ids = {
+            entry.get("card_id")
+            for entry in guidance.get("profiles", []) or []
+            if isinstance(entry, dict)
+        }
+        additions = [
+            copy.deepcopy(entry)
+            for entry in application_guidance.get("profiles", []) or []
+            if isinstance(entry, dict)
+            and entry.get("card_id") in selected_ids
+            and entry.get("card_id") not in existing_guidance_ids
+        ]
+        if additions:
+            guidance.setdefault("profiles", []).extend(additions)
+        guidance_candidate = self._dump_lens_guidance(guidance)
+        if guidance_candidate != guidance_before:
+            candidates[guidance_relative] = guidance_candidate
+
+        self._validate_profile_starter_candidates(candidates)
+        diff_parts = []
+        for relative, candidate in sorted(candidates.items()):
+            target = self._source_path(relative)
+            before = target.read_bytes() if target.exists() else b""
+            diff_parts.append(
+                "".join(
+                    difflib.unified_diff(
+                        before.decode("utf-8").splitlines(keepends=True),
+                        candidate.decode("utf-8").splitlines(keepends=True),
+                        fromfile=f"a/{relative}" if before else "/dev/null",
+                        tofile=f"b/{relative}",
+                    )
+                )
+            )
+        review = {
+            "created": time.monotonic(),
+            "pack_fingerprint": self._profile_pack_fingerprint,
+            "card_ids": [entry["profile"]["card_id"] for entry in selected],
+            "profiles": [str(entry["profile"].get("title") or entry["path"].stem) for entry in selected],
+            "candidates": candidates,
+            "candidate_sha256": {
+                relative: self._sha256(data) for relative, data in candidates.items()
+            },
+            "source_sha256": {
+                str(entry["path"]): self._sha256(entry["path"].read_bytes())
+                for entry in selected
+            },
+            "guidance_source_sha256": self._sha256(guidance_before),
+            "application_guidance_sha256": self._sha256(application_guidance_path.read_bytes()),
+            "application_guidance_path": application_guidance_path,
+            "diff": "".join(diff_parts),
+        }
+        with self._write_lock:
+            self._expire_profile_starter_reviews()
+            while len(self._pending_profile_starter_reviews) >= MAX_PENDING_REVIEWS:
+                oldest = min(
+                    self._pending_profile_starter_reviews,
+                    key=lambda key: self._pending_profile_starter_reviews[key]["created"],
+                )
+                del self._pending_profile_starter_reviews[oldest]
+            token = secrets.token_urlsafe(24)
+            self._pending_profile_starter_reviews[token] = review
+        return {
+            "reviewToken": token,
+            "profiles": review["profiles"],
+            "sourceFiles": sorted(candidates),
+            "diff": review["diff"],
+            "summary": f"Add {len(selected)} official profile starter{'s' if len(selected) != 1 else ''} to this private pack.",
+        }
+
+    def save_profile_starters(self, review_token, confirmed):
+        if confirmed is not True:
+            raise PrototypeError("Adding official profiles requires explicit confirmation.")
+        if not isinstance(review_token, str) or not review_token:
+            raise PrototypeError("A reviewed official-profile token is required.")
+        with self._write_lock:
+            self._expire_profile_starter_reviews()
+            review = self._pending_profile_starter_reviews.pop(review_token, None)
+            if review is None:
+                raise ProfileConflictError(
+                    "This official-profile review expired or was already used. Review again."
+                )
+            self.assert_profile_pack_current()
+            if self._profile_pack_fingerprint != review["pack_fingerprint"]:
+                raise ProfileConflictError("The private profile pack changed after review. Review again.")
+            for source, expected_sha in review["source_sha256"].items():
+                path = Path(source)
+                if not path.is_file() or self._sha256(path.read_bytes()) != expected_sha:
+                    raise ProfileConflictError("The application profile catalog changed after review. Review again.")
+            application_guidance_path = review["application_guidance_path"]
+            if self._sha256(application_guidance_path.read_bytes()) != review["application_guidance_sha256"]:
+                raise ProfileConflictError("Application lens guidance changed after review. Review again.")
+            guidance_relative = self.paths.profile_pack_relative_source("profile_lens_guidance")
+            guidance_path = self.paths.profile_lens_guidance_file
+            guidance_before = guidance_path.read_bytes()
+            if self._sha256(guidance_before) != review["guidance_source_sha256"]:
+                raise ProfileConflictError("Pack lens guidance changed after review. Review again.")
+            for relative in review["candidates"]:
+                if relative == guidance_relative:
+                    continue
+                if self._source_path(relative).exists():
+                    raise ProfileConflictError(f"{relative} appeared after review. Nothing was overwritten.")
+            for relative, candidate in review["candidates"].items():
+                if self._sha256(candidate) != review["candidate_sha256"][relative]:
+                    raise ProfileConflictError("The reviewed profile candidate is no longer valid.")
+            self._validate_profile_starter_candidates(review["candidates"])
+            backup = self._create_profile_starter_backup(review, guidance_before)
+            written = []
+            try:
+                for relative, candidate in review["candidates"].items():
+                    target = self._source_path(relative)
+                    prior = target.read_bytes() if target.exists() else None
+                    self._atomic_write(target, candidate, prior)
+                    written.append((relative, prior))
+                errors = self._source_validation_errors()
+                if errors:
+                    raise PrototypeError("Post-save source validation failed: " + "; ".join(errors))
+            except Exception as exc:
+                rollback_errors = []
+                for relative, prior in reversed(written):
+                    target = self._source_path(relative)
+                    try:
+                        if prior is None:
+                            target.unlink(missing_ok=True)
+                        else:
+                            self._atomic_write(target, prior, target.read_bytes())
+                    except Exception as rollback_exc:  # pragma: no cover
+                        rollback_errors.append(f"{relative}: {rollback_exc}")
+                if rollback_errors:
+                    raise PrototypeError(
+                        f"Profile addition failed and rollback was incomplete. Recovery backup: {backup}. "
+                        + "; ".join(rollback_errors)
+                    ) from exc
+                raise PrototypeError(
+                    f"Profile addition failed; prior pack source was restored. Recovery backup: {backup}. {exc}"
+                ) from exc
+            self._reload_profiles()
+            return {
+                "addedProfiles": review["profiles"],
+                "sourceFiles": [relative for relative, _prior in written],
+                "backup": str(backup),
+                "validation": "passed",
+            }
+
+    def _official_profile_catalog(self):
+        catalog = {}
+        profiles_dir = self.paths.application_root / EMBEDDED_SOURCE_PATHS["profiles"]
+        for path in sorted(profiles_dir.glob("*.yaml")):
+            profile = load_yaml(path) or {}
+            card_id = profile.get("card_id")
+            if (
+                isinstance(card_id, str)
+                and profile.get("card_type", "profile") == "profile"
+                and profile.get("display_category", "subject") == "subject"
+            ):
+                catalog[card_id] = {"path": path, "profile": profile}
+        return catalog
+
+    def _validate_profile_starter_candidates(self, candidates):
+        from validators import lens_guidance_validator, profile_validator
+
+        with tempfile.TemporaryDirectory(prefix="profile-editor-official-profiles-") as temporary:
+            shadow = Path(temporary)
+            for directory in ("00 Master", "10 Profiles", "50 Field Guide", "data"):
+                (shadow / directory).mkdir(parents=True, exist_ok=True)
+            for relative in (
+                "00 Master/card_layout.yaml",
+                "50 Field Guide/required_appendices.yaml",
+            ):
+                shutil.copy2(self.paths.root / relative, shadow / relative)
+            shutil.copy2(self.paths.baseline_file, shadow / "00 Master" / "baseline.yaml")
+            shutil.copy2(
+                self.paths.owned_equipment_file,
+                shadow / "data" / "stabilization_reference.yaml",
+            )
+            for source in discover_profiles(self.paths):
+                shutil.copy2(source, shadow / "10 Profiles" / source.name)
+            guidance_relative = self.paths.profile_pack_relative_source("profile_lens_guidance")
+            guidance_candidate = candidates.get(
+                guidance_relative,
+                self.paths.profile_lens_guidance_file.read_bytes(),
+            )
+            (shadow / "00 Master" / "profile_lens_guidance.yaml").write_bytes(guidance_candidate)
+            profiles_prefix = self.paths.profile_pack_relative_source("profiles").rstrip("/") + "/"
+            for relative, data in candidates.items():
+                if relative.startswith(profiles_prefix):
+                    (shadow / "10 Profiles" / Path(relative).name).write_bytes(data)
+            errors = [
+                issue.message
+                for validator in (profile_validator, lens_guidance_validator)
+                for issue in validator.validate(shadow)
+                if issue.level == "error"
+            ]
+            if errors:
+                raise PrototypeError("Official profile candidate validation failed: " + "; ".join(errors))
+
+    def _create_profile_starter_backup(self, review, guidance_before):
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        base = self.paths.backups_dir / f"{timestamp}-profile-editor-add-official-profiles"
+        backup = base
+        counter = 2
+        while backup.exists():
+            backup = base.with_name(f"{base.name}-{counter}")
+            counter += 1
+        before_path = backup / "before" / "00 Master" / "profile_lens_guidance.yaml"
+        before_path.parent.mkdir(parents=True)
+        before_path.write_bytes(guidance_before)
+        for relative, candidate in review["candidates"].items():
+            target = backup / "candidate" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(candidate)
+        (backup / "transaction.json").write_text(
+            json.dumps(
+                {
+                    "version": 1,
+                    "profile_pack": self._backup_pack_identity(),
+                    "created": datetime.now().astimezone().isoformat(),
+                    "operation": "add-official-profile-starters",
+                    "card_ids": review["card_ids"],
+                    "profiles": review["profiles"],
+                    "candidate_sha256": review["candidate_sha256"],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return backup
 
     def camera_lab_evidence_detail(self):
         try:
@@ -4220,6 +4542,16 @@ class ProfileEditorModel:
         for token in expired:
             del self._pending_special_reviews[token]
 
+    def _expire_profile_starter_reviews(self):
+        cutoff = time.monotonic() - REVIEW_TTL_SECONDS
+        expired = [
+            token
+            for token, review in self._pending_profile_starter_reviews.items()
+            if review["created"] < cutoff
+        ]
+        for token in expired:
+            del self._pending_profile_starter_reviews[token]
+
     @staticmethod
     def _validate_project_sources(root):
         from validator import run
@@ -4353,10 +4685,25 @@ class EditorHandler(BaseHTTPRequestHandler):
                 return self._json({"cards": self.model.deleted_cards()})
             if path == "/api/editor-info":
                 return self._json(self.model.editor_info())
+            if path == "/api/profile-pack-creation-options":
+                return self._json(self.pack_creator.creation_options())
+            if path == "/api/profile-starter-options":
+                return self._json(self.model.profile_starter_options())
             if path.startswith("/api/profiles/"):
                 name = unquote(path.removeprefix("/api/profiles/"))
                 return self._json(self.model.profile_detail(name))
             if path == "/preview/card.html":
+                preview = self.model.paths.html_output_dir / PREVIEW_NAME
+                return self._file(preview, "text/html; charset=utf-8")
+            if path.startswith("/field-guide/html/"):
+                self.model.assert_profile_pack_current()
+                render_appendices(self.model.paths)
+                relative = unquote(path.removeprefix("/field-guide/html/"))
+                return self._safe_file(
+                    self.model.paths.field_guide_html_output_dir,
+                    relative,
+                )
+            if path.startswith("/field-guide/Cards/") or path == "/field-guide/index.html":
                 preview = self.model.paths.html_output_dir / PREVIEW_NAME
                 return self._file(preview, "text/html; charset=utf-8")
             if path.startswith("/source/"):
@@ -4384,6 +4731,8 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/profile-pack-git-remote-reviews",
             "/api/profile-pack-git-remotes",
             "/api/profile-pack-git-pushes",
+            "/api/profile-starter-reviews",
+            "/api/profile-starter-saves",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4447,6 +4796,8 @@ class EditorHandler(BaseHTTPRequestHandler):
             "/api/profile-pack-git-remote-reviews",
             "/api/profile-pack-git-remotes",
             "/api/profile-pack-git-pushes",
+            "/api/profile-starter-reviews",
+            "/api/profile-starter-saves",
             "/api/camera-lab-launch",
             "/api/workflow-preflight",
             "/api/preflight-pull",
@@ -4501,12 +4852,25 @@ class EditorHandler(BaseHTTPRequestHandler):
                         payload.get("packName"),
                         payload.get("destination"),
                         payload.get("pendingChanges"),
+                        payload.get("optionalProfileIds"),
                     )
                 )
             if parsed.path == "/api/profile-pack-creations":
                 return self._json(
                     self._create_profile_pack(
                         payload.get("reviewToken"), payload.get("confirmCreate")
+                    )
+                )
+            if parsed.path == "/api/profile-starter-reviews":
+                return self._json(
+                    self.model.review_profile_starters(
+                        payload.get("cardIds"), payload.get("pendingChanges")
+                    )
+                )
+            if parsed.path == "/api/profile-starter-saves":
+                return self._json(
+                    self.model.save_profile_starters(
+                        payload.get("reviewToken"), payload.get("confirmAdd")
                     )
                 )
             if parsed.path == "/api/profile-pack-git-status":

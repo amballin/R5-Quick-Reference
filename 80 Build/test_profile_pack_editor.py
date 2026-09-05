@@ -27,11 +27,17 @@ from test_profile_pack_build import PROJECT_ROOT, write_pack_from_embedded_sourc
 class ProfilePackEditorTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
+        self.workspace_environment = mock.patch.dict(
+            os.environ,
+            {"PRS_LOCAL_WORKSPACE": str(Path(self.temporary.name) / "workspace")},
+        )
+        self.workspace_environment.start()
         self.pack = Path(self.temporary.name) / "private-pack"
         write_pack_from_embedded_sources(self.pack)
         self.model = ProfileEditorModel(PROJECT_ROOT, profile_pack_root=self.pack)
 
     def tearDown(self):
+        self.workspace_environment.stop()
         self.temporary.cleanup()
 
     def profile_payload(self, name="Fireworks", **changes):
@@ -126,10 +132,69 @@ class ProfilePackEditorTests(unittest.TestCase):
         self.model.assert_mutation_allowed("/api/profile-pack-git-remote-reviews")
         self.model.assert_mutation_allowed("/api/profile-pack-git-remotes")
         self.model.assert_mutation_allowed("/api/profile-pack-git-pushes")
+        self.model.assert_mutation_allowed("/api/profile-starter-reviews")
+        self.model.assert_mutation_allowed("/api/profile-starter-saves")
         with self.assertRaisesRegex(PrototypeError, "outside the guarded"):
             self.model.assert_mutation_allowed("/api/local-build")
         with self.assertRaisesRegex(PrototypeError, "outside the guarded"):
             self.model.assert_mutation_allowed("/api/profile-pack-creations")
+
+    def test_adds_reviewed_official_profile_and_lens_guidance_without_overwrite(self):
+        macro_id = "48850916-669d-592f-9e3f-defc3994445e"
+        (self.pack / "10 Profiles" / "Macro.yaml").unlink()
+        guidance_path = self.pack / "00 Master" / "profile_lens_guidance.yaml"
+        guidance = yaml.safe_load(guidance_path.read_text(encoding="utf-8"))
+        guidance["profiles"] = [
+            entry for entry in guidance["profiles"] if entry.get("card_id") != macro_id
+        ]
+        guidance_path.write_text(yaml.safe_dump(guidance, sort_keys=False), encoding="utf-8")
+        self.model = ProfileEditorModel(PROJECT_ROOT, profile_pack_root=self.pack)
+
+        options = self.model.profile_starter_options()
+        self.assertIn("Macro", [item["title"] for item in options["available"]])
+        with self.assertRaisesRegex(PrototypeError, "browser draft"):
+            self.model.review_profile_starters([macro_id], 1)
+        review = self.model.review_profile_starters([macro_id], 0)
+        self.assertEqual(review["profiles"], ["Macro"])
+        self.assertIn("10 Profiles/Macro.yaml", review["sourceFiles"])
+        self.assertIn("00 Master/profile_lens_guidance.yaml", review["sourceFiles"])
+        self.assertIn("/dev/null", review["diff"])
+        with self.assertRaisesRegex(PrototypeError, "explicit confirmation"):
+            self.model.save_profile_starters(review["reviewToken"], False)
+
+        result = self.model.save_profile_starters(review["reviewToken"], True)
+        self.model.accept_profile_pack_state()
+        self.assertEqual(result["addedProfiles"], ["Macro"])
+        self.assertTrue((self.pack / "10 Profiles" / "Macro.yaml").is_file())
+        saved_guidance = yaml.safe_load(guidance_path.read_text(encoding="utf-8"))
+        self.assertIn(macro_id, [entry.get("card_id") for entry in saved_guidance["profiles"]])
+        transaction = json.loads((Path(result["backup"]) / "transaction.json").read_text())
+        self.assertEqual(transaction["profile_pack"]["pack_id"], self.model.paths.profile_pack.pack_id)
+        self.assertNotIn("Macro", [item["title"] for item in self.model.profile_starter_options()["available"]])
+        with self.assertRaisesRegex(PrototypeError, "unavailable or already present"):
+            self.model.review_profile_starters([macro_id], 0)
+
+    def test_official_profile_addition_rolls_back_after_validation_failure(self):
+        macro_id = "48850916-669d-592f-9e3f-defc3994445e"
+        macro_path = self.pack / "10 Profiles" / "Macro.yaml"
+        macro_path.unlink()
+        guidance_path = self.pack / "00 Master" / "profile_lens_guidance.yaml"
+        guidance = yaml.safe_load(guidance_path.read_text(encoding="utf-8"))
+        guidance["profiles"] = [
+            entry for entry in guidance["profiles"] if entry.get("card_id") != macro_id
+        ]
+        guidance_path.write_text(yaml.safe_dump(guidance, sort_keys=False), encoding="utf-8")
+        before_guidance = guidance_path.read_bytes()
+        self.model = ProfileEditorModel(
+            PROJECT_ROOT,
+            profile_pack_root=self.pack,
+            source_validator=lambda _paths: ["forced validation failure"],
+        )
+        review = self.model.review_profile_starters([macro_id], 0)
+        with self.assertRaisesRegex(PrototypeError, "prior pack source was restored"):
+            self.model.save_profile_starters(review["reviewToken"], True)
+        self.assertFalse(macro_path.exists())
+        self.assertEqual(guidance_path.read_bytes(), before_guidance)
 
     def test_external_pack_git_status_is_routed_to_the_selected_pack_workflow(self):
         workflow = mock.Mock()

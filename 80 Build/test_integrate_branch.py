@@ -236,6 +236,8 @@ class BranchIntegrationWorkflowTests(unittest.TestCase):
 
     def test_restart_detection_ignores_documentation_only_changes(self):
         self.assertTrue(app_restart_required(["M\t80 Build/profile_editor/app.js"]))
+        self.assertTrue(app_restart_required(["M\t80 Build/camera_control/static/app.js"]))
+        self.assertTrue(app_restart_required(["M\t80 Build/app_wrappers.py"]))
         self.assertTrue(app_restart_required(["A\t10 Profiles/New.yaml"]))
         self.assertFalse(app_restart_required(["M\tREADME.md", "M\tWORKFLOWS/index.md"]))
 

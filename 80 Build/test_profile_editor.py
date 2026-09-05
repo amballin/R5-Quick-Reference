@@ -961,6 +961,11 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('id="profile-pack-creation-dialog"', html)
         self.assertIn('id="create-profile-pack"', html)
         self.assertIn('id="profile-pack-git-panel"', html)
+        self.assertIn('id="profile-starter-panel"', html)
+        self.assertIn('id="profile-starter-dialog"', html)
+        self.assertIn("Profile Packs &amp; Sharing", html)
+        self.assertIn("How the editor protects your work", html)
+        self.assertLess(html.index('id="today-view"'), html.index('class="safety-note"'))
         self.assertIn('id="application-git-summary"', html)
         self.assertIn('id="profile-pack-git-summary"', html)
         self.assertIn('id="combined-handoff-status"', html)
@@ -989,6 +994,9 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn('request("/api/profile-pack-git-remote-reviews"', javascript)
         self.assertIn('request("/api/profile-pack-git-remotes"', javascript)
         self.assertIn('request("/api/profile-pack-git-pushes"', javascript)
+        self.assertIn('request("/api/profile-starter-options"', javascript)
+        self.assertIn('request("/api/profile-starter-reviews"', javascript)
+        self.assertIn('request("/api/profile-starter-saves"', javascript)
         self.assertIn("profileEditor.profilePackRemoteJob", javascript)
         self.assertIn("profileEditor.profilePackPushJob", javascript)
         self.assertIn("PROFILE_PACK_RECEIPT_KEY", javascript)
@@ -1003,6 +1011,7 @@ class ProfileEditorTransactionTests(unittest.TestCase):
         self.assertIn("updateSidebarViewport", javascript)
         self.assertIn("max-height: calc(100vh - 2rem)", stylesheet)
         self.assertIn('.sharing-panel input[type="checkbox"]', stylesheet)
+        self.assertIn('.review-confirmation input[type="checkbox"]', stylesheet)
         self.assertIn(".profile-pack-setup-steps", stylesheet)
         self.assertIn('request("/api/finish-day-status"', javascript)
         self.assertIn('request("/api/finish-day-prepare"', javascript)
@@ -1423,6 +1432,18 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
             connection.request(
                 "POST",
+                "/api/profile-starter-reviews",
+                body=json.dumps({"cardIds": [], "pendingChanges": 0}),
+                headers={"Content-Type": "application/json"},
+            )
+            response = connection.getresponse()
+            self.assertEqual(response.status, 403)
+            response.read()
+            connection.close()
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request(
+                "POST",
                 "/api/profile-pack-git-status",
                 body=json.dumps({"pendingChanges": 0}),
                 headers={"Content-Type": "application/json"},
@@ -1513,6 +1534,40 @@ class ProfileEditorTransactionTests(unittest.TestCase):
             self.assertFalse(thread.is_alive())
         finally:
             server.server_close()
+
+    def test_card_preview_notes_link_opens_field_guide_and_returns_to_preview(self):
+        preview = self.model.preview("Camera Buttons", {})
+        preview_html = preview.read_text(encoding="utf-8")
+        link = (
+            "/field-guide/html/Custom%20Controls%20%26%20Menus%2C%20"
+            "Back-Button%20AF%20%26%20Dial%20Strategies.html"
+            "?return=../Cards/Camera%20Buttons.html"
+        )
+        self.assertIn('href="../../field-guide/html/', preview_html)
+
+        server = create_server(self.model, port=0, token="preview-link-test-token")
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=10)
+            connection.request("GET", link)
+            response = connection.getresponse()
+            field_guide_html = response.read().decode("utf-8")
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertIn("Custom Controls &amp; Menus, Back-Button AF &amp; Dial Strategies", field_guide_html)
+
+            connection = HTTPConnection("127.0.0.1", server.server_port, timeout=2)
+            connection.request("GET", "/field-guide/Cards/Camera%20Buttons.html")
+            response = connection.getresponse()
+            returned_preview = response.read().decode("utf-8")
+            connection.close()
+            self.assertEqual(response.status, 200)
+            self.assertIn("<h1>Camera Buttons</h1>", returned_preview)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
 
     def test_profile_detail_exposes_card_order_and_visible_setting_paths(self):
         detail = self.model.profile_detail("Birds in Flight")

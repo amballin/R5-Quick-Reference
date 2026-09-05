@@ -42,7 +42,7 @@ To edit the same selected pack through guarded reviewed transactions, run:
 python3 -B "80 Build/profile_editor.py" --profile-pack "/absolute/path/to/private-profile-pack"
 ```
 
-The editor displays the manifest's friendly `pack_name` and permits only pack-namespaced previews plus reviewed Profile/lens, baseline, C1-C3, My Menu, Camera Buttons, removal, restore, Camera Lab evidence-promotion, and Step 6B private-pack Git transactions. Setup & Sharing reports combined handoff without modifying application Git. It rejects spreadsheet import/generation, build, cleanup, application Finish Day/Git, integration, main-editor launch, and publication. Restart it after changing pack source outside the editor. The normal app launcher uses the current valid machine-local editor selection; it does not change which pack an explicit build or validator command uses.
+The editor displays the manifest's friendly `pack_name` and permits only pack-namespaced previews plus reviewed Profile/lens, baseline, C1-C3, My Menu, Camera Buttons, removal, restore, Camera Lab evidence-promotion, Step 7B official-profile addition, and Step 6B private-pack Git transactions. Profile Packs & Sharing reports combined handoff without modifying application Git. It rejects spreadsheet import/generation, build, cleanup, application Finish Day/Git, integration, main-editor launch, and publication. Restart it after changing pack source outside the editor. The normal app launcher uses the current valid machine-local editor selection; it does not change which pack an explicit build or validator command uses.
 
 ## Why three commands
 

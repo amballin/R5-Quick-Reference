@@ -15,10 +15,17 @@ from unittest import mock
 
 import yaml
 
-from profile_pack import EMBEDDED_SOURCE_PATHS, SOURCE_PATHS, resolve_profile_pack
+from asset_manager import ProjectPaths
+from profile_pack import (
+    EMBEDDED_SOURCE_PATHS,
+    REQUIRED_STARTER_CARD_IDS,
+    SOURCE_PATHS,
+    resolve_profile_pack,
+)
 from profile_pack_creation import ProfilePackCreationError, ProfilePackCreator
 from profile_pack_selection import ProfilePackSelectionStore
 from profile_editor import EditorHandler, ProfileEditorModel
+from validators.profile_pack_seed_validator import validate as validate_profile_pack_seed
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +50,7 @@ class ProfilePackCreationTests(unittest.TestCase):
             "pack_name": "My Canon EOS R5 Profiles",
             "destination": str(self.destination),
             "pending_changes": 0,
+            "optional_profile_ids": [],
         }
         values.update(overrides)
         return self.creator.review(**values)
@@ -57,6 +65,9 @@ class ProfilePackCreationTests(unittest.TestCase):
         self.assertIn("AGENTS.md", review["sourceFiles"])
         self.assertIn(".gitignore", review["sourceFiles"])
         self.assertIn("10 Profiles/Wildlife.yaml", review["sourceFiles"])
+        self.assertNotIn("10 Profiles/Macro.yaml", review["sourceFiles"])
+        self.assertEqual(len(review["requiredCards"]), 7)
+        self.assertEqual(review["selectedOptionalCards"], [])
         self.assertEqual(review["sourceFileCount"], len(review["sourceFiles"]))
         self.assertIn("without a commit, remote, or push", review["gitAction"])
 
@@ -75,8 +86,22 @@ class ProfilePackCreationTests(unittest.TestCase):
             destination = self.destination / destination_relative
             source = PROJECT_ROOT / EMBEDDED_SOURCE_PATHS[key]
             self.assertEqual(destination.is_dir(), source.is_dir())
-            if source.is_file():
+            if source.is_file() and key not in {"controls", "profile_lens_guidance", "verification_status"}:
                 self.assertEqual(destination.read_bytes(), source.read_bytes())
+        created_ids = {
+            yaml.safe_load(path.read_text(encoding="utf-8"))["card_id"]
+            for path in (self.destination / "10 Profiles").glob("*.yaml")
+        }
+        self.assertEqual(created_ids, REQUIRED_STARTER_CARD_IDS)
+        controls = yaml.safe_load((self.destination / "controls.yaml").read_text(encoding="utf-8"))
+        self.assertEqual(controls["controls"][0]["status"], "approved_target_pending_camera_verification")
+        self.assertNotIn("retired_evidence", controls)
+        self.assertNotIn("physically tested", yaml.safe_dump(controls))
+        status = yaml.safe_load(
+            (self.destination / "90 Testing" / "eos_r5_verification_status.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(status["tests"], {})
+        self.assertEqual(status["sessions"], [])
         self.assertEqual(resolve_profile_pack(PROJECT_ROOT, self.destination).pack_id, context.pack_id)
         remotes = subprocess.run(
             ["git", "-C", str(self.destination), "remote"],
@@ -94,6 +119,47 @@ class ProfilePackCreationTests(unittest.TestCase):
         self.assertNotEqual(head.returncode, 0)
         with self.assertRaisesRegex(ProfilePackCreationError, "missing or expired"):
             self.creator.create(review["reviewToken"], True)
+
+    def test_optional_profiles_are_explicit_and_lens_guidance_is_intersected(self):
+        options = self.creator.creation_options()
+        macro = next(item for item in options["optional"] if item["title"] == "Macro")
+        review = self.review(optional_profile_ids=[macro["cardId"]])
+        self.assertIn("10 Profiles/Macro.yaml", review["sourceFiles"])
+        context = self.creator.create(review["reviewToken"], True)
+        created_ids = {
+            yaml.safe_load(path.read_text(encoding="utf-8"))["card_id"]
+            for path in context.sources["profiles"].glob("*.yaml")
+        }
+        self.assertEqual(created_ids, REQUIRED_STARTER_CARD_IDS | {macro["cardId"]})
+        guidance = yaml.safe_load(context.sources["profile_lens_guidance"].read_text(encoding="utf-8"))
+        self.assertEqual(
+            {entry["card_id"] for entry in guidance["profiles"]},
+            {
+                card_id
+                for card_id in created_ids
+                if card_id in {entry["card_id"] for entry in yaml.safe_load((PROJECT_ROOT / "00 Master/profile_lens_guidance.yaml").read_text(encoding="utf-8"))["profiles"]}
+            },
+        )
+
+    def test_unknown_or_duplicate_optional_profiles_are_rejected(self):
+        with self.assertRaisesRegex(ProfilePackCreationError, "Unknown optional"):
+            self.review(optional_profile_ids=["00000000-0000-0000-0000-000000000000"])
+        macro_id = next(
+            item["cardId"]
+            for item in self.creator.creation_options()["optional"]
+            if item["title"] == "Macro"
+        )
+        with self.assertRaisesRegex(ProfilePackCreationError, "duplicates"):
+            self.review(optional_profile_ids=[macro_id, macro_id])
+
+    def test_external_validation_requires_the_minimum_starter_pack(self):
+        review = self.review()
+        context = self.creator.create(review["reviewToken"], True)
+        (context.sources["profiles"] / "My Menu.yaml").unlink()
+        paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=self.destination)
+        issues = validate_profile_pack_seed(paths)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("missing required", issues[0].message)
 
     def test_creation_rejects_drafts_existing_or_nested_destinations_and_missing_confirmation(self):
         with self.assertRaisesRegex(ProfilePackCreationError, "browser draft"):

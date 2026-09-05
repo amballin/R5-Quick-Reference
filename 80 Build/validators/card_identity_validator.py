@@ -1,6 +1,8 @@
 from collections import Counter
 from uuid import UUID
 
+from profile_pack import valid_application_profile_reference_ids
+
 from .common import error, load_yaml_checked, resolved_paths
 
 
@@ -64,6 +66,7 @@ def validate(paths_or_root):
                 issues.append(error("card_identity", path, f"{mode} uses legacy profile_title instead of profile_id."))
 
     manifest_path = root / "50 Field Guide" / "required_appendices.yaml"
+    valid_appendix_profile_ids = valid_application_profile_reference_ids(paths)
     try:
         manifest = load_yaml_checked(manifest_path) or {}
     except Exception:
@@ -74,6 +77,6 @@ def validate(paths_or_root):
         if "profiles" in entry:
             issues.append(error("card_identity", manifest_path, f"Appendix {entry.get('id')} uses legacy profiles instead of profile_ids."))
         for profile_id in entry.get("profile_ids", []) or []:
-            if profile_id not in cards:
+            if profile_id not in valid_appendix_profile_ids:
                 issues.append(error("card_identity", manifest_path, f"Appendix {entry.get('id')} references missing card_id: {profile_id}"))
     return issues

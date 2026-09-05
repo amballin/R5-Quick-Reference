@@ -15,6 +15,7 @@ from html_renderer import shared_header_icon_path
 from my_menu_colors import load_my_menu_colors, menu_color
 from control_reference import inject_control_tables
 from site_navigation import SITE_NAV_CSS, brand_image, site_navigation
+from profile_pack import application_profile_catalog
 
 
 QUICK_ACCESS_MFN_COLOR = "#4f46e5"
@@ -71,6 +72,9 @@ def render_appendices(paths, include_pdf=False):
                 continue
             title = entry.get("title") or source.stem
             markdown = source.read_text(encoding="utf-8", errors="replace")
+            markdown = _filter_active_profile_lists(
+                markdown, paths, entry.get("profile_ids") or []
+            )
             markdown = _inject_stabilization_references(markdown, paths)
             markdown = inject_control_tables(markdown, paths)
             html_path = html_stage_dir / f"{source.stem}.html"
@@ -111,6 +115,55 @@ def render_appendices(paths, include_pdf=False):
     search_path.write_text(json.dumps(search_entries, indent=2), encoding="utf-8")
     generated["Search"] = 1
     return generated
+
+
+def _filter_active_profile_lists(markdown, paths, associated_profile_ids=None):
+    """Intersect explicit authored `Profiles:` inventories with the active pack."""
+    if paths.profile_pack.mode != "external":
+        return markdown
+    active_titles = {}
+    for source in sorted(paths.profiles_dir.glob("*.yaml")):
+        try:
+            profile = load_yaml_checked(source) or {}
+        except Exception:
+            continue
+        title = profile.get("title")
+        card_id = profile.get("card_id")
+        if isinstance(card_id, str) and isinstance(title, str):
+            active_titles[card_id] = title
+
+    catalog = application_profile_catalog(paths.application_root)
+    catalog_titles = {
+        card_id: profile.get("title")
+        for card_id, profile in catalog.items()
+        if isinstance(profile.get("title"), str)
+    }
+    if active_titles == catalog_titles:
+        return markdown
+    catalog_ids_by_title = {
+        profile.get("title", "").casefold(): card_id
+        for card_id, profile in catalog.items()
+        if isinstance(profile.get("title"), str)
+    }
+    pattern = re.compile(r"^(\s*-\s+Profiles:\s*)(.+?)\.?\s*$", re.MULTILINE)
+
+    def replace(match):
+        authored = [item.strip() for item in match.group(2).split(",") if item.strip()]
+        authored_ids = [
+            catalog_ids_by_title[title.casefold()]
+            for title in authored
+            if title.casefold() in catalog_ids_by_title
+        ]
+        selected = [
+            active_titles[card_id]
+            for card_id in authored_ids
+            if card_id in active_titles
+        ]
+        if not selected:
+            return ""
+        return match.group(1) + ", ".join(selected) + "."
+
+    return pattern.sub(replace, markdown)
 
 
 def _inject_stabilization_references(markdown, paths):

@@ -39,6 +39,24 @@ SOURCE_PATHS = {
     "verification_status": "90 Testing/eos_r5_verification_status.yaml",
 }
 
+# Step 7A starter packs always retain the baseline, the three editable C-mode
+# foundations, and the permanent reference cards.  Titles may change inside a
+# private pack; immutable card IDs keep the contract stable.
+STARTER_CX_CARDS = (
+    ("3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42", "Wildlife", "C1"),
+    ("d2609cc6-8056-5632-932d-45dcb4416185", "Birds in Flight", "C2"),
+    ("c4489d13-bc1c-507c-a4b3-fe09b02a5ffa", "Landscape", "C3"),
+)
+STARTER_REFERENCE_CARDS = (
+    ("3f2f9197-1aff-54cf-a526-32cac18daee8", "Camera Buttons"),
+    ("24499188-e352-5bc4-b51b-2c54b50da333", "Camera Defaults"),
+    ("468084df-890b-5b91-882e-221d2a61ab8e", "Camera Setup Essentials"),
+    ("7b1cf834-7ab2-504e-85a5-5e393092a63d", "My Menu"),
+)
+REQUIRED_STARTER_CARD_IDS = frozenset(
+    card_id for card_id, *_rest in (*STARTER_CX_CARDS, *STARTER_REFERENCE_CARDS)
+)
+
 # Embedded transition mode deliberately maps mixed legacy sources without moving them.
 EMBEDDED_SOURCE_PATHS = {
     **SOURCE_PATHS,
@@ -206,6 +224,42 @@ def profile_pack_revision(context):
         "dirty_source_fingerprint": state["dirty_source_fingerprint"],
         "pack_fingerprint": fingerprint,
     }
+
+
+def application_profile_catalog(application_root):
+    """Return the reusable embedded card catalog keyed by immutable card ID."""
+    catalog = {}
+    profiles_dir = Path(application_root).resolve() / EMBEDDED_SOURCE_PATHS["profiles"]
+    for path in sorted(profiles_dir.glob("*.yaml")):
+        try:
+            profile = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except (OSError, UnicodeError, yaml.YAMLError):
+            continue
+        card_id = profile.get("card_id")
+        if isinstance(card_id, str):
+            catalog[card_id] = profile
+    return catalog
+
+
+def valid_application_profile_reference_ids(paths):
+    """Validate shared appendix references against the reusable app catalog.
+
+    Embedded mode still requires every referenced card to be active. External
+    packs may omit a known optional catalog card; generation intersects those
+    associations with the pack's active card IDs.
+    """
+    if paths.profile_pack.mode == "external":
+        return set(application_profile_catalog(paths.application_root))
+    values = set()
+    for path in sorted(paths.profiles_dir.glob("*.yaml")):
+        try:
+            profile = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except (OSError, UnicodeError, yaml.YAMLError):
+            continue
+        card_id = profile.get("card_id")
+        if isinstance(card_id, str):
+            values.add(card_id)
+    return values
 
 
 def write_build_provenance(context, output_path):

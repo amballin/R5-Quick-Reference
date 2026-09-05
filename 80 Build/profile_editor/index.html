@@ -100,8 +100,8 @@
           <span class="nav-note">Optional exact deletion review</span>
         </button>
         <button class="view-tab" type="button" data-view="setup-sharing">
-          <span class="nav-label">Setup &amp; Sharing</span>
-          <span class="nav-note">Macs, forks, and personal data</span>
+          <span class="nav-label">Profile Packs</span>
+          <span class="nav-note">Create, select, and share</span>
         </button>
         <button class="view-tab" type="button" data-view="dictionary">
           <span class="nav-label">Camera Reference</span>
@@ -111,12 +111,6 @@
     </aside>
 
     <div class="app-workspace">
-    <section class="safety-note" aria-label="Editor safety notice">
-      <strong>Review before every save.</strong>
-      Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.
-      Camera Buttons and My Menu use dedicated guarded editors; other permanent reference-card content remains read-only. Released-card removal, permanent card or source deletion, and direct baseline edits remain unavailable. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review. Optional Cleanup Review may permanently remove only exact separately confirmed workflow-owned disposable items. Local builds are allowed only from Review &amp; Build after all browser drafts are resolved and source validation passes. Commit, push, publication, and branch integration remain confined to their separately confirmed guarded workspaces.
-    </section>
-
     <section id="today-view" class="app-view">
       <div class="view-intro">
         <div>
@@ -126,6 +120,13 @@
         </div>
         <button id="refresh-workflow-preflight" class="secondary" type="button">Refresh preflight</button>
       </div>
+
+      <details class="safety-note">
+        <summary>How the editor protects your work</summary>
+        <p><strong>Review before every save.</strong> Profile, Cx Foundation, and baseline-migration writes require an exact YAML diff, a recovery backup, concurrent-change detection, validation, and atomic replacement.</p>
+        <p>Camera Buttons and My Menu use dedicated guarded editors; other permanent reference-card content remains read-only. Released-card removal, permanent card or source deletion, and direct baseline edits remain unavailable. Unreleased cards can only be moved into the recoverable Deleted Cards holding area after dependency review.</p>
+        <p>Cleanup, builds, Git actions, branch integration, and publication remain confined to their dedicated reviewed workspaces.</p>
+      </details>
 
       <nav class="day-workflow" aria-label="Daily workflow">
         <button class="day-step is-active" type="button" data-day-phase="start"><strong>1</strong><span>Start</span></button>
@@ -947,7 +948,7 @@
       <div class="view-intro">
         <div>
           <p class="eyebrow">Private profile pack</p>
-          <h2>Setup &amp; Sharing</h2>
+          <h2>Profile Packs &amp; Sharing</h2>
           <p class="muted">Follow the four steps below. The editor shows only the action that is needed next and keeps the application repository separate.</p>
         </div>
         <a class="secondary action-link" href="/source/WORKFLOWS/other-mac.html" target="_blank" rel="noreferrer">Other-Mac guide</a>
@@ -963,6 +964,17 @@
         <section id="profile-pack-existing-summary" class="profile-pack-existing-summary" hidden>
           <div><p class="eyebrow">Selected profile pack</p><h3 id="current-pack-setup-name">Private profile pack</h3><p class="muted">This pack remains separate from the Camera Guide application.</p></div>
           <button id="switch-to-embedded-for-creation" class="secondary" type="button">Create another pack</button>
+        </section>
+
+        <section id="profile-starter-panel" class="profile-starter-panel" hidden>
+          <div>
+            <p class="eyebrow">Step 7B · add official profiles</p>
+            <h3>Add profile starters to this pack</h3>
+            <p class="muted">Choose profiles from the application catalog that are not already in this pack. Existing profiles and card identities are never overwritten.</p>
+          </div>
+          <div id="profile-starter-options" class="optional-starter-cards" aria-label="Official profiles available to add"></div>
+          <p id="profile-starter-message" class="muted" role="status"></p>
+          <button id="review-profile-starters" class="secondary" type="button">Review selected profiles</button>
         </section>
 
         <section id="profile-pack-creation-panel" class="profile-pack-creation-panel">
@@ -982,7 +994,19 @@
               </span>
             </label>
           </div>
-          <p id="profile-pack-creation-message" class="muted" role="status">The new pack will contain a migrated copy. Embedded sources remain unchanged.</p>
+          <div class="starter-profile-selection">
+            <section>
+              <h4>Always included</h4>
+              <p class="muted">The baseline, editable C1–C3 starters, and permanent reference cards preserve a valid minimum pack.</p>
+              <ul id="required-starter-cards" class="starter-card-list" aria-label="Required starter cards"></ul>
+            </section>
+            <fieldset>
+              <legend>Optional profile cards</legend>
+              <p class="muted">Choose only the additional cards this pack should contain. You can add another official profile later from this page while that private pack is selected.</p>
+              <div id="optional-starter-cards" class="optional-starter-cards"></div>
+            </fieldset>
+          </div>
+          <p id="profile-pack-creation-message" class="muted" role="status">The new pack will contain the required starter set plus only the optional cards selected here. Embedded sources remain unchanged.</p>
           <div class="profile-pack-creation-actions">
             <button id="review-profile-pack-creation" class="primary" type="button">Review new profile pack</button>
           </div>
@@ -1100,10 +1124,29 @@
       <summary><span id="profile-pack-creation-file-count">0</span> files will be created</summary>
       <ul id="profile-pack-creation-file-list"></ul>
     </details>
-    <label class="review-confirmation"><input id="profile-pack-creation-confirm" type="checkbox"> I reviewed the name, exact destination, migrated source inventory, and local Git boundary.</label>
+    <label class="review-confirmation"><input id="profile-pack-creation-confirm" type="checkbox"> I reviewed the name, exact destination, selected starter cards, source inventory, and local Git boundary.</label>
     <div class="review-actions">
       <button id="profile-pack-creation-cancel" class="secondary" type="button">Cancel</button>
       <button id="create-profile-pack" class="save-action" type="button" disabled>Create and select profile pack</button>
+    </div>
+  </dialog>
+
+  <dialog id="profile-starter-dialog" class="review-dialog">
+    <div class="review-heading">
+      <div>
+        <p class="eyebrow">Required profile-addition review</p>
+        <h2>Add these official profiles?</h2>
+        <p id="profile-starter-summary" class="muted"></p>
+      </div>
+      <button id="profile-starter-close" class="secondary" type="button" aria-label="Close profile addition review">Close</button>
+    </div>
+    <p class="review-warning"><strong>Nothing existing will be overwritten.</strong> Only the reviewed profile files and their application-supplied lens guidance will be added to this private pack.</p>
+    <h3 class="review-diff-heading">Exact source changes</h3>
+    <pre id="profile-starter-diff" class="review-diff" tabindex="0"></pre>
+    <label class="review-confirmation"><input id="profile-starter-confirm" type="checkbox"> I reviewed the selected profiles, exact files, and lens-guidance additions.</label>
+    <div class="review-actions">
+      <button id="profile-starter-cancel" class="secondary" type="button">Cancel</button>
+      <button id="add-profile-starters" class="save-action" type="button" disabled>Add reviewed profiles</button>
     </div>
   </dialog>
 

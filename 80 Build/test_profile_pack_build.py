@@ -16,7 +16,7 @@ from unittest import mock
 import yaml
 
 from asset_manager import ProjectPaths
-from appendix_renderer import render_appendices
+from appendix_renderer import _filter_active_profile_lists, render_appendices
 from offline_index import render_offline_index
 from profile_pack import SOURCE_PATHS
 from pwa import generate_pwa
@@ -114,6 +114,36 @@ class ProfilePackBuildTests(unittest.TestCase):
             )
             generate_pwa(paths, build_version="parity-test")
             return self._tree_bytes(paths.merged_build_output_dir)
+
+    def test_explicit_profile_inventories_intersect_with_active_pack(self):
+        for source in (self.pack / "10 Profiles").glob("*.yaml"):
+            if source.name not in {
+                "Wildlife.yaml",
+                "Birds in Flight.yaml",
+                "Landscape.yaml",
+                "Camera Buttons.yaml",
+                "Camera Defaults.yaml",
+                "Camera Setup Essentials.yaml",
+                "My Menu.yaml",
+            }:
+                source.unlink()
+        wildlife_path = self.pack / "10 Profiles" / "Wildlife.yaml"
+        wildlife = yaml.safe_load(wildlife_path.read_text(encoding="utf-8"))
+        wildlife["title"] = "Forest Wildlife"
+        wildlife_path.write_text(yaml.safe_dump(wildlife, sort_keys=False), encoding="utf-8")
+        paths = ProjectPaths(PROJECT_ROOT, profile_pack_root=self.pack)
+        filtered = _filter_active_profile_lists(
+            "- Profiles: Wildlife, Macro, Landscape.\nMacro remains a general photographic subject.\n",
+            paths,
+            [
+                "3f9e95b6-7c08-5ca0-89a7-ad3f878bbc42",
+                "48850916-669d-592f-9e3f-defc3994445e",
+                "c4489d13-bc1c-507c-a4b3-fe09b02a5ffa",
+            ],
+        )
+        self.assertIn("- Profiles: Forest Wildlife, Landscape.", filtered)
+        self.assertNotIn("Profiles: Wildlife, Macro", filtered)
+        self.assertIn("Macro remains a general photographic subject.", filtered)
 
     def test_external_cli_matches_embedded_bundle_and_never_writes_application_outputs(self):
         reference = self._render_reference_bundle()

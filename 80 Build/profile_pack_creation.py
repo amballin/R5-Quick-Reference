@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from pathlib import Path
 import re
 import secrets
@@ -23,7 +24,10 @@ from profile_pack import (
     MANIFEST_VERSION,
     PROFILE_PACK_CONTRACT,
     PROHIBITED_COMPONENT_PATTERNS,
+    REQUIRED_STARTER_CARD_IDS,
     SOURCE_PATHS,
+    STARTER_CX_CARDS,
+    STARTER_REFERENCE_CARDS,
     resolve_profile_pack,
 )
 
@@ -48,18 +52,48 @@ class ProfilePackCreator:
         self._pending_reviews = {}
         self._lock = threading.RLock()
 
-    def review(self, pack_name, destination, pending_changes):
+    def creation_options(self):
+        """Return path-free required and optional starter-card choices."""
+        catalog = self._embedded_profile_catalog()
+        required = []
+        for card_id, title, *slot in (*STARTER_CX_CARDS, *STARTER_REFERENCE_CARDS):
+            source = catalog.get(card_id)
+            if source is None:
+                raise ProfilePackCreationError(f"Required starter card is missing: {title}")
+            required.append(
+                {
+                    "cardId": card_id,
+                    "title": str(source[1].get("title") or title),
+                    "role": slot[0] if slot else "Reference",
+                }
+            )
+        optional = [
+            {
+                "cardId": card_id,
+                "title": str(profile.get("title") or path.stem),
+            }
+            for card_id, (path, profile) in catalog.items()
+            if card_id not in REQUIRED_STARTER_CARD_IDS
+            and profile.get("card_type", "profile") == "profile"
+            and profile.get("display_category", "subject") == "subject"
+        ]
+        optional.sort(key=lambda item: item["title"].casefold())
+        return {"required": required, "optional": optional}
+
+    def review(self, pack_name, destination, pending_changes, optional_profile_ids=None):
         if pending_changes != 0:
             raise ProfilePackCreationError(
                 "Save or discard every browser draft before creating a profile pack."
             )
         pack_name = self._pack_name(pack_name)
         destination = self._destination(destination)
+        selected_optional_ids = self._optional_profile_ids(optional_profile_ids)
+        selected_card_ids = set(REQUIRED_STARTER_CARD_IDS) | selected_optional_ids
         self._expire_reviews()
         pack_id = str(uuid4())
         manifest = self._manifest(pack_id, pack_name)
         manifest_yaml = yaml.safe_dump(manifest, sort_keys=False, allow_unicode=True)
-        source_files = self._source_file_inventory()
+        source_files = self._source_file_inventory(selected_card_ids)
         review_token = secrets.token_urlsafe(32)
         self._pending_reviews[review_token] = {
             "created": time.monotonic(),
@@ -70,6 +104,8 @@ class ProfilePackCreator:
             "manifest_yaml": manifest_yaml,
             "source_fingerprint": self._embedded_fingerprint(),
             "source_files": source_files,
+            "selected_card_ids": sorted(selected_card_ids),
+            "selected_optional_ids": sorted(selected_optional_ids),
         }
         if len(self._pending_reviews) > MAX_PENDING_REVIEWS:
             oldest = min(self._pending_reviews, key=lambda token: self._pending_reviews[token]["created"])
@@ -82,6 +118,12 @@ class ProfilePackCreator:
             "manifestYaml": manifest_yaml,
             "sourceFiles": source_files,
             "sourceFileCount": len(source_files),
+            "requiredCards": self.creation_options()["required"],
+            "selectedOptionalCards": [
+                item
+                for item in self.creation_options()["optional"]
+                if item["cardId"] in selected_optional_ids
+            ],
             "gitAction": "Initialize a local Git repository without a commit, remote, or push.",
         }
 
@@ -195,11 +237,49 @@ end run
         )
         shutil.copy2(PACK_INSTRUCTIONS, staging / "AGENTS.md")
         shutil.copy2(PACK_GITIGNORE, staging / ".gitignore")
+        selected_card_ids = set(review["selected_card_ids"])
         for key, destination_relative in SOURCE_PATHS.items():
             source = self.application_root / EMBEDDED_SOURCE_PATHS[key]
             destination = staging / destination_relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            if source.is_dir():
+            if key == "profiles":
+                destination.mkdir(parents=True, exist_ok=True)
+                for path in sorted(source.glob("*.yaml")):
+                    profile = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+                    if profile.get("card_id") not in selected_card_ids:
+                        continue
+                    if profile.get("card_id") == STARTER_REFERENCE_CARDS[0][0]:
+                        profile = deepcopy(profile)
+                        profile["subtitle"] = "Starter Layout — Verify on Camera"
+                        destination.joinpath(path.name).write_text(
+                            yaml.safe_dump(profile, sort_keys=False, allow_unicode=True),
+                            encoding="utf-8",
+                        )
+                    else:
+                        shutil.copy2(path, destination / path.name)
+            elif key == "profile_lens_guidance":
+                guidance = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
+                guidance["profiles"] = [
+                    entry
+                    for entry in guidance.get("profiles", []) or []
+                    if isinstance(entry, dict) and entry.get("card_id") in selected_card_ids
+                ]
+                destination.write_text(
+                    yaml.safe_dump(guidance, sort_keys=False, allow_unicode=True),
+                    encoding="utf-8",
+                )
+            elif key == "controls":
+                controls = yaml.safe_load(source.read_text(encoding="utf-8")) or {}
+                destination.write_text(
+                    yaml.safe_dump(self._starter_controls(controls), sort_keys=False, allow_unicode=True),
+                    encoding="utf-8",
+                )
+            elif key == "verification_status":
+                destination.write_text(
+                    yaml.safe_dump(self._empty_verification_status(), sort_keys=False, allow_unicode=True),
+                    encoding="utf-8",
+                )
+            elif source.is_dir():
                 shutil.copytree(source, destination)
             else:
                 shutil.copy2(source, destination)
@@ -268,7 +348,7 @@ end run
             )
         return value
 
-    def _source_file_inventory(self):
+    def _source_file_inventory(self, selected_card_ids):
         files = [".gitignore", "AGENTS.md", "profile-pack.yaml"]
         for key, destination_relative in SOURCE_PATHS.items():
             source = self.application_root / EMBEDDED_SOURCE_PATHS[key]
@@ -279,11 +359,93 @@ end run
                         (destination / path.relative_to(source)).as_posix()
                         for path in source.rglob("*")
                         if path.is_file()
+                        and (
+                            key != "profiles"
+                            or (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("card_id")
+                            in selected_card_ids
+                        )
                     )
                 )
             else:
                 files.append(destination.as_posix())
         return sorted(files)
+
+    def _embedded_profile_catalog(self):
+        catalog = {}
+        profiles_dir = self.application_root / EMBEDDED_SOURCE_PATHS["profiles"]
+        for path in sorted(profiles_dir.glob("*.yaml")):
+            profile = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            card_id = profile.get("card_id")
+            if isinstance(card_id, str):
+                catalog[card_id] = (path, profile)
+        return catalog
+
+    def _optional_profile_ids(self, values):
+        if values is None:
+            values = []
+        if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+            raise ProfilePackCreationError("Optional profile selections must be a list of card IDs.")
+        if len(values) != len(set(values)):
+            raise ProfilePackCreationError("Optional profile selections must not contain duplicates.")
+        options = {item["cardId"] for item in self.creation_options()["optional"]}
+        unknown = sorted(set(values) - options)
+        if unknown:
+            raise ProfilePackCreationError(
+                "Unknown optional starter profile selection: " + ", ".join(unknown)
+            )
+        return set(values)
+
+    @staticmethod
+    def _starter_controls(controls):
+        controls = deepcopy(controls)
+        controls["status"] = "starter_template_pending_camera_verification"
+        controls["last_confirmed"] = None
+        controls["authority"] = (
+            "Application starter template; the pack owner must verify every assignment on their camera."
+        )
+        controls["evidence_rules"] = [
+            "Starter assignments are recommendations until the pack owner verifies them on the camera.",
+            "Approved targets remain pending until physically verified on the camera.",
+            "Canon capability statements do not establish the owner's current setup.",
+            "Unresolved items remain unresolved until the pack owner decides them.",
+        ]
+        for group in ("controls", "dials"):
+            for row in controls.get(group, []) or []:
+                if isinstance(row, dict):
+                    row["status"] = "approved_target_pending_camera_verification"
+                    if row.get("control") == "M-Fn":
+                        row["notes"] = (
+                            "Verify that repeated presses switch among C1, C2, and C3 after assigning this control."
+                        )
+        modes = controls.get("custom_shooting_modes") or {}
+        for slot in ("C1", "C2", "C3"):
+            if isinstance(modes.get(slot), dict):
+                modes[slot]["status"] = "approved_target_pending_camera_verification"
+        modes["notes"] = [
+            "C1, C2, and C3 begin with editable starter targets.",
+            "Verify each complete registration on the camera before treating it as current.",
+            "Any assignment or target change remains pending until it is registered and verified.",
+        ]
+        modes["registration_state"] = {
+            "switching_behavior": "approved_target_pending_camera_verification",
+            "C1": "pending_camera_verification",
+            "C2": "pending_camera_verification",
+            "C3": "pending_camera_verification",
+        }
+        controls.pop("retired_evidence", None)
+        return controls
+
+    @staticmethod
+    def _empty_verification_status():
+        return {
+            "version": 1,
+            "updated": None,
+            "tests": {},
+            "registration": {},
+            "sessions": [],
+            "retired_tests": {},
+            "history": [],
+        }
 
     def _embedded_fingerprint(self):
         return resolve_profile_pack(self.application_root).fingerprint()

@@ -51,6 +51,7 @@ REQUIRED_FILES = [
     "80 Build/app_wrappers.py",
     "80 Build/application_version.py",
     "80 Build/profile_pack.py",
+    "80 Build/validators/profile_pack_seed_validator.py",
     "80 Build/profile_pack_selection.py",
     "80 Build/control_reference.py",
     "80 Build/feature_interactions.py",

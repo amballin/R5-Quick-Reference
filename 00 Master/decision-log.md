@@ -1099,6 +1099,30 @@ On reopen or status refresh, reconcile any saved action receipt with the live re
 
 Size the desktop navigation sidebar from its actual visible top edge rather than from the whole viewport so every navigation item is reachable without scrolling the content workspace. Every application and generated private-pack `.gitignore` excludes `.DS_Store`; pack creation installs that ignore file, and private-pack Git review and staging defensively omit Finder metadata even for older packs.
 
+## Selective Starter Packs and Active Reference Resolution — Step 7A
+
+**Status:** Accepted
+**Date:** 2026-09-04
+
+Create new-user private packs from a validated minimum rather than copying every owner profile. Always include the baseline, the editable starter targets C1 Wildlife, C2 Birds in Flight, and C3 Landscape, and the permanent Camera Buttons, Camera Defaults, Camera Setup Essentials, and My Menu cards. Present every other reusable subject card as an explicit optional selection. Retain immutable card identities when an official starter is selected or later added; titles and settings remain editable.
+
+Reset camera-specific verification history and owner-confirmed control evidence in every newly created starter pack. Starter control assignments are approved targets pending the new owner's camera verification and must never inherit another owner's physical-session claims.
+
+Shared deep-dive and Quick Reference associations may name reusable catalog card IDs that are absent from a particular pack. Validate those IDs against the application catalog, intersect displayed structured associations and explicit `Profiles:` inventories with the active pack, and continue rejecting unknown IDs. General educational discussion may mention a photographic subject without implying that its profile card exists.
+
+Treat macOS app wrappers as deterministic thin launchers. Refresh prototype wrappers after validated Editor, Camera Lab, launcher, or wrapper-input work when their candidates are stale. Integrate Branch must always compare persistent Main wrappers after successful Resync and automatically rebuild only missing or byte-stale candidates; documentation-only changes do not require a wrapper rebuild, while merged runtime changes require a visible restart notice without stopping a running editor or camera session.
+
+## Add-Only Official Profiles and Streamlined Pack Workspace — Step 7B
+
+**Status:** Accepted
+**Date:** 2026-09-05
+
+Rename the sidebar destination to **Profile Packs** and its page to **Profile Packs & Sharing** so creation, selection, extension, local saving, and private sharing read as one coherent workspace. Move the full save-safety explanation off every page into a collapsed **How the editor protects your work** section on Today. Apply compact intrinsic sizing to confirmation checkboxes in every review dialog, including dialogs outside the sharing panel.
+
+Allow an existing external pack to add one or more absent official application-catalog subject profiles. Review the exact new profile files and matching absent lens-guidance entries, bind the one-use review to both application source hashes and the current pack fingerprint, reject filename or immutable-card-ID collisions, and require separate confirmation. Back up, validate, write atomically, and roll back on failure. The operation is add-only: it cannot overwrite or remove an existing pack profile, alter application source, or commit or push either repository.
+
+Defer lens-list maintenance to a later guarded design. Canon equipment knowledge remains application-owned; a private pack may eventually own its selected lenses, preferences, and notes without duplicating Canon's catalog facts.
+
 ## Phase 4 — User Experience
 
 **Status:** Proposed (non-binding)
